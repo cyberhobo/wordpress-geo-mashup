@@ -1,0 +1,19 @@
+/*
+ * Example Cascading Stylesheet for the WordPress Geo Mashup Plugin.
+ *
+ * Infowindow div ID: locationinfo
+ * WordPress classes used in infowindow: 
+ * 		storytitle, 
+ *		storycontent, 
+ * 		blogdate, 
+ *		meta
+ *
+ * This sample shrinks the fonts so the info window isn't too big,
+ * limits the maximum size, and adds scrollbars if more space is 
+ * still needed.
+ */
+
+.locationinfo {
+	font-size: 70%;
+	width: 300px;
+}
