@@ -3,11 +3,6 @@
 require('../../../wp-blog-header.php');
 
 status_header(200);
-header('Content-type: text/xml; charset='.get_settings('blog_charset'), true);
-header('Cache-Control: no-cache;', true);
-header('Expires: -1;', true);
-
-echo '<?xml version="1.0" encoding="'.get_settings('blog_charset').'"?'.'>'."\n";
 
 $opts = get_settings('geo_mashup_options');
 $post_id =$_GET['post_id'];
@@ -32,6 +27,12 @@ function trimHtml($html, $length) {
 
 function queryPost($post_id) {
 	global $wpdb, $opts;
+	header('Content-type: text/xml; charset='.get_settings('blog_charset'), true);
+	header('Cache-Control: no-cache;', true);
+	header('Expires: -1;', true);
+
+	echo '<?xml version="1.0" encoding="'.get_settings('blog_charset').'"?'.'>'."\n";
+
 	echo '<channel><title>GeoMashup Query</title><item>';
 	$post = $wpdb->get_row("SELECT * FROM {$wpdb->posts} WHERE ID=$post_id");
 	if (!$post) {
@@ -60,10 +61,14 @@ function queryPost($post_id) {
 
 function queryLocations() {
 	global $wpdb, $opts;
-	echo "<markers>\n";
+	header('Content-type: text/plain; charset='.get_settings('blog_charset'), true);
+	header('Cache-Control: no-cache;', true);
+	header('Expires: -1;', true);
+
+	echo '{ posts : [';
 
 	// Construct the query 
-	$fields = 'ID, meta_value';
+	$fields = 'ID, post_title, meta_value';
 	$tables = $wpdb->postmeta.
 		' INNER JOIN '. $wpdb->posts.
 		' ON ' . $wpdb->postmeta .' .post_id = ' . $wpdb->posts .'.ID';
@@ -126,12 +131,15 @@ function queryLocations() {
 	$wpdb->query($query_string);
 
 	if ($wpdb->last_result) {
+		$comma = '';
 		foreach ($wpdb->last_result as $row) {
-			list($lat,$lon) = split(',',$row->meta_value);
-			echo '<marker post_id="'.$row->ID.'" lat="'.$lat.'" lon="'.$lon."\" />\n";
+			list($lat,$lng) = split(',',$row->meta_value);
+			echo 	$comma.'{"post_id":"'.$row->ID.'","title":"'.$row->post_title.
+						'","lat":"'.$lat.'","lng":"'.$lng.'"}';
+			$comma = ',';
 		}
 	}
-	echo "</markers>\n";
+	echo ']}';
 }
 ?>
 
