@@ -2,8 +2,8 @@
 /*
 Plugin Name: Geo Mashup
 Plugin URI: http://www.cyberhobo.net/downloads/geo-mashup-plugin/
-Description: Adds a Google Maps mashup of blog posts geocoded with the Geo plugin. For WordPress 1.5.1 or higher. Minimal instructions and configuration will be in <a href="options-general.php?page=geo-mashup/geo-mashup.php">Options->Geo Mashup</a> after the plugin is activated.
-Version: 0.5 
+Description: Adds a Google Maps mashup of geocoded blog posts. Configure in <a href="options-general.php?page=geo-mashup/geo-mashup.php">Options->Geo Mashup</a> after the plugin is activated.
+Version: 1.0 BETA 1
 Author: Dylan Kuhn
 Author URI: http://www.cyberhobo.net/
 Minimum WordPress Version Required: 1.5.1
@@ -11,7 +11,7 @@ Minimum WordPress Version Required: 1.5.1
 
 /*
 Geo Mashup - Adds a Google Maps mashup of blog posts geocoded with the Geo plugin. 
-Copyright (c) 2005 Dylan Kuhn
+Copyright (c) 2005-2007 Dylan Kuhn
 
 This program is free software; you can redistribute it
 and/or modify it under the terms of the GNU General Public
@@ -78,89 +78,114 @@ class GeoMashup {
 				}
 				</style>';
 			}
+			$linkDir = get_bloginfo('wpurl')."/wp-content/plugins/geo-mashup";
 			echo '
-			<script src="http://maps.google.com/maps?file=api&amp;v=2&amp;key='.$geoMashupOpts['google_key'].'" type="text/javascript"></script>';
+				<script src="http://maps.google.com/maps?file=api&amp;v=2&amp;key='.$geoMashupOpts['google_key'].'" type="text/javascript"></script>
+				<script src="'.$linkDir.'/geo-mashup.js" type="text/javascript"></script>';
+			$custom_marker_file = dirname(__FILE__).'/custom-marker.js';
+			if (is_readable($custom_marker_file)) {
+				echo '
+					<script src="'.$linkDir.'/custom-marker.js" type="text/javascript"></script>';
+			}
 		}
 	}
 
-	function wp_footer() {
-		global $wpdb,$geoMashupOpts;
-		if (!is_page($geoMashupOpts['mashup_page'])) {
-			return;
-		}
-
-		if ($geoMashupOpts['google_key']) {
-			$linkDir = get_bloginfo('wpurl')."/wp-content/plugins/geo-mashup";
-			echo '	
-			<script type="text/javascript">
-			  //<![CDATA[
-				function GeoMashup() {}
-				GeoMashup.linkDir = "'.$linkDir.'";
-				GeoMashup.mapControl = "'.$geoMashupOpts['map_control'].'";';
-			if ($geoMashupOpts['add_map_type_control'] == 'true') {
-				echo '
-				GeoMashup.addMapTypeControl = true;';
-			}
-			if ($geoMashupOpts['add_overview_control'] == 'true') {
-				echo '
-				GeoMashup.addOverviewControl = true;';
-			}
-			if ($_GET['cat']) {
-				echo '
-				GeoMashup.cat = "'.$_GET['cat'].'";';
-			}
-			if ($geoMashupOpts['add_category_control'] == 'true') {
-				$query = 'SELECT cat_ID, cat_name FROM '.$wpdb->categories;
-				$categories = $wpdb->get_results($query);
-				$comma = '';
-				echo 'geoMashupCategories = {';
-				foreach ($categories as $category) {
-					echo $comma.$category->cat_ID.':\''.addslashes($category->cat_name).'\'';
-					$comma = ',';
-				}
-				echo '}; GeoMashup.addCategoryControl = true;';
-				readfile('category-control.js',true);
-			}
-			if ($geoMashupOpts['map_type']) {
-				echo '
-				GeoMashup.defaultMapType = '.$geoMashupOpts['map_type'].';';
-			}
-			if (strlen($geoMashupOpts['zoom_level'])>0) {
-				echo '
-				GeoMashup.defaultZoom = '.$geoMashupOpts['zoom_level'].';';
-			}
-			if ($geoMashupOpts['show_post'] == 'true') {
-				echo '
-				GeoMashup.showPostHere = '.$geoMashupOpts['show_post'].';';
-			}
-			if ($geoMashupOpts['show_log'] == 'true') {
-				echo '
-				GeoMashup.showLog = '.$geoMashupOpts['show_log'].';';
-			}
-			if ($_GET['lat'] && $_GET['lon']) {
-				echo '
-				GeoMashup.loadLat = "'.$_GET['lat'].'";';
-				echo '
-				GeoMashup.loadLon = "'.$_GET['lon'].'";';
-			}
-			if (strlen($_GET['zoom'])>0) {
-				echo '
-				GeoMashup.loadZoom = '.$_GET['zoom'].';';
-			}
-			if ($geoMashupOpts['auto_info_open'] == 'true') {
-				echo '
-				GeoMashup.autoOpenInfoWindow = true;';
-			}
-			$custom_marker_file = dirname(__FILE__).'/custom-marker.js';
-			if (is_readable($custom_marker_file)) {
-				readfile($custom_marker_file);
-			}
-			$mashup_js_file = dirname(__FILE__).'/geo-mashup.js';
-			readfile($mashup_js_file);
+	function admin_head($not_used)
+	{
+		global $geoMashupOpts;
+		if ($geoMashupOpts['google_key'] && strstr($_SERVER['REQUEST_URI'],'post.php')) {
+			$link_url = get_bloginfo('wpurl')."/wp-content/plugins/geo-mashup";
 			echo '
-				GeoMashup.loadMap();
-				//]]>
-			</script>';
+				<style type="text/css"> #geo_mashup_map div { margin:0; } </style>
+				<script src="http://maps.google.com/maps?file=api&amp;v=2&amp;key='.$geoMashupOpts['google_key'].'" type="text/javascript"></script>
+				<script src="'.$link_url.'/geo-mashup-admin.js" type="text/javascript"></script>
+				<script src="'.$link_url.'/JSONscriptRequest.js" type="text/javascript"></script>';
+		}
+	}
+
+	function edit_form_advanced()
+	{
+		ob_start(array('GeoMashup','advanced_buffer'));
+	}
+
+	function advanced_buffer($content)
+	{
+		global $post_ID;
+
+		list($post_lat,$post_lng) = split(',',get_post_meta($post_ID,'_geo_location',true));
+		$post_location_name = '';
+		$link_url = get_bloginfo('wpurl')."/wp-content/plugins/geo-mashup";
+		$geo_locations = get_settings('geo_locations');
+		$locations_json = '{';
+		$comma = '';
+		foreach ($geo_locations as $name => $latlng) {
+			list($lat,$lng) = split(',',$latlng);
+			if ($lat==$post_lat && $lng==$post_lng) $post_location_name = addslashes($name);
+			$locations_json .= $comma.'"'.addslashes($name).'":{"name":"'.addslashes($name).'","lat":"'.$lat.'","lng":"'.$lng.'"}';
+			$comma = ',';
+		}
+		$locations_json .= '}';
+		$edit_html = '
+			<div class="dbx-box-wrapper">
+				<fieldset class="dbx-box">
+					<div class="dbx-handle-wrapper"><h3 class="dbx-handle">Location</h3></div>
+					<div class="dbx-content-wrapper"><div class="dbx-content">
+						<img id="geo_mashup_status_icon" src="'.$link_url.'/images/idle_icon.gif" style="float:right" />
+						<label for="geo_mashup_search">Find location:
+							<input	id="geo_mashup_search" 
+											name="geo_mashup_search" 
+											type="text" 
+											size="35" 
+											onfocus="GeoMashupAdmin.map.checkResize()"
+											onkeypress="return GeoMashupAdmin.searchKey(event, this.value)" />
+						</label>
+						<a href="#" onclick="document.getElementById(\'geo_mashup_inline_help\').style.display=\'block\'; return false;">help</a>
+						<div id="geo_mashup_inline_help" style="position:absolute; z-index:1; left:0; top:0; padding:5px; border:2px solid blue; background-color:#ffc; display:none;">
+							<p>Put a green pin at the location for this post. There are many ways to do it:
+							<ul>
+								<li>Search for a location name.</li>
+								<li>For multiple search results, mouse over pins to see location names, and click a result pin to select that location.</li>
+								<li>Search for a decimal latitude and longitude, like <em>40.123,-105.456</em>.</li> 
+								<li>Search for a street address, like <em>123 main st, anytown, acity</em>.</li>
+								<li>Click on the location. The map will zoom in if necessary so you can refine the location by dragging it or clicking a new location.</li>
+							</ul>
+							To execute a search, type search text into the Find Location box and hit the enter key. 
+							If you type a name next to "Save As", the location will be saved under that name so you can find it again quickly. </p>
+							<p><a href="#" onclick="document.getElementById(\'geo_mashup_inline_help\').style.display=\'none\'; return false;">close</a>
+						</div>
+						<div id="geo_mashup_map" style="width:400px;height:250px;">
+							Loading Google map. Check Geo Mashup options if the map fails to load.
+						</div>
+						<script type="text/javascript">//<![CDATA[
+							GeoMashupAdmin.registerMap(document.getElementById("geo_mashup_map"),
+																				{"link_url":"'.$link_url.'",
+																				"post_lat":"'.$post_lat.'",
+																				"post_lng":"'.$post_lng.'",
+																				"post_location_name":"'.$post_location_name.'",
+																				"saved_locations":'.$locations_json.',
+																				"status_icon":document.getElementById("geo_mashup_status_icon")});
+							// ]]>
+						</script>
+						<label for="geo_mashup_location_name">Save As: 
+							<input id="geo_mashup_location_name" name="geo_mashup_location_name" type="text" size="45" />
+						</label>
+						<input id="geo_mashup_location" name="geo_mashup_location" type="hidden" value="'.$post_lat.','.$post_lng.'" />
+					</div></div>
+				</fieldset>
+			</div>';
+		return preg_replace('#(<div.*?id="advancedstuff".*?'.'>)#ims', '\\1' . $edit_html, $content, 1);
+	}
+
+	function save_post($post_id) {
+		if (isset($_POST['geo_mashup_location'])) {
+			delete_post_meta($post_id, '_geo_location');
+			add_post_meta($post_id, '_geo_location', $_POST['geo_mashup_location']);
+
+			if (isset($_POST['geo_mashup_location_name']) && $_POST['geo_mashup_location_name'] != '') {
+				$geo_locations = get_settings('geo_locations');
+				$geo_locations[$_POST['geo_mashup_location_name']] = $_POST['geo_mashup_location'];
+				update_option('geo_locations',$geo_locations);
+			}
 		}
 	}
 
@@ -175,17 +200,34 @@ class GeoMashup {
 					plugin options</a> before it will work.</p>';
 			}
 			$mapdiv .= '</div>';
+			$linkDir = get_bloginfo('wpurl')."/wp-content/plugins/geo-mashup";
+			$script = '<script type="text/javascript">
+				GeoMashup.registerMap(document.getElementById("geoMashup"), {
+					addMapTypeControl:'.($geoMashupOpts['add_map_type_control']?$geoMashupOpts['add_map_type_control']:'false').',
+					linkDir:"'.$linkDir.'",
+					mapControl:"'.$geoMashupOpts['map_control'].'",
+					addOverviewControl:'.($geoMashupOpts['add_overview_control']?$geoMashupOpts['add_overview_control']:'false').',
+					defaultMapType:'.$geoMashupOpts['map_type'].',
+					defaultZoom:'.($geoMashupOpts['zoom_level']?$geoMashupOpts['zoom_level']:'null').',
+					showPostHere:'.($geoMashupOpts['show_post']?$geoMashupOpts['show_post']:'false').',
+					showLog:'.($geoMashupOpts['show_log']?$geoMashupOpts['show_log']:'false').',
+					cat:"'.$_GET['cat'].'",
+					loadLat:'.($_GET['lat']?$_GET['lat']:'null').',
+					loadLon:'.($_GET['lon']?$_GET['lon']:'null').',
+					loadZoom:'.($_GET['zoom']?$_GET['zoom']:'null').',
+					autoOpenInfoWindow:'.($geoMashupOpts['auto_info_open']?$geoMashupOpts['auto_info_open']:'false').'});</script>';
+
 			$postdiv = '';
 			if ($geoMashupOpts['show_post'] == 'true') {
 				$postdiv = '<div id="geoPost"></div>';
 			}
 
 			if ($content) {
-				$content = preg_replace('/<\!--\s*Geo.?Mashup\s*-->/i',$mapdiv,$content);
+				$content = preg_replace('/<\!--\s*Geo.?Mashup\s*-->/i',$mapdiv.$script,$content);
 				$content = preg_replace('/<\!--\s*Geo.?Post\s*-->/i',$postdiv,$content);
 				$content = preg_replace('/<\!--\s*Geo.?Category\s*-->/i',single_cat_title('',false),$content);
 			} else {
-				$content = $mapdiv;
+				$content = $mapdiv.$script;
 			}
 		}
 		return $content;
@@ -227,25 +269,6 @@ class GeoMashup {
 
 	function options_page() {
 		global $wpdb,$geoMashupOpts;
-
-		$activePlugins = get_settings('active_plugins');
-		$isGeoActive = false;
-		foreach($activePlugins as $pluginFile) {
-			if ($pluginFile == 'geo.php') {
-				$isGeoActive = true;
-			}
-		}
-		if (!$isGeoActive) {
-			echo '
-			<div class="updated">
-				<p>The <a href="http://dev.wp-plugins.org/wiki/GeoPlugin">Geo Plugin</a> needs to be installed 
-				and activated for Geo Mashup to work, but it wasn\'t found. We\'ll go on anyway and hope for the best...</p>
-				<p>Here is the array of plugins WordPress says are active:<pre>';
-			print_r($activePlugins);
-			echo '</pre>
-				If Geo is active, this list should contain geo.php. </p>
-			</div>';
-		}
 
 		if (isset($_POST['submit'])) {
 			// Process option updates
@@ -512,7 +535,7 @@ class GeoMashup {
 				</fieldset>
 				<div class="submit"><input type="submit" name="submit" value="'.__('Update Options', 'GeoMashup').'" /></div>
 			</form>
-			<p><a href="http://dev.wp-plugins.org/wiki/GeoMashup">Geo Mashup Documentation</a></p>
+			<p><a href="http://code.google.com/p/wordpress-geo-mashup/wiki/Documentation">Geo Mashup Documentation</a></p>
 		</div>';
 	}
 
@@ -541,16 +564,17 @@ class GeoMashup {
 	 */
 	function post_link($text = 'Geo Mashup', $display = true) {
 		global $geoMashupOpts;
-		$lat = get_Lat();
-		$lon = get_Lon();
-		if ($lat && $lon) {
+		$coords = GeoMashup::post_coordinates();
+		$lat = $coords['lat'];
+		$lng = $coords['lng'];
+		if ($lat && $lng) {
 			$link = '';
 			$url = get_bloginfo('url');
 			$using_pretty_links = get_settings('permalink_structure');
 			if ($using_pretty_links && !(strstr($url,'index.php'))) {
-				$link = '<a href="'.$url.'/'.$geoMashupOpts['mashup_page'].htmlentities("/?lat=$lat&lon=$lon")."\">$text</a>";
+				$link = '<a href="'.$url.'/'.$geoMashupOpts['mashup_page'].htmlentities("/?lat=$lat&lon=$lng")."\">$text</a>";
 			} else {
-				$link = '<a href="'.$url.'?pagename='.$geoMashupOpts['mashup_page'].htmlentities("&lat=$lat&lon=$lon")."\">$text</a>";
+				$link = '<a href="'.$url.'?pagename='.$geoMashupOpts['mashup_page'].htmlentities("&lat=$lat&lon=$lng")."\">$text</a>";
 			}
 			if ($display) {
 				echo $link;
@@ -567,14 +591,55 @@ class GeoMashup {
 		GeoMashup::post_link($text,$display);
 	}
 
+	/**
+	* Fetch post coordinates.
+	*/
+	function post_coordinates() {
+		global $post;
+
+		$meta = trim(get_post_meta($post->ID, '_geo_location', true));
+		if (strlen($meta)>1) {
+			list($lat, $lng) = split(',', $meta);
+			return array('lat' => $lat, 'lng' => $lng);
+		}
+		return false;
+	}
+
+	/**
+	* Fetch RSS geo tags.
+	*/
+	function geo_rss_tags($display = true) {
+		list($lat, $lon) = split(',', get_post_meta($wp_query->post->ID, '_geo_location', true));
+		if ($lat == '' || $lon == '') {
+			if (get_settings('use_default_geourl')){
+				// send the default here
+				$lat = get_settings('default_geourl_lat');
+				$lon = get_settings('default_geourl_lon');
+			}
+		}
+		if ($lat != '' && $lon != '') {
+			$tags = "<geo:lat>$lat</geo:lat><geo:long>$lon</geo:long>\n"
+						. "<icbm:latitude>$lat</icbm:latitude><icbm:longitude>$lon</icbm:longitude>\n"
+						. "<geourl:longitude>$lon</geourl:longitude><geourl:latitude>$lat</geourl:latitude>\n";
+			if ($display) {
+				echo $tags;
+			}
+			return $tags;
+		}
+		return false;
+	}
 } // class GeoMashup
 
+// frontend hooks
 add_action('wp_head', array('GeoMashup', 'wp_head'));
-add_action('wp_footer', array('GeoMashup', 'wp_footer'));
-add_action('admin_menu', array('GeoMashup', 'admin_menu'));
 add_filter('the_content', array('GeoMashup', 'the_content'));
 if ($geoMashupOpts['add_category_links'] == 'true') {
 	add_filter('list_cats', array('GeoMashup', 'list_cats'), 10, 2);
 }
 
+// admin hooks
+add_action('admin_menu', array('GeoMashup', 'admin_menu'));
+add_action('admin_head', array('GeoMashup', 'admin_head'));
+add_action('edit_form_advanced', array('GeoMashup', 'edit_form_advanced'));
+add_action('save_post', array('GeoMashup', 'save_post'));
 ?>
