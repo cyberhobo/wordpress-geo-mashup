@@ -232,11 +232,6 @@ var GeoMashup = {
 		this.showing_url = '';
 		this.checkDependencies();
 		this.map = new GMap2(this.container);
-		if (document.all&&window.attachEvent) { // IE-Win
-				 window.attachEvent("onunload", GUnload);
-		} else if (window.addEventListener) { // Others
-				 window.addEventListener("unload", GUnload, false);
-		}
 		GEvent.addListener(this.map, "moveend", function() {
 			GeoMashup.log('Moved the map, query for new visible locations');
 			var request = GXmlHttp.create();
