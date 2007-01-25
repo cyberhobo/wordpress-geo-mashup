@@ -93,7 +93,7 @@ class GeoMashup {
 	function admin_head($not_used)
 	{
 		global $geoMashupOpts;
-		if ($geoMashupOpts['google_key'] && strstr($_SERVER['REQUEST_URI'],'post.php')) {
+		if ($geoMashupOpts['google_key'] && preg_match('/post(-new|).php/',$_SERVER['REQUEST_URI'])) {
 			$link_url = get_bloginfo('wpurl')."/wp-content/plugins/geo-mashup";
 			echo '
 				<style type="text/css"> #geo_mashup_map div { margin:0; } </style>
@@ -317,7 +317,7 @@ class GeoMashup {
 		// Create form elements
 		$pageSlugOptions = "";
 		$pageSlugs = $wpdb->get_col("SELECT DISTINCT post_name FROM $wpdb->posts " .
-			"WHERE post_status='static' ORDER BY post_name");
+			"WHERE post_status='static' OR post_type='page' ORDER BY post_name");
 		if ($pageSlugs) {
 			foreach($pageSlugs as $slug) {
 				$selected = "";
