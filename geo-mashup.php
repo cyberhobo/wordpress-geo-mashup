@@ -256,11 +256,11 @@ class GeoMashup {
 				// Add map link only if there are geo-located posts to see
 				$using_pretty_links = get_settings('permalink_structure');
 				if ($using_pretty_links) {
-					return $content.'</a>'.$geoMashupOpts['category_link_separator'].'<a href="'.get_bloginfo('url').'/'.$geoMashupOpts['mashup_page'].
+					return $content.'</a>'.$geoMashupOpts['category_link_separator'].'<a href="'.get_page_link($geoMashupOpts['mashup_page']).
 						'?cat='.$category->cat_ID.'&zoom='.$geoMashupOpts['category_zoom'].'" title="'.$geoMashupOpts['category_link_text'].
 						'">'.$geoMashupOpts['category_link_text'];
 				} else {
-					return $content.'</a>'.$geoMashupOpts['category_link_separator'].'<a href="'.get_bloginfo('url').'?pagename='.$geoMashupOpts['mashup_page'].
+					return $content.'</a>'.$geoMashupOpts['category_link_separator'].'<a href="'.get_page_link($geoMashupOpts['mashup_page']).
 						'&cat='.$category->cat_ID.'&zoom='.$geoMashupOpts['category_zoom'].'" title="'.$geoMashupOpts['category_link_text'].
 						'">'.$geoMashupOpts['category_link_text'];
 				}
@@ -324,15 +324,15 @@ class GeoMashup {
 
 		// Create form elements
 		$pageSlugOptions = "";
-		$pageSlugs = $wpdb->get_col("SELECT DISTINCT post_name FROM $wpdb->posts " .
+		$pageSlugs = $wpdb->get_results("SELECT DISTINCT ID, post_name FROM $wpdb->posts " .
 			"WHERE post_status='static' OR post_type='page' ORDER BY post_name");
 		if ($pageSlugs) {
 			foreach($pageSlugs as $slug) {
 				$selected = "";
-				if ($slug == $geoMashupOpts['mashup_page']) {
+				if ($slug->ID == $geoMashupOpts['mashup_page']) {
 					$selected = ' selected="true"';
 				}
-				$pageSlugOptions .= '<option value="'.$slug.'"'.$selected.'>'.$slug."</option>\n";
+				$pageSlugOptions .= '<option value="'.$slug->ID.'"'.$selected.'>'.$slug->post_name."</option>\n";
 			}
 		} else {
 			$pageSlugOptions = '<option value="">No pages found</option>';
@@ -553,10 +553,6 @@ class GeoMashup {
 	 * Google map. DEPRECATED
 	 */
 	function body_attribute() {
-		global $geoMashupOpts;
-		if (is_page($geoMashupOpts['mashup_page'])) {
-			//echo ' onload="GeoMashup.loadMap()"';
-		}
 	}
 
 	/**
@@ -577,12 +573,11 @@ class GeoMashup {
 		$lng = $coords['lng'];
 		if ($lat && $lng) {
 			$link = '';
-			$url = get_bloginfo('url');
 			$using_pretty_links = get_settings('permalink_structure');
 			if ($using_pretty_links && !(strstr($url,'index.php'))) {
-				$link = '<a href="'.$url.'/'.$geoMashupOpts['mashup_page'].htmlentities("/?lat=$lat&lon=$lng")."\">$text</a>";
+				$link = '<a href="'.get_page_link($geoMashupOpts['mashup_page']).htmlentities("?lat=$lat&lon=$lng")."\">$text</a>";
 			} else {
-				$link = '<a href="'.$url.'?pagename='.$geoMashupOpts['mashup_page'].htmlentities("&lat=$lat&lon=$lng")."\">$text</a>";
+				$link = '<a href="'.get_page_link($geoMashupOpts['mashup_page']).htmlentities("&lat=$lat&lon=$lng")."\">$text</a>";
 			}
 			if ($display) {
 				echo $link;
