@@ -3,7 +3,7 @@
 Plugin Name: Geo Mashup
 Plugin URI: http://www.cyberhobo.net/downloads/geo-mashup-plugin/
 Description: Adds a Google Maps mashup of geocoded blog posts. Configure in <a href="options-general.php?page=geo-mashup/geo-mashup.php">Options->Geo Mashup</a> after the plugin is activated.
-Version: 1.0 BETA 2
+Version: 1.0 
 Author: Dylan Kuhn
 Author URI: http://www.cyberhobo.net/
 Minimum WordPress Version Required: 1.5.1
@@ -79,14 +79,18 @@ class GeoMashup {
 				</style>';
 			}
 			$linkDir = get_bloginfo('wpurl')."/wp-content/plugins/geo-mashup";
+			$custom_marker_file = dirname(__FILE__).'/custom.js';
+			if (is_readable($custom_marker_file)) {
+				echo '
+					<script src="'.$linkDir.'/custom.js" type="text/javascript"></script>';
+			}
+			// Other javascript may be packed
+			if ($geoMashupOpts['use_packed'] == 'true') {
+				$linkDir .= '/packed';
+			}
 			echo '
 				<script src="http://maps.google.com/maps?file=api&amp;v=2&amp;key='.$geoMashupOpts['google_key'].'" type="text/javascript"></script>
 				<script src="'.$linkDir.'/geo-mashup.js" type="text/javascript"></script>';
-			$custom_marker_file = dirname(__FILE__).'/custom-marker.js';
-			if (is_readable($custom_marker_file)) {
-				echo '
-					<script src="'.$linkDir.'/custom-marker.js" type="text/javascript"></script>';
-			}
 		}
 	}
 
@@ -94,7 +98,10 @@ class GeoMashup {
 	{
 		global $geoMashupOpts;
 		if ($geoMashupOpts['google_key'] && preg_match('/post(-new|).php/',$_SERVER['REQUEST_URI'])) {
-			$link_url = get_bloginfo('wpurl')."/wp-content/plugins/geo-mashup";
+			$link_url = get_bloginfo('wpurl').'/wp-content/plugins/geo-mashup';
+			if ($geoMashupOpts['use_packed'] == 'true') {
+				$link_url .= '/packed';
+			}
 			echo '
 				<style type="text/css"> #geo_mashup_map div { margin:0; } </style>
 				<script src="http://maps.google.com/maps?file=api&amp;v=2&amp;key='.$geoMashupOpts['google_key'].'" type="text/javascript"></script>
@@ -136,7 +143,7 @@ class GeoMashup {
 											name="geo_mashup_search" 
 											type="text" 
 											size="35" 
-											onfocus="GeoMashupAdmin.map.checkResize()"
+											onfocus="this.select(); GeoMashupAdmin.map.checkResize();"
 											onkeypress="return GeoMashupAdmin.searchKey(event, this.value)" />
 						</label>
 						<a href="#" onclick="document.getElementById(\'geo_mashup_inline_help\').style.display=\'block\'; return false;">help</a>
@@ -147,13 +154,15 @@ class GeoMashup {
 								<li>For multiple search results, mouse over pins to see location names, and click a result pin to select that location.</li>
 								<li>Search for a decimal latitude and longitude, like <em>40.123,-105.456</em>.</li> 
 								<li>Search for a street address, like <em>123 main st, anytown, acity</em>.</li>
-								<li>Click on the location. The map will zoom in if necessary so you can refine the location by dragging it or clicking a new location.</li>
+								<li>Click on the location. Zoom in if necessary so you can refine the location by dragging it or clicking a new location.</li>
 							</ul>
 							To execute a search, type search text into the Find Location box and hit the enter key. 
-							If you type a name next to "Save As", the location will be saved under that name so you can find it again quickly. </p>
+							If you type a name next to "Save As", the location will be saved under that name so you can find it again with a quick
+							search. Saved names are searched before doing a GeoNames search for location names.</p>
+							<p>To remove the location (green pin) for a post, clear the search box and hit the enter key.</p>
 							<p><a href="#" onclick="document.getElementById(\'geo_mashup_inline_help\').style.display=\'none\'; return false;">close</a>
 						</div>
-						<div id="geo_mashup_map" style="width:400px;height:250px;">
+						<div id="geo_mashup_map" style="width:400px;height:300px;">
 							Loading Google map. Check Geo Mashup options if the map fails to load.
 						</div>
 						<script type="text/javascript">//<![CDATA[
@@ -177,8 +186,8 @@ class GeoMashup {
 	}
 
 	function save_post($post_id) {
+		delete_post_meta($post_id, '_geo_location');
 		if (isset($_POST['geo_mashup_location'])) {
-			delete_post_meta($post_id, '_geo_location');
 			add_post_meta($post_id, '_geo_location', $_POST['geo_mashup_location']);
 
 			if (isset($_POST['geo_mashup_location_name']) && $_POST['geo_mashup_location_name'] != '') {
@@ -210,7 +219,6 @@ class GeoMashup {
 					defaultMapType:'.$geoMashupOpts['map_type'].',
 					defaultZoom:'.($geoMashupOpts['zoom_level']?$geoMashupOpts['zoom_level']:'null').',
 					showPostHere:'.($geoMashupOpts['show_post']?$geoMashupOpts['show_post']:'false').',
-					showLog:'.($geoMashupOpts['show_log']?$geoMashupOpts['show_log']:'false').',
 					cat:"'.$_GET['cat'].'",
 					loadLat:'.($_GET['lat']?$_GET['lat']:'null').',
 					loadLon:'.($_GET['lon']?$_GET['lon']:'null').',
@@ -277,7 +285,7 @@ class GeoMashup {
 			$geoMashupOpts['add_overview_control'] = 'false';
 			$geoMashupOpts['add_category_links'] = 'false';
 			$geoMashupOpts['show_post'] = 'false';
-			$geoMashupOpts['show_log'] = 'false';
+			$geoMashupOpts['use_packed'] = 'false';
 			$geoMashupOpts['show_future'] = 'false';
 			$geoMashupOpts['auto_info_open'] = 'false';
 			foreach($_POST as $name => $value) {
@@ -385,10 +393,10 @@ class GeoMashup {
 			$showPostChecked = '';
 		}
 
-		if ($geoMashupOpts['show_log'] == 'true') {
-			$showLogChecked = ' checked="true"';
+		if ($geoMashupOpts['use_packed'] == 'true') {
+			$usePackedChecked = ' checked="true"';
 		} else {
-			$showLogChecked = '';
+			$usePackedChecked = '';
 		}
 		if ($geoMashupOpts['show_future'] == 'true') {
 			$showFutureChecked = ' checked="true"';
@@ -423,7 +431,7 @@ class GeoMashup {
 							<a href="http://maps.google.com/apis/maps/signup.html">'.__('Get yours here', 'GeoMashup').'</a></td>
 						</tr>
 						<tr>
-							<th scope="row">'.__('Mashup Page Slug', 'GeoMashup').'</th>
+							<th scope="row">'.__('Mashup Page', 'GeoMashup').'</th>
 							<td>
 								<select id="mashup_page" name="mashup_page">'.$pageSlugOptions.'</select>
 							</td>
@@ -466,8 +474,8 @@ class GeoMashup {
 							<td><input id="show_post" name="show_post" type="checkbox" value="true"'.$showPostChecked.' /></td>
 						</tr>
 						<tr>
-							<th scope="row">'.__('Show Debugging Log', 'GeoMashup').'</th>
-							<td><input id="show_post" name="show_log" type="checkbox" value="true"'.$showLogChecked.' /></td>
+							<th scope="row">'.__('Use Compressed Javascript', 'GeoMashup').'</th>
+							<td><input id="show_post" name="use_packed" type="checkbox" value="true"'.$usePackedChecked.' /></td>
 						</tr>
 					</table>
 				</fieldset>
