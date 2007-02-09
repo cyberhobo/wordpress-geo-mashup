@@ -31,12 +31,6 @@ var GeoMashup = {
 		}
 	},
 
-	log : function(message,color) {
-		if (this.opts.showLog) {
-			GLog.write(message,color);
-		}
-	},
-
 	getCookie : function(NameOfCookie) { 
 		if (document.cookie.length > 0) { 
 			var begin = document.cookie.indexOf(NameOfCookie+"=");
@@ -76,7 +70,6 @@ var GeoMashup = {
 	renderRss : function (rss_doc) {
 		var items = rss_doc.getElementsByTagName('item');
 		if (items.length == 0) return false;
-		this.log('Render ' + items.length + ' items from RSS');
 		var html = ['<div class="locationinfo">'];
 			
 		for (var i=0; i<items.length; i++) {
@@ -110,7 +103,6 @@ var GeoMashup = {
 	},
 
 	showPost : function (url) {
-		this.log('Show post: ' + url);
 		if (this.showing_url == url) {
 			return false;
 		}
@@ -139,12 +131,11 @@ var GeoMashup = {
 					geoPost.innerHTML = 'Request for '+url+' failed: '+request.status;
 				}
 			}
-		}
+		};
 		request.send(null);
 	},
 
 	createMarker : function(point,title) {
-		this.log('Create a marker at ' + point);
 		var marker_opts = {title:title};
 		if (this.marker_icon) {
 			marker_opts.icon = this.marker_icon;
@@ -162,21 +153,17 @@ var GeoMashup = {
 		GEvent.addListener(marker, "infowindowopen", function() {
 			if (GeoMashup.loading) {
 				var request = new GXmlHttp.create();
-				GeoMashup.log('Load all posts at ' + point);
 				for(var i=0; i<GeoMashup.locations[point].posts.length; i++) {
 					var post_id = GeoMashup.locations[point].posts[i];
 					if (!GeoMashup.locations[point].loaded[post_id]) {
-						GeoMashup.log('The XML for post ' + post_id + ' has not been loaded, request it');
 						var url = GeoMashup.opts.linkDir + '/geo-query.php?post_id=' + post_id;
 						// Use a synchronous request to simplify multiple posts at a location
 						request.open('GET', url, false);
 						try {
 							request.send(null);
 							if (!GeoMashup.locations[point].xmlDoc) {
-								GeoMashup.log('This is the only post here, use the XML as it is');
 								GeoMashup.locations[point].xmlDoc = request.responseXML;
 							} else {
-								GeoMashup.log('There are multiple posts here, append this one to the others');
 								var newItem = request.responseXML.getElementsByTagName('item')[0];
 								var channel = GeoMashup.locations[point].xmlDoc.getElementsByTagName('channel')[0];
 								channel.appendChild(newItem);
@@ -194,7 +181,6 @@ var GeoMashup = {
 		}); // end marker infowindowopen
 
 		GEvent.addListener(marker, 'infowindowclose', function() {
-			GeoMashup.log('Closed the infowindow');
 			var geoPost = document.getElementById('geoPost');
 			if (geoPost && geoPost.firstChild) {
 				geoPost.removeChild(geoPost.firstChild);
@@ -206,7 +192,6 @@ var GeoMashup = {
 	},
 
 	checkDependencies : function () {
-		this.log('Check browser compatibility');
 		if (typeof(GMap) == "undefined" || !GBrowserIsCompatible()) {
 			this.container.innerHTML = '<p class="errormessage">' +
 				'Sorry, the Google Maps script failed to load. Have you entered your ' +
@@ -219,7 +204,6 @@ var GeoMashup = {
 	},
 
 	clickCenterMarker : function() {
-		this.log('If there is a marker at the center, click it');
 		var center = this.map.getCenter();
 		if (this.locations[center]) {
 			GEvent.trigger(this.locations[center].marker,"click");
@@ -233,7 +217,6 @@ var GeoMashup = {
 		this.checkDependencies();
 		this.map = new GMap2(this.container);
 		GEvent.addListener(this.map, "moveend", function() {
-			GeoMashup.log('Moved the map, query for new visible locations');
 			var request = GXmlHttp.create();
 			var bounds = GeoMashup.map.getBounds();
 			var url = GeoMashup.opts.linkDir + '/geo-query.php?minlat=' +
@@ -244,7 +227,6 @@ var GeoMashup = {
 			}
 			request.open("GET", url, true);
 			request.onreadystatechange = function() {
-				GeoMashup.log('Request state ' + request.readyState);
 				if (request.readyState == 4 && request.status == 200) {
 					var response_data = eval(request.responseText);
 					for (var i = 0; i < response_data.length; i++) {
@@ -279,33 +261,27 @@ var GeoMashup = {
 						}
 					}
 				} // end readystate == 4
-			} // end onreadystatechange function
+			}; // end onreadystatechange function
 			request.send(null);
 		});
 
 		if (opts.loadLat && opts.loadLon) {
-			this.log('Center at' + opts.LoadLat + ',' + opts.LoadLon);
 			this.loadLat = opts.loadLat;
 			this.loadLon = opts.loadLon;
 		} else {
-			this.log('Look for load settings in cookies');
 			this.loadLat = this.getCookie("loadLat");
 			this.loadLon = this.getCookie("loadLon");
 		}
 		if (opts.loadZoom)
 		{
-			this.log('Zoom option ' + opts.loadZoom);
 			this.loadZoom = opts.loadZoom;
 		} else {
 			var cookieZoom = parseInt(this.getCookie("loadZoom"));
 			if (cookieZoom) {
-				this.log('Zoom level ' + cookieZoom + ' from cookie');
 				this.loadZoom = cookieZoom;
 			} else if (typeof(opts.defaultZoom) != 'undefined') {
-				this.log('Zoom level ' + opts.defaultZoom + ' from default');
 				this.loadZoom = opts.defaultZoom;
 			} else {
-				this.log('Zoom level 5, last resort');
 				this.loadZoom = 5;
 			}
 		}
@@ -313,22 +289,17 @@ var GeoMashup = {
 		if (!this.loadType) {
 			var cookieTypeNum = parseInt(this.getCookie("loadType"));
 			if (cookieTypeNum) {
-				this.log('Load type ' + cookieTypeNum + ' from cookie');
 				this.loadType = this.map.getMapTypes()[cookieTypeNum];
 			} else if (opts.defaultMapType) {
-				this.log('Load type ' + opts.defaultMapType + ' from default');
 				this.loadType = opts.defaultMapType;
 			} else {
-				this.log('Load normal type, last resort');
 				this.loadType = G_NORMAL_MAP;
 			}
 		} 
 
 		if (this.loadLat && this.loadLon && typeof(this.loadZoom) != 'undefined') {
-			this.log('Center map based on load settings');
 			this.map.setCenter(new GLatLng(this.loadLat, this.loadLon), this.loadZoom, this.loadType);
 		} else {
-			this.log('Query the most recent geo-tagged post and center there');
 			var request = GXmlHttp.create();
 			var url = this.opts.linkDir + '/geo-query.php';
 			if (opts.cat) {
@@ -339,15 +310,12 @@ var GeoMashup = {
 			var posts = eval(request.responseText);
 			if (posts.length>0) {
 				var point = new GLatLng(posts[0].lat,posts[0].lng);
-				this.log('Most recent post at ' + point);
 				this.map.setCenter(point,this.loadZoom,this.loadType);
 			} else {
-				this.log('No posts available - center at 0,0');
 				this.map.setCenter(new GLatLng(0,0),this.loadZoom,this.loadType);
 			}
 		}
 
-		this.log('Add controls');
 		if (opts.mapControl == 'GSmallZoomControl') {
 			this.map.addControl(new GSmallZoomControl());
 		} else if (opts.mapControl == 'GSmallMapControl') {
@@ -373,15 +341,13 @@ var GeoMashup = {
 			this.map.addControl(new GeoMashupCategoryControl());
 		}
 
-		if (this.customizeMap) {
-			this.log('The customizeMap user function exists, call it');
-			this.customizeMap();
+		if (customizeGeoMashup) {
+			customizeGeoMashup(this);
 		}
 
 	},
 		
 	setBackCookies : function() {
-		this.log('Set cookies to remember map position');
 		var center = this.map.getCenter();
 		var mapTypeNum = 0;
 		for(var ix=0; ix<this.map.getMapTypes().length; ix++){
@@ -394,5 +360,6 @@ var GeoMashup = {
 		this.setCookie("loadZoom",this.map.getZoom());
 		return true;
 	}
+
 };
 
