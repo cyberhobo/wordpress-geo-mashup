@@ -45,8 +45,9 @@ var GeoMashupAdmin = {
 
 		this.map = new GMap2(container,{draggableCursor:'pointer'});
 		this.map.setCenter(new GLatLng(0,0),1);
-		this.map.addControl(new GSmallMapControl());
+		this.map.addControl(new GLargeMapControl());
 		this.map.addControl(new GMapTypeControl());
+		this.map.enableContinuousZoom();
 
 		if (opts.post_lat && opts.post_lng) {
 			var latlng = new GLatLng(opts.post_lat, opts.post_lng);
@@ -78,8 +79,6 @@ var GeoMashupAdmin = {
 		this.map.addOverlay(marker);
 		this.selectMarker(marker);
 
-		var zoom = (this.map.getZoom() > 12) ? this.map.getZoom() : 12;
-		this.map.setCenter(latlng, zoom);
 		if (!name || name.length == 0) {
 			var geonames_request_url = 'http://ws.geonames.org/findNearbyPlaceNameJSON?callback=GeoMashupAdmin.suggestName&lat=' +
 				latlng.lat() + '&lng=' + latlng.lng();
@@ -113,6 +112,7 @@ var GeoMashupAdmin = {
 			// Enter key was hit - new search
 			this.map.clearOverlays();
 			this.selected_marker = null;
+			this.location_input.value = '';
 			if (search_text.match(/^[-\d\.\s]*,[-\d\.\s]*$/)) {
 				// Coordinates
 				var latlng_array = search_text.split(',');
@@ -161,6 +161,7 @@ var GeoMashupAdmin = {
 		marker.location_name = name;
 		if (!this.selected_marker) {
 			this.selected_marker = marker;
+			this.map.setCenter(latlng);
 			this.location_input.value = latlng.lat() + ',' + latlng.lng();
 			GEvent.addListener(marker,'dragend',function () { 
 				GeoMashupAdmin.location_input.value = marker.getPoint().lat() + ',' + marker.getPoint().lng();
@@ -173,14 +174,11 @@ var GeoMashupAdmin = {
 	showGeoNames : function(data) {
 		if (data)
 		{
-			var geo_bounds = new GLatLngBounds();
 			for (var i=0; i<data.totalResultsCount && i<100; ++i) {
 				var result_latlng = new GLatLng(data.geonames[i].lat, data.geonames[i].lng);
-				geo_bounds.extend(result_latlng);
 				var marker = this.createMarker(result_latlng,data.geonames[i].name);
 				this.map.addOverlay(marker);
 			}
-			this.map.setCenter(geo_bounds.getCenter(), this.map.getBoundsZoomLevel(geo_bounds)-1);
 			this.geoNamesRequest.removeScriptTag();
 			this.setBusy(false);
 		}
@@ -190,15 +188,12 @@ var GeoMashupAdmin = {
 		if (!response || response.Status.code != 200) {
 			alert('No locations found for that address');
 		} else {
-			var geo_bounds = new GLatLngBounds();
 			for (var i=0; i<response.Placemark.length && i<100; ++i) {
 				var latlng = new GLatLng(response.Placemark[i].Point.coordinates[1],
 																 response.Placemark[i].Point.coordinates[0]);
-				geo_bounds.extend(latlng);
 				var marker = this.createMarker(latlng, response.Placemark[i].address);
 				this.map.addOverlay(marker);
 			}
-			this.map.setCenter(geo_bounds.getCenter(), this.map.getBoundsZoomLevel(geo_bounds)-1);
 			this.setBusy(false);
 		}
 	},
