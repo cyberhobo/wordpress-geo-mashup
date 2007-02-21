@@ -18,5 +18,7 @@ function customizeGeoMashup(mashup) {
 	mashup.marker_icon.infoWindowAnchor = new GPoint(5, 1);
 
 	// Recenter the map
+	// Replace 18.5, 15.3 with your latitude, longitude
+	// www.theoutdoormap.com is a good place to find coordinates if you need them
 	mashup.map.setCenter( new GLatLng(18.5,15.3) );
 }
