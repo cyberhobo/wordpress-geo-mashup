@@ -609,28 +609,25 @@ class GeoMashup {
 	}
 
 	/**
-	* Fetch RSS geo tags.
-	*/
-	function geo_rss_tags($display = true) {
-		list($lat, $lon) = split(',', get_post_meta($wp_query->post->ID, '_geo_location', true));
-		if ($lat == '' || $lon == '') {
-			if (get_settings('use_default_geourl')){
-				// send the default here
-				$lat = get_settings('default_geourl_lat');
-				$lon = get_settings('default_geourl_lon');
-			}
-		}
-		if ($lat != '' && $lon != '') {
-			$tags = "<geo:lat>$lat</geo:lat><geo:long>$lon</geo:long>\n"
-						. "<icbm:latitude>$lat</icbm:latitude><icbm:longitude>$lon</icbm:longitude>\n"
-						. "<geourl:longitude>$lon</geourl:longitude><geourl:latitude>$lat</geourl:latitude>\n";
-			if ($display) {
-				echo $tags;
-			}
-			return $tags;
-		}
-		return false;
+	 * Emit GeoRSS namespace
+	 */
+	function rss_ns() {
+		echo 'xmlns:georss="http://www.georss.org/georss"';
 	}
+
+	/**
+	* Emit GeoRSS tags.
+	*/
+	function rss_item() {
+		global $wp_query;
+
+		// Using Simple GeoRSS for now
+		$coordinates = trim(get_post_meta($wp_query->post->ID, '_geo_location', true));
+		if (strlen($coordinates) > 1) {
+			echo '<georss:point>' . $coordinates . '</georss:point>';
+		}
+	}
+
 } // class GeoMashup
 
 // frontend hooks
@@ -639,6 +636,12 @@ add_filter('the_content', array('GeoMashup', 'the_content'));
 if ($geoMashupOpts['add_category_links'] == 'true') {
 	add_filter('list_cats', array('GeoMashup', 'list_cats'), 10, 2);
 }
+add_action('rss_ns', array('GeoMashup', 'rss_ns'));
+add_action('rss2_ns', array('GeoMashup', 'rss_ns'));
+add_action('atom_ns', array('GeoMashup', 'rss_ns'));
+add_action('rss_item', array('GeoMashup', 'rss_item'));
+add_action('rss2_item', array('GeoMashup', 'rss_item'));
+add_action('atom_item', array('GeoMashup', 'rss_item'));
 
 // admin hooks
 add_action('admin_menu', array('GeoMashup', 'admin_menu'));
