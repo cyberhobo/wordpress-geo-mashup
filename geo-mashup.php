@@ -3,10 +3,10 @@
 Plugin Name: Geo Mashup
 Plugin URI: http://www.cyberhobo.net/downloads/geo-mashup-plugin/
 Description: Adds a Google Maps mashup of geocoded blog posts. Configure in <a href="options-general.php?page=geo-mashup/geo-mashup.php">Options->Geo Mashup</a> after the plugin is activated.
-Version: 1.0 
+Version: 1.0.1
 Author: Dylan Kuhn
 Author URI: http://www.cyberhobo.net/
-Minimum WordPress Version Required: 1.5.1
+Minimum WordPress Version Required: 2.0
 */
 
 /*
@@ -112,11 +112,6 @@ class GeoMashup {
 
 	function edit_form_advanced()
 	{
-		ob_start(array('GeoMashup','advanced_buffer'));
-	}
-
-	function advanced_buffer($content)
-	{
 		global $post_ID;
 
 		list($post_lat,$post_lng) = split(',',get_post_meta($post_ID,'_geo_location',true));
@@ -133,10 +128,10 @@ class GeoMashup {
 		}
 		$locations_json .= '}';
 		$edit_html = '
-			<div class="dbx-box-wrapper">
+			<div class="dbx-b-ox-wrapper">
 				<fieldset class="dbx-box">
-					<div class="dbx-handle-wrapper"><h3 class="dbx-handle">Location</h3></div>
-					<div class="dbx-content-wrapper"><div class="dbx-content">
+					<div class="dbx-h-andle-wrapper"><h3 class="dbx-handle">Location</h3></div>
+					<div class="dbx-c-ontent-wrapper"><div class="dbx-content">
 						<img id="geo_mashup_status_icon" src="'.$link_url.'/images/idle_icon.gif" style="float:right" />
 						<label for="geo_mashup_search">Find location:
 							<input	id="geo_mashup_search" 
@@ -182,7 +177,7 @@ class GeoMashup {
 					</div></div>
 				</fieldset>
 			</div>';
-		return preg_replace('#(<div.*?id="advancedstuff".*?'.'>)#ims', '\\1' . $edit_html, $content, 1);
+		echo $edit_html;
 	}
 
 	function save_post($post_id) {
@@ -573,12 +568,13 @@ class GeoMashup {
 		$lng = $coords['lng'];
 		if ($lat && $lng) {
 			$link = '';
-			$using_pretty_links = get_settings('permalink_structure');
-			if ($using_pretty_links && !(strstr($url,'index.php'))) {
-				$link = '<a href="'.get_page_link($geoMashupOpts['mashup_page']).htmlentities("?lat=$lat&lon=$lng")."\">$text</a>";
+			$url = get_page_link($geoMashupOpts['mashup_page']);
+			if (strstr($url,'?')) {
+				$url .= '&';
 			} else {
-				$link = '<a href="'.get_page_link($geoMashupOpts['mashup_page']).htmlentities("&lat=$lat&lon=$lng")."\">$text</a>";
+				$url .= '?';
 			}
+			$link = '<a href="'.$url.htmlentities("lat=$lat&lon=$lng")."\">$text</a>";
 			if ($display) {
 				echo $link;
 			} else {
@@ -643,6 +639,6 @@ if ($geoMashupOpts['add_category_links'] == 'true') {
 // admin hooks
 add_action('admin_menu', array('GeoMashup', 'admin_menu'));
 add_action('admin_head', array('GeoMashup', 'admin_head'));
-add_action('edit_form_advanced', array('GeoMashup', 'edit_form_advanced'));
+add_action('dbx_post_advanced', array('GeoMashup', 'edit_form_advanced'));
 add_action('save_post', array('GeoMashup', 'save_post'));
 ?>
