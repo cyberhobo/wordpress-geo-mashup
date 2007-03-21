@@ -341,7 +341,7 @@ var GeoMashup = {
 			this.map.addControl(new GeoMashupCategoryControl());
 		}
 
-		if (customizeGeoMashup) {
+		if (customizeGeoMashup != undefined) {
 			customizeGeoMashup(this);
 		}
 
