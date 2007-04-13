@@ -15,6 +15,8 @@ PURPOSE. See the GNU General Public License for more
 details.
 */
 
+var customizeGeoMashup;
+
 var GeoMashup = {
 	posts : [],
 	locations : [],
@@ -176,6 +178,7 @@ var GeoMashup = {
 				} // end location posts loop
 				GeoMashup.loading = false;
 				var html = GeoMashup.renderRss(GeoMashup.locations[point].xmlDoc);
+				GeoMashup.map.closeInfoWindow();
 				marker.openInfoWindowHtml(html);
 			} 
 		}); // end marker infowindowopen
@@ -297,7 +300,7 @@ var GeoMashup = {
 			}
 		} 
 
-		if (this.loadLat && this.loadLon && typeof(this.loadZoom) != 'undefined') {
+		if (this.loadLat && this.loadLon && typeof(this.loadZoom) != 'undefined' && !opts.cat) {
 			this.map.setCenter(new GLatLng(this.loadLat, this.loadLon), this.loadZoom, this.loadType);
 		} else {
 			var request = GXmlHttp.create();
