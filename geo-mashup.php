@@ -3,7 +3,7 @@
 Plugin Name: Geo Mashup
 Plugin URI: http://www.cyberhobo.net/downloads/geo-mashup-plugin/
 Description: Adds a Google Maps mashup of geocoded blog posts. Configure in <a href="options-general.php?page=geo-mashup/geo-mashup.php">Options->Geo Mashup</a> after the plugin is activated.
-Version: 1.0.1
+Version: 1.0.2
 Author: Dylan Kuhn
 Author URI: http://www.cyberhobo.net/
 Minimum WordPress Version Required: 2.0
