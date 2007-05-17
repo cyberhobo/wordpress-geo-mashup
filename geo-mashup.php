@@ -3,7 +3,7 @@
 Plugin Name: Geo Mashup
 Plugin URI: http://www.cyberhobo.net/downloads/geo-mashup-plugin/
 Description: Adds a Google Maps mashup of geocoded blog posts. Configure in <a href="options-general.php?page=geo-mashup/geo-mashup.php">Options->Geo Mashup</a> after the plugin is activated.
-Version: 1.0.2
+Version: 1.0.3
 Author: Dylan Kuhn
 Author URI: http://www.cyberhobo.net/
 Minimum WordPress Version Required: 2.0
@@ -26,7 +26,7 @@ PURPOSE. See the GNU General Public License for more
 details.
 */
 
-load_plugin_textdomain('GeoMashup');
+load_plugin_textdomain('GeoMashup', 'wp-content/plugins/geo-mashup/languages');
 $geoMashupOpts = get_settings('geo_mashup_options');
 
 /**
@@ -76,6 +76,8 @@ class GeoMashup {
 				}
 				echo '
 				}
+				#geoMashup div {margin:0; padding:0; border:none;}
+				#geoMashup img {margin:0; padding:0; max-width:none; border:none;}
 				</style>';
 			}
 			$linkDir = get_bloginfo('wpurl')."/wp-content/plugins/geo-mashup";
@@ -123,8 +125,9 @@ class GeoMashup {
 			$comma = '';
 			foreach ($geo_locations as $name => $latlng) {
 				list($lat,$lng) = split(',',$latlng);
-				if ($lat==$post_lat && $lng==$post_lng) $post_location_name = addslashes($name);
-				$locations_json .= $comma.'"'.addslashes($name).'":{"name":"'.addslashes($name).'","lat":"'.$lat.'","lng":"'.$lng.'"}';
+				$escaped_name = addslashes(str_replace(array("\r\n","\r","\n"),'',$name));
+				if ($lat==$post_lat && $lng==$post_lng) $post_location_name = $escaped_name;
+				$locations_json .= $comma.'"'.addslashes($name).'":{"name":"'.addslashes($escaped_name).'","lat":"'.$lat.'","lng":"'.$lng.'"}';
 				$comma = ',';
 			}
 		}
@@ -132,10 +135,10 @@ class GeoMashup {
 		$edit_html = '
 			<div class="dbx-b-ox-wrapper">
 				<fieldset class="dbx-box">
-					<div class="dbx-h-andle-wrapper"><h3 class="dbx-handle">Location</h3></div>
+					<div class="dbx-h-andle-wrapper"><h3 class="dbx-handle">'.__('Location', 'GeoMashup').'</h3></div>
 					<div class="dbx-c-ontent-wrapper"><div class="dbx-content">
 						<img id="geo_mashup_status_icon" src="'.$link_url.'/images/idle_icon.gif" style="float:right" />
-						<label for="geo_mashup_search">Find location:
+						<label for="geo_mashup_search">'.__('Find location:', 'GeoMashup').'
 							<input	id="geo_mashup_search" 
 											name="geo_mashup_search" 
 											type="text" 
@@ -143,24 +146,22 @@ class GeoMashup {
 											onfocus="this.select(); GeoMashupAdmin.map.checkResize();"
 											onkeypress="return GeoMashupAdmin.searchKey(event, this.value)" />
 						</label>
-						<a href="#" onclick="document.getElementById(\'geo_mashup_inline_help\').style.display=\'block\'; return false;">help</a>
+						<a href="#" onclick="document.getElementById(\'geo_mashup_inline_help\').style.display=\'block\'; return false;">'.__('help', 'GeoMashup').'</a>
 						<div id="geo_mashup_inline_help" style="position:absolute; z-index:1; left:0; top:0; padding:5px; border:2px solid blue; background-color:#ffc; display:none;">
-							<p>Put a green pin at the location for this post. There are many ways to do it:
+							<p>'.__('Put a green pin at the location for this post.', 'GeoMashup').' '.__('There are many ways to do it:', 'GeoMashup').'
 							<ul>
-								<li>Search for a location name.</li>
-								<li>For multiple search results, mouse over pins to see location names, and click a result pin to select that location.</li>
-								<li>Search for a decimal latitude and longitude, like <em>40.123,-105.456</em>.</li> 
-								<li>Search for a street address, like <em>123 main st, anytown, acity</em>.</li>
-								<li>Click on the location. Zoom in if necessary so you can refine the location by dragging it or clicking a new location.</li>
+								<li>'.__('Search for a location name.', 'GeoMashup').'</li>
+								<li>'.__('For multiple search results, mouse over pins to see location names, and click a result pin to select that location.', 'GeoMashup').'</li>
+								<li>'.__('Search for a decimal latitude and longitude, like <em>40.123,-105.456</em>.', 'GeoMashup').'</li> 
+								<li>'.__('Search for a street address, like <em>123 main st, anytown, acity</em>.', 'GeoMashup').'</li>
+								<li>'.__('Click on the location. Zoom in if necessary so you can refine the location by dragging it or clicking a new location.', 'GeoMashup').'</li>
 							</ul>
-							To execute a search, type search text into the Find Location box and hit the enter key. 
-							If you type a name next to "Save As", the location will be saved under that name so you can find it again with a quick
-							search. Saved names are searched before doing a GeoNames search for location names.</p>
-							<p>To remove the location (green pin) for a post, clear the search box and hit the enter key.</p>
-							<p><a href="#" onclick="document.getElementById(\'geo_mashup_inline_help\').style.display=\'none\'; return false;">close</a>
+							'.__('To execute a search, type search text into the Find Location box and hit the enter key. If you type a name next to "Save As", the location will be saved under that name so you can find it again with a quick search. Saved names are searched before doing a GeoNames search for location names.', 'GeoMashup').'</p>
+							<p>'.__('To remove the location (green pin) for a post, clear the search box and hit the enter key.', 'GeoMashup').'</p>
+							<p><a href="#" onclick="document.getElementById(\'geo_mashup_inline_help\').style.display=\'none\'; return false;">'.__('close', 'GeoMashup').'</a>
 						</div>
 						<div id="geo_mashup_map" style="width:400px;height:300px;">
-							Loading Google map. Check Geo Mashup options if the map fails to load.
+							'.__('Loading Google map. Check Geo Mashup options if the map fails to load.', 'GeoMashup').'
 						</div>
 						<script type="text/javascript">//<![CDATA[
 							GeoMashupAdmin.registerMap(document.getElementById("geo_mashup_map"),
@@ -172,7 +173,7 @@ class GeoMashup {
 																				"status_icon":document.getElementById("geo_mashup_status_icon")});
 							// ]]>
 						</script>
-						<label for="geo_mashup_location_name">Save As: 
+						<label for="geo_mashup_location_name">'.__('Save As:', 'GeoMashup').'
 							<input id="geo_mashup_location_name" name="geo_mashup_location_name" type="text" size="45" />
 						</label>
 						<input id="geo_mashup_location" name="geo_mashup_location" type="hidden" value="'.$post_lat.','.$post_lng.'" />
@@ -219,6 +220,8 @@ class GeoMashup {
 					cat:"'.$_GET['map_cat'].'",
 					loadLat:'.($_GET['lat']?$_GET['lat']:'null').',
 					loadLon:'.($_GET['lon']?$_GET['lon']:'null').',
+					infoWindowWidth:'.($geoMashupOpts['info_window_width']?$geoMashupOpts['info_window_width']:'false').',
+					infoWindowHeight:'.($geoMashupOpts['info_window_height']?$geoMashupOpts['info_window_height']:'false').',
 					loadZoom:'.($_GET['zoom']?$_GET['zoom']:'null').',
 					autoOpenInfoWindow:'.($geoMashupOpts['auto_info_open']?$geoMashupOpts['auto_info_open']:'false').'});</script>';
 
@@ -337,9 +340,9 @@ class GeoMashup {
 
 		$mapTypeOptions = "";
 		$mapTypes = Array(
-			'G_NORMAL_MAP' => 'Roadmap',
-			'G_SATELLITE_MAP' => 'Satellite',
-			'G_HYBRID_MAP' => 'Hybrid');
+			'G_NORMAL_MAP' => __('Roadmap', 'GeoMashup'),
+			'G_SATELLITE_MAP' => __('Satellite', 'GeoMashup'),
+			'G_HYBRID_MAP' => __('Hybrid', 'GeoMashup'));
 		foreach($mapTypes as $type => $label) {
 			$selected = "";
 			if ($type == $geoMashupOpts['map_type']) {
@@ -349,9 +352,9 @@ class GeoMashup {
 		}
 		$mapControlOptions = "";
 		$mapControls = Array(
-			'GSmallZoomControl' => 'Small Zoom',
-			'GSmallMapControl' => 'Small Pan/Zoom',
-			'GLargeMapControl' => 'Large Pan/Zoom');
+			'GSmallZoomControl' => __('Small Zoom', 'GeoMashup'),
+			'GSmallMapControl' => __('Small Pan/Zoom', 'GeoMashup'),
+			'GLargeMapControl' => __('Large Pan/Zoom', 'GeoMashup'));
 		foreach($mapControls as $type => $label) {
 			$selected = "";
 			if ($type == $geoMashupOpts['map_control']) {
@@ -518,19 +521,19 @@ class GeoMashup {
 						</tr>
 						<tr>
 							<th scope="row">'.__('Map Width', 'GeoMashup').'</th>
-							<td><input id="map_width" name="map_width" type="text" size="5" value="'.$geoMashupOpts['map_width'].'" />px</td>
+							<td><input id="map_width" name="map_width" type="text" size="5" value="'.$geoMashupOpts['map_width'].'" />'.__('px', 'GeoMashup').'</td>
 						</tr>
 						<tr>
 							<th scope="row">'.__('Map Height', 'GeoMashup').'</th>
-							<td><input id="map_height" name="map_height" type="text" size="5" value="'.$geoMashupOpts['map_height'].'" />px</td>
+							<td><input id="map_height" name="map_height" type="text" size="5" value="'.$geoMashupOpts['map_height'].'" />'.__('px', 'GeoMashup').'</td>
 						</tr>
 						<tr>
 							<th scope="row">'.__('Info Window Width', 'GeoMashup').'</th>
-							<td><input id="info_window_width" name="info_window_width" type="text" size="5" value="'.$geoMashupOpts['info_window_width'].'" />px</td>
+							<td><input id="info_window_width" name="info_window_width" type="text" size="5" value="'.$geoMashupOpts['info_window_width'].'" />'.__('px', 'GeoMashup').'</td>
 						</tr>
 						<tr>
 							<th scope="row">'.__('Info Window Height', 'GeoMashup').'</th>
-							<td><input id="info_window_height" name="info_window_height" type="text" size="5" value="'.$geoMashupOpts['info_window_height'].'" />px</td>
+							<td><input id="info_window_height" name="info_window_height" type="text" size="5" value="'.$geoMashupOpts['info_window_height'].'" />'.__('px', 'GeoMashup').'</td>
 						</tr>
 						<tr>
 							<th scope="row">'.__('Info Window Font Size', 'GeoMashup').'</th>
@@ -538,9 +541,9 @@ class GeoMashup {
 						</tr>
 					</table>
 				</fieldset>
-				<div class="submit"><input type="submit" name="submit" value="'.__('Update Options', 'GeoMashup').'" /></div>
+				<div class="submit"><input type="submit" name="submit" value="'.__('Update Options', 'GeoMashup').' &raquo;" /></div>
 			</form>
-			<p><a href="http://code.google.com/p/wordpress-geo-mashup/wiki/Documentation">Geo Mashup Documentation</a></p>
+			<p><a href="http://code.google.com/p/wordpress-geo-mashup/wiki/Documentation">'.__('Geo Mashup Documentation', 'GeoMashup').'</a></p>
 		</div>';
 	}
 
@@ -622,6 +625,7 @@ class GeoMashup {
 		// Using Simple GeoRSS for now
 		$coordinates = trim(get_post_meta($wp_query->post->ID, '_geo_location', true));
 		if (strlen($coordinates) > 1) {
+			$coordinates = str_replace(',',' ',$coordinates);
 			echo '<georss:point>' . $coordinates . '</georss:point>';
 		}
 	}
