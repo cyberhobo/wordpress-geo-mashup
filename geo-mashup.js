@@ -168,7 +168,23 @@ var GeoMashup = {
 							} else {
 								var newItem = request.responseXML.getElementsByTagName('item')[0];
 								var channel = GeoMashup.locations[point].xmlDoc.getElementsByTagName('channel')[0];
-								channel.appendChild(newItem);
+								if (GeoMashup.locations[point].xmlDoc.importNode) {
+									// Standards browsers
+									var importedNode = GeoMashup.locations[point].xmlDoc.importNode(newItem, true);
+
+									// Safari bug - if the title element got lost create a new one and append it
+									if(newItem.getElementsByTagName("title")[0] && !importedNode.getElementsByTagName("title")[0]){                              
+											var titleElement = newItem.ownerDocument.createElement("title");
+											var titleData = newItem.ownerDocument.createTextNode(newItem.getElementsByTagName("title")[0].firstChild.data);
+											titleElement.appendChild(titleData);
+											importedNode.appendChild(titleElement);
+									}
+
+									channel.appendChild(importedNode);
+								} else {
+									// break the rules for IE
+									channel.appendChild(newItem);
+								}
 							} 
 							GeoMashup.locations[point].loaded[post_id] = true;
 						} catch (e) {
@@ -179,7 +195,10 @@ var GeoMashup = {
 				GeoMashup.loading = false;
 				var html = GeoMashup.renderRss(GeoMashup.locations[point].xmlDoc);
 				GeoMashup.map.closeInfoWindow();
-				marker.openInfoWindowHtml(html);
+				var info_window_opts = {};
+				if (GeoMashup.opts.infoWindowWidth) info_window_opts.maxWidth = GeoMashup.opts.infoWindowWidth;
+				if (GeoMashup.opts.infoWindowHeight) info_window_opts.maxHeight = GeoMashup.opts.infoWindowHeight;
+				marker.openInfoWindowHtml(html,info_window_opts);
 			} 
 		}); // end marker infowindowopen
 
