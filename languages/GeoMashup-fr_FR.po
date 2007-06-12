@@ -1,0 +1,255 @@
+# Geo Mashup French translation.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Geo Mashup\n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: 2007-04-22 15:21-0500\n"
+"Last-Translator: Olivier <obagot@gmail.com>\n"
+"Language-Team: Geo Mashup - French <obagot@gmail.com>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-SourceCharset: utf-8\n"
+"X-Poedit-Basepath: ..\n"
+"X-Poedit-KeywordsList: gettext;__;_e\n"
+"X-Poedit-Country: FRANCE\n"
+"X-Poedit-Language: French\n"
+"X-Poedit-SearchPath-0: c:\\devel\\geo-mashup\n"
+
+# c:\devel\geo-mashup/geo-mashup.php:138
+msgid "Location"
+msgstr "Emplacement"
+
+# c:\devel\geo-mashup/geo-mashup.php:138
+msgid "Find location:"
+msgstr "Trouver un emplacement :"
+
+# c:\devel\geo-mashup/geo-mashup.php:146
+msgid "help"
+msgstr "Aide"
+
+# c:\devel\geo-mashup/geo-mashup.php:148
+msgid "Put a green pin at the location for this post."
+msgstr "Placez un repère vert sur l'emplacement pour cet article."
+
+# c:\devel\geo-mashup/geo-mashup.php:148
+msgid "There are many ways to do it:"
+msgstr "Il y a plusieurs façons de faire :"
+
+# c:\devel\geo-mashup/geo-mashup.php:150
+msgid "Search for a location name."
+msgstr "Cherchez un emplacement par son nom."
+
+# c:\devel\geo-mashup/geo-mashup.php:151
+msgid "For multiple search results, mouse over pins to see location names, and click a result pin to select that location."
+msgstr "Si plusieurs résultats de recherche sont proposés, survolez les repères avec la souris pour voir les détails et cliquez pour sélectionner l'emplacement."
+
+# c:\devel\geo-mashup/geo-mashup.php:152
+msgid "Search for a decimal latitude and longitude, like <em>40.123,-105.456</em>."
+msgstr "Cherchez par latitude et longitude, par exemple : <em>40.123,-105.456</em>."
+
+# c:\devel\geo-mashup/geo-mashup.php:153
+msgid "Search for a street address, like <em>123 main st, anytown, acity</em>."
+msgstr "Cherchez une adresse spécifique, par exemple : <em>123 rue du Centre, Paris, France</em>."
+
+# c:\devel\geo-mashup/geo-mashup.php:154
+msgid "Click on the location. Zoom in if necessary so you can refine the location by dragging it or clicking a new location."
+msgstr "Cliquez sur l'emplacement. Zoomez et déplacez le repère, si nécéssaire, afin de positioner le repère avec plus de précision. "
+
+# c:\devel\geo-mashup/geo-mashup.php:158
+msgid "To execute a search, type search text into the Find Location box and hit the enter key. If you type a name next to \"Save As\", the location will be saved under that name so you can find it again with a quick search. Saved names are searched before doing a GeoNames search for location names."
+msgstr "Pour trouver un emplacement, saisissez un nom dans le champ de recherche et appuyez sur la touche Entrée. Si vous avez saisi un nom dans le champ \"Enregistrer sous\", l'emplacement sera enregistré sous ce nom afin de faciliter les recherches suivantes. Les emplacements enregistrés sont proposés en priorité avant d'effectuer une recherche GeoNames."
+
+# c:\devel\geo-mashup/geo-mashup.php:159
+msgid "To remove the location (green pin) for a post, clear the search box and hit the enter key."
+msgstr "Pour supprimer l'emplacement (repère vert) d'un article, effacez le champ de recherche et appuyez sur la touche Entrée."
+
+# c:\devel\geo-mashup/geo-mashup.php:160
+msgid "close"
+msgstr "Fermer"
+
+# c:\devel\geo-mashup/geo-mashup.php:163
+msgid "Loading Google map. Check Geo Mashup options if the map fails to load."
+msgstr "Chargement de Google Maps en cours. Vérifiez les options de Geo Mashup si la carte ne s'affiche pas."
+
+# c:\devel\geo-mashup/geo-mashup.php:175
+msgid "Save As:"
+msgstr "Enregistrer sous :"
+
+# c:\devel\geo-mashup/geo-mashup.php:292
+msgid "Options updated."
+msgstr "Options sauvegardées."
+
+# c:\devel\geo-mashup/geo-mashup.php:319
+msgid "Defaults set."
+msgstr "Valeurs par défaut rétablies."
+
+# c:\devel\geo-mashup/geo-mashup.php:340
+msgid "Roadmap"
+msgstr "Plan"
+
+# c:\devel\geo-mashup/geo-mashup.php:341
+msgid "Satellite"
+msgstr "Satellite"
+
+# c:\devel\geo-mashup/geo-mashup.php:342
+msgid "Hybrid"
+msgstr "Mixte"
+
+# c:\devel\geo-mashup/geo-mashup.php:352
+msgid "Small Zoom"
+msgstr "Zoom (petite taille)"
+
+# c:\devel\geo-mashup/geo-mashup.php:353
+msgid "Small Pan/Zoom"
+msgstr "Navigation/Zoom (petite taille)"
+
+# c:\devel\geo-mashup/geo-mashup.php:354
+msgid "Large Pan/Zoom"
+msgstr "Navigation/Zoom (grande taille)"
+
+# c:\devel\geo-mashup/geo-mashup.php:421
+msgid "Geo Mashup Options"
+msgstr "Options de Geo Mashup"
+
+# c:\devel\geo-mashup/geo-mashup.php:423
+msgid "Behavior"
+msgstr "Comportement"
+
+# c:\devel\geo-mashup/geo-mashup.php:426
+msgid "Google Maps Key"
+msgstr "Clé Google Maps"
+
+# c:\devel\geo-mashup/geo-mashup.php:428
+msgid "Get yours here"
+msgstr "Obtenir une clé"
+
+# c:\devel\geo-mashup/geo-mashup.php:431
+msgid "Mashup Page"
+msgstr "Page contenant le Mashup"
+
+# c:\devel\geo-mashup/geo-mashup.php:437
+msgid "Map Control"
+msgstr "Commandes de la carte"
+
+# c:\devel\geo-mashup/geo-mashup.php:443
+msgid "Add Map Type Control"
+msgstr "Afficher les commandes de type de carte"
+
+# c:\devel\geo-mashup/geo-mashup.php:447
+msgid "Add Overview Control"
+msgstr "Afficher la fenêtre de vue d'ensemble"
+
+# c:\devel\geo-mashup/geo-mashup.php:451
+msgid "Default Map Type"
+msgstr "Type de carte par défaut"
+
+# c:\devel\geo-mashup/geo-mashup.php:457
+msgid "Default Zoom Level"
+msgstr "Niveau de zoom par défaut"
+
+# c:\devel\geo-mashup/geo-mashup.php:459
+# c:\devel\geo-mashup/geo-mashup.php:497
+msgid "0-17"
+msgstr "0-17"
+
+# c:\devel\geo-mashup/geo-mashup.php:462
+msgid "Show Future Posts"
+msgstr "Afficher les articles post-datés"
+
+# c:\devel\geo-mashup/geo-mashup.php:466
+msgid "Automatically Open the Center Info Window"
+msgstr "Afficher automatiquement la bulle d'information"
+
+# c:\devel\geo-mashup/geo-mashup.php:470
+msgid "Enable Full Post Display"
+msgstr "Activer la vue \"Article complet\""
+
+# c:\devel\geo-mashup/geo-mashup.php:474
+msgid "Use Compressed Javascript"
+msgstr "Utiliser la version compressée du Javascript"
+
+# c:\devel\geo-mashup/geo-mashup.php:480
+msgid "Categories"
+msgstr "Catégories"
+
+# c:\devel\geo-mashup/geo-mashup.php:483
+msgid "Add Category Links"
+msgstr "Ajouter les liens de catégorie"
+
+# c:\devel\geo-mashup/geo-mashup.php:487
+msgid "Category Link Separator"
+msgstr "Séparateur de lien de catégorie"
+
+# c:\devel\geo-mashup/geo-mashup.php:491
+msgid "Category Link Text"
+msgstr "Texte de lien de catégorie"
+
+# c:\devel\geo-mashup/geo-mashup.php:495
+msgid "Category Zoom Level"
+msgstr "Niveau de zoom pour les catégories"
+
+# c:\devel\geo-mashup/geo-mashup.php:502
+msgid "Presentation"
+msgstr "Présentation"
+
+# c:\devel\geo-mashup/geo-mashup.php:505
+msgid "Post Excerpt Format"
+msgstr "Format de résumé d'article"
+
+# c:\devel\geo-mashup/geo-mashup.php:507
+msgid "Text"
+msgstr "Texte"
+
+# c:\devel\geo-mashup/geo-mashup.php:508
+msgid "HTML"
+msgstr "HTML"
+
+# c:\devel\geo-mashup/geo-mashup.php:511
+msgid "Post Excerpt Length"
+msgstr "Longueur du résumé d'article"
+
+# c:\devel\geo-mashup/geo-mashup.php:515
+msgid "Include style settings"
+msgstr "Inclure les styles"
+
+# c:\devel\geo-mashup/geo-mashup.php:517
+msgid " (Uncheck to use styles from your theme stylesheet instead of these)"
+msgstr " (Décocher pour utiliser les styles du thème courant)"
+
+# c:\devel\geo-mashup/geo-mashup.php:520
+msgid "Map Width"
+msgstr "Largeur de la carte"
+
+# c:\devel\geo-mashup/geo-mashup.php:521
+# c:\devel\geo-mashup/geo-mashup.php:525
+# c:\devel\geo-mashup/geo-mashup.php:529
+# c:\devel\geo-mashup/geo-mashup.php:533
+msgid "px"
+msgstr "px"
+
+# c:\devel\geo-mashup/geo-mashup.php:524
+msgid "Map Height"
+msgstr "Hauteur de la carte"
+
+# c:\devel\geo-mashup/geo-mashup.php:528
+msgid "Info Window Width"
+msgstr "Largeur de la bulle d'information"
+
+# c:\devel\geo-mashup/geo-mashup.php:532
+msgid "Info Window Height"
+msgstr "Hauteur de la bulle d'information"
+
+# c:\devel\geo-mashup/geo-mashup.php:536
+msgid "Info Window Font Size"
+msgstr "Taille de la police de caractères"
+
+# c:\devel\geo-mashup/geo-mashup.php:541
+msgid "Update Options"
+msgstr "Mise à jour des options"
+
+# c:\devel\geo-mashup/geo-mashup.php:421
+msgid "Geo Mashup Documentation"
+msgstr "Documentation de Geo Mashup"
+
