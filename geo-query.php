@@ -82,19 +82,19 @@ function queryLocations() {
 
 	$minlat = $_GET['minlat'];
 	if (is_numeric($minlat)) {
-		$minlat = mysql_real_escape_string($minlat);
+		$minlat = $wpdb->escape($minlat);
 	}
 	$minlon = $_GET['minlon'];
 	if (is_numeric($minlon)) {
-		$minlon = mysql_real_escape_string($minlon);
+		$minlon = $wpdb->escape($minlon);
 	}
 	$maxlat = $_GET['maxlat'];
 	if (is_numeric($maxlat)) {
-		$maxlat = mysql_real_escape_string($maxlat);
+		$maxlat = $wpdb->escape($maxlat);
 	}
 	$maxlon = $_GET['maxlon'];
 	if (is_numeric($maxlon)) {
-		$maxlon = mysql_real_escape_string($maxlon);
+		$maxlon = $wpdb->escape($maxlon);
 	}
 	// Ignore nonsense bounds
 	if ($minlat && $maxlat && $minlat>$maxlat) {
@@ -110,21 +110,22 @@ function queryLocations() {
 	if ($maxlon) $where .= " AND substring_index(meta_value,',',-1)<$maxlon";
 
 	$cat = $_GET['cat'];
+	$tables .= ' INNER JOIN '.$wpdb->post2cat.
+		' ON '.$wpdb->posts.'.ID = '.$wpdb->post2cat.'.post_id';
 	if (is_numeric($cat)) {
-		$cat = mysql_real_escape_string($cat);
-		$tables .= ' INNER JOIN '.$wpdb->post2cat.
-			' ON '.$wpdb->posts.'.ID = '.$wpdb->post2cat.'.post_id';
+		$cat = $wpdb->escape($cat);
 		$where .= " AND category_id=$cat";
-	}
+	} 
 
-	$query_string .= "SELECT $fields FROM $tables WHERE $where ORDER BY post_date DESC";
+	$query_string = "SELECT $fields FROM $tables WHERE $where ORDER BY post_date DESC";
 
+	$all = 'true';
 	$limit = $_GET['limit'];
-	if (!($minlat && $maxlat && $minlon && $maxlon) && !$limit && !$category) {
-		// limit is not geographic, so limit number of results
-		$query_string .= " LIMIT 0,10";
+	if (!($minlat && $maxlat && $minlon && $maxlon) && !$limit) {
+		// result should contain all posts (possibly for a category)
+		$all = 'false';
 	} else if (is_numeric($limit) && $limit>0) {
-		$limit = mysql_real_escape_string($limit);
+		$limit = $wpdb->escape($limit);
 		$query_string .= " LIMIT 0,$limit";
 	}
 
@@ -132,10 +133,21 @@ function queryLocations() {
 
 	if ($wpdb->last_result) {
 		$comma = '';
-		foreach ($wpdb->last_result as $row) {
-			list($lat,$lng) = split(',',$row->meta_value);
-			echo 	$comma.'{"post_id":"'.$row->ID.'","title":"'.$row->post_title.
-						'","lat":"'.$lat.'","lng":"'.$lng.'"}';
+		$posts = $wpdb->last_result; 
+		foreach ($posts as $post) {
+			list($lat,$lng) = split(',',$post->meta_value);
+			echo 	$comma.'{"post_id":"'.$post->ID.'","title":"'.addslashes($post->post_title).
+				'","lat":"'.$lat.'","lng":"'.$lng.'","categories":[';
+			$categories_sql = "SELECT cat_name FROM {$wpdb->post2cat} pc ".
+				"JOIN {$wpdb->categories} c ON pc.category_id = c.cat_ID ".
+				"WHERE pc.post_id = {$post->ID}";
+			$categories = $wpdb->get_col($categories_sql);
+			$categories_comma = '';
+			foreach ($categories as $category) {
+				echo $categories_comma.'"'.addslashes($category).'"';
+				$categories_comma = ',';
+			}
+			echo ']}';
 			$comma = ',';
 		}
 	}
