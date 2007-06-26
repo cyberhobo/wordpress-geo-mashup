@@ -134,7 +134,7 @@ function queryLocations() {
 		$comma = '';
 		foreach ($wpdb->last_result as $row) {
 			list($lat,$lng) = split(',',$row->meta_value);
-			echo 	$comma.'{"post_id":"'.$row->ID.'","title":"'.$row->post_title.
+			echo 	$comma.'{"post_id":"'.$row->ID.'","title":"'.addslashes($row->post_title).
 						'","lat":"'.$lat.'","lng":"'.$lng.'"}';
 			$comma = ',';
 		}
