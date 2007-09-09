@@ -266,7 +266,7 @@ class GeoMashup {
 					linkDir:"'.$linkDir.'",
 					mapControl:"'.$geoMashupOpts['map_control'].'",
 					addOverviewControl:'.($geoMashupOpts['add_overview_control']?$geoMashupOpts['add_overview_control']:'false').',
-					mapType:'.$geoMashupOpts['map_type'].',
+					mapType:"'.$geoMashupOpts['map_type'].'",
 					zoom:'.($geoMashupOpts['zoom_level']?$geoMashupOpts['zoom_level']:'5').',
 					markerMinZoom:'.($geoMashupOpts['marker_min_zoom']?$geoMashupOpts['marker_min_zoom']:'0').',
 					maxPosts:'.($geoMashupOpts['max_posts']?$geoMashupOpts['max_posts']:'false').',
@@ -430,8 +430,7 @@ class GeoMashup {
 
 		$mapTypeOptions = "";
 		$mapTypes = Array(
-			'G_NORMAL_MAP' => __('Roadmap', 'GeoMashup'),
-			'G_SATELLITE_MAP' => __('Satellite', 'GeoMashup'),
+			'G_NORMAL_MAP' => __('Roadmap', 'GeoMashup'), 'G_SATELLITE_MAP' => __('Satellite', 'GeoMashup'),
 			'G_HYBRID_MAP' => __('Hybrid', 'GeoMashup'));
 		foreach($mapTypes as $type => $label) {
 			$selected = "";
@@ -684,6 +683,7 @@ class GeoMashup {
 			$link = '<a href="'.$url.htmlentities("lat=$lat&lng=$lng")."\">$text</a>";
 			if ($display) {
 				echo $link;
+				return true;
 			} else {
 				return $link;
 			}
@@ -694,7 +694,7 @@ class GeoMashup {
 	* A better name for the post_link tag.
 	*/
 	function show_on_map_link($text = 'Show On Map', $display = true) {
-		GeoMashup::post_link($text,$display);
+		return GeoMashup::post_link($text,$display);
 	}
 
 	/**
@@ -733,12 +733,20 @@ class GeoMashup {
 	/**
 	* Fetch post coordinates.
 	*/
-	function post_coordinates() {
+	function post_coordinates($places = 10) {
 		global $post;
 
 		$meta = trim(get_post_meta($post->ID, '_geo_location', true));
 		if (strlen($meta)>1) {
 			list($lat, $lng) = split(',', $meta);
+			$lat_dec_pos = strpos($lat,'.');
+			if ($lat_dec_pos !== false) {
+				$lat = substr($lat, 0, $lat_dec_pos+$places+1);
+			}
+			$lng_dec_pos = strpos($lng,'.');
+			if ($lng_dec_pos !== false) {
+				$lng = substr($lng, 0, $lng_dec_pos+$places+1);
+			}
 			return array('lat' => $lat, 'lng' => $lng);
 		}
 		return false;
