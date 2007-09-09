@@ -77,7 +77,7 @@ function queryLocations() {
 		' AND length(meta_value)>1';
 
 	if ($opts['show_future'] != 'true') {
-		$where .= ' AND post_date<NOW()';
+		$where .= ' AND post_date_gmt<DATE_ADD(\'1970-01-01\', INTERVAL UNIX_TIMESTAMP() SECOND )';
 	}
 
 	$minlat = $_GET['minlat'];
