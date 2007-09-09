@@ -69,7 +69,7 @@ var GeoMashup = {
 			settings_str = settings_str.substr(1);
 		}
 		var pairs = settings_str.split('&');
-		for (i in pairs) {
+		for (var i=0; i<pairs.length; i++) {
 			var keyvalue = pairs[i].split('=');
 			obj[keyvalue[0]] = decodeURIComponent(keyvalue[1]);
 		}
@@ -425,7 +425,12 @@ var GeoMashup = {
 
 		if (typeof(opts.mapType) == 'string') {
 			var typeNum = parseInt(opts.mapType);
-			opts.mapType = this.map.getMapTypes()[typeNum];
+
+			if (isNaN(typeNum)) {
+				opts.mapType = eval(opts.mapType);
+			} else {
+				opts.mapType = this.map.getMapTypes()[typeNum];
+			}
 		} else if (typeof(opts.mapType) == 'undefined') {
 			opts.mapType = G_NORMAL_MAP;
 		}
