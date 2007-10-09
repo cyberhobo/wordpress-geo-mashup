@@ -146,60 +146,49 @@ var GeoMashup = {
 
 		// Show this markers index in the info window when it is clicked
 		GEvent.addListener(marker, "click", function() {
-			// The loading window is late to show up - may replace it 
-			// with a message div 
-			marker.openInfoWindowHtml('Loading...');
-			GeoMashup.loading = true;
-		});
+			var request = new GXmlHttp.create();
+			for(var i=0; i<GeoMashup.locations[point].posts.length; i++) {
+				var post_id = GeoMashup.locations[point].posts[i];
+				if (!GeoMashup.locations[point].loaded[post_id]) {
+					var url = GeoMashup.opts.linkDir + '/geo-query.php?post_id=' + post_id;
+					// Use a synchronous request to simplify multiple posts at a location
+					request.open('GET', url, false);
+					try {
+						request.send(null);
+						if (!GeoMashup.locations[point].xmlDoc) {
+							GeoMashup.locations[point].xmlDoc = request.responseXML;
+						} else {
+							var newItem = request.responseXML.getElementsByTagName('item')[0];
+							var channel = GeoMashup.locations[point].xmlDoc.getElementsByTagName('channel')[0];
+							if (GeoMashup.locations[point].xmlDoc.importNode) {
+								// Standards browsers
+								var importedNode = GeoMashup.locations[point].xmlDoc.importNode(newItem, true);
 
-		GEvent.addListener(marker, "infowindowopen", function() {
-			if (GeoMashup.loading) {
-				var request = new GXmlHttp.create();
-				for(var i=0; i<GeoMashup.locations[point].posts.length; i++) {
-					var post_id = GeoMashup.locations[point].posts[i];
-					if (!GeoMashup.locations[point].loaded[post_id]) {
-						var url = GeoMashup.opts.linkDir + '/geo-query.php?post_id=' + post_id;
-						// Use a synchronous request to simplify multiple posts at a location
-						request.open('GET', url, false);
-						try {
-							request.send(null);
-							if (!GeoMashup.locations[point].xmlDoc) {
-								GeoMashup.locations[point].xmlDoc = request.responseXML;
-							} else {
-								var newItem = request.responseXML.getElementsByTagName('item')[0];
-								var channel = GeoMashup.locations[point].xmlDoc.getElementsByTagName('channel')[0];
-								if (GeoMashup.locations[point].xmlDoc.importNode) {
-									// Standards browsers
-									var importedNode = GeoMashup.locations[point].xmlDoc.importNode(newItem, true);
-
-									// Safari bug - if the title element got lost create a new one and append it
-									if(newItem.getElementsByTagName("title")[0] && !importedNode.getElementsByTagName("title")[0]){                              
-											var titleElement = newItem.ownerDocument.createElement("title");
-											var titleData = newItem.ownerDocument.createTextNode(newItem.getElementsByTagName("title")[0].firstChild.data);
-											titleElement.appendChild(titleData);
-											importedNode.appendChild(titleElement);
-									}
-
-									channel.appendChild(importedNode);
-								} else {
-									// break the rules for IE
-									channel.appendChild(newItem);
+								// Safari bug - if the title element got lost create a new one and append it
+								if(newItem.getElementsByTagName("title")[0] && !importedNode.getElementsByTagName("title")[0]){                              
+										var titleElement = newItem.ownerDocument.createElement("title");
+										var titleData = newItem.ownerDocument.createTextNode(newItem.getElementsByTagName("title")[0].firstChild.data);
+										titleElement.appendChild(titleData);
+										importedNode.appendChild(titleElement);
 								}
-							} 
-							GeoMashup.locations[point].loaded[post_id] = true;
-						} catch (e) {
-							alert('Request for ' + url + ' failed: ' + e);
-						}
-					} // end if not loaded
-				} // end location posts loop
-				GeoMashup.loading = false;
-				var html = GeoMashup.renderRss(GeoMashup.locations[point].xmlDoc);
-				GeoMashup.map.closeInfoWindow();
-				var info_window_opts = {};
-				if (GeoMashup.opts.infoWindowWidth) info_window_opts.maxWidth = GeoMashup.opts.infoWindowWidth;
-				if (GeoMashup.opts.infoWindowHeight) info_window_opts.maxHeight = GeoMashup.opts.infoWindowHeight;
-				marker.openInfoWindowHtml(html,info_window_opts);
-			} 
+
+								channel.appendChild(importedNode);
+							} else {
+								// break the rules for IE
+								channel.appendChild(newItem);
+							}
+						} 
+						GeoMashup.locations[point].loaded[post_id] = true;
+					} catch (e) {
+						alert('Request for ' + url + ' failed: ' + e);
+					}
+				} // end if not loaded
+			} // end location posts loop
+			var html = GeoMashup.renderRss(GeoMashup.locations[point].xmlDoc);
+			var info_window_opts = {};
+			if (GeoMashup.opts.infoWindowWidth) info_window_opts.maxWidth = GeoMashup.opts.infoWindowWidth;
+			if (GeoMashup.opts.infoWindowHeight) info_window_opts.maxHeight = GeoMashup.opts.infoWindowHeight;
+			marker.openInfoWindowHtml(html,info_window_opts);
 		}); // end marker infowindowopen
 
 		GEvent.addListener(marker, 'infowindowclose', function() {
