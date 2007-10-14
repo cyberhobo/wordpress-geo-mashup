@@ -38,8 +38,11 @@ function queryPost($post_id) {
 	if (!$post) {
 		echo '<title>Post'.$post_id.'not found</title>';
 	} else {
-		$cat_query = "SELECT cat_name FROM {$wpdb->post2cat},{$wpdb->categories} ".
-			"WHERE category_id=cat_ID AND post_id=$post_id";
+		$cat_query = "SELECT name 
+			FROM {$wpdb->terms} t
+			JOIN {$wpdb->term_taxonomy} tt ON tt.term_id = t.term_id
+			JOIN {$wpdb->term_relationships} tr ON tr.term_taxonomy_id = tt.term_taxonomy_id
+			WHERE tr.object_id=$post_id";
 		$categories = $wpdb->get_col($cat_query);
 		foreach ($categories as $category) {
 			echo '<category>'.$category.'</category>';
@@ -69,9 +72,9 @@ function queryLocations() {
 
 	// Construct the query 
 	$fields = 'ID, post_title, meta_value';
-	$tables = $wpdb->postmeta.
-		' INNER JOIN '. $wpdb->posts.
-		' ON ' . $wpdb->postmeta .' .post_id = ' . $wpdb->posts .'.ID';
+	$tables = "$wpdb->postmeta pm
+		INNER JOIN $wpdb->posts p
+		ON pm.post_id = p.ID";
 	$where = 'meta_key=\'_geo_location\''.
 		' AND post_status=\'publish\''.
 		' AND length(meta_value)>1';
@@ -110,11 +113,10 @@ function queryLocations() {
 	if ($maxlon) $where .= " AND substring_index(meta_value,',',-1)<$maxlon";
 
 	$cat = $_GET['cat'];
-	$tables .= ' INNER JOIN '.$wpdb->post2cat.
-		' ON '.$wpdb->posts.'.ID = '.$wpdb->post2cat.'.post_id';
+	$tables .= " INNER JOIN $wpdb->term_relationships tr ON tr.object_id = p.ID";
 	if (is_numeric($cat)) {
 		$cat = $wpdb->escape($cat);
-		$where .= " AND category_id=$cat";
+		$where .= " AND tr.term_taxonomy_id=$cat";
 	} 
 
 	$query_string = "SELECT $fields FROM $tables WHERE $where ORDER BY post_date DESC";
@@ -138,9 +140,12 @@ function queryLocations() {
 			list($lat,$lng) = split(',',$post->meta_value);
 			echo 	$comma.'{"post_id":"'.$post->ID.'","title":"'.addslashes($post->post_title).
 				'","lat":"'.$lat.'","lng":"'.$lng.'","categories":[';
-			$categories_sql = "SELECT cat_name FROM {$wpdb->post2cat} pc ".
-				"JOIN {$wpdb->categories} c ON pc.category_id = c.cat_ID ".
-				"WHERE pc.post_id = {$post->ID}";
+			$categories_sql = "SELECT name 
+				FROM {$wpdb->term_relationships} tr
+				JOIN {$wpdb->term_taxonomy} tt ON tt.term_taxonomy_id = tr.term_taxonomy_id 
+				JOIN {$wpdb->terms} t ON t.term_id = tt.term_id
+				WHERE tt.taxonomy='category' 
+				AND tr.object_id = {$post->ID}";
 			$categories = $wpdb->get_col($categories_sql);
 			$categories_comma = '';
 			foreach ($categories as $category) {
