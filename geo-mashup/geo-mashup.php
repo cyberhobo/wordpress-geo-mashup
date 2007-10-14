@@ -241,8 +241,8 @@ class GeoMashup {
 			$mapdiv .= '</div>';
 			$linkDir = get_bloginfo('wpurl')."/wp-content/plugins/geo-mashup";
 			$categorySelect = "SELECT * 
-				FROM $wpdb->terms 
-				JOIN $wpdb->term_taxonomy ON {$wpdb->term_taxonomy}.term_id = {$wpdb->terms}.term_id
+				FROM $wpdb->terms t
+				JOIN $wpdb->term_taxonomy tt ON tt.term_id = t.term_id
 				WHERE taxonomy='category'";
 			$categories = $wpdb->get_results($categorySelect);
 			$categoryOpts = '{';
@@ -306,8 +306,9 @@ class GeoMashup {
 		if ($category) {
 			$query = "SELECT count(*) FROM {$wpdb->posts} p 
 				INNER JOIN {$wpdb->term_relationships} tr ON tr.object_id=p.ID 
+				INNER JOIN {$wpdb->term_taxonomy} tt ON tt.term_taxonomy_id=tr.term_taxonomy_id
 				INNER JOIN {$wpdb->postmeta} pm ON pm.post_id=p.ID 
-				WHERE tr.term_taxonomy_id={$category->cat_ID} 
+				WHERE tt.term_id={$category->cat_ID} 
 				AND pm.meta_key='_geo_location'
 				AND length(pm.meta_value)>1
 				AND p.post_status='publish'";
@@ -410,8 +411,8 @@ class GeoMashup {
 				<tr><th>'.__('Category', 'GeoMashup').'</th><th>'.__('Color').'</th>
 				<th>'.__('Show Connecting Line Until Zoom Level (0-17 or none)','GeoMashup')."</th></tr>\n";
 		$categorySelect = "SELECT * 
-			FROM $wpdb->terms 
-			JOIN $wpdb->term_taxonomy ON {$wpdb->term_taxonomy}.term_id = {$wpdb->terms}.term_id
+			FROM $wpdb->terms t 
+			JOIN $wpdb->term_taxonomy tt ON tt.term_id = t.term_id
 			WHERE taxonomy='category'";
 		$categories = $wpdb->get_results($categorySelect);
 		if ($categories)
