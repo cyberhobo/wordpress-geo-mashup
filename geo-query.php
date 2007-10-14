@@ -38,8 +38,12 @@ function queryPost($post_id) {
 	if (!$post) {
 		echo '<title>Post'.$post_id.'not found</title>';
 	} else {
-		$cat_query = "SELECT cat_name FROM {$wpdb->post2cat},{$wpdb->categories} ".
-			"WHERE category_id=cat_ID AND post_id=$post_id";
+		$cat_query = "SELECT name 
+			FROM {$wpdb->terms} t
+			JOIN {$wpdb->term_taxonomy} tt ON tt.term_id = t.term_id
+			JOIN {$wpdb->term_relationships} tr ON tr.term_taxonomy_id = tt.term_taxonomy_id
+			WHERE tr.object_id=$post_id
+			AND	  tt.taxonomy='category'";
 		$categories = $wpdb->get_col($cat_query);
 		foreach ($categories as $category) {
 			echo '<category>'.$category.'</category>';
@@ -69,32 +73,30 @@ function queryLocations() {
 
 	// Construct the query 
 	$fields = 'ID, post_title, meta_value';
-	$tables = $wpdb->postmeta.
-		' INNER JOIN '. $wpdb->posts.
-		' ON ' . $wpdb->postmeta .' .post_id = ' . $wpdb->posts .'.ID';
+	$tables = "$wpdb->postmeta pm JOIN $wpdb->posts p ON pm.post_id = p.ID";
 	$where = 'meta_key=\'_geo_location\''.
 		' AND post_status=\'publish\''.
 		' AND length(meta_value)>1';
 
 	if ($opts['show_future'] != 'true') {
-		$where .= ' AND post_date<NOW()';
+		$where .= ' AND post_date_gmt<DATE_ADD(\'1970-01-01\', INTERVAL UNIX_TIMESTAMP() SECOND )';
 	}
 
 	$minlat = $_GET['minlat'];
 	if (is_numeric($minlat)) {
-		$minlat = mysql_real_escape_string($minlat);
+		$minlat = $wpdb->escape($minlat);
 	}
 	$minlon = $_GET['minlon'];
 	if (is_numeric($minlon)) {
-		$minlon = mysql_real_escape_string($minlon);
+		$minlon = $wpdb->escape($minlon);
 	}
 	$maxlat = $_GET['maxlat'];
 	if (is_numeric($maxlat)) {
-		$maxlat = mysql_real_escape_string($maxlat);
+		$maxlat = $wpdb->escape($maxlat);
 	}
 	$maxlon = $_GET['maxlon'];
 	if (is_numeric($maxlon)) {
-		$maxlon = mysql_real_escape_string($maxlon);
+		$maxlon = $wpdb->escape($maxlon);
 	}
 	// Ignore nonsense bounds
 	if ($minlat && $maxlat && $minlat>$maxlat) {
@@ -111,10 +113,12 @@ function queryLocations() {
 
 	$cat = $_GET['cat'];
 	if (is_numeric($cat)) {
-		$cat = mysql_real_escape_string($cat);
-		$tables .= ' INNER JOIN '.$wpdb->post2cat.
-			' ON '.$wpdb->posts.'.ID = '.$wpdb->post2cat.'.post_id';
-		$where .= " AND category_id=$cat";
+		$cat = $wpdb->escape($cat);
+		$tables .= " JOIN $wpdb->term_relationships tr ON tr.object_id = p.ID
+			JOIN $wpdb->term_taxonomy tt ON tt.term_taxonomy_id = tr.term_taxonomy_id 
+				AND tt.taxonomy='category'";
+
+		$where .= " AND tr.term_taxonomy_id=$cat";
 	}
 
 	$query_string .= "SELECT $fields FROM $tables WHERE $where ORDER BY post_date DESC";
@@ -124,7 +128,7 @@ function queryLocations() {
 		// limit is not geographic, so limit number of results
 		$query_string .= " LIMIT 0,10";
 	} else if (is_numeric($limit) && $limit>0) {
-		$limit = mysql_real_escape_string($limit);
+		$limit = $wpdb->escape($limit);
 		$query_string .= " LIMIT 0,$limit";
 	}
 
