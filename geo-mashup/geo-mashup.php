@@ -3,10 +3,10 @@
 Plugin Name: Geo Mashup
 Plugin URI: http://www.cyberhobo.net/downloads/geo-mashup-plugin/
 Description: Adds a Google Maps mashup of geocoded blog posts. Configure in <a href="options-general.php?page=geo-mashup/geo-mashup.php">Options->Geo Mashup</a> after the plugin is activated.
-Version: 1.1b1
+Version: 1.1b2
 Author: Dylan Kuhn
 Author URI: http://www.cyberhobo.net/
-Minimum WordPress Version Required: 2.0
+Minimum WordPress Version Required: 2.3
 */
 
 /*
@@ -240,20 +240,24 @@ class GeoMashup {
 			}
 			$mapdiv .= '</div>';
 			$linkDir = get_bloginfo('wpurl')."/wp-content/plugins/geo-mashup";
+			$categorySelect = "SELECT * 
+				FROM $wpdb->terms 
+				JOIN $wpdb->term_taxonomy ON {$wpdb->term_taxonomy}.term_id = {$wpdb->terms}.term_id
+				WHERE taxonomy='category'";
+			$categories = $wpdb->get_results($categorySelect);
 			$categoryOpts = '{';
-			$categories = $wpdb->get_results("SELECT * FROM $wpdb->categories");
 			if ($categories)
 			{
 				$cat_comma = '';
 				foreach($categories as $category) {
-					$categoryOpts .= $cat_comma.'"'.addslashes($category->cat_name).'":{';
+					$categoryOpts .= $cat_comma.'"'.addslashes($category->name).'":{';
 					$opt_comma = '';
-					if ($geoMashupOpts['category_color'][$category->category_nicename]) {
-						$categoryOpts .= '"color_name":"'.$geoMashupOpts['category_color'][$category->category_nicename].'"';
+					if ($geoMashupOpts['category_color'][$category->slug]) {
+						$categoryOpts .= '"color_name":"'.$geoMashupOpts['category_color'][$category->slug].'"';
 						$opt_comma = ',';
 					}
-					if ($geoMashupOpts['category_line_zoom'][$category->category_nicename]) {
-						$categoryOpts .= $opt_comma.'"max_line_zoom":"'.$geoMashupOpts['category_line_zoom'][$category->category_nicename].'"';
+					if ($geoMashupOpts['category_line_zoom'][$category->slug]) {
+						$categoryOpts .= $opt_comma.'"max_line_zoom":"'.$geoMashupOpts['category_line_zoom'][$category->slug].'"';
 					}
 					$categoryOpts .= '}';
 					$cat_comma = ',';
@@ -300,10 +304,10 @@ class GeoMashup {
 	function list_cats($content, $category = null) {
 		global $wpdb, $geoMashupOpts;
 		if ($category) {
-			$query = "SELECT count(*) FROM {$wpdb->posts} p INNER JOIN {$wpdb->post2cat} pc 
-				ON pc.post_id=p.ID INNER JOIN {$wpdb->postmeta} pm
-				ON pm.post_id=p.ID 
-				WHERE pc.category_id={$category->cat_ID} 
+			$query = "SELECT count(*) FROM {$wpdb->posts} p 
+				INNER JOIN {$wpdb->term_relationships} tr ON tr.object_id=p.ID 
+				INNER JOIN {$wpdb->postmeta} pm ON pm.post_id=p.ID 
+				WHERE tr.term_taxonomy_id={$category->cat_ID} 
 				AND pm.meta_key='_geo_location'
 				AND length(pm.meta_value)>1
 				AND p.post_status='publish'";
@@ -405,24 +409,28 @@ class GeoMashup {
 			<table>
 				<tr><th>'.__('Category', 'GeoMashup').'</th><th>'.__('Color').'</th>
 				<th>'.__('Show Connecting Line Until Zoom Level (0-17 or none)','GeoMashup')."</th></tr>\n";
-		$categories = $wpdb->get_results("SELECT * FROM $wpdb->categories");
+		$categorySelect = "SELECT * 
+			FROM $wpdb->terms 
+			JOIN $wpdb->term_taxonomy ON {$wpdb->term_taxonomy}.term_id = {$wpdb->terms}.term_id
+			WHERE taxonomy='category'";
+		$categories = $wpdb->get_results($categorySelect);
 		if ($categories)
 		{
 			foreach($categories as $category) {
 				$colorOptions = '';
 				foreach($colorNames as $color) {
 					$colorOptions .= '<option value="'.$color.'"';
-					if ($color == $geoMashupOpts['category_color'][$category->category_nicename]) {
+					if ($color == $geoMashupOpts['category_color'][$category->slug]) {
 						$colorOptions .= ' selected="true"';
 					}
 					$colorOptions .= ' style="background-color:'.$color.'">'.
 						__($color,'GeoMashup').'</option>';
 				}
-				$categoryTable .= '<tr><td>' . $category->cat_name . '</td><td><select id="category_color_' .
-					$category->category_nicename . '" name="category_color[' . $category->category_nicename . ']">'.$colorOptions.
-					'</select></td><td><input id="category_line_zoom_' . $category->category_nicename . 
-					'" name="category_line_zoom['.$category->category_nicename.']" value="'.
-					$geoMashupOpts['category_line_zoom'][$category->category_nicename].
+				$categoryTable .= '<tr><td>' . $category->name . '</td><td><select id="category_color_' .
+					$category->slug . '" name="category_color[' . $category->slug . ']">'.$colorOptions.
+					'</select></td><td><input id="category_line_zoom_' . $category->slug . 
+					'" name="category_line_zoom['.$category->slug.']" value="'.
+					$geoMashupOpts['category_line_zoom'][$category->slug].
 					'" type="text" size="2" maxlength="2" /></td></tr>'."\n";
 			}
 		}
@@ -756,7 +764,7 @@ class GeoMashup {
 	 * Emit GeoRSS namespace
 	 */
 	function rss_ns() {
-		echo 'xmlns:georss="http://www.georss.org/georss"';
+		echo 'xmlns:georss="http://www.georss.org/georss" ';
 	}
 
 	/**
