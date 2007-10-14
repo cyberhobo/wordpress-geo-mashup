@@ -42,7 +42,8 @@ function queryPost($post_id) {
 			FROM {$wpdb->terms} t
 			JOIN {$wpdb->term_taxonomy} tt ON tt.term_id = t.term_id
 			JOIN {$wpdb->term_relationships} tr ON tr.term_taxonomy_id = tt.term_taxonomy_id
-			WHERE tr.object_id=$post_id";
+			WHERE tr.object_id=$post_id
+			AND		tt.taxonomy='category'";
 		$categories = $wpdb->get_col($cat_query);
 		foreach ($categories as $category) {
 			echo '<category>'.$category.'</category>';
@@ -113,10 +114,12 @@ function queryLocations() {
 	if ($maxlon) $where .= " AND substring_index(meta_value,',',-1)<$maxlon";
 
 	$cat = $_GET['cat'];
-	$tables .= " INNER JOIN $wpdb->term_relationships tr ON tr.object_id = p.ID";
+	$tables .= " JOIN $wpdb->term_relationships tr ON tr.object_id = p.ID 
+		JOIN $wpdb->term_taxonomy tt ON tt.term_taxonomy_id = tr.term_taxonomy_id 
+			AND tt.taxonomy='category'";
 	if (is_numeric($cat)) {
 		$cat = $wpdb->escape($cat);
-		$where .= " AND tr.term_taxonomy_id=$cat";
+		$where .= " AND tt.term_id=$cat";
 	} 
 
 	$query_string = "SELECT $fields FROM $tables WHERE $where ORDER BY post_date DESC";
