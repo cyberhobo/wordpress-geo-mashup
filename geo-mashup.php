@@ -3,10 +3,10 @@
 Plugin Name: Geo Mashup
 Plugin URI: http://www.cyberhobo.net/downloads/geo-mashup-plugin/
 Description: Adds a Google Maps mashup of geocoded blog posts. Configure in <a href="options-general.php?page=geo-mashup/geo-mashup.php">Options->Geo Mashup</a> after the plugin is activated.
-Version: 1.0.4
+Version: 1.0.5
 Author: Dylan Kuhn
 Author URI: http://www.cyberhobo.net/
-Minimum WordPress Version Required: 2.0
+Minimum WordPress Version Required: 2.3
 */
 
 /*
@@ -244,10 +244,10 @@ class GeoMashup {
 	function list_cats($content, $category = null) {
 		global $wpdb, $geoMashupOpts;
 		if ($category) {
-			$query = "SELECT count(*) FROM {$wpdb->posts} p INNER JOIN {$wpdb->post2cat} pc 
-				ON pc.post_id=p.ID INNER JOIN {$wpdb->postmeta} pm
-				ON pm.post_id=p.ID 
-				WHERE pc.category_id={$category->cat_ID} 
+			$query = "SELECT count(*) FROM {$wpdb->posts} p 
+				INNER JOIN {$wpdb->term_relationships} tr ON tr.object_id=p.ID 
+				INNER JOIN {$wpdb->postmeta} pm ON pm.post_id=p.ID 
+				WHERE tr.term_taxonomy_id={$category->cat_ID} 
 				AND pm.meta_key='_geo_location'
 				AND length(pm.meta_value)>1
 				AND p.post_status='publish'";
@@ -613,7 +613,7 @@ class GeoMashup {
 	 * Emit GeoRSS namespace
 	 */
 	function rss_ns() {
-		echo 'xmlns:georss="http://www.georss.org/georss"';
+		echo 'xmlns:georss="http://www.georss.org/georss" ';
 	}
 
 	/**
