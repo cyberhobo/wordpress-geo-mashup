@@ -214,10 +214,10 @@ var GeoMashup = {
 		}
 	},
 
-	clickCenterMarker : function() {
+	clickMarker : function(post_id) {
 		var center = this.map.getCenter();
-		if (this.locations[center]) {
-			GEvent.trigger(this.locations[center].marker,"click");
+		if (this.posts[post_id]) {
+			GEvent.trigger(this.posts[post_id].marker,"click");
 		}
 	},
 
@@ -254,21 +254,23 @@ var GeoMashup = {
 								GeoMashup.locations[point].posts = new Array();
 								GeoMashup.locations[point].posts.push(post_id);
 								GeoMashup.locations[point].loaded = new Array();
-								GeoMashup.posts[post_id] = true;
+								GeoMashup.posts[post_id] = new Object();
 								var marker = GeoMashup.createMarker(point,response_data[i].title);
+								GeoMashup.posts[post_id].marker = marker;
 								GeoMashup.locations[point].marker = marker;
 								GeoMashup.map.addOverlay(marker);
 							} else {
 								// There is already a marker at this point, add the new post to it
 								GeoMashup.locations[point].posts.push(post_id);
-								GeoMashup.posts[post_id] = true;
+								GeoMashup.posts[post_id] = new Object();
+								GeoMashup.posts[post_id].marker = GeoMashup.locations[point].marker;
 							}
 						}
 					} // end for each marker
 					if (GeoMashup.firstLoad) {
 						GeoMashup.firstLoad = false;
-						if (GeoMashup.opts.autoOpenInfoWindow) {
-							GeoMashup.clickCenterMarker();
+						if (GeoMashup.opts.openPostId) {
+							GeoMashup.clickMarker(GeoMashup.opts.openPostId);
 						}
 					}
 				} // end readystate == 4
@@ -322,6 +324,9 @@ var GeoMashup = {
 			if (posts.length>0) {
 				var point = new GLatLng(posts[0].lat,posts[0].lng);
 				this.map.setCenter(point,this.loadZoom,this.loadType);
+				if (this.opts.autoOpenInfoWindow) {
+					this.opts.openPostId = posts[0].post_id;
+				}
 			} else {
 				this.map.setCenter(new GLatLng(0,0),this.loadZoom,this.loadType);
 			}
