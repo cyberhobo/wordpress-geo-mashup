@@ -3,7 +3,7 @@
 Plugin Name: Geo Mashup
 Plugin URI: http://www.cyberhobo.net/downloads/geo-mashup-plugin/
 Description: Adds a Google Maps mashup of geocoded blog posts. Configure in <a href="options-general.php?page=geo-mashup/geo-mashup.php">Options->Geo Mashup</a> after the plugin is activated.
-Version: 1.0.5
+Version: 1.0.6
 Author: Dylan Kuhn
 Author URI: http://www.cyberhobo.net/
 Minimum WordPress Version Required: 2.3
@@ -223,6 +223,7 @@ class GeoMashup {
 					infoWindowWidth:'.($geoMashupOpts['info_window_width']?$geoMashupOpts['info_window_width']:'false').',
 					infoWindowHeight:'.($geoMashupOpts['info_window_height']?$geoMashupOpts['info_window_height']:'false').',
 					loadZoom:'.($_GET['zoom']?$_GET['zoom']:'null').',
+					openPostId:'.($_GET['openPostId']?$_GET['openPostId']:'null').',
 					autoOpenInfoWindow:'.($geoMashupOpts['auto_info_open']?$geoMashupOpts['auto_info_open']:'false').'});</script>';
 
 			$postdiv = '';
@@ -567,7 +568,7 @@ class GeoMashup {
 	 * A tag to insert a link to a post on the mashup.
 	 */
 	function post_link($text = 'Geo Mashup', $display = true) {
-		global $geoMashupOpts;
+		global $geoMashupOpts,$post;
 		$coords = GeoMashup::post_coordinates();
 		$lat = $coords['lat'];
 		$lng = $coords['lng'];
@@ -579,7 +580,7 @@ class GeoMashup {
 			} else {
 				$url .= '?';
 			}
-			$link = '<a href="'.$url.htmlentities("lat=$lat&lon=$lng")."\">$text</a>";
+			$link = '<a href="'.$url.htmlentities("lat=$lat&lon=$lng&openPostId={$post->ID}")."\">$text</a>";
 			if ($display) {
 				echo $link;
 			} else {
