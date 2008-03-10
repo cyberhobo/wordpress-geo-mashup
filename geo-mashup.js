@@ -72,6 +72,7 @@ var GeoMashup = {
 		for (var i=0; i<pairs.length; i++) {
 			var keyvalue = pairs[i].split('=');
 			obj[keyvalue[0]] = decodeURIComponent(keyvalue[1]);
+			if (obj[keyvalue[0]] == 'false') obj[keyvalue[0]] = false;
 		}
 		return true;
 	},
@@ -109,7 +110,7 @@ var GeoMashup = {
 		for (var i=0; i<items.length; i++) {
 			var link = this.getTagContent(items[i],'link');
 			var url = link;
-			var onclick = 'GeoMashup.saveBackSettings()';
+			var onclick = 'this.target=\'_parent\'; GeoMashup.saveBackSettings()';
 			if (this.opts.showPostHere) {
 				onclick = 'GeoMashup.showPost(\''+url+'\')';
 				url = '#geoPost';
@@ -265,17 +266,14 @@ var GeoMashup = {
 			this.container.innerHTML = '<p class="errormessage">' +
 				'Sorry, the Google Maps script failed to load. Have you entered your ' +
 				'<a href="http://maps.google.com/apis/maps/signup.html">API key<\/a> ' +
-				'in the <a href="' + this.opts.linkDir + 
-				'../../../wp-admin/options-general.php?page=geo-mashup/geo-mashup.php">' +
-				'Geo Mashup Options<\/a>?';
+				'in the Geo Mashup Options?';
 			throw "The Google Maps javascript didn't load.";
 		}
 	},
 
-	clickCenterMarker : function() {
-		var center = this.map.getCenter();
-		if (this.locations[center]) {
-			GEvent.trigger(this.locations[center].marker,"click");
+	clickMarker : function(post_id) {
+		if (this.posts[post_id]) {
+			GEvent.trigger(this.posts[post_id].marker,"click");
 		}
 	},
 
@@ -331,8 +329,9 @@ var GeoMashup = {
 					this.locations[point].posts = new Array();
 					this.locations[point].posts.push(post_id);
 					this.locations[point].loaded = new Array();
-					this.posts[post_id] = true;
+					this.posts[post_id] = new Object();
 					var marker = this.createMarker(point,response_data[i]);
+					this.posts[post_id].marker = marker;
 					this.locations[point].marker = marker;
 					this.marker_manager.addMarker(marker,this.opts.markerMinZoom);
 				} else {
@@ -340,7 +339,8 @@ var GeoMashup = {
 					this.locations[point].posts.push(post_id);
 					//this.locations[point].marker.setImage(this.opts.linkDir + '/images/mm_20_plus.png');
 					this.locations[point].marker.getIcon().image = this.opts.linkDir + '/images/mm_20_plus.png';
-					this.posts[post_id] = true;
+					this.posts[post_id] = new Object();
+					this.posts[post_id].marker = this.locations[point].marker;
 				}
 			}
 		} // end for each marker
@@ -349,8 +349,8 @@ var GeoMashup = {
 				
 		if (this.firstLoad) {
 			this.firstLoad = false;
-			if (this.opts.autoOpenInfoWindow) {
-				this.clickCenterMarker();
+			if (this.opts.openPostId) {
+				this.clickMarker(this.opts.openPostId);
 			}
 		}
 	},
@@ -435,9 +435,23 @@ var GeoMashup = {
 			opts.mapType = G_NORMAL_MAP;
 		}
 
+		if (opts.loadKml)
+		{
+			this.kml = new GGeoXml(opts.loadKml);
+			this.map.addOverlay(this.kml);
+		}
+
 		if (opts.lat && opts.lng) {
 			// Use the center form options
 			this.map.setCenter(new GLatLng(opts.lat, opts.lng), opts.zoom, opts.mapType);
+		} else if (this.kml) {
+			this.map.setCenter(this.kml.getDefaultCenter, opts.zoom, opts.mapType);
+		} else if (opts.postData && opts.postData.posts[0]) {
+			var center_latlng = new GLatLng(opts.postData.posts[0].lat, opts.postData.posts[0].lng);
+			this.map.setCenter(center_latlng, opts.zoom, opts.mayType);
+			if (this.opts.autoOpenInfoWindow) {
+				this.opts.openPostId = opts.postData.posts[0].post_id;
+			}
 		} else {
 			// Center on the most recent located post
 			var request = GXmlHttp.create();
@@ -451,6 +465,9 @@ var GeoMashup = {
 			if (posts.length>0) {
 				var point = new GLatLng(posts[0].lat,posts[0].lng);
 				this.map.setCenter(point,opts.zoom,opts.mapType);
+				if (this.opts.autoOpenInfoWindow) {
+					this.opts.openPostId = posts[0].post_id;
+				}
 			} else {
 				this.map.setCenter(new GLatLng(0,0),opts.zoom,opts.mapType);
 			}
@@ -458,11 +475,26 @@ var GeoMashup = {
 
 		GEvent.bind(this.map, "zoomend", this, this.adjustZoom);
 
-		// Request posts near visible range first?
-		this.requestPosts(true);
+		this.marker_manager = new GMarkerManager(this.map);
+		if (opts.inPost)
+		{
+			if (opts.lat && opts.lng && !this.kml)
+			{
+				this.map.addOverlay(new GMarker(new GLatLng(this.opts.lat,this.opts.lng)));
+			}
+		}
+		else if (opts.postData)
+		{
+			this.addPosts(opts.postData.posts,true);
+		}
+		else
+		{
+			// Request posts near visible range first
+			this.requestPosts(true);
 
-		// Request all posts
-		this.requestPosts(false);
+			// Request all posts
+			this.requestPosts(false);
+		}
 
 		if (opts.mapControl == 'GSmallZoomControl') {
 			this.map.addControl(new GSmallZoomControl());
@@ -473,6 +505,7 @@ var GeoMashup = {
 		}
 		
 		if (opts.addMapTypeControl) {
+			this.map.addMapType(G_PHYSICAL_MAP);
 			this.map.addControl(new GMapTypeControl());
 		}
 
@@ -493,7 +526,6 @@ var GeoMashup = {
 			customizeGeoMashup(this);
 		}
 
-		this.marker_manager = new GMarkerManager(this.map);
 	},
 		
 	saveBackSettings : function() {
