@@ -41,7 +41,14 @@ var GeoMashupAdmin = {
 
 		this.name_textbox = document.getElementById("geo_mashup_location_name");
 		this.search_textbox = document.getElementById("geo_mashup_search");
+		this.saved_select = document.getElementById("geo_mashup_select");
 		this.location_input = document.getElementById("geo_mashup_location");
+
+		for each (saved_location in this.opts.saved_locations)
+		{
+			var selected = (this.opts.post_location_name == saved_location.name);
+			this.saved_select.add(new Option(saved_location.name.replace(/\\/g,''),saved_location.name,false,selected),null);
+		}
 
 		this.map = new GMap2(container,{draggableCursor:'pointer'});
 		this.map.setCenter(new GLatLng(0,0),1);
@@ -49,12 +56,28 @@ var GeoMashupAdmin = {
 		this.map.addControl(new GMapTypeControl());
 		this.map.enableContinuousZoom();
 
+		if (opts.kml_url) {
+			this.loadKml(opts.kml_url);
+		}
 		if (opts.post_lat && opts.post_lng) {
 			var latlng = new GLatLng(opts.post_lat, opts.post_lng);
 			this.addSelectedMarker(latlng,opts.post_location_name);
 		}
 
 		GEvent.bind(this.map,'click',this,this.onclick);
+	},
+  
+	onKmlLoad : function() {
+		if (!(this.opts.post_lat && this.opts.post_lng)) {
+			var latlng = this.kml.getDefaultCenter();
+			this.addSelectedMarker(latlng, this.opts.post_location_name);
+			this.search_textbox.value = latlng.lat() + ',' + latlng.lng();
+		}
+	},
+
+	loadKml : function(kml_url) {
+		this.kml = new GGeoXml(kml_url, function () { GeoMashupAdmin.onKmlLoad(); });
+		this.map.addOverlay(this.kml);
 	},
 
 	onclick : function(overlay, latlng) {
@@ -65,6 +88,17 @@ var GeoMashupAdmin = {
 			this.search_textbox.value = latlng.lat() + ',' + latlng.lng();
 		}
 	},
+  
+	onSelectChange : function(select) {
+		if  (select.selectedIndex > 0) {
+			var option = select.options[select.selectedIndex];
+			var saved_location = this.opts.saved_locations[option.value];
+			if (saved_location) {
+				var latlng = new GLatLng(saved_location.lat, saved_location.lng);
+				this.addSelectedMarker(latlng, saved_location.name);
+			}
+		}
+  },
 
 	setBusy : function(is_busy) {
 		if (is_busy) {
