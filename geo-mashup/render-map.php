@@ -53,12 +53,14 @@ if ($post)
 
 $width = $_GET['width'];
 if (!is_numeric($width)) { 
-	$width = $geo_mashup_opts['map_width'];
+	if (is_page($post)) $width = $geo_mashup_opts['in_post_map_width'];
+	else $width = $geo_mashup_opts['map_width'];
 }
 $height = $_GET['height'];
 if (!is_numeric($height))
 {
-	$height = $geo_mashup_opts['map_height'];
+	if (is_page($post)) $height = $geo_mashup_opts['in_post_map_height'];
+	else $height = $geo_mashup_opts['map_height'];
 }
 
 $category_select = "SELECT * 
@@ -97,7 +99,7 @@ $map_opts['categoryOpts'] = $category_opts;
 		<script src="http://maps.google.com/maps?file=api&amp;v=2&amp;key=<?php echo $geo_mashup_opts['google_key'];?>" 
 						type="text/javascript"></script>
 		<?php if (is_readable('custom.js')): ?>
-		<script src="<?php echo $packed; ?>custom.js" type="text/javascript"></script>
+		<script src="custom.js" type="text/javascript"></script>
 		<?php endif; ?>
 		<script src="<?php echo $packed; ?>geo-mashup.js" type="text/javascript"></script>
 		<?php if (is_readable('map-style.css')): ?>
