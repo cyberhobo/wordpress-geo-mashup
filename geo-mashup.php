@@ -2,7 +2,7 @@
 /*
 Plugin Name: Geo Mashup
 Plugin URI: http://www.cyberhobo.net/downloads/geo-mashup-plugin/
-Description: Adds a Google Maps mashup of geocoded blog posts. Configure in <a href="options-general.php?page=geo-mashup/geo-mashup.php">Options->Geo Mashup</a> after the plugin is activated.
+Description: Tools for adding maps to your blog, and plotting posts on a master map. Configure in <a href="options-general.php?page=geo-mashup/geo-mashup.php">Options->Geo Mashup</a> after the plugin is activated.
 Version: 1.1b3
 Author: Dylan Kuhn
 Author URI: http://www.cyberhobo.net/
@@ -337,13 +337,17 @@ class GeoMashup {
 	function map($option_args = null)
 	{
 		global $geoMashupOpts,$post;
-		$options = array('width' => $geoMashupOpts['map_width'], 'height' => $geoMashupOpts['map_height']);
+		$options = array('width' => $geoMashupOpts['in_post_map_width'], 'height' => $geoMashupOpts['in_post_map_height']);
 		if ($post)
 		{
 			$options['postID'] = $post->ID;
-			if (is_page() && isset($_SERVER['QUERY_STRING'])) {
-				$querystring_options = GeoMashup::explode_assoc('=','&',$_SERVER['QUERY_STRING']);
-				$options = $querystring_options + $options;
+			if (is_page()) {
+				$options['width'] = $geoMashupOpts['map_width']; 
+				$options['height'] = $geoMashupOpts['map_height'];
+				if (isset($_SERVER['QUERY_STRING'])) {
+					$querystring_options = GeoMashup::explode_assoc('=','&',$_SERVER['QUERY_STRING']);
+					$options = $querystring_options + $options;
+				}
 			} 
 		}
 		
@@ -476,9 +480,10 @@ class GeoMashup {
 
 		if (isset($_POST['submit'])) {
 			// Process option updates
-			$geoMashupOpts['include_style'] = 'false';
 			$geoMashupOpts['add_map_type_control'] = 'false';
+			$geoMashupOpts['in_post_add_map_type_control'] = 'false';
 			$geoMashupOpts['add_overview_control'] = 'false';
+			$geoMashupOpts['in_post_add_overview_control'] = 'false';
 			$geoMashupOpts['add_category_links'] = 'false';
 			$geoMashupOpts['show_post'] = 'false';
 			$geoMashupOpts['use_packed'] = 'false';
@@ -492,13 +497,13 @@ class GeoMashup {
 		}
 
 		// Add defaults for missing options
-		if (!isset($geoMashupOpts['include_style'])) {
-			$geoMashupOpts['include_style'] = 'true';
+		if (!isset($geoMashupOpts['map_width'])) {
 			$geoMashupOpts['map_width'] = '400';
 			$geoMashupOpts['map_height'] = '500';
-			$geoMashupOpts['info_window_width'] = '300';
-			$geoMashupOpts['info_window_height'] = '175';
-			$geoMashupOpts['font_size'] = '75';
+			$geoMashupOpts['in_post_map_width'] = '400';
+			$geoMashupOpts['in_post_map_height'] = '500';
+			$geoMashupOpts['in_post_map_width'] = '400';
+			$geoMashupOpts['in_post_map_height'] = '500';
 			$geoMashupOpts['excerpt_format'] = 'text';
 			$geoMashupOpts['excerpt_length'] = '250';
 			$geoMashupOpts['add_category_links'] = 'false';
@@ -509,7 +514,13 @@ class GeoMashup {
 			if (!isset($geoMashupOpts['map_control'])) {
 				$geoMashupOpts['map_control'] = 'GSmallMapControl';
 			}
+			if (!isset($geoMashupOpts['in_post_map_control'])) {
+				$geoMashupOpts['map_control'] = 'GSmallMapControl';
+			}
 			if (!isset($geoMashupOpts['add_map_type_control'])) {
+				$geoMashupOpts['add_map_type_control'] = 'true';
+			}
+			if (!isset($geoMashupOpts['in_post_add_map_type_control'])) {
 				$geoMashupOpts['add_map_type_control'] = 'true';
 			}
 			if (!isset($geoMashupOpts['auto_info_open'])) {
@@ -584,8 +595,14 @@ class GeoMashup {
 				$selected = ' selected="true"';
 			}
 			$mapTypeOptions .= '<option value="'.$type.'"'.$selected.'>'.$label."</option>\n";
+			$in_post_selected = "";
+			if ($type == $geoMashupOpts['in_post_map_type']) {
+				$in_post_selected = ' selected="true"';
+			}
+			$inPostMapTypeOptions .= '<option value="'.$type.'"'.$in_post_selected.'>'.$label."</option>\n";
 		}
 		$mapControlOptions = "";
+		$inPostMapControlOptions = "";
 		$mapControls = Array(
 			'GSmallZoomControl' => __('Small Zoom', 'GeoMashup'),
 			'GSmallMapControl' => __('Small Pan/Zoom', 'GeoMashup'),
@@ -596,12 +613,11 @@ class GeoMashup {
 				$selected = ' selected="true"';
 			}
 			$mapControlOptions .= '<option value="'.$type.'"'.$selected.'>'.$label."</option>\n";
-		}
-
-		if ($geoMashupOpts['include_style'] == 'true') {
-			$styleChecked = ' checked="true"';
-		} else {
-			$styleChecked = '';
+			$in_post_selected = "";
+			if ($type == $geoMashupOpts['in_post_map_control']) {
+				$in_post_select = ' selected="true"';
+			}
+			$inPostMapControlOptions .= '<option value="'.$type.'"'.$in_post_selected.'>'.$label."</option>\n";
 		}
 
 		if ($geoMashupOpts['add_map_type_control'] == 'true') {
@@ -610,10 +626,22 @@ class GeoMashup {
 			$mapTypeChecked = '';
 		}
 
+		if ($geoMashupOpts['in_post_add_map_type_control'] == 'true') {
+			$inPostMapTypeChecked = ' checked="true"';
+		} else {
+			$inPostMapTypeChecked = '';
+		}
+
 		if ($geoMashupOpts['add_overview_control'] == 'true') {
 			$overviewChecked = ' checked="true"';
 		} else {
 			$overviewmapChecked = '';
+		}
+
+		if ($geoMashupOpts['in_post_add_overview_control'] == 'true') {
+			$inPostOverviewChecked = ' checked="true"';
+		} else {
+			$inPostOverviewmapChecked = '';
 		}
 
 		if ($geoMashupOpts['add_category_links'] == 'true') {
@@ -656,9 +684,9 @@ class GeoMashup {
 		echo '
 		<div class="wrap">
 			<form method="post">
-				<h2>'.__('Geo Mashup Options', 'GeoMashup').'</h2>
+				<h2>'.__('Geo Mashup Plugin Options', 'GeoMashup').'</h2>
 				<fieldset>
-					<legend>'.__('Behavior', 'GeoMashup').'</legend>
+					<legend>'.__('Overall Settings', 'GeoMashup').'</legend>
 					<table width="100%" cellspacing="2" cellpadding="5" class="editform">
 						<tr>
 							<th width="33%" scope="row">'.__('Google Maps Key', 'GeoMashup').'</th>
@@ -666,7 +694,46 @@ class GeoMashup {
 							<a href="http://maps.google.com/apis/maps/signup.html">'.__('Get yours here', 'GeoMashup').'</a></td>
 						</tr>
 						<tr>
-							<th scope="row">'.__('Mashup Page', 'GeoMashup').'</th>
+							<th scope="row">'.__('Use Compressed Javascript', 'GeoMashup').'</th>
+							<td><input id="use_packed" name="use_packed" type="checkbox" value="true"'.$usePackedChecked.' /></td>
+						</tr>
+					</table>
+				</fieldset>
+				<fieldset>
+					<legend>'.__('Default Settings For Maps Inside Posts', 'GeoMashup').'</legend>
+					<table width="100%" cellspacing="2" cellpadding="5" class="editform">
+						<tr>
+							<th scope="row">'.__('Map Control', 'GeoMashup').'</th>
+							<td>
+								<select id="in_post_map_control" name="in_post_map_control">'.$inPostMapControlOptions.'</select>
+							</td>
+						</tr>
+						<tr>
+							<th scope="row">'.__('Add Map Type Control', 'GeoMashup').'</th>
+							<td><input id="in_post_add_map_type_control" name="in_post_add_map_type_control" type="checkbox" value="true"'.$inPostMapTypeChecked.' /></td>
+						</tr>
+						<tr>
+							<th scope="row">'.__('Add Overview Control', 'GeoMashup').'</th>
+							<td><input id="in_post_add_overview_control" name="in_post_add_overview_control" type="checkbox" value="true"'.$inPostOverviewChecked.' /></td>
+						</tr>
+						<tr>
+							<th scope="row">'.__('Default Map Type', 'GeoMashup').'</th>
+							<td>
+								<select id="in_post_map_type" name="in_post_map_type">'.$inPostMapTypeOptions.'</select>
+							</td>
+						</tr>
+						<tr>
+							<th scope="row">'.__('Default Zoom Level', 'GeoMashup').'</th>
+							<td><input id="in_post_zoom_level" name="in_post_zoom_level" type="text" size="2" value="'.$geoMashupOpts['in_post_zoom_level'].'" />'.
+							__('0 (max zoom out) - 17 (max zoom in)', 'GeoMashup').'</td>
+						</tr>
+					</table>
+				</fieldset>
+				<fieldset>
+					<legend>'.__('Default Settings For The Global Map', 'GeoMashup').'</legend>
+					<table width="100%" cellspacing="2" cellpadding="5" class="editform">
+						<tr>
+							<th scope="row" title="'.__('Generated links go here','GeoMashup').'">'.__('Global Mashup Page', 'GeoMashup').'</th>
 							<td>
 								<select id="mashup_page" name="mashup_page">'.$pageSlugOptions.'</select>
 							</td>
@@ -711,22 +778,13 @@ class GeoMashup {
 							<td><input id="show_future" name="show_future" type="checkbox" value="true"'.$showFutureChecked.' /></td>
 						</tr>
 						<tr>
-							<th scope="row">'.__('Automatically Open the Center Info Window', 'GeoMashup').'</th>
+							<th scope="row">'.__('Automatically Open Linked Post Info Window', 'GeoMashup').'</th>
 							<td><input id="auto_info_open" name="auto_info_open" type="checkbox" value="true"'.$autoInfoOpenChecked.' /></td>
 						</tr>
 						<tr>
 							<th scope="row">'.__('Enable Full Post Display', 'GeoMashup').'</th>
 							<td><input id="show_post" name="show_post" type="checkbox" value="true"'.$showPostChecked.' /></td>
 						</tr>
-						<tr>
-							<th scope="row">'.__('Use Compressed Javascript', 'GeoMashup').'</th>
-							<td><input id="use_packed" name="use_packed" type="checkbox" value="true"'.$usePackedChecked.' /></td>
-						</tr>
-					</table>
-				</fieldset>
-				<fieldset>
-					<legend>'.__('Categories', 'GeoMashup').'</legend>
-					<table width="100%" cellspacing="2" cellpadding="5" class="editform">
 						<tr>
 							<th scope="row">'.__('Add Category Links', 'GeoMashup').'</th>
 							<td><input id="add_category_links" name="add_category_links" type="checkbox" value="true"'.$categoryLinksChecked.' /></td>
@@ -762,29 +820,20 @@ class GeoMashup {
 							<td><input id="excerpt_length" name="excerpt_length" type="text" size="5" value="'.$geoMashupOpts['excerpt_length'].'" /></td>
 						</tr>
 						<tr>
-							<th width="33%" scope="row">'.__('Include style settings', 'GeoMashup').'</th>
-							<td><input id="include_style" name="include_style" type="checkbox" value="true"'.$styleChecked.' />'.
-							__(' (Uncheck to use styles from your theme stylesheet instead of these)', 'GeoMashup').'</td>
-						</tr>
-						<tr>
-							<th scope="row">'.__('Map Width', 'GeoMashup').'</th>
+							<th scope="row">'.__('Global Map Width', 'GeoMashup').'</th>
 							<td><input id="map_width" name="map_width" type="text" size="5" value="'.$geoMashupOpts['map_width'].'" />'.__('px', 'GeoMashup').'</td>
 						</tr>
 						<tr>
-							<th scope="row">'.__('Map Height', 'GeoMashup').'</th>
+							<th scope="row">'.__('Global Map Height', 'GeoMashup').'</th>
 							<td><input id="map_height" name="map_height" type="text" size="5" value="'.$geoMashupOpts['map_height'].'" />'.__('px', 'GeoMashup').'</td>
 						</tr>
 						<tr>
-							<th scope="row">'.__('Info Window Width', 'GeoMashup').'</th>
-							<td><input id="info_window_width" name="info_window_width" type="text" size="5" value="'.$geoMashupOpts['info_window_width'].'" />'.__('px', 'GeoMashup').'</td>
+							<th scope="row">'.__('In-Post Map Width', 'GeoMashup').'</th>
+							<td><input id="in_post_map_width" name="in_post_map_width" type="text" size="5" value="'.$geoMashupOpts['in_post_map_width'].'" />'.__('px', 'GeoMashup').'</td>
 						</tr>
 						<tr>
-							<th scope="row">'.__('Info Window Height', 'GeoMashup').'</th>
-							<td><input id="info_window_height" name="info_window_height" type="text" size="5" value="'.$geoMashupOpts['info_window_height'].'" />'.__('px', 'GeoMashup').'</td>
-						</tr>
-						<tr>
-							<th scope="row">'.__('Info Window Font Size', 'GeoMashup').'</th>
-							<td><input id="font_size" name="font_size" type="text" size="5" value="'.$geoMashupOpts['font_size'].'" />%</td>
+							<th scope="row">'.__('In-Post Map Height', 'GeoMashup').'</th>
+							<td><input id="in_post_map_height" name="in_post_map_height" type="text" size="5" value="'.$geoMashupOpts['in_post_map_height'].'" />'.__('px', 'GeoMashup').'</td>
 						</tr>
 					</table>
 				</fieldset>
