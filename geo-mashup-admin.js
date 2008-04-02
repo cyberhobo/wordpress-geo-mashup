@@ -44,10 +44,13 @@ var GeoMashupAdmin = {
 		this.saved_select = document.getElementById("geo_mashup_select");
 		this.location_input = document.getElementById("geo_mashup_location");
 
-		for each (saved_location in this.opts.saved_locations)
+		for (location_name in this.opts.saved_locations)
 		{
-			var selected = (this.opts.post_location_name == saved_location.name);
-			this.saved_select.add(new Option(saved_location.name.replace(/\\/g,''),saved_location.name,false,selected),null);
+			if (typeof(location_name) == 'string')
+			{
+				var selected = (this.opts.post_location_name == location_name);
+				this.saved_select.options[this.saved_select.options.length] = new Option(location_name.replace(/\\/g,''),location_name,false,selected);
+			}
 		}
 
 		this.map = new GMap2(container,{draggableCursor:'pointer'});
@@ -147,10 +150,11 @@ var GeoMashupAdmin = {
 			this.map.clearOverlays();
 			this.selected_marker = null;
 			this.location_input.value = '';
+			var latlng;
 			if (search_text.match(/^[-\d\.\s]*,[-\d\.\s]*$/)) {
 				// Coordinates
 				var latlng_array = search_text.split(',');
-				var latlng = new GLatLng(latlng_array[0],latlng_array[1]);
+				latlng = new GLatLng(latlng_array[0],latlng_array[1]);
 				this.addSelectedMarker(latlng);
 			} else if (search_text.match(/\d/) || search_text.match(',')) {
 				// Address
@@ -162,7 +166,7 @@ var GeoMashupAdmin = {
 				var saved_locations_key = search_text.replace("'","\\'");
 				if (this.opts.saved_locations[saved_locations_key]) {
 					// Saved location
-					var latlng = new GLatLng(this.opts.saved_locations[saved_locations_key].lat,this.opts.saved_locations[saved_locations_key].lng);
+					latlng = new GLatLng(this.opts.saved_locations[saved_locations_key].lat,this.opts.saved_locations[saved_locations_key].lng);
 					this.addSelectedMarker(latlng,search_text);
 				} else {
 					// Location name search
