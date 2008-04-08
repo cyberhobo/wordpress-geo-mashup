@@ -266,11 +266,12 @@ class GeoMashup {
 			INNER JOIN $wpdb->posts p
 			ON pm.post_id = p.ID";
 		$where = 'meta_key=\'_geo_location\''.
-			' AND post_status=\'publish\''.
 			' AND length(meta_value)>1';
 
-		if ($query_args['show_future'] != 'true') {
-			$where .= ' AND post_date_gmt<DATE_ADD(\'1970-01-01\', INTERVAL UNIX_TIMESTAMP() SECOND )';
+		if ($query_args['show_future'] == 'true') {
+			$where .= ' AND post_status=\'publish\'';
+		} else {
+			$where .= ' AND post_status in (\'publish\',\'future\')';
 		}
 
 		// Ignore nonsense bounds
@@ -294,7 +295,7 @@ class GeoMashup {
 			$where .= " AND tt.term_id=$cat";
 		} 
 
-		$query_string = "SELECT $fields FROM $tables WHERE $where ORDER BY post_date DESC";
+		$query_string = "SELECT $fields FROM $tables WHERE $where ORDER BY post_status ASC, post_date DESC";
 
 		$all = 'true';
 		if (!($query_args['minlat'] && $query_args['maxlat'] && $query_args['minlon'] && $query_args['maxlon']) && !$query_args['limit']) {
@@ -888,7 +889,7 @@ class GeoMashup {
 			} else {
 				$url .= '?';
 			}
-			$link = '<a href="'.$url.htmlentities("lat=$lat&lng=$lng&openPostId={$post->ID}").'">'.$icon.' '.$options['text'].'</a>';
+			$link = '<a class="geo_mashup_link" href="'.$url.htmlentities("lat=$lat&lng=$lng&openPostId={$post->ID}").'">'.$icon.' '.$options['text'].'</a>';
 			if ($options['display']) {
 				echo $link;
 				return true;
