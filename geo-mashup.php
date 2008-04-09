@@ -549,8 +549,24 @@ class GeoMashup {
 
 		// Create marker and color arrays
 		$link_url = get_bloginfo('wpurl')."/wp-content/plugins/geo-mashup";
-		$colorNames = Array('aqua','black','blue','fuchsia','gray','green','lime','maroon','navy',
-			'olive','orange','purple','red','silver','teal','white','yellow');
+		$colorNames = Array(
+			'aqua' => '#00ffff',
+			'black' => '#000000',
+			'blue' => '#0000ff',
+			'fuchsia' => '#ff00ff',
+			'gray' => '#808080',
+			'green' => '#008000',
+			'lime' => '#00ff00',
+			'maroon' => '#800000',
+			'navy' => '#000080',
+			'olive' => '#808000',
+			'orange' => '#ffa500',
+			'purple' => '#800080',
+			'red' => '#ff0000',
+			'silver' => '#c0c0c0',
+			'teal' => '#008080',
+			'white' => '#ffffff',
+			'yellow' => '#ffff00');
 		
 		// Create category table
 		$categoryTable = '
@@ -566,13 +582,13 @@ class GeoMashup {
 		{
 			foreach($categories as $category) {
 				$colorOptions = '';
-				foreach($colorNames as $color) {
-					$colorOptions .= '<option value="'.$color.'"';
+				foreach($colorNames as $name => $rgb) {
+					$colorOptions .= '<option value="'.$rgb.'"';
 					if ($color == $geoMashupOpts['category_color'][$category->slug]) {
 						$colorOptions .= ' selected="true"';
 					}
-					$colorOptions .= ' style="background-color:'.$color.'">'.
-						__($color,'GeoMashup').'</option>';
+					$colorOptions .= ' style="background-color:'.$rgb.'">'.
+						__($name,'GeoMashup').'</option>';
 				}
 				$categoryTable .= '<tr><td>' . $category->name . '</td><td><select id="category_color_' .
 					$category->slug . '" name="category_color[' . $category->slug . ']">'.$colorOptions.
