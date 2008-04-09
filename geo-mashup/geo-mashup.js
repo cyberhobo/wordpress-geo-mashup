@@ -24,7 +24,24 @@ var GeoMashup = {
 	categories : {},
 	category_count : 0,
 	errors : [],
-	colors : ['red','lime','blue','orange','yellow','aqua','green','silver','maroon','olive','navy','purple','gray','teal','fuchsia','white','black'],
+	colors : [
+		{name:'red',rgb:'#ff0000'},
+	  {name:'lime',rgb:'#00ff00'},
+		{name:'blue',rgb:'#0000ff'},
+		{name:'orange',rgb:'#ffa500'},
+		{name:'yellow',rgb:'#ffff00'},
+		{name:'aqua',rgb:'#00ffff'},
+		{name:'green',rgb:'#008000'},
+		{name:'silver',rgb:'#c0c0c0'},
+		{name:'maroon',rgb:'#800000'},
+		{name:'olive',rgb:'#808000'},
+		{name:'navy',rgb:'#000080'},
+		{name:'purple',rgb:'#800080'},
+		{name:'gray',rgb:'#808080'},
+		{name:'teal',rgb:'#008080'},
+		{name:'fuchsia',rgb:'#ff00ff'},
+		{name:'white',rgb:'#ffffff'},
+		{name:'black',rgb:'#000000'}],
 	firstLoad : true,
 
 	registerMap : function(container, opts) {
@@ -90,11 +107,11 @@ var GeoMashup = {
 		return str.join('');
 	},
 
-	getTagContent : function (parent, tag, default_value) {
+	getTagContent : function (container, tag, default_value) {
 		if (!default_value) {
 			default_value = '';
 		}
-		var children = parent.getElementsByTagName(tag);
+		var children = container.getElementsByTagName(tag);
 		if (children.length > 0 && children[0].firstChild) {
 			return children[0].firstChild.nodeValue;
 		} else {
@@ -139,7 +156,7 @@ var GeoMashup = {
 
 	showCategoryInfo : function() {
 		var legend_html = ['<table>'];
-		var legend_element = document.getElementById("geoMashupCategoryLegend");
+		var legend_element = parent.document.getElementById("geoMashupCategoryLegend");
 		for (category in this.categories) {
 			this.categories[category].line = new GPolyline(this.categories[category].points, 
 				this.categories[category].color);
@@ -164,7 +181,7 @@ var GeoMashup = {
 		if (this.showing_url == url) {
 			return false;
 		}
-		var geoPost = document.getElementById('geoPost');
+		var geoPost = parent.document.getElementById('geoPost');
 		if (!geoPost) {
 			this.opts.showPostHere = false;
 			return false;
@@ -242,16 +259,18 @@ var GeoMashup = {
 					}
 				} // end if not loaded
 			} // end location posts loop
-			var html = GeoMashup.renderRss(GeoMashup.locations[point].xmlDoc);
-			GeoMashup.map.closeInfoWindow();
 			var info_window_opts = {};
+			var html = GeoMashup.renderRss(GeoMashup.locations[point].xmlDoc);
+			info_window_opts.maxContent = '<iframe src="http://www.cyberhobo.net/test/" width="100%" height="100%"></iframe>';
+			info_window_opts.maxTitle = 'Test Max';
+			GeoMashup.map.closeInfoWindow();
 			if (GeoMashup.opts.infoWindowWidth) info_window_opts.maxWidth = GeoMashup.opts.infoWindowWidth;
 			if (GeoMashup.opts.infoWindowHeight) info_window_opts.maxHeight = GeoMashup.opts.infoWindowHeight;
 			marker.openInfoWindowHtml(html,info_window_opts);
 		}); // end marker infowindowopen
 
 		GEvent.addListener(marker, 'infowindowclose', function() {
-			var geoPost = document.getElementById('geoPost');
+			var geoPost = parent.document.getElementById('geoPost');
 			if (geoPost && geoPost.firstChild) {
 				geoPost.removeChild(geoPost.firstChild);
 				GeoMashup.showing_url = '';
@@ -283,7 +302,7 @@ var GeoMashup = {
 			if (this.opts.categoryOpts[category].color_name) {
 				color = this.opts.categoryOpts[category].color_name;
 			} else {
-				color = this.colors[this.category_count%this.colors.length];
+				color = this.colors[this.category_count%this.colors.length].rgb;
 			}
 			icon = new GIcon(this.base_color_icon);
 			icon.image = this.opts.linkDir + '/images/mm_20_' + color + '.png';
