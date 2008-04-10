@@ -383,8 +383,8 @@ var GeoMashup = {
 			var map_span = map_bounds.toSpan();
 			url += '&minlat=' + (map_bounds.getSouthWest().lat() - map_span.lat()) + 
 				'&minlon=' + (map_bounds.getSouthWest().lng() - map_span.lng()) + 
-				'&maxlat=' + (map_bounds.getNorthEast().lat() + map_span.lat()) + 
-				'&maxlon=' + (map_bounds.getNorthEast().lng() + map_span.lat());
+				'&maxlat=' + (map_bounds.getSouthWest().lat() + 3*map_span.lat()) + 
+				'&maxlon=' + (map_bounds.getSouthWest().lng() + 3*map_span.lat());
 		}
 		if (this.opts.map_cat) {
 			url += '&cat=' + GeoMashup.opts.map_cat;
