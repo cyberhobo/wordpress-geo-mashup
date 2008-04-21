@@ -339,19 +339,11 @@ class GeoMashup {
 	{
 		global $geoMashupOpts,$post;
 		$options = array('width' => $geoMashupOpts['in_post_map_width'], 'height' => $geoMashupOpts['in_post_map_height']);
-		if ($post)
-		{
-			$options['postID'] = $post->ID;
-			if (is_page()) {
-				$options['width'] = $geoMashupOpts['map_width']; 
-				$options['height'] = $geoMashupOpts['map_height'];
-				if (isset($_SERVER['QUERY_STRING'])) {
-					$querystring_options = GeoMashup::explode_assoc('=','&',$_SERVER['QUERY_STRING']);
-					$options = $querystring_options + $options;
-				}
-			} 
-		}
-		
+		if (is_page() && isset($_SERVER['QUERY_STRING'])) {
+			$querystring_options = GeoMashup::explode_assoc('=','&',$_SERVER['QUERY_STRING']);
+			$options = $querystring_options + $options;
+		} 
+	
 		if (is_array($option_args))
 		{	
 			$options = $option_args + $options;
@@ -361,6 +353,9 @@ class GeoMashup {
 			$options = GeoMashup::explode_assoc('=',':',$option_args) + $options;
 		}
 
+		if ($options['contextual'] != 'true') {
+			$options['postID'] = $post->ID;
+		}
 		$iframe_src = get_bloginfo('wpurl').'/wp-content/plugins/geo-mashup/render-map.php?'.GeoMashup::implode_assoc('=','&',$options,false,true);
 		return "<div class=\"geo_mashup_map\"><iframe src=\"{$iframe_src}\" height=\"{$options['height']}\" ".
 			"width=\"{$options['width']}\" marginheight=\"0\" marginwidth=\"0\" ".
@@ -583,8 +578,8 @@ class GeoMashup {
 			foreach($categories as $category) {
 				$colorOptions = '';
 				foreach($colorNames as $name => $rgb) {
-					$colorOptions .= '<option value="'.$rgb.'"';
-					if ($color == $geoMashupOpts['category_color'][$category->slug]) {
+					$colorOptions .= '<option value="'.$name.'"';
+					if ($name == $geoMashupOpts['category_color'][$category->slug]) {
 						$colorOptions .= ' selected="true"';
 					}
 					$colorOptions .= ' style="background-color:'.$rgb.'">'.

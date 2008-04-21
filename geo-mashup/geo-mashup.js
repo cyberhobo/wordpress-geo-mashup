@@ -24,24 +24,25 @@ var GeoMashup = {
 	categories : {},
 	category_count : 0,
 	errors : [],
-	colors : [
-		{name:'red',rgb:'#ff0000'},
-	  {name:'lime',rgb:'#00ff00'},
-		{name:'blue',rgb:'#0000ff'},
-		{name:'orange',rgb:'#ffa500'},
-		{name:'yellow',rgb:'#ffff00'},
-		{name:'aqua',rgb:'#00ffff'},
-		{name:'green',rgb:'#008000'},
-		{name:'silver',rgb:'#c0c0c0'},
-		{name:'maroon',rgb:'#800000'},
-		{name:'olive',rgb:'#808000'},
-		{name:'navy',rgb:'#000080'},
-		{name:'purple',rgb:'#800080'},
-		{name:'gray',rgb:'#808080'},
-		{name:'teal',rgb:'#008080'},
-		{name:'fuchsia',rgb:'#ff00ff'},
-		{name:'white',rgb:'#ffffff'},
-		{name:'black',rgb:'#000000'}],
+	color_names : ['red','lime','blue','orange','yellow','aqua','green','silver','maroon','olive','navy','purple','gray','teal','fuchsia','white','black'],
+	colors : {
+		'red':'#ff0000',
+	  'lime':'#00ff00',
+		'blue':'#0000ff',
+		'orange':'#ffa500',
+		'yellow':'#ffff00',
+		'aqua':'#00ffff',
+		'green':'#008000',
+		'silver':'#c0c0c0',
+		'maroon':'#800000',
+		'olive':'#808000',
+		'navy':'#000080',
+		'purple':'#800080',
+		'gray':'#808080',
+		'teal':'#008080',
+		'fuchsia':'#ff00ff',
+		'white':'#ffffff',
+		'black':'#000000'},
 	firstLoad : true,
 
 	registerMap : function(container, opts) {
@@ -298,14 +299,15 @@ var GeoMashup = {
 
 	extendCategory : function(point, category) {
 		if (!this.categories[category]) {
-			var icon, color;
+			var icon, color, color_name;
 			if (this.opts.categoryOpts[category].color_name) {
-				color = this.opts.categoryOpts[category].color_name;
+				color_name = this.opts.categoryOpts[category].color_name;
 			} else {
-				color = this.colors[this.category_count%this.colors.length].rgb;
+				color_name = this.colors[this.category_count%this.colors.length].name;
 			}
+			color = this.colors[color_name];
 			icon = new GIcon(this.base_color_icon);
-			icon.image = this.opts.linkDir + '/images/mm_20_' + color + '.png';
+			icon.image = this.opts.linkDir + '/images/mm_20_' + color_name + '.png';
 			this.categories[category] = {
 				icon : icon,
 				points : [point],
