@@ -1008,7 +1008,7 @@ add_action('rss2_ns', array('GeoMashup', 'rss_ns'));
 add_action('atom_ns', array('GeoMashup', 'rss_ns'));
 add_action('rss_item', array('GeoMashup', 'rss_item'));
 add_action('rss2_item', array('GeoMashup', 'rss_item'));
-add_action('atom_item', array('GeoMashup', 'rss_item'));
+add_action('atom_entry', array('GeoMashup', 'rss_item'));
 
 // admin hooks
 add_filter('upload_mimes', array('GeoMashup', 'upload_mimes'));
