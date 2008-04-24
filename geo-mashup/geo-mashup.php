@@ -338,11 +338,15 @@ class GeoMashup {
 	function map($option_args = null)
 	{
 		global $geoMashupOpts,$post;
-		$options = array('width' => $geoMashupOpts['in_post_map_width'], 'height' => $geoMashupOpts['in_post_map_height']);
-		if (is_page() && isset($_SERVER['QUERY_STRING'])) {
-			$querystring_options = GeoMashup::explode_assoc('=','&',$_SERVER['QUERY_STRING']);
-			$options = $querystring_options + $options;
-		} 
+		if (is_page()) {
+			$options = array('width' => $geoMashupOpts['map_width'], 'height' => $geoMashupOpts['map_height']);
+			if (isset($_SERVER['QUERY_STRING'])) {
+				$querystring_options = GeoMashup::explode_assoc('=','&',$_SERVER['QUERY_STRING']);
+				$options = $querystring_options + $options;
+			} 
+		} else {
+			$options = array('width' => $geoMashupOpts['in_post_map_width'], 'height' => $geoMashupOpts['in_post_map_height']);
+		}
 	
 		if (is_array($option_args))
 		{	
