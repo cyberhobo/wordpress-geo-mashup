@@ -262,8 +262,6 @@ var GeoMashup = {
 			} // end location posts loop
 			var info_window_opts = {};
 			var html = GeoMashup.renderRss(GeoMashup.locations[point].xmlDoc);
-			info_window_opts.maxContent = '<iframe src="http://www.cyberhobo.net/test/" width="100%" height="100%"></iframe>';
-			info_window_opts.maxTitle = 'Test Max';
 			GeoMashup.map.closeInfoWindow();
 			if (GeoMashup.opts.infoWindowWidth) info_window_opts.maxWidth = GeoMashup.opts.infoWindowWidth;
 			if (GeoMashup.opts.infoWindowHeight) info_window_opts.maxHeight = GeoMashup.opts.infoWindowHeight;
