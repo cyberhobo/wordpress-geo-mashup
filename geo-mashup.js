@@ -121,6 +121,7 @@ var GeoMashup = {
 	},
 
 	renderRss : function (rss_doc) {
+		// Built excerpt HTML
 		var items = rss_doc.getElementsByTagName('item');
 		if (items.length == 0) return false;
 		var html = ['<div class="locationinfo">'];
@@ -146,6 +147,8 @@ var GeoMashup = {
 				'<\/p>']);
 			if (items.length == 1) {
 				var desc = this.getTagContent(items[i],'description').replace('[...]','');
+				desc = desc.replace(/(<a[^>])target="[^"]*"/gi,'$1'); // remove existing link targets
+				desc = desc.replace(/<a[^>]*/gi,'$& target="_parent"'); // make link target '_parent'
 				html = html.concat(['<div class="storycontent">',desc,
 					'<a href="',url,'" onclick="',onclick,'">[...]<\/a><\/div>']);
 				if (this.opts.showPostHere) { this.showPost(link); }
