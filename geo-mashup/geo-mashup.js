@@ -432,7 +432,6 @@ var GeoMashup = {
 		this.multiple_category_icon = new GIcon(this.base_color_icon);
 		this.multiple_category_icon.image = opts.linkDir + '/images/mm_20_mixed.png';
 		this.map = new GMap2(this.container);
-		this.loadSettings(opts, window.location.search);
 		if (window.location.search == this.getCookie('back_search'))
 		{
 			this.loadSettings(opts, this.getCookie('back_settings'));
