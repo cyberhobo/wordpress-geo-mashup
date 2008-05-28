@@ -24,13 +24,15 @@ $map_opts = array(
 	'infoWindowWidth' => ($geo_mashup_opts['info_window_width']?$geo_mashup_opts['info_window_width']:'false'),
 	'infoWindowHeight' => ($geo_mashup_opts['info_window_height']?$geo_mashup_opts['info_window_height']:'false'));
 
-if (isset($_GET['postID']))
+$post = null;
+if (strlen($_GET['postIDs']) > 0)
 {
-	$post = get_post($_GET['postID']);
-}
-else
-{
-	$post = false;
+	if (strpos($_GET['postIDs'],',') > 0) {
+		$map_opts['postData'] = GeoMashup::getLocationsJson($_GET);
+	} else {
+		$post = get_post($_GET['postIDs']);
+		unset($_GET['postIDs']);
+	}
 }
 
 if ($post)
@@ -99,7 +101,7 @@ $map_opts['categoryOpts'] = $category_opts;
 		<script src="http://maps.google.com/maps?file=api&amp;v=2&amp;key=<?php echo $geo_mashup_opts['google_key'];?>" 
 						type="text/javascript"></script>
 		<?php if (is_readable('custom.js')): ?>
-		<script src="custom.js" type="text/javascript"></script>
+		<script src="<?php echo $packed; ?>custom.js" type="text/javascript"></script>
 		<?php endif; ?>
 		<script src="<?php echo $packed; ?>geo-mashup.js" type="text/javascript"></script>
 		<?php if (is_readable('map-style.css')): ?>
