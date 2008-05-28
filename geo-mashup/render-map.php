@@ -24,6 +24,8 @@ $map_opts = array(
 	'infoWindowWidth' => ($geo_mashup_opts['info_window_width']?$geo_mashup_opts['info_window_width']:'false'),
 	'infoWindowHeight' => ($geo_mashup_opts['info_window_height']?$geo_mashup_opts['info_window_height']:'false'));
 
+$map_opts = array_merge($_GET, $map_opts);
+
 $post = null;
 if (strlen($_GET['postIDs']) > 0)
 {
