@@ -34,27 +34,27 @@ function geo_mashup_map($atts)
 {
 	global $geoMashupOpts,$wp_query;
 
-	$options = array('postIDs' => '');
+	$options = array('post_ids' => '');
 	if ($wp_query->current_post == -1)
   {
 		// We're outside of The Loop, go contextual
 		$comma = '';
 		while ($wp_query->have_posts()) {
 			$wp_query->the_post();
-			$options['postIDs'] .= $comma.$wp_query->post->ID;
+			$options['post_ids'] .= $comma.$wp_query->post->ID;
 			$comma = ',';
 		}
 	}	else if (is_page()) {
 		$options['width'] = $geoMashupOpts['map_width'];
 		$options['height'] = $geoMashupOpts['map_height'];
-		$options['postIDs'] = $wp_query->post->ID;
+		$options['post_ids'] = $wp_query->post->ID;
 		if (isset($_SERVER['QUERY_STRING'])) {
 			$options = wp_parse_args($_SERVER['QUERY_STRING'],$options);
 		} 
 	} else {
 		$options['width'] = $geoMashupOpts['in_post_map_width']; 
 		$options['height'] = $geoMashupOpts['in_post_map_height'];
-		$options['postIDs'] = $wp_query->post->ID;
+		$options['post_ids'] = $wp_query->post->ID;
 	}
 	if (is_array($atts)) {
 		$options = array_merge($options, $atts);
