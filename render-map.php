@@ -10,30 +10,16 @@ $geo_mashup_opts = get_settings('geo_mashup_options');
 $packed = '';
 if ($geo_mashup_opts['use_packed'] == 'true') $packed = 'packed/';
 
-$map_opts = array(
-	'addMapTypeControl' => ($geo_mashup_opts['add_map_type_control']?$geo_mashup_opts['add_map_type_control']:'false'),
-	'linkDir' => "'$link_dir'",
-	'mapControl' => "'{$geo_mashup_opts['map_control']}'",
-	'addOverviewControl' => ($geo_mashup_opts['add_overview_control']?$geo_mashup_opts['add_overview_control']:'false'),
-	'mapType' => "'{$geo_mashup_opts['map_type']}'",
-	'zoom' => ($geo_mashup_opts['zoom_level']?$geo_mashup_opts['zoom_level']:'5'),
-	'markerMinZoom' => ($geo_mashup_opts['marker_min_zoom']?$geo_mashup_opts['marker_min_zoom']:'0'),
-	'maxPosts' => ($geo_mashup_opts['max_posts']?$geo_mashup_opts['max_posts']:'false'),
-	'showPostHere' => ($geo_mashup_opts['show_post']?$geo_mashup_opts['show_post']:'false'),
-	'autoOpenInfoWindow' => ($geo_mashup_opts['auto_info_open']?$geo_mashup_opts['auto_info_open']:'false'),
-	'infoWindowWidth' => ($geo_mashup_opts['info_window_width']?$geo_mashup_opts['info_window_width']:'false'),
-	'infoWindowHeight' => ($geo_mashup_opts['info_window_height']?$geo_mashup_opts['info_window_height']:'false'));
-
-$map_opts = array_merge($_GET, $map_opts);
+$map_opts = array('link_dir' => "'$link_dir'");
 
 $post = null;
-if (strlen($_GET['postIDs']) > 0)
+if (strlen($_GET['post_ids']) > 0)
 {
-	if (strpos($_GET['postIDs'],',') > 0) {
-		$map_opts['postData'] = GeoMashup::getLocationsJson($_GET);
+	if (strpos($_GET['post_ids'],',') > 0) {
+		$map_opts['post_data'] = GeoMashup::getLocationsJson($_GET);
 	} else {
-		$post = get_post($_GET['postIDs']);
-		unset($_GET['postIDs']);
+		$post = get_post($_GET['post_ids']);
+		unset($_GET['post_ids']);
 	}
 }
 
@@ -42,18 +28,40 @@ if ($post)
 	$kml_urls = GeoMashup::get_kml_attachment_urls($post->ID);
 	if (count($kml_urls)>0)
 	{
-		$map_opts['loadKml'] = '\''.array_pop($kml_urls).'\'';
+		$map_opts['load_kml'] = '\''.array_pop($kml_urls).'\'';
 	}
 	if ($post->post_type == 'post')
 	{
-		$map_opts = $map_opts + GeoMashup::post_coordinates();
-		$map_opts['inPost'] = 'true';
+		$settings = array(
+			'map_control' => "'{$geo_mashup_opts['in_post_map_control']}'",
+			'add_map_type_control' => ($geo_mashup_opts['in_post_add_map_type_control']?$geo_mashup_opts['in_post_add_map_type_control']:'false'),
+			'add_overview_control' => ($geo_mashup_opts['in_post_add_overview_control']?$geo_mashup_opts['in_post_add_overview_control']:'false'),
+			'map_type' => "'{$geo_mashup_opts['in_post_map_type']}'",
+			'zoom' => ($geo_mashup_opts['in_post_zoom_level']?$geo_mashup_opts['in_post_zoom_level']:'5'));
+		$map_opts = array_merge(GeoMashup::post_coordinates(),$map_opts);
+		$map_opts = array_merge($settings,$map_opts);
+		$map_opts['in_post'] = 'true';
 	}
 	else if ($post->post_type = 'page')
 	{
-		$map_opts['postData'] = GeoMashup::getLocationsJson($_GET);
+		$settings = array(
+			'add_map_type_control' => ($geo_mashup_opts['add_map_type_control']?$geo_mashup_opts['add_map_type_control']:'false'),
+			'map_control' => "'{$geo_mashup_opts['map_control']}'",
+			'add_overview_control' => ($geo_mashup_opts['add_overview_control']?$geo_mashup_opts['add_overview_control']:'false'),
+			'map_type' => "'{$geo_mashup_opts['map_type']}'",
+			'zoom' => ($geo_mashup_opts['zoom_level']?$geo_mashup_opts['zoom_level']:'5'),
+			'marker_min_zoom' => ($geo_mashup_opts['marker_min_zoom']?$geo_mashup_opts['marker_min_zoom']:'0'),
+			'max_posts' => ($geo_mashup_opts['max_posts']?$geo_mashup_opts['max_posts']:'false'),
+			'show_post_here' => ($geo_mashup_opts['show_post']?$geo_mashup_opts['show_post']:'false'),
+			'auto_open_info_window' => ($geo_mashup_opts['auto_info_open']?$geo_mashup_opts['auto_info_open']:'false'),
+			'info_window_width' => ($geo_mashup_opts['info_window_width']?$geo_mashup_opts['info_window_width']:'false'),
+			'info_window_height' => ($geo_mashup_opts['info_window_height']?$geo_mashup_opts['info_window_height']:'false'));
+		$map_opts['post_data'] = GeoMashup::getLocationsJson($_GET);
+		$map_opts = array_merge($settings,$map_opts);
 	}
 }
+
+$map_opts = array_merge($map_opts, $_GET);
 
 $width = $_GET['width'];
 if (!is_numeric($width)) { 
