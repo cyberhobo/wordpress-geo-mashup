@@ -130,7 +130,7 @@ var GeoMashup = {
 			var link = this.getTagContent(items[i],'link');
 			var url = link;
 			var onclick = 'this.target=\'_parent\'; GeoMashup.saveBackSettings()';
-			if (this.opts.showPostHere) {
+			if (this.opts.show_post_here) {
 				onclick = 'GeoMashup.showPost(\''+url+'\')';
 				url = '#geoPost';
 			}
@@ -151,7 +151,7 @@ var GeoMashup = {
 				desc = desc.replace(/<a[^>]*/gi,'$& target="_parent"'); // make link target '_parent'
 				html = html.concat(['<div class="storycontent">',desc,
 					'<a href="',url,'" onclick="',onclick,'">[...]<\/a><\/div>']);
-				if (this.opts.showPostHere) { this.showPost(link); }
+				if (this.opts.show_post_here) { this.showPost(link); }
 			}
 		} 
 		html.push('<\/div>');
@@ -187,7 +187,7 @@ var GeoMashup = {
 		}
 		var geoPost = parent.document.getElementById('geoPost');
 		if (!geoPost) {
-			this.opts.showPostHere = false;
+			this.opts.show_post_here = false;
 			return false;
 		}
 		this.showing_url = url;
@@ -229,7 +229,7 @@ var GeoMashup = {
 			for(var i=0; i<GeoMashup.locations[point].posts.length; i++) {
 				var post_id = GeoMashup.locations[point].posts[i];
 				if (!GeoMashup.locations[point].loaded[post_id]) {
-					var url = GeoMashup.opts.linkDir + '/geo-query.php?post_id=' + post_id;
+					var url = GeoMashup.opts.link_dir + '/geo-query.php?post_id=' + post_id;
 					// Use a synchronous request to simplify multiple posts at a location
 					request.open('GET', url, false);
 					try {
@@ -266,8 +266,8 @@ var GeoMashup = {
 			var info_window_opts = {};
 			var html = GeoMashup.renderRss(GeoMashup.locations[point].xmlDoc);
 			GeoMashup.map.closeInfoWindow();
-			if (GeoMashup.opts.infoWindowWidth) info_window_opts.maxWidth = GeoMashup.opts.infoWindowWidth;
-			if (GeoMashup.opts.infoWindowHeight) info_window_opts.maxHeight = GeoMashup.opts.infoWindowHeight;
+			if (GeoMashup.opts.info_window_width) info_window_opts.maxWidth = GeoMashup.opts.info_window_width;
+			if (GeoMashup.opts.info_window_height) info_window_opts.maxHeight = GeoMashup.opts.info_window_height;
 			marker.openInfoWindowHtml(html,info_window_opts);
 		}); // end marker infowindowopen
 
@@ -308,7 +308,7 @@ var GeoMashup = {
 			}
 			color = this.colors[color_name];
 			icon = new GIcon(this.base_color_icon);
-			icon.image = this.opts.linkDir + '/images/mm_20_' + color_name + '.png';
+			icon.image = this.opts.link_dir + '/images/mm_20_' + color_name + '.png';
 			this.categories[category] = {
 				icon : icon,
 				points : [point],
@@ -341,7 +341,7 @@ var GeoMashup = {
 				var category = response_data[i].categories[j];
 				this.extendCategory(point, category);
 			}
-			if (this.opts.maxPosts && this.post_count >= this.opts.maxPosts) break;
+			if (this.opts.max_posts && this.post_count >= this.opts.max_posts) break;
 			if (!this.posts[post_id]) {
 				// This post has not yet been loaded
 				this.post_count++;
@@ -355,12 +355,12 @@ var GeoMashup = {
 					var marker = this.createMarker(point,response_data[i]);
 					this.posts[post_id].marker = marker;
 					this.locations[point].marker = marker;
-					this.marker_manager.addMarker(marker,this.opts.markerMinZoom);
+					this.marker_manager.addMarker(marker,this.opts.marker_min_zoom);
 				} else {
 					// There is already a marker at this point, add the new post to it
 					this.locations[point].posts.push(post_id);
-					//this.locations[point].marker.setImage(this.opts.linkDir + '/images/mm_20_plus.png');
-					this.locations[point].marker.getIcon().image = this.opts.linkDir + '/images/mm_20_plus.png';
+					//this.locations[point].marker.setImage(this.opts.link_dir + '/images/mm_20_plus.png');
+					this.locations[point].marker.getIcon().image = this.opts.link_dir + '/images/mm_20_plus.png';
 					this.posts[post_id] = new Object();
 					this.posts[post_id].marker = this.locations[point].marker;
 				}
@@ -378,9 +378,9 @@ var GeoMashup = {
 	},
 
 	requestPosts : function(use_bounds) {
-		if (this.opts.maxPosts && this.post_count >= this.opts.maxPosts) return;
+		if (this.opts.max_posts && this.post_count >= this.opts.max_posts) return;
 		var request = GXmlHttp.create();
-		var url = this.opts.linkDir + '/geo-query.php?i=1';
+		var url = this.opts.link_dir + '/geo-query.php?i=1';
 		if (use_bounds) {
 			var map_bounds = this.map.getBounds();
 			var map_span = map_bounds.toSpan();
@@ -392,8 +392,8 @@ var GeoMashup = {
 		if (this.opts.map_cat) {
 			url += '&cat=' + GeoMashup.opts.map_cat;
 		}
-		if (this.opts.maxPosts) {
-			url += '&limit=' + GeoMashup.opts.maxPosts;
+		if (this.opts.max_posts) {
+			url += '&limit=' + GeoMashup.opts.max_posts;
 		}
 		request.open("GET", url, true);
 		request.onreadystatechange = function() {
@@ -423,14 +423,14 @@ var GeoMashup = {
 		this.showing_url = '';
 		this.checkDependencies();
 		this.base_color_icon = new GIcon();
-		this.base_color_icon.image = opts.linkDir + '/images/mm_20_black.png';
-		this.base_color_icon.shadow = opts.linkDir + '/images/mm_20_shadow.png';
+		this.base_color_icon.image = opts.link_dir + '/images/mm_20_black.png';
+		this.base_color_icon.shadow = opts.link_dir + '/images/mm_20_shadow.png';
 		this.base_color_icon.iconSize = new GSize(12, 20);
 		this.base_color_icon.shadowSize = new GSize(22, 20);
 		this.base_color_icon.iconAnchor = new GPoint(6, 20);
 		this.base_color_icon.infoWindowAnchor = new GPoint(5, 1);
 		this.multiple_category_icon = new GIcon(this.base_color_icon);
-		this.multiple_category_icon.image = opts.linkDir + '/images/mm_20_mixed.png';
+		this.multiple_category_icon.image = opts.link_dir + '/images/mm_20_mixed.png';
 		this.map = new GMap2(this.container);
 		if (window.location.search == this.getCookie('back_search'))
 		{
@@ -444,39 +444,39 @@ var GeoMashup = {
 			opts.zoom = 5;
 		}
 
-		if (typeof(opts.mapType) == 'string') {
-			var typeNum = parseInt(opts.mapType);
+		if (typeof(opts.map_type) == 'string') {
+			var typeNum = parseInt(opts.map_type);
 
 			if (isNaN(typeNum)) {
-				opts.mapType = eval(opts.mapType);
+				opts.map_type = eval(opts.map_type);
 			} else {
-				opts.mapType = this.map.getMapTypes()[typeNum];
+				opts.map_type = this.map.getMapTypes()[typeNum];
 			}
-		} else if (typeof(opts.mapType) == 'undefined') {
-			opts.mapType = G_NORMAL_MAP;
+		} else if (typeof(opts.map_type) == 'undefined') {
+			opts.map_type = G_NORMAL_MAP;
 		}
 
-		if (opts.loadKml)
+		if (opts.load_kml)
 		{
-			this.kml = new GGeoXml(opts.loadKml);
+			this.kml = new GGeoXml(opts.load_kml);
 			this.map.addOverlay(this.kml);
 		}
 
 		if (opts.lat && opts.lng) {
 			// Use the center form options
-			this.map.setCenter(new GLatLng(opts.lat, opts.lng), opts.zoom, opts.mapType);
+			this.map.setCenter(new GLatLng(opts.lat, opts.lng), opts.zoom, opts.map_type);
 		} else if (this.kml) {
-			this.map.setCenter(this.kml.getDefaultCenter, opts.zoom, opts.mapType);
-		} else if (opts.postData && opts.postData.posts[0]) {
-			var center_latlng = new GLatLng(opts.postData.posts[0].lat, opts.postData.posts[0].lng);
-			this.map.setCenter(center_latlng, opts.zoom, opts.mayType);
-			if (this.opts.autoOpenInfoWindow) {
-				this.opts.openPostId = opts.postData.posts[0].post_id;
+			this.map.setCenter(this.kml.getDefaultCenter, opts.zoom, opts.map_type);
+		} else if (opts.post_data && opts.post_data.posts[0]) {
+			var center_latlng = new GLatLng(opts.post_data.posts[0].lat, opts.post_data.posts[0].lng);
+			this.map.setCenter(center_latlng, opts.zoom, opts.map_type);
+			if (this.opts.auto_open_info_window && !this.opts.openPostId) {
+				this.opts.openPostId = opts.post_data.posts[0].post_id;
 			}
 		} else {
 			// Center on the most recent located post
 			var request = GXmlHttp.create();
-			var url = this.opts.linkDir + '/geo-query.php?limit=1';
+			var url = this.opts.link_dir + '/geo-query.php?limit=1';
 			if (opts.map_cat) {
 				url += '&cat='+opts.map_cat;
 			}
@@ -485,28 +485,28 @@ var GeoMashup = {
 			var posts = eval(request.responseText);
 			if (posts.length>0) {
 				var point = new GLatLng(posts[0].lat,posts[0].lng);
-				this.map.setCenter(point,opts.zoom,opts.mapType);
-				if (this.opts.autoOpenInfoWindow) {
+				this.map.setCenter(point,opts.zoom,opts.map_type);
+				if (this.opts.auto_open_info_window) {
 					this.opts.openPostId = posts[0].post_id;
 				}
 			} else {
-				this.map.setCenter(new GLatLng(0,0),opts.zoom,opts.mapType);
+				this.map.setCenter(new GLatLng(0,0),opts.zoom,opts.map_type);
 			}
 		}
 
 		GEvent.bind(this.map, "zoomend", this, this.adjustZoom);
 
 		this.marker_manager = new GMarkerManager(this.map);
-		if (opts.inPost)
+		if (opts.in_post)
 		{
 			if (opts.lat && opts.lng && !this.kml)
 			{
 				this.map.addOverlay(new GMarker(new GLatLng(this.opts.lat,this.opts.lng)));
 			}
 		}
-		else if (opts.postData)
+		else if (opts.post_data)
 		{
-			this.addPosts(opts.postData.posts,true);
+			this.addPosts(opts.post_data.posts,true);
 		}
 		else
 		{
@@ -517,20 +517,20 @@ var GeoMashup = {
 			this.requestPosts(false);
 		}
 
-		if (opts.mapControl == 'GSmallZoomControl') {
+		if (opts.map_control == 'GSmallZoomControl') {
 			this.map.addControl(new GSmallZoomControl());
-		} else if (opts.mapControl == 'GSmallMapControl') {
+		} else if (opts.map_control == 'GSmallMapControl') {
 			this.map.addControl(new GSmallMapControl());
-		} else if (opts.mapControl == 'GLargeMapControl') {
+		} else if (opts.map_control == 'GLargeMapControl') {
 			this.map.addControl(new GLargeMapControl());
 		}
 		
-		if (opts.addMapTypeControl) {
-			this.map.addMapType(G_PHYSICAL_MAP);
+		this.map.addMapType(G_PHYSICAL_MAP);
+		if (opts.add_map_type_control) {
 			this.map.addControl(new GMapTypeControl());
 		}
 
-		if (opts.addOverviewControl) {
+		if (opts.add_overview_control) {
 			this.map.addControl(new GOverviewMapControl());
 			var ov = document.getElementById('geoMashup_overview');
 			if (ov) {
@@ -557,7 +557,7 @@ var GeoMashup = {
 				mapTypeNum=ix;
 		}
 		var back_settings = {
-			'mapType':mapTypeNum,
+			'map_type':mapTypeNum,
 			'lat':center.lat(),
 			'lng':center.lng(),
 			'zoom':this.map.getZoom()
