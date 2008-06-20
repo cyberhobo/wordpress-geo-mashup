@@ -5,6 +5,12 @@ global $post;
 
 status_header(200);
 
+function add_double_quotes(&$item,$key) {
+	if (is_int(strpos($item,',')) || is_int(strpos($item,':'))) {
+		$item = '"'.$item.'"';
+	}
+}
+
 $link_dir = get_bloginfo('wpurl')."/wp-content/plugins/geo-mashup";
 $geo_mashup_opts = get_settings('geo_mashup_options');
 $packed = '';
@@ -61,7 +67,9 @@ if ($post)
 	}
 }
 
-$map_opts = array_merge($map_opts, $_GET);
+$get_opts = $_GET;
+array_walk($get_opts, 'add_double_quotes');
+$map_opts = array_merge($map_opts, $get_opts);
 
 $width = $_GET['width'];
 if (!is_numeric($width)) { 
