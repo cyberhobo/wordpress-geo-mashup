@@ -330,9 +330,9 @@ class GeoMashup {
 			$where .= " AND tt.term_id=$cat";
 		} 
 
-		if (isset($query_args['postIDs']))
+		if (isset($query_args['post_ids']))
 		{
-			$where .= ' AND p.ID in (' . $wpdb->escape($query_args['postIDs']) .')';
+			$where .= ' AND p.ID in (' . $wpdb->escape($query_args['post_ids']) .')';
 		}
 
 		$query_string = "SELECT $fields FROM $tables WHERE $where ORDER BY post_status ASC, post_date DESC";
