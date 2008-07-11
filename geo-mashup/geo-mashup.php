@@ -36,7 +36,7 @@ function geo_mashup_map($atts)
 
 	$options = array('post_ids' => '');
 	if ($wp_query->current_post == -1)
-  {
+	{
 		// We're outside of The Loop, go contextual
 		$comma = '';
 		while ($wp_query->have_posts()) {
@@ -44,9 +44,10 @@ function geo_mashup_map($atts)
 			$options['post_ids'] .= $comma.$wp_query->post->ID;
 			$comma = ',';
 		}
-	}	else if (is_page()) {
+	} else if (is_page()) {
 		$options['width'] = $geoMashupOpts['map_width'];
 		$options['height'] = $geoMashupOpts['map_height'];
+		$options['show_future'] = $geoMashupOpts['show_future'];
 		$options['post_ids'] = $wp_query->post->ID;
 		if (isset($_SERVER['QUERY_STRING'])) {
 			$options = wp_parse_args($_SERVER['QUERY_STRING'],$options);
@@ -305,6 +306,8 @@ class GeoMashup {
 
 		if ($query_args['show_future'] == 'true') {
 			$where .= ' AND post_status in (\'publish\',\'future\')';
+		} else if ($query_args['show_future'] == 'only') {
+			$where .= ' AND post_status=\'future\'';
 		} else {
 			$where .= ' AND post_status=\'publish\'';
 		}
@@ -685,10 +688,17 @@ class GeoMashup {
 		} else {
 			$usePackedChecked = '';
 		}
-		if ($geoMashupOpts['show_future'] == 'true') {
-			$showFutureChecked = ' checked="true"';
-		} else {
-			$showFutureChecked = '';
+		$showFutureOptions = "";
+		$futureOptions = Array(
+			'true' => __('Yes', 'GeoMashup'),
+			'false' => __('No', 'GeoMashup'),
+			'only' => __('Only', 'GeoMashup'));
+		foreach($futureOptions as $value => $label) {
+			$selected = "";
+			if ($value == $geoMashupOpts['show_future']) {
+				$selected = ' selected="true"';
+			}
+			$showFutureOptions .= '<option value="'.$value.'"'.$selected.'>'.$label."</option>\n";
 		}
 
 		if ($geoMashupOpts['excerpt_format'] == 'text') {
@@ -799,7 +809,7 @@ class GeoMashup {
 						</tr>
 						<tr>
 							<th scope="row">'.__('Show Future Posts', 'GeoMashup').'</th>
-							<td><input id="show_future" name="show_future" type="checkbox" value="true"'.$showFutureChecked.' /></td>
+							<td><select id="show_future" name="show_future">'.$showFutureOptions.'</select></td>
 						</tr>
 						<tr>
 							<th scope="row">'.__('Automatically Open Linked Post Info Window', 'GeoMashup').'</th>
@@ -939,11 +949,15 @@ class GeoMashup {
 			FROM {$wpdb->posts} JOIN
 				{$wpdb->postmeta} ON {$wpdb->postmeta}.post_id = {$wpdb->posts}.ID
 			WHERE meta_key='_geo_location' AND
-				post_status='publish' AND
 				length(meta_value) > 1";
-		if ($geoMashupOpts['show_future'] != 'true') {
-			$query .= ' AND post_date<NOW()';
+		if ($geoMashupOpts['show_future'] == 'false') {
+			$query .= ' AND post_status=\'publish\'';
+		} else if ($geoMashupOpts['show_future'] == 'only') {
+			$query .= ' AND post_status=\'future\'';
+		} else {
+			$query .= ' AND post_status IN (\'publish\',\'future\')';
 		}
+
 		$query .= ' ORDER BY post_date DESC';
 		$list_html = '<ul id="geo_mashup_located_post_list">';
 		$posts = $wpdb->get_results($query);

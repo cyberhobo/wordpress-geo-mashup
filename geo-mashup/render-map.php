@@ -6,7 +6,7 @@ global $post;
 status_header(200);
 
 function add_double_quotes(&$item,$key) {
-	if (is_int(strpos($item,',')) || is_int(strpos($item,':'))) {
+	if ($key == 'show_future' || is_int(strpos($item,',')) || is_int(strpos($item,':'))) {
 		$item = '"'.$item.'"';
 	}
 }
