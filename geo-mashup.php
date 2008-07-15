@@ -904,7 +904,7 @@ class GeoMashup {
 		if (is_array($option_args)) {
 			$options = $option_args + $options;
 		} if (is_string($option_args)) {
-			$options = GeoMashup::explode_assoc('=',':',$option_args) + $options;
+			$options = wp_parse_args($option_args, $options);
 		}
 		$coords = GeoMashup::post_coordinates();
 		$lat = $coords['lat'];
