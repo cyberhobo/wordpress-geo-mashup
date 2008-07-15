@@ -1,2 +1,12 @@
+/* Title link style */
 h2 a { text-decoration:none; } 
-.locationinfo { overflow:auto; width:300px; height:200px; }
+
+/* Post date and tags/categories */
+.meta { font-size:60%; }
+.meta .blogdate { font-style: italic; }
+
+/* Info window */
+.locationinfo { font-size:80%; overflow:auto; width:300px; height:200px; }
+
+/* Excerpt */
+.storycontent { font-family: Verdana Sans-Serif; }
