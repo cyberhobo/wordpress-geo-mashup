@@ -68,6 +68,41 @@ function geo_mashup_map($atts)
 }
 
 /**
+* [geo_mashup_show_on_map_link ...]
+*/
+function geo_mashup_show_on_map_link($atts) {
+	return GeoMashup::post_link($atts);
+}
+
+/**
+* [geo_mashup_full_post]
+*/
+function geo_mashup_full_post($atts) {
+	return GeoMashup::full_post();
+}
+
+/**
+* [geo_mashup_category_name]
+*/
+function geo_mashup_category_name($atts) {
+	return GeoMashup::category_name($atts);
+}
+
+/**
+* [geo_mashup_category_legend]
+*/
+function geo_mashup_category_legend($atts) {
+	return GeoMashup::category_legend($atts);
+}
+
+/**
+* [geo_mashup_list_located_posts]
+*/
+function geo_mashup_list_located_posts($atts) {
+	return GeoMashup::list_located_posts($atts);
+}
+
+/**
  * The Geo Mashup class/namespace.
  */
 class GeoMashup {
@@ -222,60 +257,66 @@ class GeoMashup {
 			}
 		}
 		$locations_json .= '}';
+		$nonce = wp_create_nonce(plugin_basename(__FILE__));
 		$edit_html = '
-			<div class="dbx-b-ox-wrapper">
-				<fieldset class="dbx-box">
-					<div class="dbx-h-andle-wrapper"><h3 class="dbx-handle">'.__('Location', 'GeoMashup').'</h3></div>
-					<div class="dbx-c-ontent-wrapper"><div class="dbx-content">
-						<img id="geo_mashup_status_icon" src="'.$link_url.'/images/idle_icon.gif" style="float:right" />
-						<label for="geo_mashup_search">'.__('Find location:', 'GeoMashup').'
-							<input	id="geo_mashup_search" 
-											name="geo_mashup_search" 
-											type="text" 
-											size="35" 
-											onfocus="this.select(); GeoMashupAdmin.map.checkResize();"
-											onkeypress="return GeoMashupAdmin.searchKey(event, this.value)" />
-						</label>
-						<select id="geo_mashup_select" name="geo_mashup_select" onchange="GeoMashupAdmin.onSelectChange(this);"><option>[Saved Locations]</option></select>
-						<a href="#" onclick="document.getElementById(\'geo_mashup_inline_help\').style.display=\'block\'; return false;">'.__('help', 'GeoMashup').'</a>
-						<div id="geo_mashup_inline_help" style="position:absolute; z-index:1; left:0; top:0; padding:5px; border:2px solid blue; background-color:#ffc; display:none;">
-							<p>'.__('Put a green pin at the location for this post.', 'GeoMashup').' '.__('There are many ways to do it:', 'GeoMashup').'
-							<ul>
-								<li>'.__('Search for a location name.', 'GeoMashup').'</li>
-								<li>'.__('For multiple search results, mouse over pins to see location names, and click a result pin to select that location.', 'GeoMashup').'</li>
-								<li>'.__('Search for a decimal latitude and longitude, like <em>40.123,-105.456</em>.', 'GeoMashup').'</li> 
-								<li>'.__('Search for a street address, like <em>123 main st, anytown, acity</em>.', 'GeoMashup').'</li>
-								<li>'.__('Click on the location. Zoom in if necessary so you can refine the location by dragging it or clicking a new location.', 'GeoMashup').'</li>
-							</ul>
-							'.__('To execute a search, type search text into the Find Location box and hit the enter key. If you type a name next to "Save As", the location will be saved under that name so you can find it again with a quick search. Saved names are searched before doing a GeoNames search for location names.', 'GeoMashup').'</p>
-							<p>'.__('To remove the location (green pin) for a post, clear the search box and hit the enter key.', 'GeoMashup').'</p>
-							<p><a href="#" onclick="document.getElementById(\'geo_mashup_inline_help\').style.display=\'none\'; return false;">'.__('close', 'GeoMashup').'</a>
-						</div>
-						<div id="geo_mashup_map" style="width:400px;height:300px;">
-							'.__('Loading Google map. Check Geo Mashup options if the map fails to load.', 'GeoMashup').'
-						</div>
-						<script type="text/javascript">//<![CDATA[
-							GeoMashupAdmin.registerMap(document.getElementById("geo_mashup_map"),
-																				{"link_url":"'.$link_url.'",
-																				"post_lat":"'.$post_lat.'",
-																				"post_lng":"'.$post_lng.'",
-																				"post_location_name":"'.$post_location_name.'",
-																				"saved_locations":'.$locations_json.',
-																				"kml_url":"'.$kml_url.'",
-																				"status_icon":document.getElementById("geo_mashup_status_icon")});
-							// ]]>
-						</script>
-						<label for="geo_mashup_location_name">'.__('Save As:', 'GeoMashup').'
-							<input id="geo_mashup_location_name" name="geo_mashup_location_name" type="text" size="45" />
-						</label>
-						<input id="geo_mashup_location" name="geo_mashup_location" type="hidden" value="'.$post_lat.','.$post_lng.'" />
-					</div></div>
-				</fieldset>
-			</div>';
+			<input id="geo_mashup_edit_nonce" name="geo_mashup_edit_nonce" type="hidden" value="'.$nonce.'" />
+			<img id="geo_mashup_status_icon" src="'.$link_url.'/images/idle_icon.gif" style="float:right" />
+			<label for="geo_mashup_search">'.__('Find location:', 'GeoMashup').'
+			<input	id="geo_mashup_search" 
+				name="geo_mashup_search" 
+				type="text" 
+				size="35" 
+				onfocus="this.select(); GeoMashupAdmin.map.checkResize();"
+				onkeypress="return GeoMashupAdmin.searchKey(event, this.value)" />
+			</label>
+			<select id="geo_mashup_select" name="geo_mashup_select" onchange="GeoMashupAdmin.onSelectChange(this);">
+				<option>'.__('[Saved Locations]','GeoMashup').'</option>
+			</select>
+			<a href="#" onclick="document.getElementById(\'geo_mashup_inline_help\').style.display=\'block\'; return false;">'.__('help', 'GeoMashup').'</a>
+			<div id="geo_mashup_inline_help" style="padding:5px; border:2px solid blue; background-color:#ffc; display:none;">
+				<p>'.__('Put a green pin at the location for this post.', 'GeoMashup').' '.__('There are many ways to do it:', 'GeoMashup').'
+				<ul>
+					<li>'.__('Search for a location name.', 'GeoMashup').'</li>
+					<li>'.__('For multiple search results, mouse over pins to see location names, and click a result pin to select that location.', 'GeoMashup').'</li>
+					<li>'.__('Search for a decimal latitude and longitude, like <em>40.123,-105.456</em>.', 'GeoMashup').'</li> 
+					<li>'.__('Search for a street address, like <em>123 main st, anytown, acity</em>.', 'GeoMashup').'</li>
+					<li>'.__('Click on the location. Zoom in if necessary so you can refine the location by dragging it or clicking a new location.', 'GeoMashup').'</li>
+				</ul>
+				'.__('To execute a search, type search text into the Find Location box and hit the enter key. If you type a name next to "Save As", the location will be saved under that name so you can find it again with a quick search. Saved names are searched before doing a GeoNames search for location names.', 'GeoMashup').'</p>
+				<p>'.__('To remove the location (green pin) for a post, clear the search box and hit the enter key.', 'GeoMashup').'</p>
+				<p><a href="#" onclick="document.getElementById(\'geo_mashup_inline_help\').style.display=\'none\'; return false;">'.__('close', 'GeoMashup').'</a>
+			</div>
+			<div id="geo_mashup_map" style="width:400px;height:300px;">
+				'.__('Loading Google map. Check Geo Mashup options if the map fails to load.', 'GeoMashup').'
+			</div>
+			<script type="text/javascript">//<![CDATA[
+				GeoMashupAdmin.registerMap(document.getElementById("geo_mashup_map"),
+					{"link_url":"'.$link_url.'",
+					"post_lat":"'.$post_lat.'",
+					"post_lng":"'.$post_lng.'",
+					"post_location_name":"'.$post_location_name.'",
+					"saved_locations":'.$locations_json.',
+					"kml_url":"'.$kml_url.'",
+					"status_icon":document.getElementById("geo_mashup_status_icon")});
+			// ]]>
+			</script>
+			<label for="geo_mashup_location_name">'.__('Save As:', 'GeoMashup').'
+				<input id="geo_mashup_location_name" name="geo_mashup_location_name" type="text" size="45" />
+			</label>
+			<input id="geo_mashup_location" name="geo_mashup_location" type="hidden" value="'.$post_lat.','.$post_lng.'" />';
 		echo $edit_html;
 	}
 
 	function save_post($post_id) {
+		if (!wp_verify_nonce($_POST['geo_mashup_edit_nonce'], plugin_basename(__FILE__))) {
+			return $post_id;
+		}
+		if ( 'page' == $_POST['post_type'] ) {
+			if ( !current_user_can( 'edit_page', $post_id )) return $post_id;
+		} else {
+			if ( !current_user_can( 'edit_post', $post_id )) return $post_id;
+		}
+
 		delete_post_meta($post_id, '_geo_location');
 		update_option('geo_mashup_temp_kml_url','');
 		if (isset($_POST['geo_mashup_location'])) {
@@ -390,7 +431,7 @@ class GeoMashup {
 	{
 		$category_name = '';
 		if (is_string($option_args)) {
-			$option_args = GeoMashup::explode_assoc('=',':',$option_args);
+			$option_args = wp_parse_args($option_args);
 		}
 		if (is_page() && isset($_SERVER['QUERY_STRING'])) {
 			$option_args = $option_args + GeoMashup::explode_assoc('=','&',$_SERVER['QUERY_STRING']);
@@ -404,51 +445,6 @@ class GeoMashup {
 	function category_legend($option_args = null)
 	{
 		return '<div id="geoMashupCategoryLegend"></div>';
-	}
-
-	function the_content($content = 'geo_mashup_map') {
-		global $geoMashupOpts,$wpdb;
-		if (preg_match_all('/\[geo_mashup_([^]:]*):{0,1}([^]]*)]/i',$content,$matches,PREG_SET_ORDER))
-		{
-			foreach ($matches as $match_parts)
-			{
-				switch (strtolower($match_parts[1]))
-				{
-				case "show_on_map_link":
-					$content = str_replace($match_parts[0],GeoMashup::show_on_map_link($match_parts[2]),$content);
-					break;
-
-				case "full_post":
-					$content = str_replace($match_parts[0],GeoMashup::full_post(),$content);
-					break;
-
-				case "category_name":
-					$content = str_replace($match_parts[0],GeoMashup::category_name($match_parts[2]),$content);
-					break;
-
-				case "category_legend":
-					$content = str_replace($match_parts[0],GeoMashup::category_legend(),$content);
-					break;
-
-				case "list_located_posts":
-					$content = str_replace($match_parts[0],GeoMashup::list_located_posts(false),$content);
-					break;
-				}
-			}
-		}
-		/*
-		if (preg_match_all('/GEO_MASHUP_MAP\??([^\s<]*)|<\!--\s*Geo.?Mashup\s*-->/i',$content,$results,PREG_SET_ORDER))
-		{
-			foreach ($results as $matches)
-			{
-				$content = str_replace($matches[0],$map_iframe,$content);
-			}
-		}
-
-			$content = preg_replace('/GEO_MASHUP_LIST_LOCATED_POSTS/i',GeoMashup::list_located_posts(false),$content);
-		}
-		 */
-		return $content;
 	}
 
 	function list_cats($content, $category = null) {
@@ -483,6 +479,10 @@ class GeoMashup {
 	function admin_menu() {
 		if (function_exists('add_options_page')) {
 			add_options_page('Geo Mashup Options', 'Geo Mashup', 8, __FILE__, array('GeoMashup', 'options_page'));
+		}
+		if (function_exists('add_meta_box')) {
+			add_meta_box('geo_mashup_admin_edit',__('Location','GeoMashup'),array('GeoMashup','edit_form_advanced'),'post','advanced');
+			add_meta_box('geo_mashup_admin_edit',__('Location','GeoMashup'),array('GeoMashup','edit_form_advanced'),'page','advanced');
 		}
 	}
 
@@ -911,7 +911,7 @@ class GeoMashup {
 		$lng = $coords['lng'];
 		if ($lat && $lng) {
 			$icon = '';
-			if ($options['show_icon']) {
+			if ($options['show_icon'] && $options['show_icon'] != 'false') {
 				$icon = '<img src="'.get_bloginfo('wpurl') .
 					'/wp-content/plugins/geo-mashup/images/geotag_16.png" alt="'.__('Geotag Icon','GeoMashup').'"/>';
 			}
@@ -942,7 +942,7 @@ class GeoMashup {
 	/**
 	 * List all located posts.
 	 */
-	function list_located_posts($display = true)
+	function list_located_posts($option_args = null)
 	{
 		global $wpdb;
 		$query = "SELECT * 
@@ -969,11 +969,7 @@ class GeoMashup {
 			}
 		}
 		$list_html .= '</ul>';
-		if ($display) {
-			echo $list_html;
-		} else {
-			return $list_html;
-		}
+		return $list_html;
 	}
 
 	/**
@@ -1023,8 +1019,12 @@ class GeoMashup {
 } // class GeoMashup
 
 // frontend hooks
-add_filter('the_content', array('GeoMashup', 'the_content'));
 add_shortcode('geo_mashup_map','geo_mashup_map');
+add_shortcode('geo_mashup_show_on_map_link', 'geo_mashup_show_on_map_link');
+add_shortcode('geo_mashup_full_post','geo_mashup_full_post');
+add_shortcode('geo_mashup_category_name','geo_mashup_category_name');
+add_shortcode('geo_mashup_category_legend','geo_mashup_category_legend');
+add_shortcode('geo_mashup_list_located_posts','geo_mashup_list_located_posts');
 
 if ($geoMashupOpts['add_category_links'] == 'true') {
 	add_filter('list_cats', array('GeoMashup', 'list_cats'), 10, 2);
@@ -1043,8 +1043,6 @@ add_filter('upload_mimes', array('GeoMashup', 'upload_mimes'));
 
 add_action('admin_menu', array('GeoMashup', 'admin_menu'));
 add_action('admin_head', array('GeoMashup', 'admin_head'));
-add_action('dbx_post_advanced', array('GeoMashup', 'edit_form_advanced'));
-add_action('dbx_page_advanced', array('GeoMashup', 'edit_form_advanced'));
 add_action('save_post', array('GeoMashup', 'save_post'));
 add_action('wp_handle_upload', array('GeoMashup', 'wp_handle_upload'));
 add_action('admin_print_scripts', array('GeoMashup', 'admin_print_scripts'));
