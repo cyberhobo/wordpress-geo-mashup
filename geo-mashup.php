@@ -903,7 +903,7 @@ class GeoMashup {
 		$lng = $coords['lng'];
 		if ($lat && $lng) {
 			$icon = '';
-			if ($options['show_icon'] && $options['show_icon'] != 'false') {
+			if ($options['show_icon'] && strcmp($options['show_icon'],'false') != 0) {
 				$icon = '<img src="'.get_bloginfo('wpurl') .
 					'/wp-content/plugins/geo-mashup/images/geotag_16.png" alt="'.__('Geotag Icon','GeoMashup').'"/>';
 			}
