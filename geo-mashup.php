@@ -195,9 +195,11 @@ class GeoMashup {
 		global $geoMashupOpts;
 		if ($geoMashupOpts['google_key'] && preg_match('/(post|page)(-new|).php/',$_SERVER['REQUEST_URI'])) {
 			$link_url = get_bloginfo('wpurl').'/wp-content/plugins/geo-mashup';
+			/* Packed code is more trouble than it's worth
 			if ($geoMashupOpts['use_packed'] == 'true') {
 				$link_url .= '/packed';
 			}
+			*/
 			echo '
 				<style type="text/css"> #geo_mashup_map div { margin:0; } </style>
 				<script src="http://maps.google.com/maps?file=api&amp;v=2&amp;key='.$geoMashupOpts['google_key'].'" type="text/javascript"></script>
@@ -497,7 +499,6 @@ class GeoMashup {
 			$geoMashupOpts['in_post_add_overview_control'] = 'false';
 			$geoMashupOpts['add_category_links'] = 'false';
 			$geoMashupOpts['show_post'] = 'false';
-			$geoMashupOpts['use_packed'] = 'false';
 			$geoMashupOpts['show_future'] = 'false';
 			$geoMashupOpts['auto_info_open'] = 'false';
 			foreach($_POST as $name => $value) {
@@ -683,11 +684,6 @@ class GeoMashup {
 			$showPostChecked = '';
 		}
 
-		if ($geoMashupOpts['use_packed'] == 'true') {
-			$usePackedChecked = ' checked="true"';
-		} else {
-			$usePackedChecked = '';
-		}
 		$showFutureOptions = "";
 		$futureOptions = Array(
 			'true' => __('Yes', 'GeoMashup'),
@@ -726,10 +722,6 @@ class GeoMashup {
 							<th width="33%" scope="row">'.__('Google Maps Key', 'GeoMashup').'</th>
 							<td><input id="google_key" name="google_key" type="text" size="40" value="'.$geoMashupOpts['google_key'].'" />
 							<a href="http://maps.google.com/apis/maps/signup.html">'.__('Get yours here', 'GeoMashup').'</a></td>
-						</tr>
-						<tr>
-							<th scope="row">'.__('Use Compressed Javascript', 'GeoMashup').'</th>
-							<td><input id="use_packed" name="use_packed" type="checkbox" value="true"'.$usePackedChecked.' /></td>
 						</tr>
 					</table>
 				</fieldset>

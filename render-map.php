@@ -13,8 +13,6 @@ function add_double_quotes(&$item,$key) {
 
 $link_dir = get_bloginfo('wpurl')."/wp-content/plugins/geo-mashup";
 $geo_mashup_opts = get_settings('geo_mashup_options');
-$packed = '';
-if ($geo_mashup_opts['use_packed'] == 'true') $packed = 'packed/';
 
 $map_opts = array('link_dir' => "'$link_dir'");
 
@@ -119,9 +117,9 @@ $map_opts['categoryOpts'] = $category_opts;
 		<script src="http://maps.google.com/maps?file=api&amp;v=2&amp;key=<?php echo $geo_mashup_opts['google_key'];?>" 
 						type="text/javascript"></script>
 		<?php if (is_readable('custom.js')): ?>
-		<script src="<?php echo $packed; ?>custom.js" type="text/javascript"></script>
+		<script src="custom.js" type="text/javascript"></script>
 		<?php endif; ?>
-		<script src="<?php echo $packed; ?>geo-mashup.js" type="text/javascript"></script>
+		<script src="geo-mashup.js" type="text/javascript"></script>
 		<?php if (is_readable('map-style.css')): ?>
 		<link rel="stylesheet" type="text/css" href="map-style.css" />
 		<?php endif; ?>
