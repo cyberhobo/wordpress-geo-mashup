@@ -29,13 +29,15 @@ if (strlen($_GET['post_ids']) > 0)
 
 if ($post)
 {
+	$coords = GeoMashup::post_coordinates();
 	$kml_urls = GeoMashup::get_kml_attachment_urls($post->ID);
 	if (count($kml_urls)>0)
 	{
 		$map_opts['load_kml'] = '\''.array_pop($kml_urls).'\'';
 	}
-	if ($post->post_type == 'post')
+	if (!empty($coords))
 	{
+		// Use inside located page or post settings
 		$settings = array(
 			'map_control' => "'{$geo_mashup_opts['in_post_map_control']}'",
 			'add_map_type_control' => ($geo_mashup_opts['in_post_add_map_type_control']?$geo_mashup_opts['in_post_add_map_type_control']:'false'),
@@ -46,8 +48,9 @@ if ($post)
 		$map_opts = array_merge($settings,$map_opts);
 		$map_opts['in_post'] = 'true';
 	}
-	else if ($post->post_type = 'page')
+	else 
 	{
+		// Use global map settings
 		$settings = array(
 			'add_map_type_control' => ($geo_mashup_opts['add_map_type_control']?$geo_mashup_opts['add_map_type_control']:'false'),
 			'map_control' => "'{$geo_mashup_opts['map_control']}'",
@@ -93,7 +96,7 @@ if ($categories)
 	foreach($categories as $category) {
 		$category_opts .= $cat_comma.'"'.addslashes($category->name).'":{';
 		$opt_comma = '';
-		if ($geoMashupOpts['category_color'][$category->slug]) {
+		if (is_array($geoMashupOpts['category_color']) && $geoMashupOpts['category_color'][$category->slug]) {
 			$category_opts .= '"color_name":"'.$geoMashupOpts['category_color'][$category->slug].'"';
 			$opt_comma = ',';
 		}
