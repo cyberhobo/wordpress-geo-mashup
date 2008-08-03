@@ -44,18 +44,23 @@ function geo_mashup_map($atts)
 			$options['post_ids'] .= $comma.$wp_query->post->ID;
 			$comma = ',';
 		}
-	} else if (is_page()) {
-		$options['width'] = $geoMashupOpts['map_width'];
-		$options['height'] = $geoMashupOpts['map_height'];
-		$options['show_future'] = $geoMashupOpts['show_future'];
-		$options['post_ids'] = $wp_query->post->ID;
-		if (isset($_SERVER['QUERY_STRING'])) {
-			$options = wp_parse_args($_SERVER['QUERY_STRING'],$options);
-		} 
 	} else {
-		$options['width'] = $geoMashupOpts['in_post_map_width']; 
-		$options['height'] = $geoMashupOpts['in_post_map_height'];
-		$options['post_ids'] = $wp_query->post->ID;
+		$coords = GeoMashup::post_coordinates();
+		if (empty($coords)) {
+			// The post or page has no location - show an overview map
+			$options['width'] = $geoMashupOpts['map_width'];
+			$options['height'] = $geoMashupOpts['map_height'];
+			$options['show_future'] = $geoMashupOpts['show_future'];
+			$options['post_ids'] = $wp_query->post->ID;
+			if (isset($_SERVER['QUERY_STRING'])) {
+				$options = wp_parse_args($_SERVER['QUERY_STRING'],$options);
+			} 
+		} else {
+			// The post or page has a location - show a local map
+			$options['width'] = $geoMashupOpts['in_post_map_width']; 
+			$options['height'] = $geoMashupOpts['in_post_map_height'];
+			$options['post_ids'] = $wp_query->post->ID;
+		}
 	}
 	if (is_array($atts)) {
 		$options = array_merge($options, $atts);
@@ -595,7 +600,7 @@ class GeoMashup {
 				$colorOptions = '';
 				foreach($colorNames as $name => $rgb) {
 					$colorOptions .= '<option value="'.$name.'"';
-					if ($name == $geoMashupOpts['category_color'][$category->slug]) {
+					if (is_array($geoMashupOpts['category_color']) && $name == $geoMashupOpts['category_color'][$category->slug]) {
 						$colorOptions .= ' selected="true"';
 					}
 					$colorOptions .= ' style="background-color:'.$rgb.'">'.
@@ -726,7 +731,7 @@ class GeoMashup {
 					</table>
 				</fieldset>
 				<fieldset>
-					<legend>'.__('Default Settings For Maps Inside Posts', 'GeoMashup').'</legend>
+					<legend>'.__('Default Settings For Maps In Located Posts and Pages', 'GeoMashup').'</legend>
 					<table width="100%" cellspacing="2" cellpadding="5" class="editform">
 						<tr>
 							<th scope="row">'.__('Map Control', 'GeoMashup').'</th>
@@ -756,7 +761,7 @@ class GeoMashup {
 					</table>
 				</fieldset>
 				<fieldset>
-					<legend>'.__('Default Settings For The Global Map', 'GeoMashup').'</legend>
+					<legend>'.__('Default Settings For Global Maps', 'GeoMashup').'</legend>
 					<table width="100%" cellspacing="2" cellpadding="5" class="editform">
 						<tr>
 							<th scope="row" title="'.__('Generated links go here','GeoMashup').'">'.__('Global Mashup Page', 'GeoMashup').'</th>
