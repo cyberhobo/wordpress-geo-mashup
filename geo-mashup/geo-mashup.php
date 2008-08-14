@@ -883,14 +883,6 @@ class GeoMashup {
 	}
 
 	/**
-	 * A tag to insert the map itself, as an alternative 
-	 * to the_content() filter.
-	 */
-	function the_map() {
-		echo GeoMashup::the_content();
-	}
-
-	/**
 	 * A tag to insert a link to a post on the mashup.
 	 */
 	function post_link($option_args = null) {
