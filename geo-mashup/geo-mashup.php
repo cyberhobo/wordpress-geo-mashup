@@ -594,7 +594,7 @@ class GeoMashup {
 			JOIN $wpdb->term_taxonomy tt ON tt.term_id = t.term_id
 			WHERE taxonomy='category'";
 		$categories = $wpdb->get_results($categorySelect);
-		if ($categories)
+		if (is_array($categories))
 		{
 			foreach($categories as $category) {
 				$colorOptions = '';
