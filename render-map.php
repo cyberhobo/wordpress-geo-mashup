@@ -90,7 +90,7 @@ $category_select = "SELECT *
 	WHERE taxonomy='category'";
 $categories = $wpdb->get_results($category_select);
 $category_opts = '{';
-if ($categories)
+if (is_array($categories))
 {
 	$cat_comma = '';
 	foreach($categories as $category) {
