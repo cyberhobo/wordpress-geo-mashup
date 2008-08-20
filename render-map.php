@@ -6,7 +6,7 @@ global $post;
 status_header(200);
 
 function add_double_quotes(&$item,$key) {
-	if ($key == 'show_future' || is_int(strpos($item,',')) || is_int(strpos($item,':'))) {
+	if ($key == 'show_future' || $key == 'map_control' || is_int(strpos($item,',')) || is_int(strpos($item,':'))) {
 		$item = '"'.$item.'"';
 	}
 }
@@ -37,7 +37,7 @@ if ($post)
 	}
 	if (!empty($coords))
 	{
-		// Use inside located page or post settings
+		// Use single located page or post settings
 		$settings = array(
 			'map_control' => "'{$geo_mashup_opts['in_post_map_control']}'",
 			'add_map_type_control' => ($geo_mashup_opts['in_post_add_map_type_control']?$geo_mashup_opts['in_post_add_map_type_control']:'false'),
