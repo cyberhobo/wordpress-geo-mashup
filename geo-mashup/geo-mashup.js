@@ -27,7 +27,7 @@ var GeoMashup = {
 	color_names : ['red','lime','blue','orange','yellow','aqua','green','silver','maroon','olive','navy','purple','gray','teal','fuchsia','white','black'],
 	colors : {
 		'red':'#ff0000',
-	  'lime':'#00ff00',
+		'lime':'#00ff00',
 		'blue':'#0000ff',
 		'orange':'#ffa500',
 		'yellow':'#ffff00',
@@ -120,6 +120,15 @@ var GeoMashup = {
 		}
 	},
 
+	parentScrollToGeoPost : function () {
+		var geo_post = parent.document.getElementById('geoPost');
+		if (geo_post) {
+			parent.focus();
+			parent.scrollTo(geo_post.offsetLeft, geo_post.offsetTop);
+		}
+		return false;
+	},
+
 	renderRss : function (rss_doc) {
 		// Built excerpt HTML
 		var items = rss_doc.getElementsByTagName('item');
@@ -131,8 +140,8 @@ var GeoMashup = {
 			var url = link;
 			var onclick = 'this.target=\'_parent\'; GeoMashup.saveBackSettings()';
 			if (this.opts.show_post_here) {
-				onclick = 'GeoMashup.showPost(\''+url+'\')';
-				url = '#geoPost';
+				onclick = 'return GeoMashup.parentScrollToGeoPost()';
+				url = '#';
 			}
 			var title = this.getTagContent(items[i],'title','-');
 			var pubDate = this.getTagContent(items[i],'pubDate','-').substr(0,16);
@@ -197,7 +206,7 @@ var GeoMashup = {
 		request.onreadystatechange = function() {
 			if (request.readyState == 4) {
 				if (request.status == 200) {
-					var node = document.createElement('div');
+					var node = parent.document.createElement('div');
 					node.innerHTML = request.responseText;
 					var divs = node.getElementsByTagName('div');
 					for (var i=0; i<divs.length; i++) {
