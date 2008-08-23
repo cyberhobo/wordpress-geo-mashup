@@ -51,6 +51,8 @@ function geo_mashup_map($atts)
 			$options['width'] = $geoMashupOpts['map_width'];
 			$options['height'] = $geoMashupOpts['map_height'];
 			$options['show_future'] = $geoMashupOpts['show_future'];
+			$options['click_to_load'] = $geoMashupOpts['click_to_load'];
+			$options['click_to_load_text'] = $geoMashupOpts['click_to_load_text'];
 			$options['post_ids'] = $wp_query->post->ID;
 			if (isset($_SERVER['QUERY_STRING'])) {
 				$options = wp_parse_args($_SERVER['QUERY_STRING'],$options);
@@ -60,16 +62,33 @@ function geo_mashup_map($atts)
 			$options['width'] = $geoMashupOpts['in_post_map_width']; 
 			$options['height'] = $geoMashupOpts['in_post_map_height'];
 			$options['post_ids'] = $wp_query->post->ID;
+			$options['click_to_load'] = $geoMashupOpts['in_post_click_to_load'];
+			$options['click_to_load_text'] = $geoMashupOpts['in_post_click_to_load_text'];
 		}
 	}
 	if (is_array($atts)) {
 		$options = array_merge($options, $atts);
 	}
-
-	$iframe_src = get_bloginfo('wpurl').'/wp-content/plugins/geo-mashup/render-map.php?'.GeoMashup::implode_assoc('=','&',$options,false,true);
-	return "<div class=\"geo_mashup_map\"><iframe src=\"{$iframe_src}\" height=\"{$options['height']}\" ".
-		"width=\"{$options['width']}\" marginheight=\"0\" marginwidth=\"0\" ".
-		"scrolling=\"no\" frameborder=\"0\"></iframe></div>";
+	$click_to_load = $options['click_to_load'];
+	unset($options['click_to_load']);
+	$click_to_load_text = $options['click_to_load_text'];
+	unset($options['click_to_load_text']);
+	$wpurl = get_bloginfo('wpurl');
+	$iframe_src = $wpurl.'/wp-content/plugins/geo-mashup/render-map.php?'.GeoMashup::implode_assoc('=','&',$options,false,true);
+	$content = "";
+	if ($click_to_load == 'true') {
+		$style = "height:{$options['height']}px;width:{$options['width']}px;background-color:#ddd;".
+			"background-image:url($wpurl/wp-content/plugins/geo-mashup/images/wp-gm-pale.png);".
+			"background-repeat:no-repeat;background-position:center;cursor:pointer;";
+		$content = "<div class=\"geo_mashup_map\" style=\"$style\" " .
+			"onclick=\"GeoMashupLoader.addMapFrame(this,'$iframe_src',{$options['height']},{$options['width']})\">".
+			"<p style=\"text-align:center;\">$click_to_load_text</p></div>";
+	} else {
+		$content =  "<div class=\"geo_mashup_map\"><iframe src=\"{$iframe_src}\" height=\"{$options['height']}\" ".
+			"width=\"{$options['width']}\" marginheight=\"0\" marginwidth=\"0\" ".
+			"scrolling=\"no\" frameborder=\"0\"></iframe></div>";
+	}
+	return $content;
 }
 
 /**
@@ -171,6 +190,8 @@ class GeoMashup {
 	function wp_head() {
 		global $geoMashupOpts, $wp_query;
 
+		$link_url = get_bloginfo('wpurl').'/wp-content/plugins/geo-mashup';
+		echo '	<script src="'.$link_url.'/geo-mashup-loader.js" type="text/javascript"></script>"';
 		if (is_single())
 		{
 			list($lat, $lon) = split(',', get_post_meta($wp_query->post->ID, '_geo_location', true));
@@ -503,6 +524,8 @@ class GeoMashup {
 			$geoMashupOpts['add_overview_control'] = 'false';
 			$geoMashupOpts['in_post_add_overview_control'] = 'false';
 			$geoMashupOpts['add_category_links'] = 'false';
+			$geoMashupOpts['click_to_load'] = 'false';
+			$geoMashupOpts['in_post_click_to_load'] = 'false';
 			$geoMashupOpts['show_post'] = 'false';
 			$geoMashupOpts['show_future'] = 'false';
 			$geoMashupOpts['auto_info_open'] = 'false';
@@ -517,13 +540,15 @@ class GeoMashup {
 		if (!isset($geoMashupOpts['map_width'])) {
 			$geoMashupOpts['map_width'] = '400';
 			$geoMashupOpts['map_height'] = '500';
-			$geoMashupOpts['in_post_map_width'] = '400';
-			$geoMashupOpts['in_post_map_height'] = '500';
-			$geoMashupOpts['in_post_map_width'] = '400';
-			$geoMashupOpts['in_post_map_height'] = '500';
+			$geoMashupOpts['in_post_map_width'] = '300';
+			$geoMashupOpts['in_post_map_height'] = '400';
 			$geoMashupOpts['excerpt_format'] = 'text';
 			$geoMashupOpts['excerpt_length'] = '250';
 			$geoMashupOpts['add_category_links'] = 'false';
+			$geoMashupOpts['click_to_load'] = 'false';
+			$geoMashupOpts['in_post_click_to_load'] = 'false';
+			$geoMashupOpts['click_to_load_text'] = __('Click to load map', 'GeoMashup');
+			$geoMashupOpts['in_post_click_to_load_text'] = __('Click to load map', 'GeoMashup');
 			$geoMashupOpts['category_link_separator'] = '::';
 			$geoMashupOpts['category_link_text'] = 'map';
 			$geoMashupOpts['category_zoom_level'] = '7';
@@ -532,13 +557,13 @@ class GeoMashup {
 				$geoMashupOpts['map_control'] = 'GSmallMapControl';
 			}
 			if (!isset($geoMashupOpts['in_post_map_control'])) {
-				$geoMashupOpts['map_control'] = 'GSmallMapControl';
+				$geoMashupOpts['in_post_map_control'] = 'GSmallMapControl';
 			}
 			if (!isset($geoMashupOpts['add_map_type_control'])) {
 				$geoMashupOpts['add_map_type_control'] = 'true';
 			}
 			if (!isset($geoMashupOpts['in_post_add_map_type_control'])) {
-				$geoMashupOpts['add_map_type_control'] = 'true';
+				$geoMashupOpts['in_post_add_map_type_control'] = 'true';
 			}
 			if (!isset($geoMashupOpts['auto_info_open'])) {
 				$geoMashupOpts['auto_info_open'] = 'true';
@@ -689,6 +714,18 @@ class GeoMashup {
 			$showPostChecked = '';
 		}
 
+		if ($geoMashupOpts['click_to_load'] == 'true') {
+			$clickToLoadChecked = ' checked="true"';
+		} else {
+			$clickToLoadChecked = '';
+		}
+
+		if ($geoMashupOpts['in_post_click_to_load'] == 'true') {
+			$inPostClickToLoadChecked = ' checked="true"';
+		} else {
+			$inPostClickToLoadChecked = '';
+		}
+		
 		$showFutureOptions = "";
 		$futureOptions = Array(
 			'true' => __('Yes', 'GeoMashup'),
@@ -758,10 +795,20 @@ class GeoMashup {
 							<td><input id="in_post_zoom_level" name="in_post_zoom_level" type="text" size="2" value="'.$geoMashupOpts['in_post_zoom_level'].'" />'.
 							__('0 (max zoom out) - 17 (max zoom in)', 'GeoMashup').'</td>
 						</tr>
-					</table>
+						<tr>
+							<th scope="row">'.__('Click To Load', 'GeoMashup').'</th>
+							<td>
+								<input id="in_post_click_to_load" name="in_post_click_to_load" type="checkbox" value="true"'.$inPostClickToLoadChecked.' />
+							</td>
+						</tr>
+						<tr>
+							<th scope="row">'.__('Click To Load Text', 'GeoMashup').'</th>
+							<td><input id="in_post_click_to_load_text" name="in_post_click_to_load_text" type="text" size="50" value="'.$geoMashupOpts['in_post_click_to_load_text'].'" /></td>
+						</tr>
+				</table>
 				</fieldset>
 				<fieldset>
-					<legend>'.__('Default Settings For Global Maps', 'GeoMashup').'</legend>
+					<legend>'.__('Default Settings For Maps In Non-Located Posts and Pages', 'GeoMashup').'</legend>
 					<table width="100%" cellspacing="2" cellpadding="5" class="editform">
 						<tr>
 							<th scope="row" title="'.__('Generated links go here','GeoMashup').'">'.__('Global Mashup Page', 'GeoMashup').'</th>
@@ -811,6 +858,14 @@ class GeoMashup {
 						<tr>
 							<th scope="row">'.__('Automatically Open Linked Post Info Window', 'GeoMashup').'</th>
 							<td><input id="auto_info_open" name="auto_info_open" type="checkbox" value="true"'.$autoInfoOpenChecked.' /></td>
+						</tr>
+						<tr>
+							<th scope="row">'.__('Click To Load', 'GeoMashup').'</th>
+							<td><input id="click_to_load" name="click_to_load" type="checkbox" value="true"'.$clickToLoadChecked.' /></td>
+						</tr>
+						<tr>
+							<th scope="row">'.__('Click To Load Text', 'GeoMashup').'</th>
+							<td><input id="click_to_load_text" name="click_to_load_text" type="text" size="50" value="'.$geoMashupOpts['click_to_load_text'].'" /></td>
 						</tr>
 						<tr>
 							<th scope="row">'.__('Enable Full Post Display', 'GeoMashup').'</th>
