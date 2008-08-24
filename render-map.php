@@ -17,6 +17,11 @@ $geo_mashup_opts = get_settings('geo_mashup_options');
 $map_opts = array('link_dir' => "'$link_dir'");
 
 $post = null;
+$map_mode = null;
+if (strlen($_GET['map_mode']) > 0) {
+	$map_mode = $_GET['map_mode'];
+	unset($_GET['map_mode']);
+}
 if (strlen($_GET['post_ids']) > 0)
 {
 	if (strpos($_GET['post_ids'],',') > 0) {
@@ -35,37 +40,36 @@ if ($post)
 	{
 		$map_opts['load_kml'] = '\''.array_pop($kml_urls).'\'';
 	}
-	if (!empty($coords))
-	{
-		// Use single located page or post settings
-		$settings = array(
-			'map_control' => "'{$geo_mashup_opts['in_post_map_control']}'",
-			'add_map_type_control' => ($geo_mashup_opts['in_post_add_map_type_control']?$geo_mashup_opts['in_post_add_map_type_control']:'false'),
-			'add_overview_control' => ($geo_mashup_opts['in_post_add_overview_control']?$geo_mashup_opts['in_post_add_overview_control']:'false'),
-			'map_type' => "'{$geo_mashup_opts['in_post_map_type']}'",
-			'zoom' => ($geo_mashup_opts['in_post_zoom_level']?$geo_mashup_opts['in_post_zoom_level']:'5'));
-		$map_opts = array_merge(GeoMashup::post_coordinates(),$map_opts);
-		$map_opts = array_merge($settings,$map_opts);
-		$map_opts['in_post'] = 'true';
-	}
-	else 
-	{
-		// Use global map settings
-		$settings = array(
-			'add_map_type_control' => ($geo_mashup_opts['add_map_type_control']?$geo_mashup_opts['add_map_type_control']:'false'),
-			'map_control' => "'{$geo_mashup_opts['map_control']}'",
-			'add_overview_control' => ($geo_mashup_opts['add_overview_control']?$geo_mashup_opts['add_overview_control']:'false'),
-			'map_type' => "'{$geo_mashup_opts['map_type']}'",
-			'zoom' => ($geo_mashup_opts['zoom_level']?$geo_mashup_opts['zoom_level']:'5'),
-			'marker_min_zoom' => ($geo_mashup_opts['marker_min_zoom']?$geo_mashup_opts['marker_min_zoom']:'0'),
-			'max_posts' => ($geo_mashup_opts['max_posts']?$geo_mashup_opts['max_posts']:'false'),
-			'show_post_here' => ($geo_mashup_opts['show_post']?$geo_mashup_opts['show_post']:'false'),
-			'auto_open_info_window' => ($geo_mashup_opts['auto_info_open']?$geo_mashup_opts['auto_info_open']:'false'),
-			'info_window_width' => ($geo_mashup_opts['info_window_width']?$geo_mashup_opts['info_window_width']:'false'),
-			'info_window_height' => ($geo_mashup_opts['info_window_height']?$geo_mashup_opts['info_window_height']:'false'));
-		$map_opts['post_data'] = GeoMashup::getLocationsJson($_GET);
-		$map_opts = array_merge($settings,$map_opts);
-	}
+}
+
+if ($map_mode == 'single' && !empty($coords))
+{
+	// Use single located page or post settings
+	$settings = array(
+		'map_control' => "'{$geo_mashup_opts['in_post_map_control']}'",
+		'add_map_type_control' => ($geo_mashup_opts['in_post_add_map_type_control']?$geo_mashup_opts['in_post_add_map_type_control']:'false'),
+		'add_overview_control' => ($geo_mashup_opts['in_post_add_overview_control']?$geo_mashup_opts['in_post_add_overview_control']:'false'),
+		'map_type' => "'{$geo_mashup_opts['in_post_map_type']}'");
+	$map_opts = array_merge(GeoMashup::post_coordinates(),$map_opts);
+	$map_opts = array_merge($settings,$map_opts);
+	$map_opts['in_post'] = 'true';
+}
+else 
+{
+	// Use global map settings
+	$settings = array(
+		'add_map_type_control' => ($geo_mashup_opts['add_map_type_control']?$geo_mashup_opts['add_map_type_control']:'false'),
+		'map_control' => "'{$geo_mashup_opts['map_control']}'",
+		'add_overview_control' => ($geo_mashup_opts['add_overview_control']?$geo_mashup_opts['add_overview_control']:'false'),
+		'map_type' => "'{$geo_mashup_opts['map_type']}'",
+		'marker_min_zoom' => ($geo_mashup_opts['marker_min_zoom']?$geo_mashup_opts['marker_min_zoom']:'0'),
+		'max_posts' => ($geo_mashup_opts['max_posts']?$geo_mashup_opts['max_posts']:'false'),
+		'show_post_here' => ($geo_mashup_opts['show_post']?$geo_mashup_opts['show_post']:'false'),
+		'auto_open_info_window' => ($geo_mashup_opts['auto_info_open']?$geo_mashup_opts['auto_info_open']:'false'),
+		'info_window_width' => ($geo_mashup_opts['info_window_width']?$geo_mashup_opts['info_window_width']:'false'),
+		'info_window_height' => ($geo_mashup_opts['info_window_height']?$geo_mashup_opts['info_window_height']:'false'));
+	$map_opts['post_data'] = GeoMashup::getLocationsJson($_GET);
+	$map_opts = array_merge($settings,$map_opts);
 }
 
 $get_opts = $_GET;
@@ -74,13 +78,13 @@ $map_opts = array_merge($map_opts, $get_opts);
 
 $width = $_GET['width'];
 if (!is_numeric($width)) { 
-	if (is_page($post)) $width = $geo_mashup_opts['in_post_map_width'];
+	if ($map_mode == 'single') $width = $geo_mashup_opts['in_post_map_width'];
 	else $width = $geo_mashup_opts['map_width'];
 }
 $height = $_GET['height'];
 if (!is_numeric($height))
 {
-	if (is_page($post)) $height = $geo_mashup_opts['in_post_map_height'];
+	if ($map_mode == 'single') $height = $geo_mashup_opts['in_post_map_height'];
 	else $height = $geo_mashup_opts['map_height'];
 }
 
@@ -117,6 +121,7 @@ $map_opts['categoryOpts'] = $category_opts;
       xmlns:v="urn:schemas-microsoft-com:vml">
   <head>
     <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+	<title>Geo Mashup Map</title>
 		<script src="http://maps.google.com/maps?file=api&amp;v=2&amp;key=<?php echo $geo_mashup_opts['google_key'];?>" 
 						type="text/javascript"></script>
 		<?php if (is_readable('custom.js')): ?>
@@ -140,10 +145,10 @@ $map_opts['categoryOpts'] = $category_opts;
 	</head>
 	<body>
 	<div id="geoMashup"></div>
-	</body>	
 	<script type="text/javascript">
 		//<![CDATA[
 		GeoMashup.createMap(document.getElementById('geoMashup'), { <?php echo GeoMashup::implode_assoc(':',',',$map_opts); ?> });	
 		//]]>
 	</script>
+	</body>	
 </html>

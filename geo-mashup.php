@@ -2,7 +2,7 @@
 Plugin Name: Geo Mashup
 Plugin URI: http://code.google.com/p/wordpress-geo-mashup/ 
 Description: Tools for adding maps to your blog, and plotting posts on a master map. Configure in <a href="options-general.php?page=geo-mashup/geo-mashup.php">Options->Geo Mashup</a> after the plugin is activated.
-Version: 1.1
+Version: 1.2beta1
 Author: Dylan Kuhn
 Author URI: http://www.cyberhobo.net/
 Minimum WordPress Version Required: 2.5.1
@@ -35,9 +35,14 @@ function geo_mashup_map($atts)
 	global $geoMashupOpts,$wp_query;
 
 	$options = array('post_ids' => '');
-	if ($wp_query->current_post == -1)
+	if (!is_array($atts)) {
+		$atts = array();
+	}
+	$map_mode = $atts['map_mode'] ? $atts['map_mode'] : null;
+	
+	if ($wp_query->current_post == -1 || $map_mode == 'contextual')
 	{
-		// We're outside of The Loop, go contextual
+		$options['map_mode'] = 'contextual';
 		$comma = '';
 		while ($wp_query->have_posts()) {
 			$wp_query->the_post();
@@ -46,10 +51,11 @@ function geo_mashup_map($atts)
 		}
 	} else {
 		$coords = GeoMashup::post_coordinates();
-		if (empty($coords)) {
-			// The post or page has no location - show an overview map
+		if (empty($coords) || $map_mode == 'global') {
+			$options['map_mode'] = 'global';
 			$options['width'] = $geoMashupOpts['map_width'];
 			$options['height'] = $geoMashupOpts['map_height'];
+			$options['zoom'] = $geoMashupOpts['zoom_level']?$geoMashupOpts['zoom_level']:'5';
 			$options['show_future'] = $geoMashupOpts['show_future'];
 			$options['click_to_load'] = $geoMashupOpts['click_to_load'];
 			$options['click_to_load_text'] = $geoMashupOpts['click_to_load_text'];
@@ -58,9 +64,10 @@ function geo_mashup_map($atts)
 				$options = wp_parse_args($_SERVER['QUERY_STRING'],$options);
 			} 
 		} else {
-			// The post or page has a location - show a local map
+			$options['map_mode'] = 'single';
 			$options['width'] = $geoMashupOpts['in_post_map_width']; 
 			$options['height'] = $geoMashupOpts['in_post_map_height'];
+			$options['zoom'] = $geoMashupOpts['in_post_zoom_level']?$geoMashupOpts['in_post_zoom_level']:10;
 			$options['post_ids'] = $wp_query->post->ID;
 			$options['click_to_load'] = $geoMashupOpts['in_post_click_to_load'];
 			$options['click_to_load_text'] = $geoMashupOpts['in_post_click_to_load_text'];
@@ -69,20 +76,56 @@ function geo_mashup_map($atts)
 	if (is_array($atts)) {
 		$options = array_merge($options, $atts);
 	}
+
+	
 	$click_to_load = $options['click_to_load'];
 	unset($options['click_to_load']);
 	$click_to_load_text = $options['click_to_load_text'];
 	unset($options['click_to_load_text']);
+
+	$map_image = '';
+	if ($options['map_mode'] == 'image') {
+		$locations = GeoMashup::getLocations($options);
+		if (!empty($locations)) {
+			$map_image = '<img src="http://maps.google.com/staticmap?size='.$options['width'].'x'.
+				$options['height'];
+			if (count($locations) == 1) {
+				$map_image .= '&amp;center='.$locations[0]->meta_value;
+			}
+			if ($options['zoom']) {
+				$map_image .= '&amp;zoom='.$options['zoom'];
+			}
+			$map_image .= '&amp;markers=';
+			$separator = '';
+			foreach ($locations as $location) {
+				$map_image .= $separator.$location->meta_value;
+				$separator = '|';
+			}
+			$map_image .= '&amp;key='.$geoMashupOpts['google_key'].'" alt="geo_mashup_map"';
+			if ($click_to_load == 'true') {
+				$map_image .= '" title="'.$click_to_load_text.'"';
+			}
+			$map_image .= ' />';
+		}
+	}
+				
 	$wpurl = get_bloginfo('wpurl');
-	$iframe_src = $wpurl.'/wp-content/plugins/geo-mashup/render-map.php?'.GeoMashup::implode_assoc('=','&',$options,false,true);
+	$iframe_src = $wpurl.'/wp-content/plugins/geo-mashup/render-map.php?'.GeoMashup::implode_assoc('=','&amp;',$options,false,true);
 	$content = "";
+
 	if ($click_to_load == 'true') {
 		$style = "height:{$options['height']}px;width:{$options['width']}px;background-color:#ddd;".
 			"background-image:url($wpurl/wp-content/plugins/geo-mashup/images/wp-gm-pale.png);".
 			"background-repeat:no-repeat;background-position:center;cursor:pointer;";
 		$content = "<div class=\"geo_mashup_map\" style=\"$style\" " .
-			"onclick=\"GeoMashupLoader.addMapFrame(this,'$iframe_src',{$options['height']},{$options['width']})\">".
-			"<p style=\"text-align:center;\">$click_to_load_text</p></div>";
+			"onclick=\"GeoMashupLoader.addMapFrame(this,'$iframe_src',{$options['height']},{$options['width']})\">";
+		if ($options['map_mode'] == 'image') {
+			$content .= $map_image . '</div>';
+		} else {
+			$content .= "<p style=\"text-align:center;\">$click_to_load_text</p></div>";
+		}
+	} else if ($options['map_mode'] == 'image') {
+		$content = "<div class=\"geo_mashup_map\">$map_image</div>";
 	} else {
 		$content =  "<div class=\"geo_mashup_map\"><iframe src=\"{$iframe_src}\" height=\"{$options['height']}\" ".
 			"width=\"{$options['width']}\" marginheight=\"0\" marginwidth=\"0\" ".
@@ -191,7 +234,7 @@ class GeoMashup {
 		global $geoMashupOpts, $wp_query;
 
 		$link_url = get_bloginfo('wpurl').'/wp-content/plugins/geo-mashup';
-		echo '	<script src="'.$link_url.'/geo-mashup-loader.js" type="text/javascript"></script>"';
+		echo '	<script src="'.$link_url.'/geo-mashup-loader.js" type="text/javascript"></script>';
 		if (is_single())
 		{
 			list($lat, $lon) = split(',', get_post_meta($wp_query->post->ID, '_geo_location', true));
@@ -358,13 +401,11 @@ class GeoMashup {
 		}
 	}
 
-	function getLocationsJson($query_args)
+	function getLocations($query_args)
 	{
 		global $wpdb;
 		$query_args = wp_parse_args($query_args);
 		
-		$json = '{ posts : [';
-
 		// Construct the query 
 		$fields = 'ID, post_title, meta_value';
 		$tables = "$wpdb->postmeta pm
@@ -416,10 +457,18 @@ class GeoMashup {
 		}
 
 		$wpdb->query($query_string);
+		
+		return $wpdb->last_result;
+	}
 
-		if ($wpdb->last_result) {
+	function getLocationsJson($query_args)
+	{
+		global $wpdb;
+
+		$json = '{ posts : [';
+		$posts = GeoMashup::getLocations($query_args);
+		if ($posts) {
 			$comma = '';
-			$posts = $wpdb->last_result; 
 			foreach ($posts as $post) {
 				list($lat,$lng) = split(',',$post->meta_value);
 				$json .= $comma.'{"post_id":"'.$post->ID.'","title":"'.addslashes($post->post_title).
@@ -462,7 +511,7 @@ class GeoMashup {
 			$option_args = wp_parse_args($option_args);
 		}
 		if (is_page() && isset($_SERVER['QUERY_STRING'])) {
-			$option_args = $option_args + GeoMashup::explode_assoc('=','&',$_SERVER['QUERY_STRING']);
+			$option_args = $option_args + GeoMashup::explode_assoc('=','&amp;',$_SERVER['QUERY_STRING']);
 		}
 		if (isset($option_args['map_cat'])) {
 			$category_name = get_cat_name($option_args['map_cat']);
@@ -492,11 +541,11 @@ class GeoMashup {
 				$link = '';
 				$url = get_page_link($geoMashupOpts['mashup_page']);
 				if (strstr($url,'?')) {
-					$url .= '&';
+					$url .= '&amp;';
 				} else {
 					$url .= '?';
 				}
-				$link = '<a href="'.$url.'map_cat='.$category->cat_ID.'&zoom='.$geoMashupOpts['category_zoom'].
+				$link = '<a href="'.$url.'map_cat='.$category->cat_ID.'&amp;zoom='.$geoMashupOpts['category_zoom'].
 					'" title="'.$geoMashupOpts['category_link_text'].'">';
 				return $content.'</a>'.$geoMashupOpts['category_link_separator'].$link.$geoMashupOpts['category_link_text'];
 			}
@@ -962,11 +1011,11 @@ class GeoMashup {
 			$link = '';
 			$url = get_page_link($geoMashupOpts['mashup_page']);
 			if (strstr($url,'?')) {
-				$url .= '&';
+				$url .= '&amp;';
 			} else {
 				$url .= '?';
 			}
-			$link = '<a class="geo_mashup_link" href="'.$url.htmlentities("lat=$lat&lng=$lng&openPostId={$post->ID}").'">'.$icon.' '.$options['text'].'</a>';
+			$link = '<a class="geo_mashup_link" href="'.$url.htmlentities("lat=$lat&amp;lng=$lng&amp;openPostId={$post->ID}").'">'.$icon.' '.$options['text'].'</a>';
 			if ($options['display']) {
 				echo $link;
 				return true;
