@@ -578,6 +578,7 @@ class GeoMashup {
 			$geoMashupOpts['show_post'] = 'false';
 			$geoMashupOpts['show_future'] = 'false';
 			$geoMashupOpts['auto_info_open'] = 'false';
+			$geoMashupOpts['theme_stylesheet_with_maps'] = 'false';
 			foreach($_POST as $name => $value) {
 				$geoMashupOpts[$name] = $value;
 			}
@@ -617,6 +618,10 @@ class GeoMashup {
 			if (!isset($geoMashupOpts['auto_info_open'])) {
 				$geoMashupOpts['auto_info_open'] = 'true';
 			}
+			if (!isset($geoMashupOpts['theme_stylesheet_with_maps'])) {
+				$geoMashupOpts['theme_stylesheet_with_maps'] = 'false';
+			}			
+			
 			update_option('geo_mashup_options', $geoMashupOpts);
 			echo '<div class="updated"><p>'.__('Defaults set.', 'GeoMashup').'</p></div>';
 		}
@@ -800,6 +805,12 @@ class GeoMashup {
 		} else {
 			$autoInfoOpenChecked = '';
 		}
+		
+		if ($geoMashupOpts['theme_stylesheet_with_maps'] == 'true') {
+			$themestylesheetwithmaps = ' checked="true"';
+		} else {
+			$themestylesheetwithmaps = '';
+		}
 	
 		// Write the form
 		echo '
@@ -969,6 +980,10 @@ class GeoMashup {
 						<tr>
 							<th scope="row">'.__('In-Post Map Height', 'GeoMashup').'</th>
 							<td><input id="in_post_map_height" name="in_post_map_height" type="text" size="5" value="'.$geoMashupOpts['in_post_map_height'].'" />'.__('px', 'GeoMashup').'</td>
+						</tr>
+						<tr>
+							<th scope="row">'.__('Use Theme Style Sheet with Maps', 'GeoMashup').'</th>
+							<td><input id="theme_stylesheet_with_maps" name="theme_stylesheet_with_maps" type="checkbox" value="true"'.$themestylesheetwithmaps.' /></td>
 						</tr>
 					</table>
 				</fieldset>
