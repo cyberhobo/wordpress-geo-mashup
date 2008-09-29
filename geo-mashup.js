@@ -303,7 +303,7 @@ var GeoMashup = {
 
 	clickMarker : function(post_id) {
 		if (this.posts[post_id]) {
-			GEvent.trigger(this.posts[post_id].marker,"click");
+			setTimeout(function () { GEvent.trigger(GeoMashup.posts[post_id].marker,"click"); },300);
 		}
 	},
 

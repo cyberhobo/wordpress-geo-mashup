@@ -30,6 +30,8 @@ if (strlen($_GET['post_ids']) > 0)
 		$post = get_post($_GET['post_ids']);
 		unset($_GET['post_ids']);
 	}
+} else {
+	unset($_GET['post_ids']);
 }
 
 if ($post)
@@ -128,9 +130,32 @@ $map_opts['categoryOpts'] = $category_opts;
 		<script src="custom.js" type="text/javascript"></script>
 		<?php endif; ?>
 		<script src="geo-mashup.js" type="text/javascript"></script>
-		<?php if (is_readable('map-style.css')): ?>
-		<link rel="stylesheet" type="text/css" href="map-style.css" />
-		<?php endif; ?>
+		<?php
+			if ($geo_mashup_opts['theme_stylesheet_with_maps'] == 'true')
+			{
+				echo '<link rel="stylesheet" href="';
+				echo bloginfo('stylesheet_url');
+				echo '" type="text/css" media="screen" />';
+			}
+		?>
+		
+		<?php 		
+			// find the css file needed
+			$template_web_path = get_bloginfo('template_directory');
+			
+			if (is_readable(TEMPLATEPATH . '/map-style.css'))
+			{
+				echo '<link rel="stylesheet" type="text/css" href="' . $template_web_path . '/map-style.css' . '" />';
+			}
+			else
+			{
+				if (is_readable('map-style.css'))
+				{
+					echo '<link rel="stylesheet" type="text/css" href="map-style.css" />';
+				}
+			}
+		?>
+		
 		<style type="text/css">
 			v\:* { behavior:url(#default#VML); }
 			#geoMashup {
