@@ -303,7 +303,11 @@ var GeoMashup = {
 
 	clickMarker : function(post_id) {
 		if (this.posts[post_id]) {
-			setTimeout(function () { GEvent.trigger(GeoMashup.posts[post_id].marker,"click"); },300);
+			setTimeout(function () { 
+					if (!GeoMashup.posts[post_id].marker.isHidden()) {
+						GEvent.trigger(GeoMashup.posts[post_id].marker,"click"); 
+					}
+				},300);
 		}
 	},
 
