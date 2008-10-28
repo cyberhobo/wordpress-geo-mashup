@@ -2,7 +2,7 @@
 Plugin Name: Geo Mashup
 Plugin URI: http://code.google.com/p/wordpress-geo-mashup/ 
 Description: Tools for adding maps to your blog, and plotting posts on a master map. Configure in <a href="options-general.php?page=geo-mashup/geo-mashup.php">Options->Geo Mashup</a> after the plugin is activated.
-Version: 1.1.1
+Version: 1.1.2
 Author: Dylan Kuhn
 Author URI: http://www.cyberhobo.net/
 Minimum WordPress Version Required: 2.5.1
@@ -25,6 +25,7 @@ details.
 */
 
 load_plugin_textdomain('GeoMashup', 'wp-content/plugins/geo-mashup/languages');
+$geoMashupOpts = array();
 $geoMashupOpts = get_settings('geo_mashup_options');
 
 /**
@@ -606,11 +607,14 @@ class GeoMashup {
 					$colorOptions .= ' style="background-color:'.$rgb.'">'.
 						__($name,'GeoMashup').'</option>';
 				}
+				$category_line_zoom = '';
+				if (is_array($geoMashupOpts['category_line_zoom'])) {
+					$category_line_zoom = $geoMashupOpts['category_line_zoom'][$category->slug];
+				}
 				$categoryTable .= '<tr><td>' . $category->name . '</td><td><select id="category_color_' .
 					$category->slug . '" name="category_color[' . $category->slug . ']">'.$colorOptions.
 					'</select></td><td><input id="category_line_zoom_' . $category->slug . 
-					'" name="category_line_zoom['.$category->slug.']" value="'.
-					$geoMashupOpts['category_line_zoom'][$category->slug].
+					'" name="category_line_zoom['.$category->slug.']" value="'.$category_line_zoom.
 					'" type="text" size="2" maxlength="2" /></td></tr>'."\n";
 			}
 		}
