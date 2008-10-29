@@ -25,8 +25,10 @@ details.
 */
 
 load_plugin_textdomain('GeoMashup', 'wp-content/plugins/geo-mashup/languages');
-$geoMashupOpts = array();
 $geoMashupOpts = get_settings('geo_mashup_options');
+if (!is_array($geoMashupOpts)) {
+	$geoMashupOpts = GeoMashup::default_options();
+}
 
 /**
  * [geo_mashup_map ...]
@@ -494,6 +496,41 @@ class GeoMashup {
 		}
 	}
 
+	function default_options() {
+		return array('using_defaults' => true, 
+			'map_width' => '400',
+			'map_height' => '500',
+			'map_type' => 'G_NORMAL_MAP',
+			'zoom_level' => '7',
+			'in_post_map_width' => '400',
+			'in_post_map_height' => '500',
+			'in_post_map_width' => '400',
+			'in_post_map_height' => '500',
+			'in_post_map_type' => 'G_NORMAL_MAP',
+			'in_post_zoom_level' => '11',
+			'excerpt_format' => 'text',
+			'excerpt_length' => '250',
+			'add_category_links' => 'false',
+			'category_link_separator' => '::',
+			'category_link_text' => 'map',
+			'category_zoom' => '7',
+			'category_color' => array(),
+			'category_line_zoom' => array(),
+			'marker_min_zoom' => '',
+			'map_control' => 'GSmallMapControl',
+			'in_post_map_control' => 'GSmallMapControl',
+			'add_map_type_control' => 'true',
+			'add_overview_control' => 'false',
+			'in_post_add_overview_control' => 'false',
+			'in_post_add_map_type_control' => 'true',
+			'show_post' => 'false',
+			'show_future' => 'false',
+			'marker_min_zoom' => '',
+			'max_posts' => '',
+			'auto_info_open' => 'true',
+		);
+	}
+
 	function options_page() {
 		global $wpdb,$geoMashupOpts;
 
@@ -507,6 +544,7 @@ class GeoMashup {
 			$geoMashupOpts['show_post'] = 'false';
 			$geoMashupOpts['show_future'] = 'false';
 			$geoMashupOpts['auto_info_open'] = 'false';
+			unset($geoMashupOpts['using_defaults']);
 			foreach($_POST as $name => $value) {
 				$geoMashupOpts[$name] = $value;
 			}
@@ -515,37 +553,8 @@ class GeoMashup {
 		}
 
 		// Add defaults for missing options
-		if (!isset($geoMashupOpts['map_width'])) {
-			$geoMashupOpts['map_width'] = '400';
-			$geoMashupOpts['map_height'] = '500';
-			$geoMashupOpts['in_post_map_width'] = '400';
-			$geoMashupOpts['in_post_map_height'] = '500';
-			$geoMashupOpts['in_post_map_width'] = '400';
-			$geoMashupOpts['in_post_map_height'] = '500';
-			$geoMashupOpts['excerpt_format'] = 'text';
-			$geoMashupOpts['excerpt_length'] = '250';
-			$geoMashupOpts['add_category_links'] = 'false';
-			$geoMashupOpts['category_link_separator'] = '::';
-			$geoMashupOpts['category_link_text'] = 'map';
-			$geoMashupOpts['category_zoom_level'] = '7';
-			$geoMashupOpts['marker_min_zoom'] = '7';
-			if (!isset($geoMashupOpts['map_control'])) {
-				$geoMashupOpts['map_control'] = 'GSmallMapControl';
-			}
-			if (!isset($geoMashupOpts['in_post_map_control'])) {
-				$geoMashupOpts['map_control'] = 'GSmallMapControl';
-			}
-			if (!isset($geoMashupOpts['add_map_type_control'])) {
-				$geoMashupOpts['add_map_type_control'] = 'true';
-			}
-			if (!isset($geoMashupOpts['in_post_add_map_type_control'])) {
-				$geoMashupOpts['add_map_type_control'] = 'true';
-			}
-			if (!isset($geoMashupOpts['auto_info_open'])) {
-				$geoMashupOpts['auto_info_open'] = 'true';
-			}
-			update_option('geo_mashup_options', $geoMashupOpts);
-			echo '<div class="updated"><p>'.__('Defaults set.', 'GeoMashup').'</p></div>';
+		if (isset($geoMashupOpts['using_defaults'])) {
+			echo '<div class="updated"><p>'.__('Currenly using default options.', 'GeoMashup').'</p></div>';
 		}
 
 		// Create form elements

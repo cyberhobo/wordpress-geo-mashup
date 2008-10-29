@@ -100,7 +100,7 @@ if (is_array($categories))
 			$category_opts .= '"color_name":"'.$geoMashupOpts['category_color'][$category->slug].'"';
 			$opt_comma = ',';
 		}
-		if ($geoMashupOpts['category_line_zoom'][$category->slug]) {
+		if (is_array($geoMashupOpts['category_line_zoom']) && $geoMashupOpts['category_line_zoom'][$category->slug]) {
 			$category_opts .= $opt_comma.'"max_line_zoom":"'.$geoMashupOpts['category_line_zoom'][$category->slug].'"';
 		}
 		$category_opts .= '}';
