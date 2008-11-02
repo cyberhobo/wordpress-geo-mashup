@@ -6,16 +6,12 @@
  * If you know javascript, you can add your own customizations.
  *
  * The old custom-marker.js from pre 1.0 versions of Geo Mashup is no longer used.
+ * Look for full category marker customization in future releases.
  */
 function customizeGeoMashup(mashup) {
-	// Use a different marker icon
-	mashup.marker_icon = new GIcon();
-	mashup.marker_icon.image = "http://labs.google.com/ridefinder/images/mm_20_red.png";
-	mashup.marker_icon.shadow = "http://labs.google.com/ridefinder/images/mm_20_shadow.png";
-	mashup.marker_icon.iconSize = new GSize(12, 20);
-	mashup.marker_icon.shadowSize = new GSize(22, 20);
-	mashup.marker_icon.iconAnchor = new GPoint(6, 20);
-	mashup.marker_icon.infoWindowAnchor = new GPoint(5, 1);
+	// Add my geotagged Flickr photos
+	var geoXmlFlickr = new GGeoXml('http://api.flickr.com/services/feeds/geo/?id=82809242@N00&lang=en-us&format=rss_200');
+	mashup.map.addOverlay( geoXmlFlickr );
 
 	// Recenter the map
 	// Replace 18.5, 15.3 with your latitude, longitude
