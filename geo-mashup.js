@@ -301,13 +301,17 @@ var GeoMashup = {
 		}
 	},
 
-	clickMarker : function(post_id) {
-		if (this.posts[post_id]) {
-			setTimeout(function () { 
-					if (!GeoMashup.posts[post_id].marker.isHidden()) {
-						GEvent.trigger(GeoMashup.posts[post_id].marker,"click"); 
-					}
-				},300);
+	clickMarker : function(post_id, try_count) {
+		if (typeof(try_count) == 'undefined') {
+			try_count = 1;
+		}
+		if (this.posts[post_id] && try_count < 4) {
+			if (GeoMashup.posts[post_id].marker.isHidden()) {
+				try_count++;
+				setTimeout(function () { GeoMashup.clickMarker(post_id, try_count); }, 300);
+			} else {
+				GEvent.trigger(GeoMashup.posts[post_id].marker,"click"); 
+			}
 		}
 	},
 
