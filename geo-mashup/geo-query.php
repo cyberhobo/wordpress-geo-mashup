@@ -13,7 +13,7 @@ if (is_numeric($post_id)) {
 
 class GeoMashupQuery {
 
-	public static function trim_html($html, $length) {
+	function trim_html($html, $length) {
 		$end_pos = 0;
 		$text_len = 0;
 		$tag_count = 0;
@@ -26,15 +26,15 @@ class GeoMashupQuery {
 		return substr($html,0,$end_pos);
 	}
 
-	public static function strip_geo_mashup_shortcodes($content) {
+	function strip_geo_mashup_shortcodes($content) {
 		return preg_replace('/\[geo_mashup.*?\]/','',$content);
 	}
 
-	public static function excerpt_html($content) {
+	function excerpt_html($content) {
 		// Geo Mashup shortcodes in excerpts can cause an infinite recursion of frames - remove them
-		$content = self::strip_geo_mashup_shortcodes($content);
+		$content = GeoMashupQuery::strip_geo_mashup_shortcodes($content);
 		$content = apply_filters('the_content', $content);
-		$content = self::trim_html($content,GeoMashup::$options['excerpt_length']);
+		$content = GeoMashupQuery::trim_html($content,GeoMashup::$options['excerpt_length']);
 		$content = balanceTags($content, true);
 		$content = htmlspecialchars($content);
 		return $content;
@@ -72,9 +72,9 @@ class GeoMashupQuery {
 			}
 			$author = $wpdb->get_var("SELECT display_name FROM {$wpdb->users} WHERE ID={$post->post_author}");
 			if (GeoMashup::$options['excerpt_format']=='html') {
-				$excerpt = self::excerpt_html($post->post_content);
+				$excerpt = GeoMashupQuery::excerpt_html($post->post_content);
 			} else {
-				$excerpt = self::excerpt_text($post->post_content);
+				$excerpt = GeoMashupQuery::excerpt_text($post->post_content);
 			}
 			echo '<author>'.htmlspecialchars($author).'</author>'.
 				'<pubDate>'.$post->post_date.'</pubDate>'.
