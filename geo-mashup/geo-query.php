@@ -11,6 +11,9 @@ if (is_numeric($post_id)) {
 	GeoMashupQuery::query_locations();
 }
 
+/**
+ * GeoMashupQuery - static class provides namespace 
+ */
 class GeoMashupQuery {
 
 	function trim_html($html, $length) {
@@ -31,24 +34,25 @@ class GeoMashupQuery {
 	}
 
 	function excerpt_html($content) {
+		global $geo_mashup_options;
 		// Geo Mashup shortcodes in excerpts can cause an infinite recursion of frames - remove them
 		$content = GeoMashupQuery::strip_geo_mashup_shortcodes($content);
 		$content = apply_filters('the_content', $content);
-		$content = GeoMashupQuery::trim_html($content,GeoMashup::$options['excerpt_length']);
+		$content = GeoMashupQuery::trim_html($content,$geo_mashup_options->get('global_map', 'excerpt_length'));
 		$content = balanceTags($content, true);
 		$content = htmlspecialchars($content);
 		return $content;
 	}
 
-	public static function excerpt_text($content) {
+	function excerpt_text($content) {
 		$content = strip_tags($content);
-		$content = substr($content,0,GeoMashup::$options['excerpt_length']);
+		$content = substr($content,0,$geo_mashup_options->get('global_map', 'excerpt_length'));
 		$content = htmlspecialchars($content);
 		return $content;
 	}
 
-	public static function query_post($post_id) {
-		global $wpdb;
+	function query_post($post_id) {
+		global $wpdb, $geo_mashup_options;
 		header('Content-type: text/xml; charset='.get_settings('blog_charset'), true);
 		header('Cache-Control: no-cache;', true);
 		header('Expires: -1;', true);
@@ -71,7 +75,7 @@ class GeoMashupQuery {
 				echo '<category>'.$category.'</category>';
 			}
 			$author = $wpdb->get_var("SELECT display_name FROM {$wpdb->users} WHERE ID={$post->post_author}");
-			if (GeoMashup::$options['excerpt_format']=='html') {
+			if ($geo_mashup_options->get('global_map', 'excerpt_format')=='html') {
 				$excerpt = GeoMashupQuery::excerpt_html($post->post_content);
 			} else {
 				$excerpt = GeoMashupQuery::excerpt_text($post->post_content);

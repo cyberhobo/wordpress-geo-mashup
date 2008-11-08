@@ -27,7 +27,7 @@ function geo_mashup_edit_form() {
 	$nonce = wp_create_nonce('geo-mashup-edit-post');
 ?>
 	<input id="geo_mashup_edit_nonce" name="geo_mashup_edit_nonce" type="hidden" value="<?php echo $nonce; ?>" />
-	<img id="geo_mashup_status_icon" src="<?php echo GeoMashup::$url_path; ?>/images/idle_icon.gif" style="float:right" />
+	<img id="geo_mashup_status_icon" src="<?php echo GEO_MASHUP_URL_PATH; ?>/images/idle_icon.gif" style="float:right" />
 	<label for="geo_mashup_search"><?php _e('Find location:', 'GeoMashup'); ?>
 	<input	id="geo_mashup_search" 
 		name="geo_mashup_search" 
@@ -58,7 +58,7 @@ function geo_mashup_edit_form() {
 	</div>
 	<script type="text/javascript">//<![CDATA[
 		GeoMashupAdmin.registerMap(document.getElementById("geo_mashup_map"),
-			{"link_url":"<?php echo GeoMashup::$url_path; ?>",
+			{"link_url":"<?php echo GEO_MASHUP_URL_PATH; ?>",
 			"post_lat":"<?php echo $post_lat; ?>",
 			"post_lng":"<?php echo $post_lng; ?>",
 			"post_location_name":"<?php echo $post_location_name; ?>",
