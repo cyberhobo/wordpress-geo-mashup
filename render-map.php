@@ -1,7 +1,7 @@
 <?php
 
 require('../../../wp-blog-header.php');
-global $post;
+global $post, $geo_mashup_options;
 
 status_header(200);
 
@@ -11,7 +11,7 @@ function add_double_quotes(&$item,$key) {
 	}
 }
 
-$map_opts = array('link_dir' => '\''.GeoMashup::$url_path.'\'');
+$map_opts = array('link_dir' => '\'' . GEO_MASHUP_URL_PATH .'\'');
 
 $map_content = null;
 if (strlen($_GET['map_content']) > 0) {
@@ -25,12 +25,12 @@ if ($map_content == 'single')
 	$post = get_post($_GET['post_id']);
 	unset($_GET['post_id']);
 	$settings = array(
-		'width' => GeoMashup::$options['in_post_map_width'],
-		'height' => GeoMashup::$options['in_post_map_height'],
-		'map_control' => "'".GeoMashup::$options['in_post_map_control']."'",
-		'add_map_type_control' => (GeoMashup::$options['in_post_add_map_type_control']?GeoMashup::$options['in_post_add_map_type_control']:'false'),
-		'add_overview_control' => (GeoMashup::$options['in_post_add_overview_control']?GeoMashup::$options['in_post_add_overview_control']:'false'),
-		'map_type' => "'".GeoMashup::$options['in_post_map_type']."'");
+		'width' => $geo_mashup_options->get('single_map', 'width'),
+		'height' => $geo_mashup_options->get('single_map', 'height'),
+		'map_control' => "'".$geo_mashup_options->get('single_map', 'map_control')."'",
+		'add_map_type_control' => ($geo_mashup_options->get('single_map', 'add_map_type_control')?$geo_mashup_options->get('single_map', 'add_map_type_control'):'false'),
+		'add_overview_control' => ($geo_mashup_options->get('single_map', 'add_overview_control')?$geo_mashup_options->get('single_map', 'add_overview_control'):'false'),
+		'map_type' => "'".$geo_mashup_options->get('single_map', 'map_type')."'");
 	$map_opts = array_merge(GeoMashup::post_coordinates(),$map_opts);
 	$map_opts = array_merge($settings,$map_opts);
 	$map_opts['in_post'] = 'true';
@@ -42,23 +42,21 @@ if ($map_content == 'single')
 	// Map content is not single
 	if ($map_content == 'global') {
 		$settings = array(
-			'width' => GeoMashup::$options['map_width'],
-			'height' => GeoMashup::$options['map_height'],
-			'add_map_type_control' => (GeoMashup::$options['add_map_type_control']?GeoMashup::$options['add_map_type_control']:'false'),
-			'map_control' => "'".GeoMashup::$options['map_control']."'",
-			'add_overview_control' => (GeoMashup::$options['add_overview_control']?GeoMashup::$options['add_overview_control']:'false'),
-			'map_type' => "'".GeoMashup::$options['map_type']."'",
-			'marker_min_zoom' => (GeoMashup::$options['marker_min_zoom']?GeoMashup::$options['marker_min_zoom']:'0'),
-			'max_posts' => (GeoMashup::$options['max_posts']?GeoMashup::$options['max_posts']:'false'),
-			'show_post_here' => (GeoMashup::$options['show_post']?GeoMashup::$options['show_post']:'false'),
-			'auto_open_info_window' => (GeoMashup::$options['auto_info_open']?GeoMashup::$options['auto_info_open']:'false'),
-			'info_window_width' => (GeoMashup::$options['info_window_width']?GeoMashup::$options['info_window_width']:'false'),
-			'info_window_height' => (GeoMashup::$options['info_window_height']?GeoMashup::$options['info_window_height']:'false'));
+			'width' => $geo_mashup_options->get('global_map', 'width'),
+			'height' => $geo_mashup_options->get('global_map', 'height'),
+			'add_map_type_control' => ($geo_mashup_options->get('global_map', 'add_map_type_control')?$geo_mashup_options->get('global_map', 'add_map_type_control'):'false'),
+			'map_control' => "'".$geo_mashup_options->get('global_map', 'map_control')."'",
+			'add_overview_control' => ($geo_mashup_options->get('global_map', 'add_overview_control')?$geo_mashup_options->get('global_map', 'add_overview_control'):'false'),
+			'map_type' => "'".$geo_mashup_options->get('global_map', 'map_type')."'",
+			'marker_min_zoom' => ($geo_mashup_options->get('global_map', 'marker_min_zoom')?$geo_mashup_options->get('global_map', 'marker_min_zoom'):'0'),
+			'max_posts' => ($geo_mashup_options->get('global_map', 'max_posts')?$geo_mashup_options->get('global_map', 'max_posts'):'false'),
+			'show_post_here' => ($geo_mashup_options->get('global_map', 'show_post')?$geo_mashup_options->get('global_map', 'show_post'):'false'),
+			'auto_open_info_window' => ($geo_mashup_options->get('global_map', 'auto_info_open')?$geo_mashup_options->get('global_map', 'auto_info_open'):'false'));
 	} else {
 		//TODO: contextual defaults
 		$settings = array(
-			'width' => GeoMashup::$options['map_width'],
-			'height' => GeoMashup::$options['map_height']);
+			'width' => $geo_mashup_options->get('global_map', 'width'),
+			'height' => $geo_mashup_options->get('global_map', 'height'));
 	}
 	$map_opts['post_data'] = GeoMashup::getLocationsJson($_GET);
 	unset($_GET['post_ids']);
@@ -85,13 +83,15 @@ if (is_array($categories))
 	$cat_comma = '';
 	foreach($categories as $category) {
 		$category_opts .= $cat_comma.'"'.addslashes($category->name).'":{';
+		$category_color = $geo_mashup_options->get('global_map', 'category_color');
 		$opt_comma = '';
-		if (is_array(GeoMashup::$options['category_color']) && GeoMashup::$options['category_color'][$category->slug]) {
-			$category_opts .= '"color_name":"'.GeoMashup::$options['category_color'][$category->slug].'"';
+		if ( !empty( $category_color[$category->slug] ) ) {
+			$category_opts .= '"color_name":"'.$category_color[$category->slug].'"';
 			$opt_comma = ',';
 		}
-		if (GeoMashup::$options['category_line_zoom'][$category->slug]) {
-			$category_opts .= $opt_comma.'"max_line_zoom":"'.GeoMashup::$options['category_line_zoom'][$category->slug].'"';
+		$category_line_zoom = $geo_mashup_options->get('global_map', 'category_line_zoom');
+		if ( !empty( $category_line_zoom[$category->slug] ) ) {
+			$category_opts .= $opt_comma.'"max_line_zoom":"'.$category_line_zoom[$category->slug].'"';
 		}
 		$category_opts .= '}';
 		$cat_comma = ',';
@@ -108,14 +108,14 @@ $map_opts['categoryOpts'] = $category_opts;
   <head>
     <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
 	<title>Geo Mashup Map</title>
-		<script src="http://maps.google.com/maps?file=api&amp;v=2&amp;key=<?php echo GeoMashup::$options['google_key'];?>" 
+		<script src="http://maps.google.com/maps?file=api&amp;v=2&amp;key=<?php echo $geo_mashup_options->get('overall', 'google_key');?>" 
 						type="text/javascript"></script>
 		<?php if (is_readable('custom.js')): ?>
 		<script src="custom.js" type="text/javascript"></script>
 		<?php endif; ?>
 		<script src="geo-mashup.js" type="text/javascript"></script>
 		<?php
-			if (GeoMashup::$options['theme_stylesheet_with_maps'] == 'true')
+			if ($geo_mashup_options->get('overall', 'theme_stylesheet_with_maps') == 'true')
 			{
 				echo '<link rel="stylesheet" href="';
 				echo bloginfo('stylesheet_url');
