@@ -71,4 +71,3 @@ function queryLocations() {
 	echo GeoMashup::getLocationsJson($_GET);
 }
 ?>
-
