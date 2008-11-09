@@ -13,11 +13,10 @@ add_shortcode('geo_mashup_list_located_posts','geo_mashup_list_located_posts');
 /**
  * [geo_mashup_map ...]
  */
-function geo_mashup_map($atts)
-{
+function geo_mashup_map($atts) {
 	global $wp_query, $geo_mashup_options;
 
-	$options = array();
+	$url_params = array();
 	if (!is_array($atts)) {
 		$atts = array();
 	}
@@ -25,79 +24,68 @@ function geo_mashup_map($atts)
 	$map_content = $atts['map_content'];
 	unset($atts['map_content']);
 
-	if ($wp_query->current_post == -1) {
-		// We're not in a post or page 
-		if (empty($map_content)) {
+	if ( empty ( $map_content ) ) {
+		if (!$wp_query->in_the_loop) {
 			$map_content = 'contextual';
-		} 
-	} else if (empty($map_content) || $map_content == 'contextual') {
-		// We are in a post or page, see if it's located
-		$coords = GeoMashup::post_coordinates();
-		if (empty($coords)) {
-			// Not located, go global
-			$map_content = 'global';
 		} else {
-			// Located, go single
-			$map_content = 'single';
+			// We are in a post or page, see if it's located
+			$coords = GeoMashup::post_coordinates();
+			if (empty($coords)) {
+				// Not located, go global
+				$map_content = 'global';
+			} else {
+				// Located, go single
+				$map_content = 'single';
+			}
 		}
 	}
 	
+	$option_keys = array ( 'width', 'height', 'zoom', 'click_to_load', 'click_to_load_text' );
 	switch ($map_content) {
 		case 'contextual':
-			$options['map_content'] = 'contextual';
+			$url_params['map_content'] = 'contextual';
+			$url_params += $geo_mashup_options->get ( 'context_map', $option_keys );
 			$comma = '';
-			while ($wp_query->have_posts()) {
-				$wp_query->the_post();
-				$options['post_ids'] .= $comma.$wp_query->post->ID;
+			foreach ($wp_query->posts as $post) {
+				$url_params['post_ids'] .= $comma.$post->ID;
 				$comma = ',';
 			}
 			break;
 
 		case 'single':
-			$options['map_content'] = 'single';
-			$options['width'] = $geo_mashup_options->get('single_map', 'width'); 
-			$options['height'] = $geo_mashup_options->get('single_map', 'height');
-			$options['zoom'] = $geo_mashup_options->get('single_map', 'zoom_level')?$geo_mashup_options->get('single_map', 'zoom_level'):10;
-			$options['post_id'] = $wp_query->post->ID;
-			$options['click_to_load'] = $geo_mashup_options->get('single_map', 'click_to_load');
-			$options['click_to_load_text'] = $geo_mashup_options->get('single_map', 'click_to_load_text');
+			$url_params['map_content'] = 'single';
+			$url_params += $geo_mashup_options->get ( 'single_map', $option_keys );
+			$url_params['post_id'] = $wp_query->post->ID;
 			break;
 
 		case 'global':
-			$options['map_content'] = 'global';
-			$options['width'] = $geo_mashup_options->get('global_map', 'width');
-			$options['height'] = $geo_mashup_options->get('global_map', 'height');
-			$options['zoom'] = $geo_mashup_options->get('global_map', 'zoom_level')?$geo_mashup_options->get('global_map', 'zoom_level'):'5';
-			$options['show_future'] = $geo_mashup_options->get('global_map', 'show_future');
-			$options['click_to_load'] = $geo_mashup_options->get('global_map', 'click_to_load');
-			$options['click_to_load_text'] = $geo_mashup_options->get('global_map', 'click_to_load_text');
+			$url_params['map_content'] = 'global';
+			$option_keys[] = 'show_future';
+			$url_params += $geo_mashup_options->get ( 'global_map', $option_keys );
 			if (isset($_SERVER['QUERY_STRING'])) {
-				$options = wp_parse_args($_SERVER['QUERY_STRING'],$options);
+				$url_params = wp_parse_args($_SERVER['QUERY_STRING'],$url_params);
 			} 
 			break;
 
 		default:
 			return '<div class="geo_mashup_map"><p>Unrecognized value for map_content: "'.$map_content.'".</p></div>';
 	}
-	$options = array_merge($options, $atts);
+	$url_params = array_merge($url_params, $atts);
 	
-	$click_to_load = $options['click_to_load'];
-	unset($options['click_to_load']);
-	$click_to_load_text = $options['click_to_load_text'];
-	unset($options['click_to_load_text']);
+	$click_to_load = $url_params['click_to_load'];
+	unset($url_params['click_to_load']);
+	$click_to_load_text = $url_params['click_to_load_text'];
+	unset($url_params['click_to_load_text']);
 
 	$map_image = '';
-	if ($options['static'] == 'true') {
-		$locations = GeoMashup::getLocations($options);
+	if ($url_params['static'] == 'true') {
+		$locations = GeoMashup::getLocations($url_params);
 		if (!empty($locations)) {
-			$map_image = '<img src="http://maps.google.com/staticmap?size='.$options['width'].'x'.$options['height'];
+			$map_image = '<img src="http://maps.google.com/staticmap?size='.$url_params['width'].'x'.$url_params['height'];
 			if (count($locations) == 1) {
 				$map_image .= '&amp;center='.$locations[0]->meta_value;
 			}
-			if ($options['zoom']) {
-				$map_image .= '&amp;zoom='.$options['zoom'];
-			}
-			$map_image .= '&amp;markers=';
+			$map_image .= '&amp;zoom=' . $url_params['zoom'] . '&amp;markers=';
 			$separator = '';
 			foreach ($locations as $location) {
 				// TODO: Try to use the correct color for the category? Draw category lines?
@@ -112,26 +100,26 @@ function geo_mashup_map($atts)
 		}
 	}
 				
-	$iframe_src = GEO_MASHUP_URL_PATH . '/render-map.php?' . GeoMashup::implode_assoc('=', '&amp;', $options, false, true);
+	$iframe_src = GEO_MASHUP_URL_PATH . '/render-map.php?' . GeoMashup::implode_assoc('=', '&amp;', $url_params, false, true);
 	$content = "";
 
 	if ($click_to_load == 'true') {
-		$style = "height:{$options['height']}px;width:{$options['width']}px;background-color:#ddd;".
+		$style = "height:{$url_params['height']}px;width:{$url_params['width']}px;background-color:#ddd;".
 			"background-image:url($wpurl/wp-content/plugins/geo-mashup/images/wp-gm-pale.png);".
 			"background-repeat:no-repeat;background-position:center;cursor:pointer;";
 		$content = "<div class=\"geo_mashup_map\" style=\"$style\" " .
-			"onclick=\"GeoMashupLoader.addMapFrame(this,'$iframe_src',{$options['height']},{$options['width']})\">";
-		if ($options['static'] == 'true') {
+			"onclick=\"GeoMashupLoader.addMapFrame(this,'$iframe_src',{$url_params['height']},{$url_params['width']})\">";
+		if ($url_params['static'] == 'true') {
 			// TODO: test whether click to load really works with a static map
 			$content .= $map_image . '</div>';
 		} else {
 			$content .= "<p style=\"text-align:center;\">$click_to_load_text</p></div>";
 		}
-	} else if ($options['static'] == 'true') {
+	} else if ($url_params['static'] == 'true') {
 		$content = "<div class=\"geo_mashup_map\">$map_image</div>";
 	} else {
-		$content =  "<div class=\"geo_mashup_map\"><iframe src=\"{$iframe_src}\" height=\"{$options['height']}\" ".
-			"width=\"{$options['width']}\" marginheight=\"0\" marginwidth=\"0\" ".
+		$content =  "<div class=\"geo_mashup_map\"><iframe src=\"{$iframe_src}\" height=\"{$url_params['height']}\" ".
+			"width=\"{$url_params['width']}\" marginheight=\"0\" marginwidth=\"0\" ".
 			"scrolling=\"no\" frameborder=\"0\"></iframe></div>";
 	}
 	return $content;

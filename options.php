@@ -8,8 +8,9 @@ function geo_mashup_options_page()
 		// Process option updates
 		check_admin_referer('geo-mashup-update-options');
 		$geo_mashup_options->set_valid_options ( $_POST );
-		$geo_mashup_options->save();
-		echo '<div class="updated"><p>'.__('Options updated.', 'GeoMashup').'</p></div>';
+		if ($geo_mashup_options->save()) {
+			echo '<div class="updated"><p>'.__('Options updated.', 'GeoMashup').'</p></div>';
+		}
 	}
 
 	if ( !empty ( $geo_mashup_options->corrupt_options ) ) {
@@ -69,7 +70,7 @@ function geo_mashup_options_page()
 	$categoryTable = '
 		<table>
 			<tr><th>'.__('Category', 'GeoMashup').'</th><th>'.__('Color').'</th>
-			<th>'.__('Show Connecting Line Until Zoom Level (0-17 or none)','GeoMashup')."</th></tr>\n";
+			<th>'.__('Show Connecting Line Until Zoom Level (0-20 or none)','GeoMashup')."</th></tr>\n";
 	$categorySelect = "SELECT * 
 		FROM $wpdb->terms t 
 		JOIN $wpdb->term_taxonomy tt ON tt.term_id = t.term_id
@@ -116,9 +117,15 @@ function geo_mashup_options_page()
 			$in_post_selected = ' selected="true"';
 		}
 		$inPostMapTypeOptions .= '<option value="'.$type.'"'.$in_post_selected.'>'.$label."</option>\n";
+		$context_selected = "";
+		if ($type == $geo_mashup_options->get ( 'context_map', 'map_type' )) {
+			$context_selected = ' selected="true"';
+		}
+		$contextMapTypeOptions .= '<option value="'.$type.'"'.$context_selected.'>'.$label."</option>\n";
 	}
 	$mapControlOptions = "";
 	$inPostMapControlOptions = "";
+	$contextMapControlOptions = "";
 	$mapControls = Array(
 		'GSmallZoomControl' => __('Small Zoom', 'GeoMashup'),
 		'GSmallMapControl' => __('Small Pan/Zoom', 'GeoMashup'),
@@ -131,9 +138,14 @@ function geo_mashup_options_page()
 		$mapControlOptions .= '<option value="'.$type.'"'.$selected.'>'.$label."</option>\n";
 		$in_post_selected = "";
 		if ($type == $geo_mashup_options->get ( 'single_map', 'map_control' )) {
-			$in_post_select = ' selected="true"';
+			$in_post_selected = ' selected="true"';
 		}
 		$inPostMapControlOptions .= '<option value="'.$type.'"'.$in_post_selected.'>'.$label."</option>\n";
+		$context_selected = "";
+		if ($type == $geo_mashup_options->get ( 'context_map', 'map_control' )) {
+			$context_selected = ' selected="true"';
+		}
+		$contextMapControlOptions .= '<option value="'.$type.'"'.$context_selected.'>'.$label."</option>\n";
 	}
 
 	if ($geo_mashup_options->get ( 'global_map', 'add_map_type_control' ) == 'true') {
@@ -148,6 +160,12 @@ function geo_mashup_options_page()
 		$inPostMapTypeChecked = '';
 	}
 
+	if ($geo_mashup_options->get ( 'context_map', 'add_map_type_control' ) == 'true') {
+		$contextMapTypeChecked = ' checked="true"';
+	} else {
+		$contextMapTypeChecked = '';
+	}
+
 	if ($geo_mashup_options->get ( 'global_map', 'add_overview_control' ) == 'true') {
 		$overviewChecked = ' checked="true"';
 	} else {
@@ -158,6 +176,12 @@ function geo_mashup_options_page()
 		$inPostOverviewChecked = ' checked="true"';
 	} else {
 		$inPostOverviewmapChecked = '';
+	}
+
+	if ($geo_mashup_options->get ( 'context_map', 'add_overview_control' ) == 'true') {
+		$contextOverviewChecked = ' checked="true"';
+	} else {
+		$contextOverviewmapChecked = '';
 	}
 
 	if ($geo_mashup_options->get ( 'overall', 'add_category_links' ) == 'true') {
@@ -182,6 +206,12 @@ function geo_mashup_options_page()
 		$inPostClickToLoadChecked = ' checked="true"';
 	} else {
 		$inPostClickToLoadChecked = '';
+	}
+	
+	if ($geo_mashup_options->get ( 'context_map', 'click_to_load' ) == 'true') {
+		$contextClickToLoadChecked = ' checked="true"';
+	} else {
+		$contextClickToLoadChecked = '';
 	}
 	
 	$showFutureOptions = "";
@@ -225,6 +255,7 @@ function geo_mashup_options_page()
 			<li><a href="#geo-mashup-overall-settings"><span><?php _e('Overall', 'GeoMashup'); ?></span></a></li>
 			<li><a href="#geo-mashup-global-map-settings"><span><?php _e('Global Maps', 'GeoMashup'); ?></span></a></li>
 			<li><a href="#geo-mashup-single-map-settings"><span><?php _e('Single Maps', 'GeoMashup'); ?></span></a></li>
+			<li><a href="#geo-mashup-context-map-settings"><span><?php _e('Contextual Maps', 'GeoMashup'); ?></span></a></li>
 			</ul>
 			<?php wp_nonce_field('geo-mashup-update-options'); ?>
 			<fieldset id="geo-mashup-overall-settings">
@@ -260,7 +291,7 @@ function geo_mashup_options_page()
 					<tr>
 						<th scope="row"><?php _e('Single Category Zoom Level', 'GeoMashup'); ?></th>
 						<td><input id="category_zoom" name="overall[category_zoom]" type="text" size="2" value="<?php echo $geo_mashup_options->get ( 'overall', 'category_zoom' ); ?>" />
-						<?php _e('0 (max zoom out) - 17 (max zoom in)', 'GeoMashup'); ?></td>
+						<?php _e('0 (max zoom out) - 20 (max zoom in)', 'GeoMashup'); ?></td>
 					</tr>
 				</table>
 				<div class="submit"><input type="submit" name="submit" value="<?php _e('Update Options', 'GeoMashup'); ?>" /></div>
@@ -298,8 +329,8 @@ function geo_mashup_options_page()
 					</tr>
 					<tr>
 						<th scope="row"><?php _e('Default Zoom Level', 'GeoMashup'); ?></th>
-						<td><input id="in_post_zoom_level" name="single_map[zoom_level]" type="text" size="2" value="<?php echo $geo_mashup_options->get ( 'single_map', 'zoom_level' ); ?>" />
-						<?php _e('0 (max zoom out) - 17 (max zoom in)', 'GeoMashup'); ?></td>
+						<td><input id="in_post_zoom" name="single_map[zoom]" type="text" size="2" value="<?php echo $geo_mashup_options->get ( 'single_map', 'zoom' ); ?>" />
+						<?php _e('0 (max zoom out) - 20 (max zoom in)', 'GeoMashup'); ?></td>
 					</tr>
 					<tr>
 						<th scope="row"><?php _e('Click To Load', 'GeoMashup'); ?></th>
@@ -357,7 +388,7 @@ function geo_mashup_options_page()
 					</tr>
 					<tr>
 						<th scope="row"><?php _e('Default Zoom Level', 'GeoMashup'); ?></th>
-						<td><input id="zoom_level" name="global_map[zoom_level]" type="text" size="2" value="<?php echo $geo_mashup_options->get ( 'global_map', 'zoom_level' ); ?>" />
+						<td><input id="zoom" name="global_map[zoom]" type="text" size="2" value="<?php echo $geo_mashup_options->get ( 'global_map', 'zoom' ); ?>" />
 						<?php _e('0 (max zoom out) - 20 (max zoom in)', 'GeoMashup'); ?></td>
 					</tr>
 					<tr>
@@ -392,6 +423,55 @@ function geo_mashup_options_page()
 					</tr>
 					<tr><td colspan="2" align="center"><?php echo $categoryTable; ?>
 					</td></tr>
+				</table>
+				<div class="submit"><input type="submit" name="submit" value="<?php _e('Update Options', 'GeoMashup'); ?>" /></div>
+			</fieldset>
+			<fieldset id="geo-mashup-context-map-settings">
+				<p><?php _e('Default settings for contextual maps, which include just the posts shown on a page, for example.', 'GeoMashup'); ?></p>
+				<table width="100%" cellspacing="2" cellpadding="5" class="editform">
+					<tr>
+						<th scope="row"><?php _e('Map Width', 'GeoMashup'); ?></th>
+						<td><input id="context_map_width" name="context_map[width]" type="text" size="5" value="<?php echo $geo_mashup_options->get ( 'context_map', 'width' ); ?>" /><?php _e('px', 'GeoMashup'); ?></td>
+					</tr>
+					<tr>
+						<th scope="row"><?php _e('Map Height', 'GeoMashup'); ?></th>
+						<td><input id="context_map_height" name="context_map[height]" type="text" size="5" value="<?php echo $geo_mashup_options->get ( 'context_map', 'height' ); ?>" /><?php _e('px', 'GeoMashup'); ?></td>
+					</tr>
+					<tr>
+						<th scope="row"><?php _e('Map Control', 'GeoMashup'); ?></th>
+						<td>
+							<select id="context_map_control" name="context_map[map_control]"><?php echo $contextMapControlOptions; ?></select>
+						</td>
+					</tr>
+					<tr>
+						<th scope="row"><?php _e('Add Map Type Control', 'GeoMashup'); ?></th>
+						<td><input id="context_add_map_type_control" name="context_map[add_map_type_control]" type="checkbox" value="true"<?php echo $contextMapTypeChecked; ?> /></td>
+					</tr>
+					<tr>
+						<th scope="row"><?php _e('Add Overview Control', 'GeoMashup'); ?></th>
+						<td><input id="context_add_overview_control" name="context_map[add_overview_control]" type="checkbox" value="true"<?php echo $contextOverviewChecked; ?> /></td>
+					</tr>
+					<tr>
+						<th scope="row"><?php _e('Default Map Type', 'GeoMashup'); ?></th>
+						<td>
+							<select id="context_map_type" name="context_map[map_type]"><?php echo $contextMapTypeOptions; ?></select>
+						</td>
+					</tr>
+					<tr>
+						<th scope="row"><?php _e('Default Zoom Level', 'GeoMashup'); ?></th>
+						<td><input id="context_zoom" name="context_map[zoom]" type="text" size="2" value="<?php echo $geo_mashup_options->get ( 'context_map', 'zoom' ); ?>" />
+						<?php _e('0 (max zoom out) - 20 (max zoom in)', 'GeoMashup'); ?></td>
+					</tr>
+					<tr>
+						<th scope="row"><?php _e('Click To Load', 'GeoMashup'); ?></th>
+						<td>
+							<input id="context_click_to_load" name="context_map[click_to_load]" type="checkbox" value="true"<?php echo $contextClickToLoadChecked; ?> />
+						</td>
+					</tr>
+					<tr>
+						<th scope="row"><?php _e('Click To Load Text', 'GeoMashup'); ?></th>
+						<td><input id="context_click_to_load_text" name="context_map[click_to_load_text]" type="text" size="50" value="<?php echo $geo_mashup_options->get ( 'context_map', 'click_to_load_text' ); ?>" /></td>
+					</tr>
 				</table>
 				<div class="submit"><input type="submit" name="submit" value="<?php _e('Update Options', 'GeoMashup'); ?>" /></div>
 			</fieldset>
