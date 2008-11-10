@@ -329,6 +329,9 @@ var GeoMashup = {
 				color_name = this.colors[this.category_count%this.colors.length].name;
 			}
 			color = this.colors[color_name];
+			if (!icon && typeof(customGeoMashupCategoryIcon) == 'function') {
+				icon = customGeoMashupCategoryIcon(this.opts, [category]);
+			}
 			if (!icon && typeof(customGeoMashupColorIcon) == 'function') {
 				icon = customGeoMashupColorIcon(this.opts, color_name);
 			}
