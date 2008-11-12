@@ -23,7 +23,8 @@ function geo_mashup_options_page()
 	if ( !empty ( $geo_mashup_options->validation_errors ) ) {
 		// There were invalid options
 		echo '<div class="updated"><p>' .
-			__('Some invalid options will not be used:<ul>', 'GeoMashup');
+			__('Some invalid options will not be used. You may see this for new options after upgrading, just do an update.', 'GeoMashup');
+		echo '<ul>';
 		foreach ( $geo_mashup_options->validation_errors as $message ) {
 			echo "<li>$message</li>";
 		}
