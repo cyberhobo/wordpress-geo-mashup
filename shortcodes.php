@@ -105,7 +105,7 @@ function geo_mashup_map($atts) {
 
 	if ($click_to_load == 'true') {
 		$style = "height:{$url_params['height']}px;width:{$url_params['width']}px;background-color:#ddd;".
-			"background-image:url($wpurl/wp-content/plugins/geo-mashup/images/wp-gm-pale.png);".
+			"background-image:url(".GEO_MASHUP_URL_PATH."/images/wp-gm-pale.png);".
 			"background-repeat:no-repeat;background-position:center;cursor:pointer;";
 		$content = "<div class=\"geo_mashup_map\" style=\"$style\" " .
 			"onclick=\"GeoMashupLoader.addMapFrame(this,'$iframe_src',{$url_params['height']},{$url_params['width']})\">";
