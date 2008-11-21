@@ -79,17 +79,17 @@ function geo_mashup_map($atts) {
 
 	$map_image = '';
 	if ($url_params['static'] == 'true') {
-		$locations = GeoMashup::getLocations($url_params);
+		$locations = GeoMashupDB::get_post_locations($url_params);
 		if (!empty($locations)) {
 			$map_image = '<img src="http://maps.google.com/staticmap?size='.$url_params['width'].'x'.$url_params['height'];
 			if (count($locations) == 1) {
-				$map_image .= '&amp;center='.$locations[0]->meta_value;
+				$map_image .= '&amp;center='.$locations[0]->lat . ',' . $locations[0]->lng;
 			}
 			$map_image .= '&amp;zoom=' . $url_params['zoom'] . '&amp;markers=';
 			$separator = '';
 			foreach ($locations as $location) {
 				// TODO: Try to use the correct color for the category? Draw category lines?
-				$map_image .= $separator.$location->meta_value.',smallred';
+				$map_image .= $separator . $location->lat . ',' . $location->lng . ',smallred';
 				$separator = '|';
 			}
 			$map_image .= '&amp;key='.$geo_mashup_options->get('overall', 'google_key').'" alt="geo_mashup_map"';

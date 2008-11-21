@@ -52,7 +52,7 @@ class GeoMashupQuery {
 	}
 
 	function query_post($post_id) {
-		global $wpdb, $geo_mashup_options;
+		global $geo_mashup_options;
 		header('Content-type: text/xml; charset='.get_settings('blog_charset'), true);
 		header('Cache-Control: no-cache;', true);
 		header('Expires: -1;', true);
@@ -60,21 +60,15 @@ class GeoMashupQuery {
 		echo '<?xml version="1.0" encoding="'.get_settings('blog_charset').'"?'.'>'."\n";
 
 		echo '<channel><title>GeoMashup Query</title><item>';
-		$post = $wpdb->get_row("SELECT * FROM {$wpdb->posts} WHERE ID=$post_id");
+		$post = get_post( $post_id );
 		if (!$post) {
 			echo '<title>Post'.$post_id.'not found</title>';
 		} else {
-			$cat_query = "SELECT name 
-				FROM {$wpdb->terms} t
-				JOIN {$wpdb->term_taxonomy} tt ON tt.term_id = t.term_id
-				JOIN {$wpdb->term_relationships} tr ON tr.term_taxonomy_id = tt.term_taxonomy_id
-				WHERE tr.object_id=$post_id
-				AND		tt.taxonomy='category'";
-			$categories = $wpdb->get_col($cat_query);
+			$categories = get_the_category( $post_id );
 			foreach ($categories as $category) {
-				echo '<category>'.$category.'</category>';
+				echo '<category>'.$category->name.'</category>';
 			}
-			$author = $wpdb->get_var("SELECT display_name FROM {$wpdb->users} WHERE ID={$post->post_author}");
+			$author = get_author_name( $post->post_author );
 			if ($geo_mashup_options->get('global_map', 'excerpt_format')=='html') {
 				$excerpt = GeoMashupQuery::excerpt_html($post->post_content);
 			} else {
@@ -94,7 +88,7 @@ class GeoMashupQuery {
 		header('Cache-Control: no-cache;', true);
 		header('Expires: -1;', true);
 
-		echo GeoMashup::getLocationsJson($_GET);
+		echo GeoMashup::get_post_locations_json($_GET);
 	}
 }
 ?>

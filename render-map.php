@@ -17,7 +17,7 @@ function add_double_quotes(&$item,$key) {
 }
 
 function geo_mashup_render_map ( ) {
-	global $wpdb, $post, $geo_mashup_options;
+	global $post, $geo_mashup_options;
 	$map_properties = array ( 
 		'url_path' => GEO_MASHUP_URL_PATH,
  		'template_url_path' => get_bloginfo('template_directory'));
@@ -53,7 +53,7 @@ function geo_mashup_render_map ( ) {
 				$options['map_content'] = 'global';
 			}
 		} 
-		$map_properties['post_data'] = GeoMashup::getLocationsJson($_GET);
+		$map_properties['post_data'] = GeoMashup::get_post_locations_json($_GET);
 		unset($_GET['post_ids']);
 		$map_properties = array_merge ( $options, $map_properties );
 	}
@@ -61,11 +61,7 @@ function geo_mashup_render_map ( ) {
 	$map_properties = array_merge($map_properties, $_GET);
 	array_walk($map_properties, 'add_double_quotes');
 
-	$category_select = "SELECT * 
-		FROM $wpdb->terms t
-		JOIN $wpdb->term_taxonomy tt ON tt.term_id = t.term_id
-		WHERE taxonomy='category'";
-	$categories = $wpdb->get_results($category_select);
+	$categories = get_categories( );
 	$category_opts = '{';
 	if (is_array($categories))
 	{

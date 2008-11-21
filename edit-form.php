@@ -2,24 +2,22 @@
 function geo_mashup_edit_form() {
 	global $post_ID;
 
-	list($post_lat,$post_lng) = split(',',get_post_meta($post_ID,'_geo_location',true));
-	$post_location_name = '';
+	$location = GeoMashupDB::get_post_location( $post_ID );
+	$location = ( empty( $location ) ) ? GeoMashupDB::blank_location( ) : $location;
+	$post_location_name = $location->saved_name;
 	$kml_url = '';
 	$kml_urls = GeoMashup::get_kml_attachment_urls($post_ID);
 	if (count($kml_urls)>0) {
 		$kml_url = array_pop($kml_urls);
 	}
-	$geo_locations = get_settings('geo_locations');
+	$saved_locations = GeoMashupDB::get_saved_locations( );
 	$locations_json = '{';
-	if (is_array($geo_locations)) {
+	if ( !empty( $saved_locations ) ) {
 		$comma = '';
-		foreach ($geo_locations as $name => $latlng) {
-			list($lat,$lng) = split(',',$latlng);
-			$escaped_name = addslashes(str_replace(array("\r\n","\r","\n"),'',$name));
-			if ($lat==$post_lat && $lng==$post_lng) {
-				$post_location_name = $escaped_name;
-			}
-			$locations_json .= $comma.'"'.addslashes($name).'":{"name":"'.$escaped_name.'","lat":"'.$lat.'","lng":"'.$lng.'"}';
+		foreach ($saved_locations as $saved_location) {
+			$escaped_name = addslashes(str_replace(array("\r\n","\r","\n"),'',$saved_location->saved_name));
+			$locations_json .= $comma.'"'.$escaped_name.'":{"location_id":"'.$saved_location->id.'","name":"'.$escaped_name.
+				'","lat":"'.$saved_location->lat.'","lng":"'.$saved_location->lng.'"}';
 			$comma = ',';
 		}
 	}
@@ -59,8 +57,8 @@ function geo_mashup_edit_form() {
 	<script type="text/javascript">//<![CDATA[
 		GeoMashupAdmin.registerMap(document.getElementById("geo_mashup_map"),
 			{"link_url":"<?php echo GEO_MASHUP_URL_PATH; ?>",
-			"post_lat":"<?php echo $post_lat; ?>",
-			"post_lng":"<?php echo $post_lng; ?>",
+			"post_lat":"<?php echo $location->lat; ?>",
+			"post_lng":"<?php echo $location->lng; ?>",
 			"post_location_name":"<?php echo $post_location_name; ?>",
 			"saved_locations":<?php echo $locations_json; ?>,
 			"kml_url":"<?php echo $kml_url; ?>",
@@ -68,9 +66,20 @@ function geo_mashup_edit_form() {
 	// ]]>
 	</script>
 	<label for="geo_mashup_location_name"><?php _e('Save As:', 'GeoMashup'); ?>
-		<input id="geo_mashup_location_name" name="geo_mashup_location_name" type="text" size="45" />
+		<input id="geo_mashup_location_name" name="geo_mashup_location_name" type="text" maxlength="50" size="45" />
 	</label>
-	<input id="geo_mashup_location" name="geo_mashup_location" type="hidden" value="<?php echo $post_lat.','.$post_lng; ?>" />
+	<input id="geo_mashup_location" name="geo_mashup_location" type="hidden" value="<?php echo $location->lat.','.$location->lng; ?>" />
+	<input id="geo_mashup_location_id" name="geo_mashup_location_id" type="hidden" value="<?php echo $location->id; ?>" />
+	<input id="geo_mashup_geoname" name="geo_mashup_geoname" type="hidden" value="<?php echo $location->geoname; ?>" />
+	<input id="geo_mashup_address" name="geo_mashup_address" type="hidden" value="<?php echo $location->address; ?>" />
+	<input id="geo_mashup_postal_code" name="geo_mashup_postal_code" type="hidden" value="<?php echo $location->postal_code; ?>" />
+	<input id="geo_mashup_country_code" name="geo_mashup_country_code" type="hidden" value="<?php echo $location->country_code; ?>" />
+	<input id="geo_mashup_admin_code" name="geo_mashup_admin_code" type="hidden" value="<?php echo $location->admin_code; ?>" />
+	<input id="geo_mashup_admin_name" name="geo_mashup_admin_name" type="hidden" value="<?php echo $location->admin_name; ?>" />
+	<input id="geo_mashup_sub_admin_code" name="geo_mashup_sub_admin_code" type="hidden" value="<? echo $location->sub_admin_code; ?>" />
+	<input id="geo_mashup_sub_admin_name" name="geo_mashup_sub_admin_name" type="hidden" value="<? echo $location->sub_admin_name; ?>" />
+	<input id="geo_mashup_locality_name" name="geo_mashup_locality_name" type="hidden" value="<? echo $location->locality_name; ?>" />
+	<input id="geo_mashup_changed" name="geo_mashup_changed" type="hidden" value="" />
 <?php
 }
 ?>
