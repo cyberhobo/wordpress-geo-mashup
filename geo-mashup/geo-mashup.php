@@ -1,8 +1,8 @@
 <?php /*
 Plugin Name: Geo Mashup
 Plugin URI: http://code.google.com/p/wordpress-geo-mashup/ 
-Description: Tools for adding maps to your blog, and plotting posts on a master map. Configure in <a href="options-general.php?page=geo-mashup/geo-mashup.php">Options->Geo Mashup</a> after the plugin is activated.
-Version: 1.2beta1
+Description: Tools for adding maps to your blog, and plotting posts on a master map. Configure in <a href="options-general.php?page=geo-mashup/geo-mashup.php">Settings->Geo Mashup</a> after the plugin is activated.
+Version: 1.2beta2
 Author: Dylan Kuhn
 Author URI: http://www.cyberhobo.net/
 Minimum WordPress Version Required: 2.5.1
@@ -28,12 +28,11 @@ details.
  * The Geo Mashup static class.
  */
 class GeoMashup {
-	var $kml_load_script = null;
 
 	function load() {
-		load_plugin_textdomain('GeoMashup', 'wp-content/plugins/geo-mashup/languages');
-
 		GeoMashup::load_constants();
+		load_plugin_textdomain('GeoMashup', 'wp-content/plugins/'.GEO_MASHUP_DIRECTORY.'/languages');
+
 		GeoMashup::load_dependencies();
 		GeoMashup::load_hooks();
 		GeoMashup::load_styles();
@@ -41,8 +40,9 @@ class GeoMashup {
 	}
 
 	function load_dependencies() {
-		include_once ( 'geo-mashup-options.php' );
-		if (!is_admin()) {
+		include_once ( dirname( __FILE__) . '/geo-mashup-options.php' );
+		include_once( dirname( __FILE__ ) . '/geo-mashup-db.php' );
+		if ( !is_admin() ) {
 			include_once(dirname(__FILE__) . '/shortcodes.php');
 		}
 	}
@@ -50,6 +50,7 @@ class GeoMashup {
 	function load_hooks() {
 		global $geo_mashup_options;
 		if (is_admin()) {
+			register_activation_hook( __FILE__, array( 'GeoMashupDB', 'install' ) );
 			add_filter('upload_mimes', array('GeoMashup', 'upload_mimes'));
 
 			add_action('admin_menu', array('GeoMashup', 'admin_menu'));
@@ -72,16 +73,17 @@ class GeoMashup {
 	}
 
 	function load_constants() {
-		$plugin_name = plugin_basename(__FILE__);
-		$plugin_name = substr($plugin_name, 0, strpos($plugin_name, '/'));
-		define('GEO_MASHUP_URL_PATH', WP_CONTENT_URL . '/plugins/' . $plugin_name);
+		define('GEO_MASHUP_PLUGIN_NAME', plugin_basename(__FILE__));
+		define('GEO_MASHUP_DIRECTORY', substr(GEO_MASHUP_PLUGIN_NAME, 0, strpos(GEO_MASHUP_PLUGIN_NAME, '/')));
+		define('GEO_MASHUP_URL_PATH', WP_CONTENT_URL . '/plugins/' . GEO_MASHUP_DIRECTORY);
 		define('GEO_MASHUP_MAX_ZOOM', 20);
+		define('GEO_MASHUP_DB_VERSION', '1.0');
 	}
 
 	function load_scripts() {
 		global $geo_mashup_options;
 		if (is_admin()) {
-			if ($_GET['page'] == 'geo-mashup/geo-mashup.php') {
+			if ($_GET['page'] == GEO_MASHUP_PLUGIN_NAME) {
 
 				wp_enqueue_script('jquery-ui-tabs');
 
@@ -99,7 +101,7 @@ class GeoMashup {
 
 	function load_styles() {
 		if (is_admin()) {
-			if ($_GET['page'] == 'geo-mashup/geo-mashup.php') {
+			if ($_GET['page'] == GEO_MASHUP_PLUGIN_NAME) {
 
 				wp_enqueue_style('geo-mashup-tabs', GEO_MASHUP_URL_PATH.'/jquery.tabs.css', false, '2.5.0', 'screen');
 
@@ -170,31 +172,34 @@ class GeoMashup {
 
 		if (is_single())
 		{
-			list($lat, $lon) = split(',', get_post_meta($wp_query->post->ID, '_geo_location', true));
-			if (($lat != '') && ($lon != '')) {
+			$loc = GeoMashupDB::get_post_location( $wp_query->post->ID );
+			if (!empty($loc)) {
 				$title = htmlspecialchars(convert_chars(strip_tags(get_bloginfo('name'))." - ".$wp_query->post->post_title));
-				echo "<meta name=\"ICBM\" content=\"{$lat}, {$lon}\" />\n";
+				echo "<meta name=\"ICBM\" content=\"{$loc->lat}, {$loc->lng}\" />\n";
 				echo "<meta name=\"DC.title\" content=\"{$title}\" />\n";
-				echo "<meta name=\"geo.position\" content=\"{$lat};{$lon}\" />\n";
+				echo "<meta name=\"geo.position\" content=\"{$lat->lat};{$lon->lng}\" />\n";
 			}
 		}
 		else
 		{
-			$geo_locations = get_settings('geo_locations');
-			if (is_array($geo_locations) && $geo_locations['default'])
+			$saved_locations = GeoMashupDB::get_saved_locations( );
+			if ( !empty( $saved_locations ) )
 			{
-				list($lat, $lon) = split(',', $geo_locations['default']);
-				$title = htmlspecialchars(convert_chars(strip_tags(get_bloginfo('name'))));
-				echo "<meta name=\"ICBM\" content=\"{$lat}, {$lon}\" />\n";
-				echo "<meta name=\"DC.title\" content=\"{$title}\" />\n";
-				echo "<meta name=\"geo.position\" content=\"{$lat};{$lon}\" />\n";
+				foreach ( $saved_locations as $saved_location ) {
+					if ( $saved_location->saved_name == 'default' ) {
+						$title = htmlspecialchars(convert_chars(strip_tags(get_bloginfo('name'))));
+						echo "<meta name=\"ICBM\" content=\"{$saved_location->lat}, {$saved_location->lon}\" />\n";
+						echo "<meta name=\"DC.title\" content=\"{$title}\" />\n";
+						echo "<meta name=\"geo.position\" content=\"{$saved_location->lat};{$saved_location->lon}\" />\n";
+					}
+				}
 			}
 		}
 	}
 
 	function admin_print_scripts($not_used)
 	{
-		if ($_GET['page'] == 'geo-mashup/geo-mashup.php') {
+		if ($_GET['page'] == GEO_MASHUP_PLUGIN_NAME) {
 
 			echo '
 				<script type="text/javascript"> 
@@ -237,107 +242,53 @@ class GeoMashup {
 			return $post_id;
 		}
 		if ( 'page' == $_POST['post_type'] ) {
-			if ( !current_user_can( 'edit_page', $post_id )) return $post_id;
+			if ( !current_user_can( 'edit_page', $post_id ) ) return $post_id;
 		} else {
-			if ( !current_user_can( 'edit_post', $post_id )) return $post_id;
+			if ( !current_user_can( 'edit_post', $post_id ) ) return $post_id;
 		}
 
-		delete_post_meta($post_id, '_geo_location');
 		update_option('geo_mashup_temp_kml_url','');
-		if (isset($_POST['geo_mashup_location'])) {
-			add_post_meta($post_id, '_geo_location', $_POST['geo_mashup_location']);
 
-			if (isset($_POST['geo_mashup_location_name']) && $_POST['geo_mashup_location_name'] != '') {
-				$geo_locations = get_settings('geo_locations');
-				$geo_locations[$_POST['geo_mashup_location_name']] = $_POST['geo_mashup_location'];
-				update_option('geo_locations',$geo_locations);
+		if (isset($_POST['geo_mashup_changed']) && $_POST['geo_mashup_changed'] == 'true') {
+			if ( empty( $_POST['geo_mashup_location'] ) ) {
+				GeoMashupDB::delete_post_location( $post_id );
+			} else if ( !empty( $_POST['geo_mashup_location_id'] ) ) {
+				GeoMashupDB::set_post_location( $post_id, $_POST['geo_mashup_location_id'] );
+			} else {
+				list( $lat, $lng ) = split( ',', $_POST['geo_mashup_location'] );
+				$post_location = array( );
+				$post_location['lat'] = trim( $lat );
+				$post_location['lng'] = trim( $lng );
+				$post_location['saved_name'] = $_POST['geo_mashup_location_name'];
+				$post_location['geoname'] = $_POST['geo_mashup_geoname'];
+				$post_location['address'] = $_POST['geo_mashup_address'];
+				$post_location['postal_code'] = $_POST['geo_mashup_postal_code'];
+				$post_location['country_code'] = $_POST['geo_mashup_country_code'];
+				$post_location['admin_code'] = $_POST['geo_mashup_admin_code'];
+				$post_location['admin_name'] = $_POST['geo_mashup_admin_name'];
+				$post_location['sub_admin_code'] = $_POST['geo_mashup_sub_admin_code'];
+				$post_location['sub_admin_name'] = $_POST['geo_mashup_sub_admin_name'];
+				$post_location['locality_name'] = $_POST['geo_mashup_locality_name'];
+				GeoMashupDB::set_post_location( $post_id, $post_location );
 			}
 		}
+		
+		return $post_id;
 	}
 
-	function getLocations($query_args)
+	function get_post_locations_json($query_args)
 	{
-		global $wpdb;
-		$query_args = wp_parse_args($query_args);
-		
-		// Construct the query 
-		$fields = 'ID, post_title, meta_value';
-		$tables = "$wpdb->postmeta pm
-			INNER JOIN $wpdb->posts p
-			ON pm.post_id = p.ID";
-		$where = 'meta_key=\'_geo_location\''.
-			' AND length(meta_value)>1';
-
-		if ($query_args['show_future'] == 'true') {
-			$where .= ' AND post_status in (\'publish\',\'future\')';
-		} else if ($query_args['show_future'] == 'only') {
-			$where .= ' AND post_status=\'future\'';
-		} else {
-			$where .= ' AND post_status=\'publish\'';
-		}
-
-		// Ignore nonsense bounds
-		if ($query_args['minlat'] && $query_args['maxlat'] && $query_args['minlat']>$query_args['maxlat']) {
-			$query_args['minlat'] = $query_args['maxlat'] = null;
-		}
-		if ($query_args['minlon'] && $query_args['maxlon'] && $query_args['minlon']>$query_args['maxlon']) {
-			$query_args['minlon'] = $query_args['maxlon'] = null;
-		}
-		// Build bounding where clause
-		if (is_numeric($query_args['minlat'])) $where .= " AND substring_index(meta_value,',',1)>{$query_args['minlat']}";
-		if (is_numeric($query_args['minlon'])) $where .= " AND substring_index(meta_value,',',-1)>{$query_args['minlon']}";
-		if (is_numeric($query_args['maxlat'])) $where .= " AND substring_index(meta_value,',',1)<{$query_args['maxlat']}";
-		if (is_numeric($query_args['maxlon'])) $where .= " AND substring_index(meta_value,',',-1)<{$query_args['maxlon']}";
-
-		if (is_numeric($query_args['map_cat'])) {
-			$tables .= " JOIN $wpdb->term_relationships tr ON tr.object_id = p.ID " .
-				"JOIN $wpdb->term_taxonomy tt ON tt.term_taxonomy_id = tr.term_taxonomy_id " .
-				"AND tt.taxonomy='category'";
-			$cat = $wpdb->escape($query_args['map_cat']);
-			$where .= " AND tt.term_id=$cat";
-		} 
-
-		if (isset($query_args['post_id'])) {
-			$where .= ' AND p.ID = ' . $wpdb->escape($query_args['post_id']);
-		} else if (isset($query_args['post_ids'])) {
-			$where .= ' AND p.ID in (' . $wpdb->escape($query_args['post_ids']) .')';
-		}
-
-		$query_string = "SELECT $fields FROM $tables WHERE $where ORDER BY post_status ASC, post_date DESC";
-
-		if (!($query_args['minlat'] && $query_args['maxlat'] && $query_args['minlon'] && $query_args['maxlon']) && !$query_args['limit']) {
-			// result should contain all posts (possibly for a category)
-		} else if (is_numeric($query_args['limit']) && $query_args['limit']>0) {
-			$query_string .= " LIMIT 0,{$query_args['limit']}";
-		}
-
-		$wpdb->query($query_string);
-		
-		return $wpdb->last_result;
-	}
-
-	function getLocationsJson($query_args)
-	{
-		global $wpdb;
-
 		$json = '{ posts : [';
-		$posts = GeoMashup::getLocations($query_args);
+		$posts = GeoMashupDB::get_post_locations($query_args);
 		if ($posts) {
 			$comma = '';
 			foreach ($posts as $post) {
-				list($lat,$lng) = split(',',$post->meta_value);
-				$json .= $comma.'{"post_id":"'.$post->ID.'","title":"'.addslashes($post->post_title).
-					'","lat":"'.$lat.'","lng":"'.$lng.'","categories":[';
-				$categories_sql = "SELECT name 
-					FROM {$wpdb->term_relationships} tr
-					JOIN {$wpdb->term_taxonomy} tt ON tt.term_taxonomy_id = tr.term_taxonomy_id 
-					JOIN {$wpdb->terms} t ON t.term_id = tt.term_id
-					WHERE tt.taxonomy='category' 
-					AND tr.object_id = {$post->ID}";
-				$categories = $wpdb->get_col($categories_sql);
+				$json .= $comma.'{"post_id":"'.$post->post_id.'","title":"'.addslashes($post->post_title).
+					'","lat":"'.$post->lat.'","lng":"'.$post->lng.'","categories":[';
+				$categories = get_the_category( $post->post_id );
 				$categories_comma = '';
 				foreach ($categories as $category) {
-					$json .= $categories_comma.'"'.addslashes($category).'"';
+					$json .= $categories_comma.'"'.addslashes($category->name).'"';
 					$categories_comma = ',';
 				}
 				$json .= ']}';
@@ -380,17 +331,10 @@ class GeoMashup {
 	}
 
 	function list_cats($content, $category = null) {
-		global $wpdb, $geo_mashup_options;
+		global $geo_mashup_options;
+
 		if ($category) {
-			$query = "SELECT count(*) FROM {$wpdb->posts} p 
-				INNER JOIN {$wpdb->term_relationships} tr ON tr.object_id=p.ID 
-				INNER JOIN {$wpdb->term_taxonomy} tt ON tt.term_taxonomy_id=tr.term_taxonomy_id
-				INNER JOIN {$wpdb->postmeta} pm ON pm.post_id=p.ID 
-				WHERE tt.term_id={$category->cat_ID} 
-				AND pm.meta_key='_geo_location'
-				AND length(pm.meta_value)>1
-				AND p.post_status='publish'";
-			$count = $wpdb->get_var($query);
+			$count = GeoMashupDB::category_located_post_count( $category->cat_ID );
 			if ($count) {
 				// Add map link only if there are geo-located posts to see
 				$link = '';
@@ -451,8 +395,8 @@ class GeoMashup {
 		if ($lat && $lng) {
 			$icon = '';
 			if ($options['show_icon'] && strcmp($options['show_icon'],'false') != 0) {
-				$icon = '<img src="'.get_bloginfo('wpurl') .
-					'/wp-content/plugins/geo-mashup/images/geotag_16.png" alt="'.__('Geotag Icon','GeoMashup').'"/>';
+				$icon = '<img src="'.GEO_MASHUP_URL_PATH.
+					'/images/geotag_16.png" alt="'.__('Geotag Icon','GeoMashup').'"/>';
 			}
 			$link = '';
 			$url = get_page_link($geo_mashup_options->get('overall', 'mashup_page'));
@@ -483,28 +427,15 @@ class GeoMashup {
 	 */
 	function list_located_posts($option_args = null)
 	{
-		global $wpdb, $geo_mashup_options;
-		$query = "SELECT * 
-			FROM {$wpdb->posts} JOIN
-				{$wpdb->postmeta} ON {$wpdb->postmeta}.post_id = {$wpdb->posts}.ID
-			WHERE meta_key='_geo_location' AND
-				length(meta_value) > 1";
-		if ($geo_mashup_options->get('global_map', 'show_future') == 'false') {
-			$query .= ' AND post_status=\'publish\'';
-		} else if ($geo_mashup_options->get('global_map', 'show_future') == 'only') {
-			$query .= ' AND post_status=\'future\'';
-		} else {
-			$query .= ' AND post_status IN (\'publish\',\'future\')';
-		}
+		global $geo_mashup_options;
 
-		$query .= ' ORDER BY post_date DESC';
 		$list_html = '<ul id="geo_mashup_located_post_list">';
-		$posts = $wpdb->get_results($query);
-		if ($posts)
+		$locs = GeoMashupDB::get_post_locations( $option_args );
+		if ($locs)
 		{
-			foreach ($posts as $post) {
-				$list_html .= '<li><a href="'.get_permalink($post->ID).'">'.
-					$post->post_title."</a></li>\n";
+			foreach ($locs as $loc) {
+				$list_html .= '<li><a href="'.get_permalink($loc->post_id).'">'.
+					$loc->post_title."</a></li>\n";
 			}
 		}
 		$list_html .= '</ul>';
@@ -517,10 +448,11 @@ class GeoMashup {
 	function post_coordinates($places = 10) {
 		global $post;
 
-		$meta = trim(get_post_meta($post->ID, '_geo_location', true));
+		$location = GeoMashupDB::get_post_location( $post->ID );
 		$coordinates = array();
-		if (strlen($meta)>1) {
-			list($lat, $lng) = split(',', $meta);
+		if ( !empty( $location ) ) {
+			$lat = $location->lat;
+			$lng = $location->lng;
 			$lat_dec_pos = strpos($lat,'.');
 			if ($lat_dec_pos !== false) {
 				$lat = substr($lat, 0, $lat_dec_pos+$places+1);
@@ -549,10 +481,9 @@ class GeoMashup {
 		global $wp_query;
 
 		// Using Simple GeoRSS for now
-		$coordinates = trim(get_post_meta($wp_query->post->ID, '_geo_location', true));
-		if (strlen($coordinates) > 1) {
-			$coordinates = str_replace(',',' ',$coordinates);
-			echo '<georss:point>' . $coordinates . '</georss:point>';
+		$location = GeoMashupDB::get_post_location( $wp_query->post->ID );
+		if ( !empty( $location ) ) {
+			echo '<georss:point>' . $location->lat . ',' . $location->lng . '</georss:point>';
 		}
 	}
 } // class GeoMashup

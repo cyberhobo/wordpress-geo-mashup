@@ -2,7 +2,7 @@
 
 function geo_mashup_options_page()
 {
-	global $wpdb, $geo_mashup_options;
+	global $geo_mashup_options;
 
 	if (isset($_POST['submit'])) {
 		// Process option updates
@@ -10,6 +10,13 @@ function geo_mashup_options_page()
 		$geo_mashup_options->set_valid_options ( $_POST );
 		if ($geo_mashup_options->save()) {
 			echo '<div class="updated"><p>'.__('Options updated.', 'GeoMashup').'</p></div>';
+		}
+	}
+
+	if ( isset( $_POST['upgrade_db'] ) ) {
+		check_admin_referer('geo-mashup-upgrade-db');
+		if ( GeoMashupDB::install( ) ) {
+			echo '<div class="updated"><p>'.__('Database upgraded.', 'GeoMashup').'</p></div>';
 		}
 	}
 
@@ -23,7 +30,7 @@ function geo_mashup_options_page()
 	if ( !empty ( $geo_mashup_options->validation_errors ) ) {
 		// There were invalid options
 		echo '<div class="updated"><p>' .
-			__('Some invalid options will not be used. You may see this for new options after upgrading, just do an update.', 'GeoMashup');
+			__('Some invalid options will not be used. If you\'ve just upgraded, do an update to initialize new options.', 'GeoMashup');
 		echo '<ul>';
 		foreach ( $geo_mashup_options->validation_errors as $message ) {
 			echo "<li>$message</li>";
@@ -33,15 +40,14 @@ function geo_mashup_options_page()
 
 	// Create form elements
 	$pageSlugOptions = "";
-	$pageSlugs = $wpdb->get_results("SELECT DISTINCT ID, post_name FROM $wpdb->posts " .
-		"WHERE post_status='static' OR post_type='page' ORDER BY post_name");
-	if ($pageSlugs) {
-		foreach($pageSlugs as $slug) {
+	$pages = get_pages( );
+	if ($pages) {
+		foreach($pages as $page) {
 			$selected = "";
-			if ($slug->ID == $geo_mashup_options->get ( 'overall', 'mashup_page' )) {
+			if ($page->ID == $geo_mashup_options->get ( 'overall', 'mashup_page' )) {
 				$selected = ' selected="true"';
 			}
-			$pageSlugOptions .= '<option value="'.$slug->ID.'"'.$selected.'>'.$slug->post_name."</option>\n";
+			$pageSlugOptions .= '<option value="'.$page->ID.'"'.$selected.'>'.$page->post_name."</option>\n";
 		}
 	} else {
 		$pageSlugOptions = '<option value="">No pages found</option>';
@@ -72,11 +78,7 @@ function geo_mashup_options_page()
 		<table>
 			<tr><th>'.__('Category', 'GeoMashup').'</th><th>'.__('Color').'</th>
 			<th>'.__('Show Connecting Line Until Zoom Level (0-20 or none)','GeoMashup')."</th></tr>\n";
-	$categorySelect = "SELECT * 
-		FROM $wpdb->terms t 
-		JOIN $wpdb->term_taxonomy tt ON tt.term_id = t.term_id
-		WHERE taxonomy='category'";
-	$categories = $wpdb->get_results($categorySelect);
+	$categories = get_categories( );
 	if (is_array($categories))
 	{
 		foreach($categories as $category) {
@@ -251,6 +253,15 @@ function geo_mashup_options_page()
 ?>
 	<div class="wrap">
 		<h2><?php _e('Geo Mashup Plugin Options', 'GeoMashup'); ?></h2>
+		<?php if ( GeoMashupDB::installed_version( ) != GEO_MASHUP_DB_VERSION ) : ?>
+			<form method="post" id="geo-mashup-upgrade-form">
+				<?php wp_nonce_field('geo-mashup-upgrade-db'); ?>
+				<div class="updated">
+					<label><?php _e( 'The Geo Mashup database is out of date.', 'GeoMashup' ); ?></label>
+					<input type="submit" name="upgrade_db" value="<?php _e('Upgrade Database', 'GeoMashup'); ?>" class="button" />
+				</div>
+			</form>
+		<?php endif; ?>
 		<form method="post" id="geo-mashup-settings-form">
 			<ul>
 			<li><a href="#geo-mashup-overall-settings"><span><?php _e('Overall', 'GeoMashup'); ?></span></a></li>
