@@ -35,6 +35,7 @@ class GeoMashupQuery {
 
 	function excerpt_html($content) {
 		global $geo_mashup_options;
+
 		// Geo Mashup shortcodes in excerpts can cause an infinite recursion of frames - remove them
 		$content = GeoMashupQuery::strip_geo_mashup_shortcodes($content);
 		$content = apply_filters('the_content', $content);
@@ -45,6 +46,8 @@ class GeoMashupQuery {
 	}
 
 	function excerpt_text($content) {
+		global $geo_mashup_options;
+
 		$content = strip_tags($content);
 		$content = substr($content,0,$geo_mashup_options->get('global_map', 'excerpt_length'));
 		$content = htmlspecialchars($content);
@@ -53,6 +56,7 @@ class GeoMashupQuery {
 
 	function query_post($post_id) {
 		global $geo_mashup_options;
+
 		header('Content-type: text/xml; charset='.get_settings('blog_charset'), true);
 		header('Cache-Control: no-cache;', true);
 		header('Expires: -1;', true);
