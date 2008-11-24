@@ -104,16 +104,20 @@ function geo_mashup_map($atts) {
 	$content = "";
 
 	if ($click_to_load == 'true') {
-		$style = "height:{$url_params['height']}px;width:{$url_params['width']}px;background-color:#ddd;".
-			"background-image:url(".GEO_MASHUP_URL_PATH."/images/wp-gm-pale.png);".
-			"background-repeat:no-repeat;background-position:center;cursor:pointer;";
-		$content = "<div class=\"geo_mashup_map\" style=\"$style\" " .
-			"onclick=\"GeoMashupLoader.addMapFrame(this,'$iframe_src',{$url_params['height']},{$url_params['width']})\">";
-		if ($url_params['static'] == 'true') {
-			// TODO: test whether click to load really works with a static map
-			$content .= $map_image . '</div>';
+		if ( is_feed() ) {
+			$content .= "<a href=\"{$iframe_src}\">$click_to_load_text</a>";
 		} else {
-			$content .= "<p style=\"text-align:center;\">$click_to_load_text</p></div>";
+			$style = "height:{$url_params['height']}px;width:{$url_params['width']}px;background-color:#ddd;".
+				"background-image:url(".GEO_MASHUP_URL_PATH."/images/wp-gm-pale.png);".
+				"background-repeat:no-repeat;background-position:center;cursor:pointer;";
+			$content = "<div class=\"geo_mashup_map\" style=\"$style\" " .
+				"onclick=\"GeoMashupLoader.addMapFrame(this,'$iframe_src',{$url_params['height']},{$url_params['width']})\">";
+			if ($url_params['static'] == 'true') {
+				// TODO: test whether click to load really works with a static map
+				$content .= $map_image . '</div>';
+			} else {
+				$content .= "<p style=\"text-align:center;\">$click_to_load_text</p></div>";
+			}
 		}
 	} else if ($url_params['static'] == 'true') {
 		$content = "<div class=\"geo_mashup_map\">$map_image</div>";
