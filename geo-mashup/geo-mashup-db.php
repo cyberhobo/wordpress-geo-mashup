@@ -68,7 +68,7 @@ class GeoMashupDB {
 
 	function get_simple_tag_content( $tag_name, $document ) {
 		$content = null;
-		$pattern = '/<' . $tag_name . '>(\w.*)<\/'. $tag_name .'>/is';
+		$pattern = '/<' . $tag_name . '>(\w.*)<\/' . $tag_name . '>/is';
 		if ( preg_match( $pattern, $document, $match ) ) {
 			$content .= $match[1];
 		}
@@ -181,7 +181,7 @@ class GeoMashupDB {
 
 		$location = false;
 		$wpdb->query( $select_string, $output_type );
-		if ($wpdb->last_result) {
+		if ( $wpdb->last_result ) {
 			$location = $wpdb->last_result[0];
 		}
 		return $location;
@@ -329,11 +329,11 @@ class GeoMashupDB {
 		$set_id = null;
 		if ( empty( $db_location ) ) {
 
-			if ( empty( $location['country_code'] ) || empty( $location['admin_code'] ) ) {
+			if ( empty( $location['country_code'] ) || empty( $location['admin_code'] ) || empty( $location['admin_name'] ) ) {
 				$location = array_merge( $location, GeoMashupDB::get_geoname_subdivision( $location['lat'], $location['lng'] ) );
 			}
 
-			if ($wpdb->insert( $location_table, $location ) ) {
+			if ( $wpdb->insert( $location_table, $location ) ) {
 				$set_id = $wpdb->insert_id;
 			}
 		} else {
@@ -378,7 +378,7 @@ class GeoMashupDB {
 			INNER JOIN {$wpdb->prefix}geo_mashup_locations gml ON gml.post_id = p.ID 
 			WHERE tt.term_id = " . $wpdb->escape( $category_id ) ."
 			AND p.post_status='publish'";
-		return $wpdb->get_var($select_string);
+		return $wpdb->get_var( $select_string );
 	}
 }
 
