@@ -1,6 +1,6 @@
 <?php
 
-require('../../../wp-blog-header.php');
+require_once('../../../wp-blog-header.php');
 
 status_header(200);
 
