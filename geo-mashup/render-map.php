@@ -18,9 +18,10 @@ function add_double_quotes(&$item,$key) {
 
 function geo_mashup_render_map ( ) {
 	global $wpdb, $post, $geo_mashup_options;
+	$template_url_path = get_bloginfo( 'template_directory' );
 	$map_properties = array ( 
 		'url_path' => GEO_MASHUP_URL_PATH,
- 		'template_url_path' => get_bloginfo('template_directory'));
+ 		'template_url_path' => $template_url_path );
 
 	$map_content = null;
 	if (strlen($_GET['map_content']) > 0) {
@@ -116,7 +117,7 @@ function geo_mashup_render_map ( ) {
 				// find the css file needed
 				if (is_readable(TEMPLATEPATH . '/map-style.css'))
 				{
-					echo '<link rel="stylesheet" type="text/css" href="' . $map_properties['template_url_path'] . '/map-style.css' . '" />';
+					echo '<link rel="stylesheet" type="text/css" href="' . $template_url_path . '/map-style.css' . '" />';
 				}
 				else
 				{
