@@ -45,6 +45,7 @@ class GeoMashupQuery {
 	}
 
 	function excerpt_text($content) {
+		global $geo_mashup_options;
 		$content = strip_tags($content);
 		$content = substr($content,0,$geo_mashup_options->get('global_map', 'excerpt_length'));
 		$content = htmlspecialchars($content);
