@@ -23,7 +23,7 @@
  * @param properties the properties of the GeoMashup being customized
  * @param map        the Google Map object documented at http://code.google.com/apis/maps/documentation/reference.html#GMap2
  */
-function customizeGeoMashup ( properties, map ) {
+function customizeGeoMashupMap ( properties, map ) {
 
 	// Load some KML only into global maps - for instance pictures of squirrels
 	
