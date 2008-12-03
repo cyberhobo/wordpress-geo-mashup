@@ -584,8 +584,12 @@ var GeoMashup = {
 			this.map.addControl(new GeoMashupCategoryControl());
 		}
 
+		if (typeof(customizeGeoMashupMap) == 'function') {
+			customizeGeoMashupMap(this.opts, this.map);
+		}
+
 		if (typeof(customizeGeoMashup) == 'function') {
-			customizeGeoMashup(this.opts, this.map);
+			customizeGeoMashup(this);
 		}
 
 	},
