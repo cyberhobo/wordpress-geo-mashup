@@ -128,9 +128,9 @@ class GeoMashup {
 		foreach($array as $key=>$item) {
 			if (!$skip_empty || isset($item)) {
 				if ($urlencoded)
-					$output[] = $key.$inner_glue.urlencode($item);
+					$output[] = preg_replace('/\s/', ' ', $key.$inner_glue.urlencode($item));
 				else
-					$output[] = $key.$inner_glue.$item;
+					$output[] = preg_replace('/\s/', ' ', $key.$inner_glue.$item);
 			}
 		}
 		return implode($outer_glue, $output);
