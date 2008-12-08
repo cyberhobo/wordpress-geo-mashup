@@ -375,7 +375,7 @@ class GeoMashupDB {
 		$select_string = "SELECT count(*) FROM {$wpdb->posts} p 
 			INNER JOIN {$wpdb->term_relationships} tr ON tr.object_id = p.ID 
 			INNER JOIN {$wpdb->term_taxonomy} tt ON tt.term_taxonomy_id = tr.term_taxonomy_id
-			INNER JOIN {$wpdb->prefix}geo_mashup_locations gml ON gml.post_id = p.ID 
+			INNER JOIN {$wpdb->prefix}geo_mashup_location_relationships gmlr ON gmlr.object_id = p.ID AND gmlr.object_name = 'post'
 			WHERE tt.term_id = " . $wpdb->escape( $category_id ) ."
 			AND p.post_status='publish'";
 		return $wpdb->get_var( $select_string );

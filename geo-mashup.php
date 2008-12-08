@@ -405,7 +405,8 @@ class GeoMashup {
 			} else {
 				$url .= '?';
 			}
-			$link = '<a class="geo_mashup_link" href="'.$url.htmlentities("lat=$lat&lng=$lng&openPostId={$post->ID}").'">'.$icon.' '.$options['text'].'</a>';
+			$link = '<a class="geo_mashup_link" href="'.$url.htmlentities("center_lat=$lat&center_lng=$lng&openPostId={$post->ID}").'">'.
+				$icon.' '.$options['text'].'</a>';
 			if ($options['display']) {
 				echo $link;
 				return true;
