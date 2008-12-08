@@ -28,13 +28,29 @@ function geo_mashup_render_map ( ) {
 		$map_content = $_GET['map_content'];
 	}
 
+	if ( !empty( $_GET['lat'] ) ) {
+		// Translate old querystring center argument
+		$map_properties['center_lat'] = $_GET['lat'];
+		unset( $_GET['lat'] );
+	}
+
+	if ( !empty( $_GET['lng'] ) ) {
+		// Translate old querystring center argument
+		$map_properties['center_lng'] = $_GET['lng'];
+		unset( $_GET['lng'] );
+	}
+
 	$option_keys = array ( 'width', 'height', 'map_control', 'map_type', 'add_map_type_control', 'add_overview_control' );
 	if ( $map_content == 'single') {
 		// Use single located page or post options
 		$post = get_post($_GET['post_id']);
 		unset($_GET['post_id']);
 		$options = $geo_mashup_options->get ( 'single_map', $option_keys );
-		$map_properties = array_merge ( GeoMashup::post_coordinates() , $map_properties );
+		$post_coordinates = GeoMashup::post_coordinates();
+		if ( !empty( $post_coordinates ) ) {
+			$map_properties['center_lat'] = $post_coordinates['lat'];
+			$map_properties['center_lng'] = $post_coordinates['lng'];
+		}
 		$map_properties = array_merge ( $options, $map_properties );
 		$kml_urls = GeoMashup::get_kml_attachment_urls($post->ID);
 		if (count($kml_urls)>0) {

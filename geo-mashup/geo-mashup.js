@@ -499,9 +499,9 @@ var GeoMashup = {
 			this.map.addOverlay(this.kml);
 		}
 
-		if (opts.lat && opts.lng) {
+		if (opts.center_lat && opts.center_lng) {
 			// Use the center form options
-			this.map.setCenter(new GLatLng(opts.lat, opts.lng), opts.zoom, opts.map_type);
+			this.map.setCenter(new GLatLng(opts.center_lat, opts.center_lng), opts.zoom, opts.map_type);
 		} else if (this.kml) {
 			this.map.setCenter(this.kml.getDefaultCenter, opts.zoom, opts.map_type);
 		} else if (opts.post_data && opts.post_data.posts[0]) {
@@ -536,13 +536,13 @@ var GeoMashup = {
 		this.marker_manager = new GMarkerManager(this.map);
 		if (opts.map_content == 'single')
 		{
-			if (opts.lat && opts.lng && !this.kml)
+			if (opts.center_lat && opts.center_lng && !this.kml)
 			{
 				var marker_opts = new Object();
 				if (typeof(customGeoMashupSinglePostIcon) == 'function') {
 					marker_opts.icon = customGeoMashupSinglePostIcon(this.opts);
 				}
-				this.map.addOverlay(new GMarker(new GLatLng(this.opts.lat,this.opts.lng), marker_opts));
+				this.map.addOverlay(new GMarker(new GLatLng(this.opts.center_lat,this.opts.center_lng), marker_opts));
 			}
 		}
 		else if (opts.post_data)
