@@ -92,7 +92,6 @@ var GeoMashupAdmin = {
 	},
 
 	createMap : function(container, opts) {
-		this.initial_load_done = false;
 		this.opts = opts;
 		this.red_icon = new GIcon();
 		this.red_icon.image = opts.link_url + '/images/mm_20_red.png';
@@ -145,9 +144,6 @@ var GeoMashupAdmin = {
 
 		GEvent.bind(this.map,'click',this,this.onclick);
 
-		if (!opts.kml_url) {
-			this.initial_load_done = true;
-		}
 	},
   
 	onKmlLoad : function() {
@@ -156,7 +152,6 @@ var GeoMashupAdmin = {
 			this.addSelectedMarker(latlng, this.opts.post_location_name);
 			this.search_textbox.value = latlng.lat() + ',' + latlng.lng();
 		}
-		this.initial_load_done = true;
 	},
 
 	loadKml : function(kml_url) {
@@ -262,18 +257,21 @@ var GeoMashupAdmin = {
 	},
 
 	setInputs : function (latlng, loc) {
-		this.location_id_input.value = loc.id;
-		this.location_input.value = latlng.lat() + ',' + latlng.lng();
-		this.geoname_input.value = loc.geoname;
-		this.address_input.value = loc.address;
-		this.postal_code_input.value = loc.postal_code;
-		this.country_code_input.value = loc.country_code;
-		this.admin_code_input.value = loc.admin_code;
-		this.admin_name_input.value = loc.admin_name;
-		this.sub_admin_code_input.value = loc.sub_admin_code;
-		this.sub_admin_name_input.value = loc.sub_admin_name;
-		this.locality_name_input.value = loc.locality_name;
-		this.changed_input.value = 'true';
+		var latlng_string = latlng.lat() + ',' + latlng.lng();
+		if ((this.location_id_input.value != loc.id) || (this.location_input.value != latlng_string)) {
+			this.location_id_input.value = loc.id;
+			this.location_input.value = latlng_string;
+			this.geoname_input.value = loc.geoname;
+			this.address_input.value = loc.address;
+			this.postal_code_input.value = loc.postal_code;
+			this.country_code_input.value = loc.country_code;
+			this.admin_code_input.value = loc.admin_code;
+			this.admin_name_input.value = loc.admin_name;
+			this.sub_admin_code_input.value = loc.sub_admin_code;
+			this.sub_admin_name_input.value = loc.sub_admin_name;
+			this.locality_name_input.value = loc.locality_name;
+			this.changed_input.value = 'true';
+		}
 	},
 
 	createMarker : function(latlng, loc) {
@@ -289,9 +287,7 @@ var GeoMashupAdmin = {
 		if (!this.selected_marker) {
 			this.selected_marker = marker;
 			this.map.setCenter(latlng);
-			if (this.initial_load_done) {
-				this.setInputs(latlng, loc);
-			}
+			this.setInputs(latlng, loc);
 
 			GEvent.addListener(marker,'dragend',function () { 
 				GeoMashupAdmin.setInputs(marker.getPoint(), new GeoMashupLocation());
