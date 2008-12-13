@@ -52,11 +52,12 @@ class GeoMashup {
 		if (is_admin()) {
 			register_activation_hook( __FILE__, array( 'GeoMashupDB', 'install' ) );
 			add_filter('upload_mimes', array('GeoMashup', 'upload_mimes'));
+			add_filter('wp_handle_upload', array('GeoMashup', 'wp_handle_upload'));
 
 			add_action('admin_menu', array('GeoMashup', 'admin_menu'));
 			add_action('save_post', array('GeoMashup', 'save_post'));
-			add_action('wp_handle_upload', array('GeoMashup', 'wp_handle_upload'));
 			add_action('admin_print_scripts', array('GeoMashup', 'admin_print_scripts'));
+
 		} else {
 			if ($geo_mashup_options->get('overall','add_category_links') == 'true') {
 				add_filter('list_cats', array('GeoMashup', 'list_cats'), 10, 2);
@@ -206,7 +207,8 @@ class GeoMashup {
 					addLoadEvent(function() { jQuery("#geo-mashup-settings-form > ul").tabs(); }); 
 				</script>';
 
-		} else if (preg_match('/(post|page)(-new|).php/', $_SERVER['REQUEST_URI'])) {
+		} else if (strpos($_SERVER['REQUEST_URI'], 'upload.php') > 0) {
+			// Load any uploaded KML into the search map
 
 			$kml_url = get_option('geo_mashup_temp_kml_url');
 			if (strlen($kml_url) > 0)
@@ -223,7 +225,7 @@ class GeoMashup {
 	function wp_handle_upload($args)
 	{
 		update_option('geo_mashup_temp_kml_url','');
-		if (is_array($args) && isset($args->file)) {
+		if (is_array($args) && isset($args['file'])) {
 			if (stripos($args['file'],'.kml') == strlen($args['file'])-4) {
 				update_option('geo_mashup_temp_kml_url',$args['url']);
 			}
