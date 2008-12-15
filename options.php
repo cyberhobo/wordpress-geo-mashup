@@ -254,13 +254,13 @@ function geo_mashup_options_page()
 	<div class="wrap">
 		<h2><?php _e('Geo Mashup Plugin Options', 'GeoMashup'); ?></h2>
 		<?php if ( GeoMashupDB::installed_version( ) != GEO_MASHUP_DB_VERSION ) : ?>
-			<form method="post" id="geo-mashup-upgrade-form">
-				<?php wp_nonce_field('geo-mashup-upgrade-db'); ?>
-				<div class="updated">
+			<div class="updated">
+				<form method="post" id="geo-mashup-upgrade-form">
+					<?php wp_nonce_field('geo-mashup-upgrade-db'); ?>
 					<label><?php _e( 'The Geo Mashup database is out of date.', 'GeoMashup' ); ?></label>
 					<input type="submit" name="upgrade_db" value="<?php _e('Upgrade Database', 'GeoMashup'); ?>" class="button" />
-				</div>
-			</form>
+				</form>
+			</div>
 		<?php endif; ?>
 		<form method="post" id="geo-mashup-settings-form">
 			<ul>
