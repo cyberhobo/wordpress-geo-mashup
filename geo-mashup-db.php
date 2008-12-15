@@ -23,6 +23,7 @@ class GeoMashupDB {
 
 		$location_table_name = $wpdb->prefix . 'geo_mashup_locations';
 		$relationships_table_name = $wpdb->prefix . 'geo_mashup_location_relationships';
+		$administrative_names_table_name = $wpdb->prefix . 'geo_mashup_administrative_names';
 		if ( GeoMashupDB::installed_version( ) != GEO_MASHUP_DB_VERSION ) {
 			$sql = "
 				CREATE TABLE $location_table_name (
@@ -31,13 +32,11 @@ class GeoMashupDB {
 					lng FLOAT( 11,7 ) NOT NULL,
 					address TINYTEXT NULL,
 					saved_name VARCHAR( 50 ) NULL,
-					geoname TINYTEXT NULL,
+					geoname TINYTEXT NULL, 
 					postal_code TINYTEXT NULL,
 					country_code VARCHAR( 2 ) NULL,
 					admin_code VARCHAR( 20 ) NULL,
-					admin_name TINYTEXT NULL,
 					sub_admin_code VARCHAR( 80 ) NULL,
-					sub_admin_name TINYTEXT NULL,
 					locality_name TINYTEXT NULL,
 					PRIMARY KEY  ( id ),
 					UNIQUE KEY saved_name ( saved_name ),
@@ -51,12 +50,26 @@ class GeoMashupDB {
 					location_id MEDIUMINT( 9 ) NOT NULL,
 					PRIMARY KEY  ( object_name, object_id, location_id ),
 					KEY object_name ( object_name, object_id )
+				);
+				CREATE TABLE $administrative_names_table_name (
+					country_code VARCHAR( 2 ) NOT NULL,
+					admin_code VARCHAR( 20 ) NOT NULL,
+					isolanguage VARCHAR( 7 ) NOT NULL,
+					geoname_id MEDIUMINT( 9 ) NULL,
+					name VARCHAR( 200 ) NOT NULL,
+					PRIMARY KEY admin_id ( country_code, admin_code, isolanguage )
 				);";
 			require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
-			// Not sure keys are handled properly by dbDelta on upgrade, so there may be errors
+			// Capture error messages - some are ok
 			$old_show_errors = $wpdb->show_errors( true );
+			ob_start();
 			dbDelta( $sql );
-			if ( !$wpdb->last_error ) {
+			$errors = ob_get_contents();
+			ob_end_clean();
+			if ( $errors && preg_match( '/\[(?!Duplicate key|Multiple primary key)/', $errors ) ) {
+				// Any errors other than duplicate or multiple primary key could be trouble
+				echo $errors;
+			} else {
 				if ( GeoMashupDB::convert_prior_locations( ) ) {
 					GeoMashupDB::installed_version( GEO_MASHUP_DB_VERSION );
 				}
@@ -68,22 +81,137 @@ class GeoMashupDB {
 
 	function get_simple_tag_content( $tag_name, $document ) {
 		$content = null;
-		$pattern = '/<' . $tag_name . '>(\w.*)<\/' . $tag_name . '>/is';
+		$pattern = '/<' . $tag_name . '>(.*)<\/' . $tag_name . '>/is';
 		if ( preg_match( $pattern, $document, $match ) ) {
 			$content .= $match[1];
 		}
 		return $content;
 	}
 
-	function get_geoname_subdivision( $lat, $lng ) {
+	/**
+	 * Try to get a language-sensitive place administrative name. First look in the 
+	 * names cached in the database, then query geonames.org for it. If a name can't be 
+	 * found for the requested language, a default name is returned, usually in the 
+	 * local language. If nothing can be found, returns NULL.
+	 * 
+	 * @param string $country_code Two-character ISO country code.
+	 * @param string $admin_code Code for the administrative area within the country, or NULL to get the country name.
+	 * @param string $language Language code, defaults to the WordPress locale language.
+	 * @return string Place name in the appropriate language, or if not available in the default language.
+	 */
+	function get_administrative_name( $country_code, $admin_code = null, $language = null ) {
+		$name = GeoMashupDB::get_cached_administrative_name( $country_code, $admin_code, $language );
+		if ( empty( $name ) ) {
+			$name = GeoMashupDB::get_geonames_administrative_name( $country_code, $admin_code, $language );
+		}
+		return $name;
+	}
+
+
+	/** 
+	 * Look in the database for a cached administrative name. Return NULL if not found.
+	 *
+	 * @param string $country_code Two-character ISO country code.
+	 * @param string $admin_code Code for the administrative area within the country, or NULL to get the country name.
+	 * @param string $language Language code, defaults to the WordPress locale language.
+	 * @return string Place name or NULL.
+	 */
+	function get_cached_administrative_name( $country_code, $admin_code = '', $language = '' ) {
+		global $wpdb;
+
+		$language = GeoMashupDB::primary_language_code( $language );
+		$select_string = "SELECT name
+			FROM {$wpdb->prefix}geo_mashup_administrative_names
+			WHERE " . 
+			$wpdb->prepare( 'isolanguage = %s AND country_code = %s AND admin_code = %s', $language, $country_code, $admin_code ); 
+
+		return $wpdb->get_var( $select_string );
+	}
+
+	/** 
+	 * Trim a locale or browser accepted languages string down to the 2 or 3 character
+	 * primary language code.
+	 *
+	 * @param string $language Local or language code string, NULL for blog locale.
+	 * @return string Two (rarely three?) character language code.
+	 */
+	function primary_language_code( $language = null ) {
+		if ( empty( $language ) ) {
+			$language = get_locale( );
+		}
+		if ( strlen( $language ) > 3 ) {
+			if ( ctype_alpha( $language[2] ) ) {
+				$language = substr( $language, 0, 3 );
+			} else {
+				$language = substr( $language, 0, 2 );
+			}
+		}
+		return $language;
+	}
+
+	function get_geonames_administrative_name( $country_code, $admin_code = '', $language = '' ) {
+		$language = GeoMashupDB::primary_language_code( $language );
+		$country_info_url = 'http://ws.geonames.org/countryInfo?country=' . urlencode( $country_code ) .
+			'&lang=' . urlencode( $language );
+
+		// Country name - the easy case
+		$country_info_xml = @ file_get_contents( $country_info_url );
+		$country_name = GeoMashupDB::get_simple_tag_content( 'countryName', $country_info_xml );
+		$country_id = GeoMashupDB::get_simple_tag_content( 'geonameId', $country_info_xml );
+		if ( !empty( $country_name ) ) {
+			GeoMashupDB::cache_administrative_name( $country_code, '', $language, $country_name, $country_id );
+			if ( empty( $admin_code ) ) {
+				return $country_name;
+			}
+		}
+
+		// Administrative area (child of country)
+		if ( empty( $country_id ) ) return null;
+
+		$children_url = 'http://ws.geonames.org/children?style=short&geonameId=' . $country_id;
+		$children_xml = @ file_get_contents( $children_url );
+		preg_match_all( '/<geonameId>(\d*)<\/geonameId>/is', $children_xml, $matches );
+		if ( empty( $matches ) ) return null;
+		$requested_name = null;
+		foreach ( $matches[1] as $child_id ) {
+			// We have to query each child to get the admin code, so just cache them all
+			$child_url = 'http://ws.geonames.org/get?geonameId=' . $child_id . '&lang=' . urlencode( $language );
+			$child_xml = @ file_get_contents( $child_url );
+			$child_name = GeoMashupDB::get_simple_tag_content( 'name', $child_xml );
+			if ( !empty( $child_name ) ) {
+				$child_admin_code = GeoMashupDB::get_simple_tag_content( 'adminCode1', $child_xml );
+				GeoMashupDB::cache_administrative_name( $country_code, $child_admin_code, $language, $child_name, $child_id );
+				if ( $child_admin_code == $admin_code ) {
+					$requested_name = $child_name;
+				}
+			}
+		}
+		return $requested_name;
+	}
+
+	function get_geonames_subdivision( $lat, $lng ) {
 		$result = array( );
-		$xml_string = @file_get_contents( "http://ws.geonames.org/countrySubdivision?lat=$lat&lng=$lng" );
+		$xml_string = @ file_get_contents( "http://ws.geonames.org/countrySubdivision?lat=$lat&lng=$lng" );
 		$result['country_code'] = GeoMashupDB::get_simple_tag_content( 'countryCode', $xml_string );
 		$result['admin_code'] = GeoMashupDB::get_simple_tag_content( 'adminCode1', $xml_string );
-		$result['admin_name'] = GeoMashupDB::get_simple_tag_content( 'adminName1', $xml_string );
+		// TODO: Save administrative names?
 		return $result;
 	}
 			
+	function cache_administrative_name( $country_code, $admin_code, $isolanguage, $name, $geoname_id = null ) {
+		global $wpdb;
+
+		$table_name = $wpdb->prefix . 'geo_mashup_administrative_names';
+		$cached_name = GeoMashupDB::get_cached_administrative_name( $country_code, $admin_code, $language ); 
+		$rows = 0;
+		if ( empty( $cached_name ) ) {
+			$rows = $wpdb->insert( $table_name, compact( 'country_code', 'admin_code', 'isolanguage', 'name', 'geoname_id' ) );
+		} else if ( $cached_name != $name ) {
+			$rows = $wpdb->update( $table_name, compact( 'name' ), compact( 'country_code', 'admin_code', 'name' ) );
+		}
+		return $rows;
+	}
+
 	function convert_prior_locations( ) {
 		global $wpdb;
 
@@ -106,6 +234,7 @@ class GeoMashupDB {
 		
 		$unconverted_metadata = $wpdb->last_result; 
 		if ( $unconverted_metadata ) {
+			echo '<p>Converting old locations';
 			foreach ( $unconverted_metadata as $postmeta ) {
 				$post_id = $postmeta->post_id;
 				list( $lat, $lng ) = split( ',', $postmeta->meta_value );
@@ -113,20 +242,34 @@ class GeoMashupDB {
 				$set_id = GeoMashupDB::set_post_location( $post_id, $location );
 				if ( $set_id ) {
 					add_post_meta( $post_id, '_geo_converted', $wpdb->prefix . 'geo_mashup_locations.id = ' . $set_id );
-				} 
+					// Echo a poor man's progress bar
+					echo '.';
+					flush( );
+				} else {
+					echo '<br/>Failed to convert location (' . $postmeta->meta_value .
+						'). You can <a href=\"post.php?action=edit&post=' . $post_id . 
+						'>edit the post</a> and try again.<br />';
+				}
 			}
+			echo '</p>';
 		}
 
 		$geo_locations = get_settings( 'geo_locations' );
 		if ( is_array( $geo_locations ) ) {
+			echo '<p>Converting saved locations:<br/>';
 			foreach ( $geo_locations as $saved_name => $coordinates ) {
 				list( $lat, $lng, $converted ) = split( ',', $coordinates );
 				$location = array( 'lat' => trim( $lat ), 'lng' => trim( $lng ), 'saved_name' => $saved_name );
 				$set_id = GeoMashupDB::set_location( $location );
 				if ( $set_id ) {
 					$geo_locations[$saved_name] .= ',' . $wpdb->prefix . 'geo_mashup_locations.id=' . $set_id;
+					echo 'OK: ' . $saved_name . '<br/>';
+				} else {
+					echo $saved_name . ' - Failed to convert saved location (' . $coordinates . 
+						'). You\'ll have to save it again, sorry.';
 				}
 			}
+			echo '</p>';
 			update_option( 'geo_locations', $geo_locations );
 		}
 
@@ -146,9 +289,7 @@ class GeoMashupDB {
 			'postal_code' => null,
 			'country_code' => null,
 			'admin_code' => null,
-			'admin_name' => null,
 			'sub_admin_code' => null,
-			'sub_admin_name' => null,
 			'locality_name' => null);
 		if ( $format == OBJECT ) {
 			return (object) $blank_location;
@@ -157,16 +298,28 @@ class GeoMashupDB {
 		}
 	}
 
-	function get_distinct_located_values( $names ) {
+	function get_distinct_located_values( $names, $where = null ) {
 		global $wpdb;
 
 		if ( is_array( $names ) ) {
 			$names = implode( ',', $names );
 		}
 
+		if ( is_object( $where ) ) {
+			$where = (array) $where;
+		}
+
 		$select_string = 'SELECT DISTINCT ' . $wpdb->escape( $names ) . "
 			FROM {$wpdb->prefix}geo_mashup_locations gml
 			JOIN {$wpdb->prefix}geo_mashup_location_relationships gmlr ON gmlr.location_id = gml.id";
+
+		if ( is_array( $where ) && !empty( $where ) ) {
+			$wheres = array( );
+			foreach ( $where as $name => $value ) {
+				$wheres[] = $wpdb->escape( $name ) . ' = \'' . $wpdb->escape( $value ) .'\'';
+			}
+			$select_string .= ' WHERE ' . implode( ' AND ', $wheres );
+		}
 
 		return $wpdb->get_results( $select_string );
 	}
@@ -329,8 +482,8 @@ class GeoMashupDB {
 		$set_id = null;
 		if ( empty( $db_location ) ) {
 
-			if ( empty( $location['country_code'] ) || empty( $location['admin_code'] ) || empty( $location['admin_name'] ) ) {
-				$location = array_merge( $location, GeoMashupDB::get_geoname_subdivision( $location['lat'], $location['lng'] ) );
+			if ( empty( $location['country_code'] ) || empty( $location['admin_code'] ) ) {
+				$location = array_merge( $location, GeoMashupDB::get_geonames_subdivision( $location['lat'], $location['lng'] ) );
 			}
 
 			if ( $wpdb->insert( $location_table, $location ) ) {
