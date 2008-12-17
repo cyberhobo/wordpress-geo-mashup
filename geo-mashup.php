@@ -384,8 +384,8 @@ class GeoMashup {
 	function post_link($option_args = null) {
 		global $post, $geo_mashup_options;
 		$options = array('text' => __('Show on map','GeoMashup'),
-										 'display' => false,
-										 'show_icon' => true);
+			 'display' => false,
+			 'show_icon' => true);
 		if (is_array($option_args)) {
 			$options = $option_args + $options;
 		} if (is_string($option_args)) {
@@ -407,7 +407,15 @@ class GeoMashup {
 			} else {
 				$url .= '?';
 			}
-			$link = '<a class="geo_mashup_link" href="'.$url.htmlentities("center_lat=$lat&center_lng=$lng&openPostId={$post->ID}").'">'.
+			$open = '';
+			if ($geo_mashup_options->get('global_map', 'auto_info_open') == 'true') {
+				$open = '&open_post_id=' . $post->ID;
+			}
+			$zoom = '';
+			if ( !empty( $options['zoom'] ) ) {
+				$zoom = '&zoom=' . $options['zoom'];
+			}
+			$link = '<a class="geo_mashup_link" href="'.$url.htmlentities("center_lat=$lat&center_lng=$lng$open$zoom").'">'.
 				$icon.' '.$options['text'].'</a>';
 			if ($options['display']) {
 				echo $link;

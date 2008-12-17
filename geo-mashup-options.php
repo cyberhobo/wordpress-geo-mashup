@@ -75,6 +75,7 @@ class GeoMashupOptions {
 		'marker_min_zoom' => array ( 'global_map', 'marker_min_zoom' ),
 		'max_posts' => array ( 'global_map', 'max_posts' ),
 		'auto_info_open' => array ( 'global_map', 'auto_info_open' ),
+		'auto_open_info_window' => array ( 'global_map', 'auto_info_open' ),
 		'click_to_load' => array ( 'global_map', 'click_to_load' ),
 		'click_to_load_text' => array ( 'global_map', 'click_to_load_text' ),
 		'in_post_map_control' => array ( 'single_map', 'map_control' ),
