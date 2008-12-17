@@ -408,8 +408,8 @@ var GeoMashup = {
 				
 		if (this.firstLoad) {
 			this.firstLoad = false;
-			if (this.opts.openPostId) {
-				this.clickMarker(this.opts.openPostId);
+			if (this.opts.auto_info_open && this.opts.open_post_id) {
+				this.clickMarker(this.opts.open_post_id);
 			}
 		}
 	},
@@ -507,8 +507,8 @@ var GeoMashup = {
 		} else if (opts.post_data && opts.post_data.posts[0]) {
 			var center_latlng = new GLatLng(opts.post_data.posts[0].lat, opts.post_data.posts[0].lng);
 			this.map.setCenter(center_latlng, opts.zoom, opts.map_type);
-			if (this.opts.auto_info_open && !this.opts.openPostId) {
-				this.opts.openPostId = opts.post_data.posts[0].post_id;
+			if (this.opts.auto_info_open && !this.opts.open_post_id) {
+				this.opts.open_post_id = opts.post_data.posts[0].post_id;
 			}
 		} else {
 			// Center on the most recent located post
@@ -524,7 +524,7 @@ var GeoMashup = {
 				var point = new GLatLng(posts[0].lat,posts[0].lng);
 				this.map.setCenter(point,opts.zoom,opts.map_type);
 				if (this.opts.auto_info_open) {
-					this.opts.openPostId = posts[0].post_id;
+					this.opts.open_post_id = posts[0].post_id;
 				}
 			} else {
 				this.map.setCenter(new GLatLng(0,0),opts.zoom,opts.map_type);
