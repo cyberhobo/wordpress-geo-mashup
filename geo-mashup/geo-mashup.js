@@ -380,7 +380,7 @@ var GeoMashup = {
 				
 		if (this.firstLoad) {
 			this.firstLoad = false;
-			if (this.opts.openPostId) {
+			if (this.opts.auto_open_info_window && this.opts.openPostId) {
 				this.clickMarker(this.opts.openPostId);
 			}
 		}
