@@ -49,6 +49,7 @@ class GeoMashup {
 
 	function load_hooks() {
 		global $geo_mashup_options;
+		add_filter('media_meta', array('GeoMashup', 'media_meta'), 10, 2);
 		if (is_admin()) {
 			register_activation_hook( __FILE__, array( 'GeoMashupDB', 'install' ) );
 			add_filter('upload_mimes', array('GeoMashup', 'upload_mimes'));
@@ -139,7 +140,7 @@ class GeoMashup {
 
 	function get_kml_attachment_urls($post_id)
 	{
-		if (!isset($post_id) || is_null($post_id))
+		if ( empty( $post_id ) )
 		{
 			return array();
 		}
@@ -198,6 +199,16 @@ class GeoMashup {
 		}
 	}
 
+	function media_meta($content, $post) {
+		// Only chance to run some javascript after a flash upload?
+		if (strpos($_SERVER['REQUEST_URI'], 'async-upload.php') > 0 && strlen($post->guid) > 0) {
+			$content .= '<script type="text/javascript"> ' .
+				'if (parent.GeoMashupAdmin) parent.GeoMashupAdmin.loadKml(\''.$post->guid.'\');' .
+				'</script>';
+		}
+		return $content;
+	}
+
 	function admin_print_scripts($not_used)
 	{
 		if ($_GET['page'] == GEO_MASHUP_PLUGIN_NAME) {
@@ -208,7 +219,7 @@ class GeoMashup {
 				</script>';
 
 		} else if (strpos($_SERVER['REQUEST_URI'], 'upload.php') > 0) {
-			// Load any uploaded KML into the search map
+			// Load any uploaded KML into the search map - only works with browser uploader
 
 			$kml_url = get_option('geo_mashup_temp_kml_url');
 			if (strlen($kml_url) > 0)
@@ -224,6 +235,8 @@ class GeoMashup {
 
 	function wp_handle_upload($args)
 	{
+		echo 'Handle an Upload!<br/>';
+		var_dump($args);
 		update_option('geo_mashup_temp_kml_url','');
 		if (is_array($args) && isset($args['file'])) {
 			if (stripos($args['file'],'.kml') == strlen($args['file'])-4) {
