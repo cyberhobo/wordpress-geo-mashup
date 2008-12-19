@@ -449,7 +449,7 @@ var GeoMashup = {
 					if (!plus_image) {
 						plus_image = this.opts.url_path + '/images/mm_20_plus.png';
 					}
-					marker.getIcon().image = plus_image;
+					marker.setImage(plus_image);
 					this.posts[post_id] = new Object();
 					this.posts[post_id].marker = this.locations[point].marker;
 				}
