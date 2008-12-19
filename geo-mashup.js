@@ -168,20 +168,44 @@ var GeoMashup = {
 	},
 
 	showCategoryInfo : function() {
-		var legend_html = ['<table>'];
-		var legend_element = parent.document.getElementById("geoMashupCategoryLegend");
+		var legend_element = null;
+		var interactive = false;
+		if (window.name) {
+			legend_element = parent.document.getElementById(window.name + "Legend");
+			interactive = true;
+		}
+		if (!legend_element) {
+			legend_element = parent.document.getElementById("geoMashupCategoryLegend");
+		}
+		var legend_html = ['<table class="geo_mashup_legend">'];
 		for (category in this.categories) {
 			this.categories[category].line = new GPolyline(this.categories[category].points, 
 				this.categories[category].color);
-			if (this.map.getZoom() <= this.categories[category].max_line_zoom) {
-				this.map.addOverlay(this.categories[category].line);
+			this.map.addOverlay(this.categories[category].line);
+			if (this.map.getZoom() > this.categories[category].max_line_zoom) {
+				this.categories[category].line.hide();
 			}
 			if (legend_element) {
+				var checkbox = '';
+				if (window.name && interactive) {
+					checkbox = ['<input type="checkbox" name="',
+						category,
+						'_checkbox" onclick="if (this.checked) { frames[\'',
+						window.name,
+						'\'].GeoMashup.showCategory(\'',
+						category,
+						'\'); } else { frames[\'',
+						window.name,
+						'\'].GeoMashup.hideCategory(\'',
+						category,
+						'\'); }" checked="true" />'].join('');
+				}
 				legend_html = legend_html.concat(['<tr><td><img src="',
 					this.categories[category].icon.image,
 					'" alt="',
-					this.categories[category].color,
+					category,
 					'"></td><td>',
+					checkbox,
 					category,
 					'</td></tr>']);
 			}
@@ -320,7 +344,7 @@ var GeoMashup = {
 		}
 	},
 
-	extendCategory : function(point, category) {
+	extendCategory : function(point, category, post_id) {
 		if (!this.categories[category]) {
 			var icon, color, color_name;
 			if (this.opts.category_opts[category].color_name) {
@@ -342,13 +366,41 @@ var GeoMashup = {
 			this.categories[category] = {
 				icon : icon,
 				points : [point],
+				posts : [post_id],
 				color : color,
+				visible : true,
 				max_line_zoom : this.opts.category_opts[category].max_line_zoom
 			};
 			this.category_count++;
 		} else {
 			this.categories[category].points.push(point);
+			this.categories[category].posts.push(post_id);
 		}
+	},
+
+	hideCategory : function(category) {
+		this.map.closeInfoWindow();
+		if (this.categories[category].line) {
+			this.categories[category].line.hide();
+		}
+		for (var i=0; i<this.categories[category].points.length; i++) {
+			var point = this.categories[category].points[i];
+			this.locations[point].marker.hide();
+		}
+		this.categories[category].visible = false;
+		this.updateVisibleList();
+	},
+
+	showCategory : function(category) {
+		if (this.categories[category].line && this.map.getZoom() <= this.categories[category].max_line_zoom) {
+			this.categories[category].line.show();
+		}
+		for (var i=0; i<this.categories[category].points.length; i++) {
+			var point = this.categories[category].points[i];
+			this.locations[point].marker.show();
+		}
+		this.categories[category].visible = true;
+		this.updateVisibleList();
 	},
 
 	addPosts : function(response_data, add_category_info) {
@@ -356,7 +408,7 @@ var GeoMashup = {
 			for (category in this.categories) {
 				this.categories[category].points.length = 0;
 				if (this.categories[category].line) {
-					this.map.removeOverlay(this.categories[category].line);
+					this.categories[category].line.hide();
 				}
 			}
 		}
@@ -369,7 +421,7 @@ var GeoMashup = {
 			// Update categories
 			for (var j = 0; j < response_data[i].categories.length; j++) {
 				var category = response_data[i].categories[j];
-				this.extendCategory(point, category);
+				this.extendCategory(point, category, post_id);
 			}
 			if (this.opts.max_posts && this.post_count >= this.opts.max_posts) break;
 			if (!this.posts[post_id]) {
@@ -382,10 +434,10 @@ var GeoMashup = {
 					this.locations[point].posts.push(post_id);
 					this.locations[point].loaded = new Array();
 					this.posts[post_id] = new Object();
-					var marker = this.createMarker(point,response_data[i]);
+					var marker = this.createMarker(point, response_data[i]);
 					this.posts[post_id].marker = marker;
 					this.locations[point].marker = marker;
-					this.marker_manager.addMarker(marker,this.opts.marker_min_zoom);
+					this.map.addOverlay(marker);
 				} else {
 					// There is already a marker at this point, add the new post to it
 					this.locations[point].posts.push(post_id);
@@ -401,6 +453,7 @@ var GeoMashup = {
 					this.posts[post_id] = new Object();
 					this.posts[post_id].marker = this.locations[point].marker;
 				}
+				this.posts[post_id].title = response_data[i].title;
 			}
 		} // end for each marker
 		// Add category lines
@@ -442,17 +495,71 @@ var GeoMashup = {
 		request.send(null);
 	},
 
+	hideMarkers : function() {
+		for (point in this.locations) {
+			this.locations[point].marker.hide();
+		}
+		this.updateVisibleList();
+	},
+
+	showMarkers : function() {
+		for (category in this.categories) {
+			if (this.categories[category].visible) {
+				for (var i=0; i<this.categories[category].points.length; i++) {
+					var point = this.categories[category].points[i];
+					this.locations[point].marker.show();
+				}
+			}
+		}
+	},
+
 	adjustZoom : function(old_level, new_level) {
+		if (old_level >= this.opts.min_marker_zoom && new_level < this.opts.min_marker_zoom) {
+			this.hideMarkers();
+		} else if (old_level < this.opts.min_marker_zoom && new_level >= this.opts.min_marker_zoom) {
+			this.showMarkers();
+		}
 		for (category in this.categories) {
 			if (old_level <= this.categories[category].max_line_zoom &&
 			  new_level > this.categories[category].max_line_zoom) {
-				this.map.removeOverlay(this.categories[category].line);
-			}
-			if (old_level > this.categories[category].max_line_zoom &&
+				this.categories[category].line.hide();
+			} else if (this.categories[category].visible &&
+				old_level > this.categories[category].max_line_zoom &&
 			  new_level <= this.categories[category].max_line_zoom) {
-				this.map.addOverlay(this.categories[category].line);
+				this.categories[category].line.show();
 			}
 		}
+	},
+
+	updateVisibleList : function() {
+		var list_element = null;
+		if (window.name) {
+			list_element = parent.document.getElementById(window.name + "VisibleList");
+		}
+		if (list_element) {
+			var list_html = ['<ul class="geo_mashup_visible_list">'];
+			for (post_id in this.posts) {
+				var map_bounds = this.map.getBounds();
+				var marker = this.posts[post_id].marker;
+				if (!marker.isHidden() && map_bounds.containsLatLng(marker.getLatLng())) {
+					list_html.push('<li><a href="#');
+					list_html.push(window.name);
+					list_html.push('" onclick="frames[\'');
+					list_html.push(window.name);
+					list_html.push('\'].GeoMashup.clickMarker(');
+					list_html.push(post_id);
+					list_html.push(');">');
+					list_html.push(this.posts[post_id].title);
+					list_html.push('</a></li>');
+				}
+			}
+			list_html.push('</ul>');
+			list_element.innerHTML = list_html.join('');
+		}
+	},
+
+	adjustViewport : function() {
+		this.updateVisibleList();
 	},
 
 	createMap : function(container, opts) {
@@ -532,8 +639,8 @@ var GeoMashup = {
 		}
 
 		GEvent.bind(this.map, "zoomend", this, this.adjustZoom);
+		GEvent.bind(this.map, "moveend", this, this.adjustViewport);
 
-		this.marker_manager = new GMarkerManager(this.map);
 		if (opts.map_content == 'single')
 		{
 			if (opts.center_lat && opts.center_lng && !this.kml)
