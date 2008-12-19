@@ -1,7 +1,9 @@
 var GeoMashupLoader = {
-	addMapFrame : function (element, frame_url, height, width) {
+	addMapFrame : function (element, frame_url, height, width, name) {
 		element.style.backgroundImage = 'none';
-		var html = ['<iframe src="'];
+		var html = ['<iframe name="'];
+		html.push(name);
+		html.push('" src="');
 		html.push(frame_url);
 		html.push('" height="');
 		html.push(height);
