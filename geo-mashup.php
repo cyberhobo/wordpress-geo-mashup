@@ -446,6 +446,30 @@ class GeoMashup {
 		return GeoMashup::post_link($option_args);
 	}
 
+	/** 
+	 * Place a list of visible posts.
+	 */
+	function visible_posts_list($args = null) {
+		$args = wp_parse_args($args);
+
+		$list_html = '';
+
+		$for_map = 'geomashup';
+		if ( !empty( $args['for_map'] ) ) {
+			$for_map = $args['for_map'];
+		}	
+		if ( !empty( $args['heading_text'] ) ) {
+			$heading_div = '<div id="' . $for_map . 'VisibleListHeader" style="display:none;">';
+			$heading_tags = '<h2>';
+			if ( !empty( $args['heading_tags'] ) ) {
+				$heading_tags = $args['heading_tags'];
+			}
+			$list_html .= balanceTags( $heading_div . $heading_tags . $args['heading_text'], true );
+		}
+		$list_html .= '<div id="' . $for_map . 'VisibleList"></div>';
+		return $list_html;
+	}
+
 	/**
 	 * List all located posts.
 	 */
