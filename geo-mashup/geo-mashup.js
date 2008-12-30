@@ -186,9 +186,13 @@ var GeoMashup = {
 				this.categories[category].line.hide();
 			}
 			if (legend_element) {
-				var checkbox = '';
+				var label;
 				if (window.name && interactive) {
-					checkbox = ['<input type="checkbox" name="',
+					var id = category + '_checkbox';
+					label = [
+						'<label for="',
+						id,
+						'"><input type="checkbox" name="category_checkbox" id="',
 						category,
 						'_checkbox" onclick="if (this.checked) { frames[\'',
 						window.name,
@@ -198,15 +202,18 @@ var GeoMashup = {
 						window.name,
 						'\'].GeoMashup.hideCategory(\'',
 						category,
-						'\'); }" checked="true" />'].join('');
+						'\'); }" checked="true" />',
+						category,
+						'</label>'].join('');
+				} else {
+					label = category;
 				}
 				legend_html = legend_html.concat(['<tr><td><img src="',
 					this.categories[category].icon.image,
 					'" alt="',
 					category,
 					'"></td><td>',
-					checkbox,
-					category,
+					label,
 					'</td></tr>']);
 			}
 		}
@@ -533,8 +540,13 @@ var GeoMashup = {
 
 	updateVisibleList : function() {
 		var list_element = null;
+		var header_element = null;
 		if (window.name) {
+			header_element = parent.document.getElementById(window.name + "VisibleListHeader");
 			list_element = parent.document.getElementById(window.name + "VisibleList");
+		}
+		if (header_element) {
+			header_element.style.display = 'block';
 		}
 		if (list_element) {
 			var list_html = ['<ul class="geo_mashup_visible_list">'];
@@ -542,7 +554,11 @@ var GeoMashup = {
 				var map_bounds = this.map.getBounds();
 				var marker = this.posts[post_id].marker;
 				if (!marker.isHidden() && map_bounds.containsLatLng(marker.getLatLng())) {
-					list_html.push('<li><a href="#');
+					list_html.push('<li><img src="');
+					list_html.push(marker.getIcon().image);
+					list_html.push('" alt="');
+					list_html.push(this.posts[post_id].title);
+					list_html.push('" /><a href="#');
 					list_html.push(window.name);
 					list_html.push('" onclick="frames[\'');
 					list_html.push(window.name);
