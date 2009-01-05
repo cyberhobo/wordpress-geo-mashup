@@ -1,0 +1,304 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Geo Mashup v1.1.3\n"
+"PO-Revision-Date: 2009-01-05 10:47+0100\n"
+"Last-Translator: michel@designdifferent.org\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Poedit-Language: German\n"
+"X-Poedit-Country: GERMANY\n"
+"X-Poedit-SourceCharset: utf-8\n"
+"X-Poedit-KeywordsList: __;_e;__ngettext:1,2;__ngettext_noop:1,2;_c\n"
+"X-Poedit-Basepath: ../\n"
+"X-Poedit-SearchPath-0: ."
+
+#: geo-mashup.php:274
+msgid "Find location:"
+msgstr "Ort suchen:"
+
+#: geo-mashup.php:283
+msgid "[Saved Locations]"
+msgstr "[Gespeicherte Orte]"
+
+#: geo-mashup.php:285
+msgid "help"
+msgstr "Hilfe"
+
+#: geo-mashup.php:287
+msgid "Put a green pin at the location for this post."
+msgstr "Bewege den grünen Pin auf der Karte zum Ort des Artikels"
+
+#: geo-mashup.php:287
+msgid "There are many ways to do it:"
+msgstr "Es gibt verschiedene Möglichkeiten das zu tun:"
+
+#: geo-mashup.php:289
+msgid "Search for a location name."
+msgstr "Nach Ortsnamen suchen."
+
+#: geo-mashup.php:290
+msgid "For multiple search results, mouse over pins to see location names, and click a result pin to select that location."
+msgstr "Bei mehreren Suchergebissen die Maus über den Pin bewegen um eine Beschreibung zusehen. Den richtigen Pin durch einen Klick auswählen."
+
+#: geo-mashup.php:291
+msgid "Search for a decimal latitude and longitude, like <em>40.123,-105.456</em>."
+msgstr "Suche nach Koordinaten wie <em>40.123,-105.456</em>."
+
+#: geo-mashup.php:292
+msgid "Search for a street address, like <em>123 main st, anytown, acity</em>."
+msgstr "Suche nach einer Adresse wie <em>Domplatz 7, Wetzlar, Deutschland</em>."
+
+#: geo-mashup.php:293
+msgid "Click on the location. Zoom in if necessary so you can refine the location by dragging it or clicking a new location."
+msgstr "Klicke auf den Ort. Du kannst den Ausschnitt der Karte verkleinern um eine genauere Auswahl zu Treffen. Halte den grünen Pin mit dem Mauszeiger fest und bewege ihn aus der Karte an einen neuen Ort."
+
+#: geo-mashup.php:295
+msgid "To execute a search, type search text into the Find Location box and hit the enter key. If you type a name next to \"Save As\", the location will be saved under that name so you can find it again with a quick search. Saved names are searched before doing a GeoNames search for location names."
+msgstr "So geben Sie den Artikel einen Ort: 1. Suchen Sie mit dem Suchfeld. 2. Geben Sie dem Ort einen Namen, unter dem er später wieder verwendet wird."
+
+#: geo-mashup.php:296
+msgid "To remove the location (green pin) for a post, clear the search box and hit the enter key."
+msgstr "Um den Ort zu löschen musst du das Suchfeld entleeren und ENTER drücken."
+
+#: geo-mashup.php:297
+msgid "close"
+msgstr "Schlissen"
+
+#: geo-mashup.php:300
+msgid "Loading Google map. Check Geo Mashup options if the map fails to load."
+msgstr "Google Map wird geladen. Schau in die Geo Mashup Einstellungen falls die Karte nicht geladen wird."
+
+#: geo-mashup.php:313
+msgid "Save As:"
+msgstr "Diesen Ort speichern als:"
+
+#: geo-mashup.php:494
+#: geo-mashup.php:495
+msgid "Location"
+msgstr "Ort"
+
+#: geo-mashup.php:552
+msgid "Options updated."
+msgstr "Einstellungen aktualisiert."
+
+#: geo-mashup.php:557
+msgid "Currenly using default options."
+msgstr "Es werden die Voreinstellungen benutzt."
+
+#: geo-mashup.php:600
+msgid "Category"
+msgstr "Kategorie"
+
+#: geo-mashup.php:600
+msgid "Color"
+msgstr "Farbe"
+
+#: geo-mashup.php:601
+msgid "Show Connecting Line Until Zoom Level (0-17 or none)"
+msgstr "Zeige Verbindungslinien ab Zoom (0-17 oder frei lassen)"
+
+#: geo-mashup.php:634
+msgid "Roadmap"
+msgstr "Straßenkarte"
+
+#: geo-mashup.php:635
+msgid "Satellite"
+msgstr "Satellitenbild"
+
+#: geo-mashup.php:636
+msgid "Hybrid"
+msgstr "Beides"
+
+#: geo-mashup.php:637
+msgid "Terrain"
+msgstr "Terrain"
+
+#: geo-mashup.php:653
+msgid "Small Zoom"
+msgstr "Kleiner Zoom"
+
+#: geo-mashup.php:654
+msgid "Small Pan/Zoom"
+msgstr "Kleine Navigation und Zoom"
+
+#: geo-mashup.php:655
+msgid "Large Pan/Zoom"
+msgstr "Große Navigation und Zoom"
+
+#: geo-mashup.php:707
+msgid "Yes"
+msgstr "Ja"
+
+#: geo-mashup.php:708
+msgid "No"
+msgstr "Nein"
+
+#: geo-mashup.php:709
+msgid "Only"
+msgstr "Nur"
+
+#: geo-mashup.php:735
+msgid "Geo Mashup Plugin Options"
+msgstr "Geo Mashup Plugin Einstellungen"
+
+#: geo-mashup.php:737
+msgid "Overall Settings"
+msgstr "Einstellungen für alle Karten"
+
+#: geo-mashup.php:740
+msgid "Google Maps Key"
+msgstr "Google Maps API Key"
+
+#: geo-mashup.php:742
+msgid "Get yours here"
+msgstr "Google Maps API Keys sind hier erhältlich"
+
+#: geo-mashup.php:747
+msgid "Default Settings For Maps In Located Posts and Pages"
+msgstr "Voreinstellungen für Karten in Artikeln und Seiten mit Ortsangaben"
+
+#: geo-mashup.php:750
+#: geo-mashup.php:786
+msgid "Map Control"
+msgstr "Kartensteuerung"
+
+#: geo-mashup.php:756
+#: geo-mashup.php:792
+msgid "Add Map Type Control"
+msgstr "Kartenart Steuerung anzeigen"
+
+#: geo-mashup.php:760
+#: geo-mashup.php:796
+msgid "Add Overview Control"
+msgstr "Kartenübersicht anzeigen"
+
+#: geo-mashup.php:764
+#: geo-mashup.php:800
+msgid "Default Map Type"
+msgstr "Standard Kartenart"
+
+#: geo-mashup.php:770
+#: geo-mashup.php:806
+msgid "Default Zoom Level"
+msgstr "Standard Zoom-Stufe"
+
+#: geo-mashup.php:772
+#: geo-mashup.php:808
+#: geo-mashup.php:813
+#: geo-mashup.php:847
+msgid "0 (max zoom out) - 17 (max zoom in)"
+msgstr "0 (Sehr großer Ausschnitt) - 17 (kleiner Ausschnitt)"
+
+#: geo-mashup.php:777
+msgid "Default Settings For Global Maps"
+msgstr "Voreinstellungen für die globale Karte"
+
+#: geo-mashup.php:780
+msgid "Generated links go here"
+msgstr "Der erzeugte Link wird hier eingefügt"
+
+#: geo-mashup.php:780
+msgid "Global Mashup Page"
+msgstr "Auf welcher Seite befindet sich die globale Karte?"
+
+#: geo-mashup.php:811
+msgid "Hide Markers Until Zoom Level"
+msgstr "Marker ausblenden bis zum Zoom-Stufe"
+
+#: geo-mashup.php:816
+msgid "Show Only Most Recent Posts"
+msgstr "Nur neueste Beiträge anzeigen"
+
+#: geo-mashup.php:818
+msgid "Number of posts to show, leave blank for all"
+msgstr "Wie viele Artikel sollen auf der Karte angezeigt werden? (Keine Angabe = Alle)"
+
+#: geo-mashup.php:821
+msgid "Show Future Posts"
+msgstr "Artikel anzeigen, die noch nicht veröffentlicht sind"
+
+#: geo-mashup.php:825
+msgid "Automatically Open Linked Post Info Window"
+msgstr "Fenster für den verlinkten Artikel automatisch öffnen"
+
+#: geo-mashup.php:829
+msgid "Enable Full Post Display"
+msgstr "Ganze Artikel auf der Karte anzeigen"
+
+#: geo-mashup.php:833
+msgid "Add Category Links"
+msgstr "Kategorie Link hinzufügen"
+
+#: geo-mashup.php:837
+msgid "Category Link Separator"
+msgstr "Trenner zwischen Kategorie Links"
+
+#: geo-mashup.php:841
+msgid "Category Link Text"
+msgstr "Text für Kategorie Link"
+
+#: geo-mashup.php:845
+msgid "Single Category Zoom Level"
+msgstr "Zoom für Karten mit nur einer Kategorie"
+
+#: geo-mashup.php:854
+msgid "Presentation"
+msgstr "Anzeige"
+
+#: geo-mashup.php:857
+msgid "Post Excerpt Format"
+msgstr "Format der Artikel Einleitung"
+
+#: geo-mashup.php:859
+msgid "Text"
+msgstr "Nur Text"
+
+#: geo-mashup.php:860
+msgid "HTML"
+msgstr "HTML"
+
+#: geo-mashup.php:863
+msgid "Post Excerpt Length"
+msgstr "Länge der Artikel Einleitung"
+
+#: geo-mashup.php:867
+msgid "Global Map Width"
+msgstr "Breite der globalen Karte"
+
+#: geo-mashup.php:868
+#: geo-mashup.php:872
+#: geo-mashup.php:876
+#: geo-mashup.php:880
+msgid "px"
+msgstr "px"
+
+#: geo-mashup.php:871
+msgid "Global Map Height"
+msgstr "Höhe der globalen Karte"
+
+#: geo-mashup.php:875
+msgid "In-Post Map Width"
+msgstr "Breite der Karte in einem Artikel"
+
+#: geo-mashup.php:879
+msgid "In-Post Map Height"
+msgstr "Höhe der Karte in einem Artikel"
+
+#: geo-mashup.php:884
+msgid "Update Options"
+msgstr "Einstellungen aktualisieren"
+
+#: geo-mashup.php:886
+msgid "Geo Mashup Documentation"
+msgstr "Geo Mashup Dokumantation"
+
+#: geo-mashup.php:903
+msgid "Show on map"
+msgstr "Auf Karte anzeigen"
+
+#: geo-mashup.php:918
+msgid "Geotag Icon"
+msgstr "Geotag Symbol"
+
