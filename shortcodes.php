@@ -174,7 +174,7 @@ function geo_mashup_list_located_posts($atts) {
 /**
  * [geo_mashup_visible_posts_list]
  */
-functino geo_mashup_visible_posts_list($atts) {
+function geo_mashup_visible_posts_list($atts) {
 	return GeoMashup::visible_posts_list($atts);
 }
 
