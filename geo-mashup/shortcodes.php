@@ -9,6 +9,7 @@ add_shortcode('geo_mashup_full_post','geo_mashup_full_post');
 add_shortcode('geo_mashup_category_name','geo_mashup_category_name');
 add_shortcode('geo_mashup_category_legend','geo_mashup_category_legend');
 add_shortcode('geo_mashup_list_located_posts','geo_mashup_list_located_posts');
+add_shortcode('geo_mashup_tabbed_category_index','geo_mashup_tabbed_category_index');
 
 /**
  * [geo_mashup_map ...]
@@ -178,4 +179,10 @@ function geo_mashup_visible_posts_list($atts) {
 	return GeoMashup::visible_posts_list($atts);
 }
 
+/**
+ * [geo_mashup_tabbed_category_index]
+ */
+function geo_mashup_tabbed_category_index($atts) {
+	return GeoMashup::tabbed_category_index($atts);
+}
 ?>
