@@ -282,7 +282,6 @@ class GeoMashup {
 				$post_location['admin_code'] = $_POST['geo_mashup_admin_code'];
 				$post_location['admin_name'] = $_POST['geo_mashup_admin_name'];
 				$post_location['sub_admin_code'] = $_POST['geo_mashup_sub_admin_code'];
-				$post_location['sub_admin_name'] = $_POST['geo_mashup_sub_admin_name'];
 				$post_location['locality_name'] = $_POST['geo_mashup_locality_name'];
 				GeoMashupDB::set_post_location( $post_id, $post_location );
 			}
