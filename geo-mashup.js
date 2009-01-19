@@ -134,7 +134,7 @@ var GeoMashup = {
 		var items = rss_doc.getElementsByTagName('item');
 		if (items.length == 0) return false;
 		var html = ['<div class="locationinfo">'];
-			
+
 		for (var i=0; i<items.length; i++) {
 			var link = this.getTagContent(items[i],'link');
 			var url = link;
@@ -167,15 +167,135 @@ var GeoMashup = {
 		return html.join('');
 	},
 
+	buildCategoryHeirarchy : function(category) {
+		if (category) {
+			var children = new Object();
+			var child_count = 0;
+			for (child_category in this.opts.category_opts) {
+				if (this.opts.category_opts[child_category].parent_id && 
+						this.opts.category_opts[child_category].parent_id == this.opts.category_opts[category].id) {
+						children[child_category] = this.buildCategoryHeirarchy(child_category);
+						child_count++;
+					}
+			}
+			return (child_count > 0) ? children : null;
+		} else {
+			this.category_heirarchy = new Object();
+			for (category in this.opts.category_opts) {
+				if (this.categories[category] && !this.opts.category_opts[category].parent_id) {
+					this.category_heirarchy[category] = this.buildCategoryHeirarchy(category);
+				}
+			}
+		}
+	},
+
+	hideCategoryHeirarchy : function(category) {
+		this.hideCategory(category);
+		for (child_cat in this.category_heirarchy[category]) {
+			this.hideCategoryHeirarchy(child_cat);
+		}
+  },
+
+	showCategoryHeirarchy : function(category) {
+		this.showCategory(category);
+		for (child_cat in this.category_heirarchy[category]) {
+			this.showCategoryHeirarchy(child_cat);
+		}
+  },
+
+	categoryTabSelect : function(select_category) {
+		var tab_div = parent.document.getElementById(window.name + 'TabIndex');
+		if (!tab_div) return false;
+		var tab_list_element = tab_div.childNodes[0];
+		for (var i=0; i<tab_list_element.childNodes.length; i++) {
+			var tab_element = tab_list_element.childNodes[i];
+			if (tab_element.childNodes[0].href.match(this.categoryIndexId(select_category))) {
+				tab_element.className = 'gm-tab-active';
+			} else {
+				tab_element.className = 'gm-tab-inactive';
+			}
+		}
+		for (category in this.category_heirarchy) {
+			var index_div = parent.document.getElementById(this.categoryIndexId(category));
+			if (index_div) {
+				if (category == select_category) {
+					index_div.className = '';
+					this.showCategoryHeirarchy(category);
+				} else {
+					index_div.className = 'gm-hidden';
+					this.hideCategoryHeirarchy(category);
+				}
+			}
+		}
+	},
+
+	categoryIndexId : function(category) {
+		return 'geo_mashup_cat_index_' + this.opts.category_opts[category].id;
+	},
+
+	categoryTabIndexHtml : function() {
+		var html_array = [];
+		html_array.push('<div id="');
+		html_array.push(window.name);
+		html_array.push('TabIndex"><ul class="geo_mashup_tab_index">');
+		for (category in this.category_heirarchy) {
+			html_array = html_array.concat([
+				'<li><a href="#',
+				this.categoryIndexId(category),
+				'" onclick="frames[\'',
+				window.name,
+				'\'].GeoMashup.categoryTabSelect(\'',
+				category,
+				'\'); return false;"><img src="',
+				this.categories[category].icon.image,
+				'" /><span>',
+				category,
+				'</span></a></li>']);
+		} 
+		html_array.push('</ul>');
+		for (category in this.category_heirarchy) {
+			html_array.push(this.categoryIndexHtml(category, this.category_heirarchy[category]));
+		}
+		return html_array.join('');
+	},
+
+	categoryIndexHtml : function(category, children) {
+		var html_array = [];
+		html_array.push('<div id="geo_mashup_cat_index_');
+		html_array.push(this.opts.category_opts[category].id);
+		html_array.push('"><ul class="geo_mashup_index_posts">');
+		for (var i=0; i<this.categories[category].posts.length; ++i) {
+			html_array.push('<li>');
+			html_array.push(this.postLinkHtml(this.categories[category].posts[i]));
+			html_array.push('</li>');
+		}
+		html_array.push('</ul><ul class="geo_mashup_sub_cat_index">');
+		for (child_cat in children) {
+			html_array.push('<li><img src="');
+			html_array.push(this.categories[child_cat].icon.image);
+			html_array.push('" /><span class="geo_mashup_sub_cat_title">');
+			html_array.push(child_cat);
+			html_array.push(this.categoryIndexHtml(child_cat, children[child_cat]));
+			html_array.push('</li>');
+		}
+		html_array.push('</ul></div>');
+		return html_array.join('');
+	},
+
 	showCategoryInfo : function() {
 		var legend_element = null;
+		var index_element = null;
 		var interactive = false;
 		if (window.name) {
 			legend_element = parent.document.getElementById(window.name + "Legend");
+			index_element = parent.document.getElementById(window.name + "TabbedIndex");
 			interactive = true;
 		}
 		if (!legend_element) {
 			legend_element = parent.document.getElementById("geoMashupCategoryLegend");
+		}
+		if (!index_element) {
+			index_element = parent.document.getElementById("geoMashupTabbedIndex");
 		}
 		var legend_html = ['<table class="geo_mashup_legend">'];
 		for (category in this.categories) {
@@ -188,13 +308,13 @@ var GeoMashup = {
 			if (legend_element) {
 				var label;
 				if (window.name && interactive) {
-					var id = category + '_checkbox';
+					var id = 'category_' + this.opts.category_opts[category].id + '_checkbox';
 					label = [
 						'<label for="',
 						id,
 						'"><input type="checkbox" name="category_checkbox" id="',
-						category,
-						'_checkbox" onclick="if (this.checked) { frames[\'',
+						id,
+						'" onclick="if (this.checked) { frames[\'',
 						window.name,
 						'\'].GeoMashup.showCategory(\'',
 						category,
@@ -219,6 +339,14 @@ var GeoMashup = {
 		}
 		legend_html.push('</table>');
 		if (legend_element) legend_element.innerHTML = legend_html.join('');
+		if (index_element) {
+			this.buildCategoryHeirarchy();
+			index_element.innerHTML = this.categoryTabIndexHtml();
+			for (category in this.category_heirarchy) {
+				this.categoryTabSelect(category);
+				break;
+			}
+		}
 	}, 
 
 	showPost : function (url) {
@@ -370,13 +498,17 @@ var GeoMashup = {
 				icon = new GIcon(this.base_color_icon);
 				icon.image = this.opts.url_path + '/images/mm_20_' + color_name + '.png';
 			}
+			max_line_zoom = 0;
+			if (this.opts.category_opts[category].max_line_zoom) {
+				max_line_zoom = this.opts.category_opts[category].max_line_zoom;
+			}
 			this.categories[category] = {
 				icon : icon,
 				points : [point],
 				posts : [post_id],
 				color : color,
 				visible : true,
-				max_line_zoom : this.opts.category_opts[category].max_line_zoom
+				max_line_zoom : max_line_zoom
 			};
 			this.category_count++;
 		} else {
@@ -465,7 +597,7 @@ var GeoMashup = {
 		} // end for each marker
 		// Add category lines
 		if (add_category_info) this.showCategoryInfo();
-				
+
 		if (this.firstLoad) {
 			this.firstLoad = false;
 			if (this.opts.auto_info_open && this.opts.open_post_id) {
@@ -538,6 +670,18 @@ var GeoMashup = {
 		}
 	},
 
+	postLinkHtml : function(post_id) {
+		return ['<a href="#',
+			window.name,
+			'" onclick="frames[\'',
+			window.name,
+			'\'].GeoMashup.clickMarker(',
+			post_id,
+			');">',
+			this.posts[post_id].title,
+			'</a>'].join('');
+	},
+
 	updateVisibleList : function() {
 		var list_element = null;
 		var header_element = null;
@@ -558,15 +702,9 @@ var GeoMashup = {
 					list_html.push(marker.getIcon().image);
 					list_html.push('" alt="');
 					list_html.push(this.posts[post_id].title);
-					list_html.push('" /><a href="#');
-					list_html.push(window.name);
-					list_html.push('" onclick="frames[\'');
-					list_html.push(window.name);
-					list_html.push('\'].GeoMashup.clickMarker(');
-					list_html.push(post_id);
-					list_html.push(');">');
-					list_html.push(this.posts[post_id].title);
-					list_html.push('</a></li>');
+					list_html.push('" />');
+					list_html.push(this.postLinkHtml(post_id));
+					list_html.push('</li>');
 				}
 			}
 			list_html.push('</ul>');
@@ -597,7 +735,7 @@ var GeoMashup = {
 			this.loadSettings(opts, this.getCookie('back_settings'));
 		}
 		this.opts = opts;
-		
+
 		if (typeof(opts.zoom) == 'string') {
 			opts.zoom = parseInt(opts.zoom);
 		} else if (typeof(opts.zoom) == 'undefined') {
@@ -688,7 +826,7 @@ var GeoMashup = {
 		} else if (opts.map_control == 'GLargeMapControl') {
 			this.map.addControl(new GLargeMapControl());
 		}
-		
+
 		this.map.addMapType(G_PHYSICAL_MAP);
 		if (opts.add_map_type_control) {
 			this.map.addControl(new GMapTypeControl());
@@ -716,7 +854,7 @@ var GeoMashup = {
 		}
 
 	},
-		
+
 	saveBackSettings : function() {
 		var center = this.map.getCenter();
 		var mapTypeNum = 0;

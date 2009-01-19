@@ -534,6 +534,21 @@ class GeoMashup {
 			echo '<georss:point>' . $location->lat . ',' . $location->lng . '</georss:point>';
 		}
 	}
+
+	/**
+	 * Return the container div for a tabbed category index for a map.
+	 */
+	function tabbed_category_index( $args ) {
+		$args = wp_parse_args($args);
+
+		wp_enqueue_script('jquery-ui-tabs');
+		$for_map = 'geomashup';
+		if ( !empty( $args['for_map'] ) ) {
+			$for_map = $args['for_map'];
+		}	
+		
+		return '<div id="' . $for_map . 'TabbedIndex"></div>';
+	}
 } // class GeoMashup
 
 GeoMashup::load();

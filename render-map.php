@@ -84,16 +84,19 @@ function geo_mashup_render_map ( ) {
 	{
 		$cat_comma = '';
 		foreach($categories as $category) {
-			$category_opts .= $cat_comma.'"'.addslashes($category->name).'":{';
+			$category_opts .= $cat_comma.'"'.addslashes($category->name).'":{"id":"' . $category->cat_ID . '"';
+			$parent_id = '';
+			if ( !empty( $category->parent ) ) {
+				$parent_id = $category->parent;
+			}
+			$category_opts .= ',"parent_id":"' . $parent_id . '"';
 			$category_color = $geo_mashup_options->get('global_map', 'category_color');
-			$opt_comma = '';
 			if ( !empty( $category_color[$category->slug] ) ) {
-				$category_opts .= '"color_name":"'.$category_color[$category->slug].'"';
-				$opt_comma = ',';
+				$category_opts .= ',"color_name":"'.$category_color[$category->slug].'"';
 			}
 			$category_line_zoom = $geo_mashup_options->get('global_map', 'category_line_zoom');
 			if ( !empty( $category_line_zoom[$category->slug] ) ) {
-				$category_opts .= $opt_comma.'"max_line_zoom":"'.$category_line_zoom[$category->slug].'"';
+				$category_opts .= ',"max_line_zoom":"'.$category_line_zoom[$category->slug].'"';
 			}
 			$category_opts .= '}';
 			$cat_comma = ',';
