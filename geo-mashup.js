@@ -498,7 +498,7 @@ var GeoMashup = {
 				icon = new GIcon(this.base_color_icon);
 				icon.image = this.opts.url_path + '/images/mm_20_' + color_name + '.png';
 			}
-			max_line_zoom = 0;
+			var max_line_zoom = 0;
 			if (this.opts.category_opts[category].max_line_zoom) {
 				max_line_zoom = this.opts.category_opts[category].max_line_zoom;
 			}
