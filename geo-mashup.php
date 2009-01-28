@@ -179,7 +179,7 @@ class GeoMashup {
 				$title = htmlspecialchars(convert_chars(strip_tags(get_bloginfo('name'))." - ".$wp_query->post->post_title));
 				echo "<meta name=\"ICBM\" content=\"{$loc->lat}, {$loc->lng}\" />\n";
 				echo "<meta name=\"DC.title\" content=\"{$title}\" />\n";
-				echo "<meta name=\"geo.position\" content=\"{$lat->lat};{$lon->lng}\" />\n";
+				echo "<meta name=\"geo.position\" content=\"{$loc->lat};{$loc->lng}\" />\n";
 			}
 		}
 		else
@@ -302,7 +302,7 @@ class GeoMashup {
 				$categories = get_the_category( $post->post_id );
 				$categories_comma = '';
 				foreach ($categories as $category) {
-					$json .= $categories_comma.'"'.addslashes($category->name).'"';
+					$json .= $categories_comma.'"'.addslashes(htmlspecialchars_decode($category->name)).'"';
 					$categories_comma = ',';
 				}
 				$json .= ']}';
