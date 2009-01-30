@@ -302,7 +302,7 @@ class GeoMashup {
 				$categories = get_the_category( $post->post_id );
 				$categories_comma = '';
 				foreach ($categories as $category) {
-					$json .= $categories_comma.'"'.addslashes(htmlspecialchars_decode($category->name)).'"';
+					$json .= $categories_comma.'"'.$category->cat_ID.'"';
 					$categories_comma = ',';
 				}
 				$json .= ']}';
