@@ -167,116 +167,151 @@ var GeoMashup = {
 		return html.join('');
 	},
 
-	buildCategoryHeirarchy : function(category) {
-		if (category) {
+	buildCategoryHeirarchy : function(category_id) {
+		if (category_id) {
 			var children = new Object();
 			var child_count = 0;
-			for (child_category in this.opts.category_opts) {
-				if (this.opts.category_opts[child_category].parent_id && 
-						this.opts.category_opts[child_category].parent_id == this.opts.category_opts[category].id) {
-						children[child_category] = this.buildCategoryHeirarchy(child_category);
+			for (child_id in this.opts.category_opts) {
+				if (this.opts.category_opts[child_id].parent_id && 
+						this.opts.category_opts[child_id].parent_id == category_id) {
+						children[child_id] = this.buildCategoryHeirarchy(child_id);
 						child_count++;
 					}
 			}
 			return (child_count > 0) ? children : null;
 		} else {
 			this.category_heirarchy = new Object();
-			for (category in this.opts.category_opts) {
-				if (this.categories[category] && !this.opts.category_opts[category].parent_id) {
-					this.category_heirarchy[category] = this.buildCategoryHeirarchy(category);
+			for (cat_id in this.opts.category_opts) {
+				if (!this.opts.category_opts[cat_id].parent_id) {
+					this.category_heirarchy[cat_id] = this.buildCategoryHeirarchy(cat_id);
 				}
 			}
 		}
 	},
 
-	hideCategoryHeirarchy : function(category) {
-		this.hideCategory(category);
-		for (child_cat in this.category_heirarchy[category]) {
-			this.hideCategoryHeirarchy(child_cat);
+	searchCategoryHeirarchy : function(search_id, heirarchy) {
+		if (!heirarchy) {
+			heirarchy = this.category_heirarchy;
+		}
+		for (category_id in heirarchy) {
+			if (category_id == search_id) {
+				return heirarchy[category_id];
+			} else {
+				var child_search = this.searchCategoryHeirarchy(search_id, heirarchy[category_id]);
+				if (child_search) {
+					return child_search;
+				}
+			}
+		}
+		return null;
+	},
+
+	hideCategoryHeirarchy : function(category_id) {
+		this.hideCategory(category_id);
+		for (child_id in this.category_heirarchy[category_id]) {
+			this.hideCategoryHeirarchy(child_id);
 		}
   },
 
-	showCategoryHeirarchy : function(category) {
-		this.showCategory(category);
-		for (child_cat in this.category_heirarchy[category]) {
-			this.showCategoryHeirarchy(child_cat);
+	showCategoryHeirarchy : function(category_id) {
+		this.showCategory(category_id);
+		for (child_id in this.category_heirarchy[category_id]) {
+			this.showCategoryHeirarchy(child_id);
 		}
   },
 
-	categoryTabSelect : function(select_category) {
+	categoryTabSelect : function(select_category_id) {
 		var tab_div = parent.document.getElementById(window.name + 'TabIndex');
 		if (!tab_div) return false;
 		var tab_list_element = tab_div.childNodes[0];
 		for (var i=0; i<tab_list_element.childNodes.length; i++) {
 			var tab_element = tab_list_element.childNodes[i];
-			if (tab_element.childNodes[0].href.match(this.categoryIndexId(select_category))) {
+			if (tab_element.childNodes[0].href.match(this.categoryIndexId(select_category_id))) {
 				tab_element.className = 'gm-tab-active';
 			} else {
 				tab_element.className = 'gm-tab-inactive';
 			}
 		}
-		for (category in this.category_heirarchy) {
-			var index_div = parent.document.getElementById(this.categoryIndexId(category));
+		for (category_id in this.tab_heirarchy) {
+			var index_div = parent.document.getElementById(this.categoryIndexId(category_id));
 			if (index_div) {
-				if (category == select_category) {
+				if (category_id == select_category_id) {
 					index_div.className = '';
-					this.showCategoryHeirarchy(category);
+					this.showCategoryHeirarchy(category_id);
 				} else {
 					index_div.className = 'gm-hidden';
-					this.hideCategoryHeirarchy(category);
+					this.hideCategoryHeirarchy(category_id);
 				}
 			}
 		}
 	},
 
-	categoryIndexId : function(category) {
-		return 'geo_mashup_cat_index_' + this.opts.category_opts[category].id;
+	categoryIndexId : function(category_id) {
+		return 'geo_mashup_cat_index_' + category_id;
 	},
 
-	categoryTabIndexHtml : function() {
+	categoryTabIndexHtml : function(heirarchy) {
 		var html_array = [];
 		html_array.push('<div id="');
 		html_array.push(window.name);
 		html_array.push('TabIndex"><ul class="geo_mashup_tab_index">');
-		for (category in this.category_heirarchy) {
+		for (category_id in heirarchy) {
 			html_array = html_array.concat([
 				'<li><a href="#',
-				this.categoryIndexId(category),
+				this.categoryIndexId(category_id),
 				'" onclick="frames[\'',
 				window.name,
 				'\'].GeoMashup.categoryTabSelect(\'',
-				category,
-				'\'); return false;"><img src="',
-				this.categories[category].icon.image,
-				'" /><span>',
-				category,
-				'</span></a></li>']);
+				category_id,
+				'\'); return false;">']);
+			if (this.categories[category_id]) {
+				html_array.push('<img src="');
+				html_array.push(this.categories[category_id].icon.image);
+				html_array.push('" />');
+			}
+			html_array.push('<span>');
+			html_array.push(this.opts.category_opts[category_id].name);
+			html_array.push('</span></a></li>');
 		} 
 		html_array.push('</ul>');
-		for (category in this.category_heirarchy) {
-			html_array.push(this.categoryIndexHtml(category, this.category_heirarchy[category]));
+		for (category_id in heirarchy) {
+			html_array.push(this.categoryIndexHtml(category_id, heirarchy[category_id]));
 		}
 		return html_array.join('');
 	},
 
-	categoryIndexHtml : function(category, children) {
+	categoryIndexHtml : function(category_id, children) {
 		var html_array = [];
 		html_array.push('<div id="geo_mashup_cat_index_');
-		html_array.push(this.opts.category_opts[category].id);
+		html_array.push(category_id);
 		html_array.push('"><ul class="geo_mashup_index_posts">');
-		for (var i=0; i<this.categories[category].posts.length; ++i) {
-			html_array.push('<li>');
-			html_array.push(this.postLinkHtml(this.categories[category].posts[i]));
-			html_array.push('</li>');
+		if (this.categories[category_id]) {
+			for (var i=0; i<this.categories[category_id].posts.length; ++i) {
+				html_array.push('<li>');
+				html_array.push(this.postLinkHtml(this.categories[category_id].posts[i]));
+				html_array.push('</li>');
+			}
 		}
-		html_array.push('</ul><ul class="geo_mashup_sub_cat_index">');
-		for (child_cat in children) {
-			html_array.push('<li><img src="');
-			html_array.push(this.categories[child_cat].icon.image);
-			html_array.push('" /><span class="geo_mashup_sub_cat_title">');
-			html_array.push(child_cat);
-			html_array.push(this.categoryIndexHtml(child_cat, children[child_cat]));
+		html_array.push('</ul>');
+		var group_count = 0;
+		var ul_open_tag = '<ul class="geo_mashup_sub_cat_index">';
+		html_array.push(ul_open_tag);
+		for (child_id in children) {
+			html_array.push('<li>');
+			if (this.categories[child_id]) {
+				html_array.push('<img src="');
+				html_array.push(this.categories[child_id].icon.image);
+				html_array.push('" />');
+			}
+			html_array.push('<span class="geo_mashup_sub_cat_title">');
+			html_array.push(this.opts.category_opts[child_id].name);
+			html_array.push(this.categoryIndexHtml(child_id, children[child_id]));
 			html_array.push('</li>');
+			group_count++;
+			if (this.opts.tab_index_group_size && group_count%this.opts.tab_index_group_size == 0) {
+				html_array.push('</ul>');
+				html_array.push(ul_open_tag);
+			}
 		}
 		html_array.push('</ul></div>');
 		return html_array.join('');
@@ -298,17 +333,17 @@ var GeoMashup = {
 			index_element = parent.document.getElementById("geoMashupTabbedIndex");
 		}
 		var legend_html = ['<table class="geo_mashup_legend">'];
-		for (category in this.categories) {
-			this.categories[category].line = new GPolyline(this.categories[category].points, 
-				this.categories[category].color);
-			this.map.addOverlay(this.categories[category].line);
-			if (this.map.getZoom() > this.categories[category].max_line_zoom) {
-				this.categories[category].line.hide();
+		for (category_id in this.categories) {
+			this.categories[category_id].line = new GPolyline(this.categories[category_id].points, 
+				this.categories[category_id].color);
+			this.map.addOverlay(this.categories[category_id].line);
+			if (this.map.getZoom() > this.categories[category_id].max_line_zoom) {
+				this.categories[category_id].line.hide();
 			}
 			if (legend_element) {
 				var label;
 				if (window.name && interactive) {
-					var id = 'category_' + this.opts.category_opts[category].id + '_checkbox';
+					var id = 'category_' + category_id + '_checkbox';
 					label = [
 						'<label for="',
 						id,
@@ -317,21 +352,21 @@ var GeoMashup = {
 						'" onclick="if (this.checked) { frames[\'',
 						window.name,
 						'\'].GeoMashup.showCategory(\'',
-						category,
+						category_id,
 						'\'); } else { frames[\'',
 						window.name,
 						'\'].GeoMashup.hideCategory(\'',
-						category,
+						category_id,
 						'\'); }" checked="true" />',
-						category,
+						this.opts.category_opts[category_id].name,
 						'</label>'].join('');
 				} else {
-					label = category;
+					label = this.opts.category_opts[category_id].name;
 				}
 				legend_html = legend_html.concat(['<tr><td><img src="',
-					this.categories[category].icon.image,
+					this.categories[category_id].icon.image,
 					'" alt="',
-					category,
+					category_id,
 					'"></td><td>',
 					label,
 					'</td></tr>']);
@@ -341,9 +376,14 @@ var GeoMashup = {
 		if (legend_element) legend_element.innerHTML = legend_html.join('');
 		if (index_element) {
 			this.buildCategoryHeirarchy();
-			index_element.innerHTML = this.categoryTabIndexHtml();
-			for (category in this.category_heirarchy) {
-				this.categoryTabSelect(category);
+			if (this.opts.start_tab_category_id) {
+				this.tab_heirarchy = this.searchCategoryHeirarchy(this.opts.start_tab_category_id);
+			} else {
+				this.tab_heirarchy = this.category_heirarchy;
+			}
+			index_element.innerHTML = this.categoryTabIndexHtml(this.tab_heirarchy);
+			for (category_id in this.tab_heirarchy) {
+				this.categoryTabSelect(category_id);
 				break;
 			}
 		}
@@ -385,6 +425,7 @@ var GeoMashup = {
 	createMarker : function(point,post) {
 		var marker_opts = {title:post.title};
 		if (typeof(customGeoMashupCategoryIcon) == 'function') {
+			// TODO: build array of category names for beta1 compatibility?
 			marker_opts.icon = customGeoMashupCategoryIcon(this.opts, post.categories);
 		} 
 		if (!marker_opts.icon) {
@@ -479,17 +520,18 @@ var GeoMashup = {
 		}
 	},
 
-	extendCategory : function(point, category, post_id) {
-		if (!this.categories[category]) {
+	extendCategory : function(point, category_id, post_id) {
+		if (!this.categories[category_id]) {
 			var icon, color, color_name;
-			if (this.opts.category_opts[category].color_name) {
-				color_name = this.opts.category_opts[category].color_name;
+			if (this.opts.category_opts[category_id].color_name) {
+				color_name = this.opts.category_opts[category_id].color_name;
 			} else {
-				color_name = this.color_names[this.category_count%this.colors_names.length];
+				color_name = this.color_names[this.category_count%this.color_names.length];
 			}
 			color = this.colors[color_name];
 			if (!icon && typeof(customGeoMashupCategoryIcon) == 'function') {
-				icon = customGeoMashupCategoryIcon(this.opts, [category]);
+				//TODO: send name instead of id for beta1 compatibility?
+				icon = customGeoMashupCategoryIcon(this.opts, [category_id]);
 			}
 			if (!icon && typeof(customGeoMashupColorIcon) == 'function') {
 				icon = customGeoMashupColorIcon(this.opts, color_name);
@@ -499,10 +541,10 @@ var GeoMashup = {
 				icon.image = this.opts.url_path + '/images/mm_20_' + color_name + '.png';
 			}
 			var max_line_zoom = 0;
-			if (this.opts.category_opts[category].max_line_zoom) {
-				max_line_zoom = this.opts.category_opts[category].max_line_zoom;
+			if (this.opts.category_opts[category_id].max_line_zoom) {
+				max_line_zoom = this.opts.category_opts[category_id].max_line_zoom;
 			}
-			this.categories[category] = {
+			this.categories[category_id] = {
 				icon : icon,
 				points : [point],
 				posts : [post_id],
@@ -512,42 +554,48 @@ var GeoMashup = {
 			};
 			this.category_count++;
 		} else {
-			this.categories[category].points.push(point);
-			this.categories[category].posts.push(post_id);
+			this.categories[category_id].points.push(point);
+			this.categories[category_id].posts.push(post_id);
 		}
 	},
 
-	hideCategory : function(category) {
-		this.map.closeInfoWindow();
-		if (this.categories[category].line) {
-			this.categories[category].line.hide();
+	hideCategory : function(category_id) {
+		if (!this.categories[category_id]) {
+			return false;
 		}
-		for (var i=0; i<this.categories[category].points.length; i++) {
-			var point = this.categories[category].points[i];
+		this.map.closeInfoWindow();
+		if (this.categories[category_id].line) {
+			this.categories[category_id].line.hide();
+		}
+		for (var i=0; i<this.categories[category_id].points.length; i++) {
+			var point = this.categories[category_id].points[i];
 			this.locations[point].marker.hide();
 		}
-		this.categories[category].visible = false;
+		this.categories[category_id].visible = false;
 		this.updateVisibleList();
 	},
 
-	showCategory : function(category) {
-		if (this.categories[category].line && this.map.getZoom() <= this.categories[category].max_line_zoom) {
-			this.categories[category].line.show();
+	showCategory : function(category_id) {
+		if (!this.categories[category_id]) {
+			return false;
 		}
-		for (var i=0; i<this.categories[category].points.length; i++) {
-			var point = this.categories[category].points[i];
+		if (this.categories[category_id].line && this.map.getZoom() <= this.categories[category_id].max_line_zoom) {
+			this.categories[category_id].line.show();
+		}
+		for (var i=0; i<this.categories[category_id].points.length; i++) {
+			var point = this.categories[category_id].points[i];
 			this.locations[point].marker.show();
 		}
-		this.categories[category].visible = true;
+		this.categories[category_id].visible = true;
 		this.updateVisibleList();
 	},
 
 	addPosts : function(response_data, add_category_info) {
 		if (add_category_info) {
-			for (category in this.categories) {
-				this.categories[category].points.length = 0;
-				if (this.categories[category].line) {
-					this.categories[category].line.hide();
+			for (category_id in this.categories) {
+				this.categories[category_id].points.length = 0;
+				if (this.categories[category_id].line) {
+					this.categories[category_id].line.hide();
 				}
 			}
 		}
@@ -559,8 +607,8 @@ var GeoMashup = {
 				parseFloat(response_data[i].lng));
 			// Update categories
 			for (var j = 0; j < response_data[i].categories.length; j++) {
-				var category = response_data[i].categories[j];
-				this.extendCategory(point, category, post_id);
+				var category_id = response_data[i].categories[j];
+				this.extendCategory(point, category_id, post_id);
 			}
 			if (this.opts.max_posts && this.post_count >= this.opts.max_posts) break;
 			if (!this.posts[post_id]) {
@@ -642,10 +690,10 @@ var GeoMashup = {
 	},
 
 	showMarkers : function() {
-		for (category in this.categories) {
-			if (this.categories[category].visible) {
-				for (var i=0; i<this.categories[category].points.length; i++) {
-					var point = this.categories[category].points[i];
+		for (category_id in this.categories) {
+			if (this.categories[category_id].visible) {
+				for (var i=0; i<this.categories[category_id].points.length; i++) {
+					var point = this.categories[category_id].points[i];
 					this.locations[point].marker.show();
 				}
 			}
@@ -658,14 +706,14 @@ var GeoMashup = {
 		} else if (old_level < this.opts.min_marker_zoom && new_level >= this.opts.min_marker_zoom) {
 			this.showMarkers();
 		}
-		for (category in this.categories) {
-			if (old_level <= this.categories[category].max_line_zoom &&
-			  new_level > this.categories[category].max_line_zoom) {
-				this.categories[category].line.hide();
-			} else if (this.categories[category].visible &&
-				old_level > this.categories[category].max_line_zoom &&
-			  new_level <= this.categories[category].max_line_zoom) {
-				this.categories[category].line.show();
+		for (category_id in this.categories) {
+			if (old_level <= this.categories[category_id].max_line_zoom &&
+			  new_level > this.categories[category_id].max_line_zoom) {
+				this.categories[category_id].line.hide();
+			} else if (this.categories[category_id].visible &&
+				old_level > this.categories[category_id].max_line_zoom &&
+			  new_level <= this.categories[category_id].max_line_zoom) {
+				this.categories[category_id].line.show();
 			}
 		}
 	},
@@ -729,7 +777,7 @@ var GeoMashup = {
 		this.base_color_icon.infoWindowAnchor = new GPoint(5, 1);
 		this.multiple_category_icon = new GIcon(this.base_color_icon);
 		this.multiple_category_icon.image = opts.url_path + '/images/mm_20_mixed.png';
-		this.map = new GMap2(this.container);
+		this.map = new GMap2(this.container,{backgroundColor : '#' + opts.background_color});
 		if (window.location.search == this.getCookie('back_search'))
 		{
 			this.loadSettings(opts, this.getCookie('back_settings'));
