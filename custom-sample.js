@@ -38,7 +38,7 @@ function customizeGeoMashupMap ( properties, map ) {
 	
 	/* DELETE this line to enable this example
 	if (properties.map_cat == 7) {
-		mashup.map.setCenter( new GLatLng(18.5,15.3), 3 );
+		map.setCenter( new GLatLng(18.5,15.3), 3 );
 	}
 	DELETE this line to enable this example */
 }
