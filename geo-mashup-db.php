@@ -376,12 +376,12 @@ class GeoMashupDB {
 		if ( is_numeric( $query_args['maxlat'] ) ) $wheres[] = "lat < {$query_args['maxlat']}";
 		if ( is_numeric( $query_args['maxlon'] ) ) $wheres[] = "lng < {$query_args['maxlon']}";
 
-		if ( is_numeric( $query_args['map_cat'] ) ) {
+		if ( !empty ( $query_args['map_cat'] ) ) {
 			$table_string .= " JOIN $wpdb->term_relationships tr ON tr.object_id = p.ID " .
 				"JOIN $wpdb->term_taxonomy tt ON tt.term_taxonomy_id = tr.term_taxonomy_id " .
 				"AND tt.taxonomy = 'category'";
 			$cat = $wpdb->escape( $query_args['map_cat'] );
-			$wheres[] = "tt.term_id = $cat";
+			$wheres[] = "tt.term_id IN ($cat)";
 		} 
 
 		if ( isset( $query_args['post_id'] ) ) {
