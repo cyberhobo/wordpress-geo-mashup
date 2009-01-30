@@ -43,7 +43,7 @@ function geo_mashup_map($atts) {
 		}
 	}
 	
-	$option_keys = array ( 'width', 'height', 'zoom', 'click_to_load', 'click_to_load_text' );
+	$option_keys = array ( 'width', 'height', 'zoom', 'background_color', 'click_to_load', 'click_to_load_text' );
 	switch ($map_content) {
 		case 'contextual':
 			$url_params['map_content'] = 'contextual';
@@ -68,6 +68,13 @@ function geo_mashup_map($atts) {
 			if (isset($_SERVER['QUERY_STRING'])) {
 				$url_params = wp_parse_args($_SERVER['QUERY_STRING'],$url_params);
 			} 
+			// Un-savable options
+			if (isset($atts['start_tab_category_id'])) {
+				$url_params['start_tab_category_id'] = $atts['start_tab_category_id'];
+			}
+			if (isset($atts['tab_index_group_size'])) {
+				$url_params['tab_index_group_size'] = $atts['tab_index_group_size'];
+			}
 			break;
 
 		default:
