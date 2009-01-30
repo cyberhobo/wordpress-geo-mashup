@@ -6,7 +6,7 @@ status_header ( 200 );
 geo_mashup_render_map ( );
 
 function add_double_quotes(&$item,$key) {
-	$quoted_keys = array ( 'show_future', 'map_control', 'map_content' );
+	$quoted_keys = array ( 'background_color', 'show_future', 'map_control', 'map_content' );
 	if ( $key == 'post_data' ) {
 		// don't quote
 	} else if ( empty ( $item ) ) {
@@ -83,18 +83,18 @@ function geo_mashup_render_map ( ) {
 	if (is_array($categories))
 	{
 		$cat_comma = '';
+		$category_color = $geo_mashup_options->get('global_map', 'category_color');
+		$category_line_zoom = $geo_mashup_options->get('global_map', 'category_line_zoom');
 		foreach($categories as $category) {
-			$category_opts .= $cat_comma.'"'.addslashes($category->name).'":{"id":"' . $category->cat_ID . '"';
+			$category_opts .= $cat_comma.'"'.$category->cat_ID.'":{"name":"' . addslashes( $category->name ) . '"';
 			$parent_id = '';
 			if ( !empty( $category->parent ) ) {
 				$parent_id = $category->parent;
 			}
 			$category_opts .= ',"parent_id":"' . $parent_id . '"';
-			$category_color = $geo_mashup_options->get('global_map', 'category_color');
 			if ( !empty( $category_color[$category->slug] ) ) {
 				$category_opts .= ',"color_name":"'.$category_color[$category->slug].'"';
 			}
-			$category_line_zoom = $geo_mashup_options->get('global_map', 'category_line_zoom');
 			if ( !empty( $category_line_zoom[$category->slug] ) ) {
 				$category_opts .= ',"max_line_zoom":"'.$category_line_zoom[$category->slug].'"';
 			}
