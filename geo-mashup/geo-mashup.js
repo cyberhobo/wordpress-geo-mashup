@@ -208,14 +208,14 @@ var GeoMashup = {
 
 	hideCategoryHeirarchy : function(category_id) {
 		this.hideCategory(category_id);
-		for (child_id in this.category_heirarchy[category_id]) {
+		for (child_id in this.tab_heirarchy[category_id]) {
 			this.hideCategoryHeirarchy(child_id);
 		}
   },
 
 	showCategoryHeirarchy : function(category_id) {
 		this.showCategory(category_id);
-		for (child_id in this.category_heirarchy[category_id]) {
+		for (child_id in this.tab_heirarchy[category_id]) {
 			this.showCategoryHeirarchy(child_id);
 		}
   },
@@ -237,13 +237,14 @@ var GeoMashup = {
 			if (index_div) {
 				if (category_id == select_category_id) {
 					index_div.className = '';
-					this.showCategoryHeirarchy(category_id);
 				} else {
 					index_div.className = 'gm-hidden';
 					this.hideCategoryHeirarchy(category_id);
 				}
 			}
 		}
+		// Done last so none of the markers get re-hidden
+		this.showCategoryHeirarchy(select_category_id);
 	},
 
 	categoryIndexId : function(category_id) {
