@@ -273,7 +273,7 @@ var GeoMashup = {
 			html_array.push(this.opts.category_opts[category_id].name);
 			html_array.push('</span></a></li>');
 		} 
-		html_array.push('</ul>');
+		html_array.push('</ul></div>');
 		for (category_id in heirarchy) {
 			html_array.push(this.categoryIndexHtml(category_id, heirarchy[category_id]));
 		}
