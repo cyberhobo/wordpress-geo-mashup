@@ -84,7 +84,7 @@ class GeoMashupQuery {
 				'<link>'.get_permalink($post_id).'</link>'.
 				'<description>'.$excerpt.'</description>';
 		}
-		echo '</item></channel>';
+		echo '</item></channel></xml>';
 	}
 
 	function query_locations() {
