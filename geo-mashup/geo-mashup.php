@@ -321,7 +321,7 @@ class GeoMashup {
 
 	function full_post($option_args = null)
 	{
-		return '<div id="geoPost"></div>';
+		return '<div id="gm-post"></div>';
 	}
 
 	function category_name($option_args = null)
@@ -341,7 +341,7 @@ class GeoMashup {
 
 	function category_legend($option_args = null)
 	{
-		return '<div id="geoMashupCategoryLegend"></div>';
+		return '<div id="gm-cat-legend"></div>';
 	}
 
 	function list_cats($content, $category = null) {
@@ -427,7 +427,7 @@ class GeoMashup {
 			if ( !empty( $options['zoom'] ) ) {
 				$zoom = '&zoom=' . $options['zoom'];
 			}
-			$link = '<a class="geo_mashup_link" href="'.$url.htmlentities("center_lat=$lat&center_lng=$lng$open$zoom").'">'.
+			$link = '<a class="gm-link" href="'.$url.htmlentities("center_lat=$lat&center_lng=$lng$open$zoom").'">'.
 				$icon.' '.$options['text'].'</a>';
 			if ($options['display']) {
 				echo $link;
@@ -458,14 +458,14 @@ class GeoMashup {
 			$for_map = $args['for_map'];
 		}	
 		if ( !empty( $args['heading_text'] ) ) {
-			$heading_div = '<div id="' . $for_map . 'VisibleListHeader" style="display:none;">';
+			$heading_div = '<div id="' . $for_map . '-visible-list-header" style="display:none;">';
 			$heading_tags = '<h2>';
 			if ( !empty( $args['heading_tags'] ) ) {
 				$heading_tags = $args['heading_tags'];
 			}
 			$list_html .= balanceTags( $heading_div . $heading_tags . $args['heading_text'], true );
 		}
-		$list_html .= '<div id="' . $for_map . 'VisibleList"></div>';
+		$list_html .= '<div id="' . $for_map . '-visible-list"></div>';
 		return $list_html;
 	}
 
@@ -476,7 +476,7 @@ class GeoMashup {
 	{
 		global $geo_mashup_options;
 
-		$list_html = '<ul id="geo_mashup_located_post_list">';
+		$list_html = '<ul class="gm-index-posts">';
 		$locs = GeoMashupDB::get_post_locations( $option_args );
 		if ($locs)
 		{
@@ -546,7 +546,7 @@ class GeoMashup {
 			$for_map = $args['for_map'];
 		}	
 		
-		return '<div id="' . $for_map . 'TabbedIndex"></div>';
+		return '<div id="' . $for_map . '-tabbed-index"></div>';
 	}
 } // class GeoMashup
 
