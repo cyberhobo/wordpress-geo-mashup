@@ -78,7 +78,7 @@ function geo_mashup_map($atts) {
 			break;
 
 		default:
-			return '<div class="geo_mashup_map"><p>Unrecognized value for map_content: "'.$map_content.'".</p></div>';
+			return '<div class="gm-map"><p>Unrecognized value for map_content: "'.$map_content.'".</p></div>';
 	}
 	$url_params = array_merge($url_params, $atts);
 	
@@ -86,7 +86,7 @@ function geo_mashup_map($atts) {
 	unset($url_params['click_to_load']);
 	$click_to_load_text = $url_params['click_to_load_text'];
 	unset($url_params['click_to_load_text']);
-	$name = 'geo_mashup_' . $map_number;
+	$name = 'gm-map-' . $map_number;
 	if (isset($url_params['name'])) {
 		$name = $url_params['name'];
 	}
@@ -125,7 +125,7 @@ function geo_mashup_map($atts) {
 			$style = "height:{$url_params['height']}px;width:{$url_params['width']}px;background-color:#ddd;".
 				"background-image:url(".GEO_MASHUP_URL_PATH."/images/wp-gm-pale.png);".
 				"background-repeat:no-repeat;background-position:center;cursor:pointer;";
-			$content = "<div class=\"geo_mashup_map\" style=\"$style\" " .
+			$content = "<div class=\"gm-map\" style=\"$style\" " .
 				"onclick=\"GeoMashupLoader.addMapFrame(this,'$iframe_src',{$url_params['height']},{$url_params['width']},'$name')\">";
 			if ($url_params['static'] == 'true') {
 				// TODO: test whether click to load really works with a static map
@@ -135,9 +135,9 @@ function geo_mashup_map($atts) {
 			}
 		}
 	} else if ($url_params['static'] == 'true') {
-		$content = "<div class=\"geo_mashup_map\">$map_image</div>";
+		$content = "<div class=\"gm-map\">$map_image</div>";
 	} else {
-		$content =  "<div class=\"geo_mashup_map\"><iframe name=\"{$name}\" src=\"{$iframe_src}\" " .
+		$content =  "<div class=\"gm-map\"><iframe name=\"{$name}\" src=\"{$iframe_src}\" " .
 			"height=\"{$url_params['height']}\" width=\"{$url_params['width']}\" marginheight=\"0\" marginwidth=\"0\" ".
 			"scrolling=\"no\" frameborder=\"0\"></iframe></div>";
 	}
