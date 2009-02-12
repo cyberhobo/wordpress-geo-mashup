@@ -21,7 +21,7 @@ var GeoMashup = {
 	posts : {},
 	post_count : 0,
 	locations : {},
-	categories : {},
+	categories : {}, // only categories on the map here
 	category_count : 0,
 	errors : [],
 	color_names : ['red','lime','blue','orange','yellow','aqua','green','silver','maroon','olive','navy','purple','gray','teal','fuchsia','white','black'],
@@ -121,7 +121,7 @@ var GeoMashup = {
 	},
 
 	parentScrollToGeoPost : function () {
-		var geo_post = parent.document.getElementById('geoPost');
+		var geo_post = parent.document.getElementById('gm-post');
 		if (geo_post) {
 			parent.focus();
 			parent.scrollTo(geo_post.offsetLeft, geo_post.offsetTop);
@@ -189,6 +189,18 @@ var GeoMashup = {
 		}
 	},
 
+	isCategoryAncestor : function(ancestor_id, child_id) {
+		if (this.opts.category_opts[child_id].parent_id) {
+			if (this.opts.category_opts[child_id].parent_id == ancestor_id) {
+				return true;
+			} else {
+				return this.isCategoryAncestor(ancestor_id, this.opts.category_opts[child_id].parent_id);
+			}
+		} else {
+			return false;
+		}
+	},
+
 	searchCategoryHeirarchy : function(search_id, heirarchy) {
 		if (!heirarchy) {
 			heirarchy = this.category_heirarchy;
@@ -221,15 +233,16 @@ var GeoMashup = {
   },
 
 	categoryTabSelect : function(select_category_id) {
-		var tab_div = parent.document.getElementById(window.name + 'TabIndex');
+		var tab_div = parent.document.getElementById(window.name + '-tab-index');
 		if (!tab_div) return false;
 		var tab_list_element = tab_div.childNodes[0];
 		for (var i=0; i<tab_list_element.childNodes.length; i++) {
 			var tab_element = tab_list_element.childNodes[i];
-			if (tab_element.childNodes[0].href.match(this.categoryIndexId(select_category_id))) {
-				tab_element.className = 'gm-tab-active';
+			var category_id = tab_element.childNodes[0].href.match(/\d+$/);
+			if (category_id == select_category_id) {
+				tab_element.className = 'gm-tab-active gm-tab-active-' + select_category_id;
 			} else {
-				tab_element.className = 'gm-tab-inactive';
+				tab_element.className = 'gm-tab-inactive gm-tab-inactive-' + category_id;
 			}
 		}
 		for (category_id in this.tab_heirarchy) {
@@ -248,31 +261,29 @@ var GeoMashup = {
 	},
 
 	categoryIndexId : function(category_id) {
-		return 'geo_mashup_cat_index_' + category_id;
+		return 'gm-cat-index-' + category_id;
 	},
 
 	categoryTabIndexHtml : function(heirarchy) {
 		var html_array = [];
 		html_array.push('<div id="');
 		html_array.push(window.name);
-		html_array.push('TabIndex"><ul class="geo_mashup_tab_index">');
+		html_array.push('-tab-index"><ul class="gm-tabs-nav">');
 		for (category_id in heirarchy) {
-			html_array = html_array.concat([
-				'<li><a href="#',
-				this.categoryIndexId(category_id),
-				'" onclick="frames[\'',
-				window.name,
-				'\'].GeoMashup.categoryTabSelect(\'',
-				category_id,
-				'\'); return false;">']);
 			if (this.categories[category_id]) {
-				html_array.push('<img src="');
-				html_array.push(this.categories[category_id].icon.image);
-				html_array.push('" />');
+				html_array = html_array.concat([
+					'<li><a href="#',
+					this.categoryIndexId(category_id),
+					'" onclick="frames[\'',
+					window.name,
+					'\'].GeoMashup.categoryTabSelect(\'',
+					category_id,
+					'\'); return false;"><img src="',
+					this.categories[category_id].icon.image,
+					'" /><span>',
+					this.opts.category_opts[category_id].name,
+					'</span></a></li>']);
 			}
-			html_array.push('<span>');
-			html_array.push(this.opts.category_opts[category_id].name);
-			html_array.push('</span></a></li>');
 		} 
 		html_array.push('</ul></div>');
 		for (category_id in heirarchy) {
@@ -283,9 +294,9 @@ var GeoMashup = {
 
 	categoryIndexHtml : function(category_id, children) {
 		var html_array = [];
-		html_array.push('<div id="geo_mashup_cat_index_');
-		html_array.push(category_id);
-		html_array.push('"><ul class="geo_mashup_index_posts">');
+		html_array.push('<div id="');
+		html_array.push(this.categoryIndexId(category_id));
+		html_array.push('" class="gm-index-panel"><ul class="gm-index-posts">');
 		if (this.categories[category_id]) {
 			for (var i=0; i<this.categories[category_id].posts.length; ++i) {
 				html_array.push('<li>');
@@ -295,7 +306,7 @@ var GeoMashup = {
 		}
 		html_array.push('</ul>');
 		var group_count = 0;
-		var ul_open_tag = '<ul class="geo_mashup_sub_cat_index">';
+		var ul_open_tag = '<ul class="gm-sub-cat-index">';
 		html_array.push(ul_open_tag);
 		for (child_id in children) {
 			html_array.push('<li>');
@@ -304,7 +315,7 @@ var GeoMashup = {
 				html_array.push(this.categories[child_id].icon.image);
 				html_array.push('" />');
 			}
-			html_array.push('<span class="geo_mashup_sub_cat_title">');
+			html_array.push('<span class="gm-sub-cat-title">');
 			html_array.push(this.opts.category_opts[child_id].name);
 			html_array.push(this.categoryIndexHtml(child_id, children[child_id]));
 			html_array.push('</li>');
@@ -323,17 +334,17 @@ var GeoMashup = {
 		var index_element = null;
 		var interactive = false;
 		if (window.name) {
-			legend_element = parent.document.getElementById(window.name + "Legend");
-			index_element = parent.document.getElementById(window.name + "TabbedIndex");
+			legend_element = parent.document.getElementById(window.name + "-legend");
+			index_element = parent.document.getElementById(window.name + "-tabbed-index");
 			interactive = true;
 		}
 		if (!legend_element) {
-			legend_element = parent.document.getElementById("geoMashupCategoryLegend");
+			legend_element = parent.document.getElementById("gm-cat-legend");
 		}
 		if (!index_element) {
-			index_element = parent.document.getElementById("geoMashupTabbedIndex");
+			index_element = parent.document.getElementById("gm-tabbed-index");
 		}
-		var legend_html = ['<table class="geo_mashup_legend">'];
+		var legend_html = ['<table class="gm-legend">'];
 		for (category_id in this.categories) {
 			this.categories[category_id].line = new GPolyline(this.categories[category_id].points, 
 				this.categories[category_id].color);
@@ -344,7 +355,7 @@ var GeoMashup = {
 			if (legend_element) {
 				var label;
 				if (window.name && interactive) {
-					var id = 'category_' + category_id + '_checkbox';
+					var id = 'gm-cat-checkbox-' + category_id;
 					label = [
 						'<label for="',
 						id,
@@ -376,7 +387,6 @@ var GeoMashup = {
 		legend_html.push('</table>');
 		if (legend_element) legend_element.innerHTML = legend_html.join('');
 		if (index_element) {
-			this.buildCategoryHeirarchy();
 			if (this.opts.start_tab_category_id) {
 				this.tab_heirarchy = this.searchCategoryHeirarchy(this.opts.start_tab_category_id);
 			} else {
@@ -735,14 +745,14 @@ var GeoMashup = {
 		var list_element = null;
 		var header_element = null;
 		if (window.name) {
-			header_element = parent.document.getElementById(window.name + "VisibleListHeader");
-			list_element = parent.document.getElementById(window.name + "VisibleList");
+			header_element = parent.document.getElementById(window.name + "-visible-list-header");
+			list_element = parent.document.getElementById(window.name + "-visible-list");
 		}
 		if (header_element) {
 			header_element.style.display = 'block';
 		}
 		if (list_element) {
-			var list_html = ['<ul class="geo_mashup_visible_list">'];
+			var list_html = ['<ul class="gm-visible-list">'];
 			for (post_id in this.posts) {
 				var map_bounds = this.map.getBounds();
 				var marker = this.posts[post_id].marker;
@@ -808,6 +818,8 @@ var GeoMashup = {
 			this.kml = new GGeoXml(opts.load_kml);
 			this.map.addOverlay(this.kml);
 		}
+
+		this.buildCategoryHeirarchy();
 
 		if (opts.center_lat && opts.center_lng) {
 			// Use the center form options
@@ -883,7 +895,7 @@ var GeoMashup = {
 
 		if (opts.add_overview_control) {
 			this.map.addControl(new GOverviewMapControl());
-			var ov = document.getElementById('geoMashup_overview');
+			var ov = document.getElementById('gm-overview');
 			if (ov) {
 				ov.style.position = 'absolute';
 				this.container.appendChild(ov);
