@@ -118,7 +118,7 @@ function geo_mashup_render_map ( ) {
 			<?php if (is_readable('custom.js')): ?>
 			<script src="custom.js" type="text/javascript"></script>
 			<?php endif; ?>
-			<script src="geo-mashup.js" type="text/javascript"></script>
+			<script src="geo-mashup.js?v=<?php echo GEO_MASHUP_VERSION; ?>" type="text/javascript"></script>
 			<?php
 				if ($geo_mashup_options->get('overall', 'theme_stylesheet_with_maps') == 'true')
 				{
@@ -145,17 +145,17 @@ function geo_mashup_render_map ( ) {
 			
 			<style type="text/css">
 				v\:* { behavior:url(#default#VML); }
-				#geoMashup {
+				#geo-mashup {
 					width:<?php echo $map_properties['width']; ?>px;
 					height:<?php echo $map_properties['height']; ?>px;
 				}
 			</style>
 		</head>
 		<body>
-		<div id="geoMashup"></div>
+		<div id="geo-mashup"></div>
 		<script type="text/javascript">
 			//<![CDATA[
-			GeoMashup.createMap(document.getElementById('geoMashup'), { <?php echo GeoMashup::implode_assoc(':',',',$map_properties); ?> });	
+			GeoMashup.createMap(document.getElementById('geo-mashup'), { <?php echo GeoMashup::implode_assoc(':',',',$map_properties); ?> });	
 			//]]>
 		</script>
 		</body>	
