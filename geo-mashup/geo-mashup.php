@@ -79,6 +79,7 @@ class GeoMashup {
 		define('GEO_MASHUP_DIRECTORY', substr(GEO_MASHUP_PLUGIN_NAME, 0, strpos(GEO_MASHUP_PLUGIN_NAME, '/')));
 		define('GEO_MASHUP_URL_PATH', WP_CONTENT_URL . '/plugins/' . GEO_MASHUP_DIRECTORY);
 		define('GEO_MASHUP_MAX_ZOOM', 20);
+		define('GEO_MASHUP_VERSION', '1.2.2');
 		define('GEO_MASHUP_DB_VERSION', '1.1');
 	}
 
@@ -92,12 +93,12 @@ class GeoMashup {
 			} else if (preg_match('/(post|page)(-new|).php/',$_SERVER['REQUEST_URI'])) {
 
 				wp_enqueue_script('geo-mashup-google-api', 'http://maps.google.com/maps?file=api&amp;v=2&amp;key='.$geo_mashup_options->get('overall', 'google_key'));
-				wp_enqueue_script('geo-mashup-admin', GEO_MASHUP_URL_PATH.'/geo-mashup-admin.js', false, '1.0.0');
+				wp_enqueue_script('geo-mashup-admin', GEO_MASHUP_URL_PATH.'/geo-mashup-admin.js', false, GEO_MASHUP_VERSION);
 				wp_enqueue_script('json-script-request', GEO_MASHUP_URL_PATH.'/JSONscriptRequest.js', false, '1.0.0');
 
 			}
 		} else {
-			wp_enqueue_script('geo-mashup-loader',GEO_MASHUP_URL_PATH.'/geo-mashup-loader.js',false,'1.0.0');
+			wp_enqueue_script('geo-mashup-loader',GEO_MASHUP_URL_PATH.'/geo-mashup-loader.js',false, GEO_MASHUP_VERSION);
 		}
 	}
 
