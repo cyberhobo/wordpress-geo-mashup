@@ -201,6 +201,16 @@ var GeoMashup = {
 		}
 	},
 
+	hasLocatedChildren : function(category_id, heirarchy) {
+		if (this.categories[category_id]) return true;
+		for (child_id in heirarchy) {
+			if (this.hasLocatedChildren(child_id, heirarchy[child_id])) {
+				return true;
+			}
+		}
+		return false;
+	},
+
 	searchCategoryHeirarchy : function(search_id, heirarchy) {
 		if (!heirarchy) {
 			heirarchy = this.category_heirarchy;
@@ -252,12 +262,16 @@ var GeoMashup = {
 					index_div.className = '';
 				} else {
 					index_div.className = 'gm-hidden';
-					this.hideCategoryHeirarchy(category_id);
+					if (!this.opts.show_inactive_tab_markers) {
+						this.hideCategoryHeirarchy(category_id);
+					}
 				}
 			}
 		}
-		// Done last so none of the markers get re-hidden
-		this.showCategoryHeirarchy(select_category_id);
+		if (!this.opts.show_inactive_tab_markers) {
+			// Done last so none of the markers get re-hidden
+			this.showCategoryHeirarchy(select_category_id);
+		}
 	},
 
 	categoryIndexId : function(category_id) {
@@ -270,7 +284,7 @@ var GeoMashup = {
 		html_array.push(window.name);
 		html_array.push('-tab-index"><ul class="gm-tabs-nav">');
 		for (category_id in heirarchy) {
-			if (this.categories[category_id]) {
+			if (this.hasLocatedChildren(category_id, heirarchy[category_id])) {
 				html_array = html_array.concat([
 					'<li><a href="#',
 					this.categoryIndexId(category_id),
@@ -278,11 +292,15 @@ var GeoMashup = {
 					window.name,
 					'\'].GeoMashup.categoryTabSelect(\'',
 					category_id,
-					'\'); return false;"><img src="',
-					this.categories[category_id].icon.image,
-					'" /><span>',
-					this.opts.category_opts[category_id].name,
-					'</span></a></li>']);
+					'\'); return false;">']);
+				if (this.categories[category_id]) {
+					html_array.push('<img src="');
+					html_array.push(this.categories[category_id].icon.image);
+					html_array.push('" />');
+				}
+				html_array.push('<span>');
+				html_array.push(this.opts.category_opts[category_id].name);
+				html_array.push('</span></a></li>');
 			}
 		} 
 		html_array.push('</ul></div>');
