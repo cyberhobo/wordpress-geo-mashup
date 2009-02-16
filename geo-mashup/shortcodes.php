@@ -75,6 +75,9 @@ function geo_mashup_map($atts) {
 			if (isset($atts['tab_index_group_size'])) {
 				$url_params['tab_index_group_size'] = $atts['tab_index_group_size'];
 			}
+			if (isset($atts['show_inactive_tab_markers'])) {
+				$url_params['show_inactive_tab_markers'] = $atts['show_inactive_tab_markers'];
+			}
 			break;
 
 		default:
