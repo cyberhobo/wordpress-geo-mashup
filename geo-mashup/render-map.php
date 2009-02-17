@@ -76,6 +76,10 @@ function geo_mashup_render_map ( ) {
 	}
 
 	$map_properties = array_merge($map_properties, $_GET);
+	$width = $map_properties['width'];
+	unset($map_properties['width']);
+	$height = $map_properties['height'];
+	unset($map_properties['height']);
 	array_walk($map_properties, 'add_double_quotes');
 
 	$categories = get_categories( );
@@ -146,8 +150,8 @@ function geo_mashup_render_map ( ) {
 			<style type="text/css">
 				v\:* { behavior:url(#default#VML); }
 				#geo-mashup {
-					width:<?php echo $map_properties['width']; ?>px;
-					height:<?php echo $map_properties['height']; ?>px;
+					width:<?php echo $width; ?>px;
+					height:<?php echo $height; ?>px;
 				}
 			</style>
 		</head>
