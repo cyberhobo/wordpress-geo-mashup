@@ -807,6 +807,9 @@ var GeoMashup = {
 		this.multiple_category_icon = new GIcon(this.base_color_icon);
 		this.multiple_category_icon.image = opts.url_path + '/images/mm_20_mixed.png';
 		this.map = new GMap2(this.container,{backgroundColor : '#' + opts.background_color});
+		this.map.setCenter(new GLatLng(0,0), 1);
+		this.map.addMapType(G_PHYSICAL_MAP);
+
 		if (window.location.search == this.getCookie('back_search'))
 		{
 			this.loadSettings(opts, this.getCookie('back_settings'));
@@ -906,7 +909,6 @@ var GeoMashup = {
 			this.map.addControl(new GLargeMapControl());
 		}
 
-		this.map.addMapType(G_PHYSICAL_MAP);
 		if (opts.add_map_type_control) {
 			this.map.addControl(new GMapTypeControl());
 		}
