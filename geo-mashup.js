@@ -167,23 +167,23 @@ var GeoMashup = {
 		return html.join('');
 	},
 
-	buildCategoryHeirarchy : function(category_id) {
+	buildCategoryHierarchy : function(category_id) {
 		if (category_id) {
 			var children = new Object();
 			var child_count = 0;
 			for (child_id in this.opts.category_opts) {
 				if (this.opts.category_opts[child_id].parent_id && 
 						this.opts.category_opts[child_id].parent_id == category_id) {
-						children[child_id] = this.buildCategoryHeirarchy(child_id);
+						children[child_id] = this.buildCategoryHierarchy(child_id);
 						child_count++;
 					}
 			}
 			return (child_count > 0) ? children : null;
 		} else {
-			this.category_heirarchy = new Object();
+			this.category_hierarchy = new Object();
 			for (cat_id in this.opts.category_opts) {
 				if (!this.opts.category_opts[cat_id].parent_id) {
-					this.category_heirarchy[cat_id] = this.buildCategoryHeirarchy(cat_id);
+					this.category_hierarchy[cat_id] = this.buildCategoryHierarchy(cat_id);
 				}
 			}
 		}
@@ -201,25 +201,25 @@ var GeoMashup = {
 		}
 	},
 
-	hasLocatedChildren : function(category_id, heirarchy) {
+	hasLocatedChildren : function(category_id, hierarchy) {
 		if (this.categories[category_id]) return true;
-		for (child_id in heirarchy) {
-			if (this.hasLocatedChildren(child_id, heirarchy[child_id])) {
+		for (child_id in hierarchy) {
+			if (this.hasLocatedChildren(child_id, hierarchy[child_id])) {
 				return true;
 			}
 		}
 		return false;
 	},
 
-	searchCategoryHeirarchy : function(search_id, heirarchy) {
-		if (!heirarchy) {
-			heirarchy = this.category_heirarchy;
+	searchCategoryHierarchy : function(search_id, hierarchy) {
+		if (!hierarchy) {
+			hierarchy = this.category_hierarchy;
 		}
-		for (category_id in heirarchy) {
+		for (category_id in hierarchy) {
 			if (category_id == search_id) {
-				return heirarchy[category_id];
+				return hierarchy[category_id];
 			} else {
-				var child_search = this.searchCategoryHeirarchy(search_id, heirarchy[category_id]);
+				var child_search = this.searchCategoryHierarchy(search_id, hierarchy[category_id]);
 				if (child_search) {
 					return child_search;
 				}
@@ -228,17 +228,17 @@ var GeoMashup = {
 		return null;
 	},
 
-	hideCategoryHeirarchy : function(category_id) {
+	hideCategoryHierarchy : function(category_id) {
 		this.hideCategory(category_id);
-		for (child_id in this.tab_heirarchy[category_id]) {
-			this.hideCategoryHeirarchy(child_id);
+		for (child_id in this.tab_hierarchy[category_id]) {
+			this.hideCategoryHierarchy(child_id);
 		}
   },
 
-	showCategoryHeirarchy : function(category_id) {
+	showCategoryHierarchy : function(category_id) {
 		this.showCategory(category_id);
-		for (child_id in this.tab_heirarchy[category_id]) {
-			this.showCategoryHeirarchy(child_id);
+		for (child_id in this.tab_hierarchy[category_id]) {
+			this.showCategoryHierarchy(child_id);
 		}
   },
 
@@ -255,7 +255,7 @@ var GeoMashup = {
 				tab_element.className = 'gm-tab-inactive gm-tab-inactive-' + category_id;
 			}
 		}
-		for (category_id in this.tab_heirarchy) {
+		for (category_id in this.tab_hierarchy) {
 			var index_div = parent.document.getElementById(this.categoryIndexId(category_id));
 			if (index_div) {
 				if (category_id == select_category_id) {
@@ -263,14 +263,14 @@ var GeoMashup = {
 				} else {
 					index_div.className = 'gm-hidden';
 					if (!this.opts.show_inactive_tab_markers) {
-						this.hideCategoryHeirarchy(category_id);
+						this.hideCategoryHierarchy(category_id);
 					}
 				}
 			}
 		}
 		if (!this.opts.show_inactive_tab_markers) {
 			// Done last so none of the markers get re-hidden
-			this.showCategoryHeirarchy(select_category_id);
+			this.showCategoryHierarchy(select_category_id);
 		}
 	},
 
@@ -278,13 +278,13 @@ var GeoMashup = {
 		return 'gm-cat-index-' + category_id;
 	},
 
-	categoryTabIndexHtml : function(heirarchy) {
+	categoryTabIndexHtml : function(hierarchy) {
 		var html_array = [];
 		html_array.push('<div id="');
 		html_array.push(window.name);
 		html_array.push('-tab-index"><ul class="gm-tabs-nav">');
-		for (category_id in heirarchy) {
-			if (this.hasLocatedChildren(category_id, heirarchy[category_id])) {
+		for (category_id in hierarchy) {
+			if (this.hasLocatedChildren(category_id, hierarchy[category_id])) {
 				html_array = html_array.concat([
 					'<li><a href="#',
 					this.categoryIndexId(category_id),
@@ -304,8 +304,8 @@ var GeoMashup = {
 			}
 		} 
 		html_array.push('</ul></div>');
-		for (category_id in heirarchy) {
-			html_array.push(this.categoryIndexHtml(category_id, heirarchy[category_id]));
+		for (category_id in hierarchy) {
+			html_array.push(this.categoryIndexHtml(category_id, hierarchy[category_id]));
 		}
 		return html_array.join('');
 	},
@@ -406,12 +406,12 @@ var GeoMashup = {
 		if (legend_element) legend_element.innerHTML = legend_html.join('');
 		if (index_element) {
 			if (this.opts.start_tab_category_id) {
-				this.tab_heirarchy = this.searchCategoryHeirarchy(this.opts.start_tab_category_id);
+				this.tab_hierarchy = this.searchCategoryHierarchy(this.opts.start_tab_category_id);
 			} else {
-				this.tab_heirarchy = this.category_heirarchy;
+				this.tab_hierarchy = this.category_hierarchy;
 			}
-			index_element.innerHTML = this.categoryTabIndexHtml(this.tab_heirarchy);
-			for (category_id in this.tab_heirarchy) {
+			index_element.innerHTML = this.categoryTabIndexHtml(this.tab_hierarchy);
+			for (category_id in this.tab_hierarchy) {
 				this.categoryTabSelect(category_id);
 				break;
 			}
@@ -840,7 +840,7 @@ var GeoMashup = {
 			this.map.addOverlay(this.kml);
 		}
 
-		this.buildCategoryHeirarchy();
+		this.buildCategoryHierarchy();
 
 		if (opts.center_lat && opts.center_lng) {
 			// Use the center form options
