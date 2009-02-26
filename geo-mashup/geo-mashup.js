@@ -129,44 +129,6 @@ var GeoMashup = {
 		return false;
 	},
 
-	renderRss : function (rss_doc) {
-		// Built excerpt HTML
-		var items = rss_doc.getElementsByTagName('item');
-		if (items.length == 0) return false;
-		var html = ['<div class="locationinfo">'];
-
-		for (var i=0; i<items.length; i++) {
-			var link = this.getTagContent(items[i],'link');
-			var url = link;
-			var onclick = 'this.target=\'_parent\'; GeoMashup.saveBackSettings()';
-			if (this.opts.show_post) {
-				onclick = 'return GeoMashup.parentScrollToGeoPost()';
-				url = '#';
-			}
-			var title = this.getTagContent(items[i],'title','-');
-			var pubDate = this.getTagContent(items[i],'pubDate','-').substr(0,16);
-			var tags = [];
-			var post_categories = items[i].getElementsByTagName('category');
-			for (var j=0; j<post_categories.length; j++) {
-				tags.push(post_categories[j].firstChild.nodeValue);
-			}
-			html = html.concat(['<h2><a href="', url, '" onclick="', onclick, '">',
-				title,'<\/a><\/h2><p class="meta"><span class="blogdate">',pubDate,'<\/span>, ',
-				tags.join(' '),
-				'<\/p>']);
-			if (items.length == 1) {
-				var desc = this.getTagContent(items[i],'description').replace('[...]','');
-				desc = desc.replace(/(<a[^>])target="[^"]*"/gi,'$1'); // remove existing link targets
-				desc = desc.replace(/<a[^>]*/gi,'$& target="_parent"'); // make link target '_parent'
-				html = html.concat(['<div class="storycontent">',desc,
-					'<a href="',url,'" onclick="',onclick,'">[...]<\/a><\/div>']);
-				if (this.opts.show_post) { this.showPost(link); }
-			}
-		} 
-		html.push('<\/div>');
-		return html.join('');
-	},
-
 	buildCategoryHierarchy : function(category_id) {
 		if (category_id) {
 			var children = new Object();
@@ -451,6 +413,14 @@ var GeoMashup = {
 		request.send(null);
 	},
 
+	directLink : function(element) {
+		this.saveBackSettings();
+		if (parent) {
+			element.target = '_parent';
+		}
+		return true;
+	},
+
 	createMarker : function(point,post) {
 		var marker_opts = {title:post.title};
 		if (typeof(customGeoMashupCategoryIcon) == 'function') {
@@ -468,51 +438,37 @@ var GeoMashup = {
 
 		// Show this markers index in the info window when it is clicked
 		GEvent.addListener(marker, "click", function() {
-			var request = new GXmlHttp.create();
-			for(var i=0; i<GeoMashup.locations[point].posts.length; i++) {
-				var post_id = GeoMashup.locations[point].posts[i];
-				if (!GeoMashup.locations[point].loaded[post_id]) {
-					var url = GeoMashup.opts.url_path + '/geo-query.php?post_id=' + post_id;
-					// Use a synchronous request to simplify multiple posts at a location
-					request.open('GET', url, false);
-					try {
-						request.send(null);
-						if (!GeoMashup.locations[point].xmlDoc) {
-							GeoMashup.locations[point].xmlDoc = request.responseXML;
-						} else {
-							var newItem = request.responseXML.getElementsByTagName('item')[0];
-							var channel = GeoMashup.locations[point].xmlDoc.getElementsByTagName('channel')[0];
-							if (GeoMashup.locations[point].xmlDoc.importNode) {
-								// Standards browsers
-								var importedNode = GeoMashup.locations[point].xmlDoc.importNode(newItem, true);
-
-								// Safari bug - if the title element got lost create a new one and append it
-								if(newItem.getElementsByTagName("title")[0] && !importedNode.getElementsByTagName("title")[0]){                              
-										var titleElement = newItem.ownerDocument.createElement("title");
-										var titleData = newItem.ownerDocument.createTextNode(newItem.getElementsByTagName("title")[0].firstChild.data);
-										titleElement.appendChild(titleData);
-										importedNode.appendChild(titleElement);
-								}
-
-								channel.appendChild(importedNode);
-							} else {
-								// break the rules for IE
-								channel.appendChild(newItem);
-							}
-						} 
-						GeoMashup.locations[point].loaded[post_id] = true;
-					} catch (e) {
-						GeoMashup.errors.push('Request for ' + url + ' failed: ' + e);
-					}
-				} // end if not loaded
-			} // end location posts loop
-			var info_window_opts = {};
-			var html = GeoMashup.renderRss(GeoMashup.locations[point].xmlDoc);
 			GeoMashup.map.closeInfoWindow();
-			if (GeoMashup.opts.info_window_width) info_window_opts.maxWidth = GeoMashup.opts.info_window_width;
-			if (GeoMashup.opts.info_window_height) info_window_opts.maxHeight = GeoMashup.opts.info_window_height;
-			marker.openInfoWindowHtml(html,info_window_opts);
-		}); // end marker infowindowopen
+			if (GeoMashup.locations[point].loaded) {
+				marker.openInfoWindow(GeoMashup.locations[point].info_node);
+			} else {
+				marker.openInfoWindowHtml('<div align="center"><img src="' +
+					GeoMashup.opts.url_path + 
+					'/images/busy_icon.gif" alt="Loading..." /></div>');
+				var post_ids = '';
+				for(var i=0; i<GeoMashup.locations[point].posts.length; i++) {
+					if (i>0) post_ids += ',';
+					post_ids += GeoMashup.locations[point].posts[i];
+				}
+				var url = GeoMashup.opts.url_path + '/geo-query.php?post_ids=' + post_ids;
+				var request = new GXmlHttp.create();
+				request.open('GET', url, true);
+				request.onreadystatechange = function() {
+					if (request.readyState == 4 && request.status == 200) {
+						var node = document.createElement('div');
+						node.innerHTML = request.responseText;
+						var links = node.getElementsByTagName('a');
+						for (var i=0; i<links.length; ++i) {
+							links[i].onclick = function () { return GeoMashup.directLink(this); }
+						}
+						GeoMashup.locations[point].info_node = node;
+						GeoMashup.locations[point].loaded = true;
+						marker.openInfoWindow(node);
+					} // end readystate == 4
+				}; // end onreadystatechange function
+				request.send(null);
+			} 
+		}); // end marker click
 
 		GEvent.addListener(marker, 'infowindowclose', function() {
 			var geoPost = parent.document.getElementById('geoPost');
@@ -648,7 +604,7 @@ var GeoMashup = {
 					this.locations[point] = new Object();
 					this.locations[point].posts = new Array();
 					this.locations[point].posts.push(post_id);
-					this.locations[point].loaded = new Array();
+					this.locations[point].loaded = false;
 					this.posts[post_id] = new Object();
 					var marker = this.createMarker(point, response_data[i]);
 					this.posts[post_id].marker = marker;
