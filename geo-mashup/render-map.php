@@ -151,6 +151,10 @@ function geo_mashup_render_map ( ) {
 					{
 						echo '<link rel="stylesheet" type="text/css" href="map-style.css" />';
 					}
+				 	else
+					{
+						echo '<link rel="stylesheet" type="text/css" href="map-style-default.css" />';
+					}	
 				}
 			?>
 			
