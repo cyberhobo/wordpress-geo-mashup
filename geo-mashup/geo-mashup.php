@@ -339,9 +339,14 @@ class GeoMashup {
 		return $category_name;
 	}
 
-	function category_legend($option_args = null)
+	function category_legend($args = null)
 	{
-		return '<div id="gm-cat-legend"></div>';
+		$args = wp_parse_args($args);
+		$for_map = 'gm-cat';
+		if ( !empty( $args['for_map'] ) ) {
+			$for_map = $args['for_map'];
+		}	
+		return '<div id="' . $for_map . '-legend"></div>';
 	}
 
 	function list_cats($content, $category = null) {
