@@ -50,13 +50,14 @@ class GeoMashup {
 	function load_hooks() {
 		global $geo_mashup_options;
 		add_filter('media_meta', array('GeoMashup', 'media_meta'), 10, 2);
+		add_filter('content_save_pre', array('GeoMashup', 'content_save_pre'));
 		if (is_admin()) {
 			register_activation_hook( __FILE__, array( 'GeoMashupDB', 'install' ) );
 			add_filter('upload_mimes', array('GeoMashup', 'upload_mimes'));
 			add_filter('wp_handle_upload', array('GeoMashup', 'wp_handle_upload'));
 
 			add_action('admin_menu', array('GeoMashup', 'admin_menu'));
-			add_action('save_post', array('GeoMashup', 'save_post'));
+			add_action('save_post', array('GeoMashup', 'save_post'), 10, 2);
 			add_action('admin_print_scripts', array('GeoMashup', 'admin_print_scripts'));
 
 		} else {
@@ -253,7 +254,42 @@ class GeoMashup {
 		geo_mashup_edit_form();
 	}
 
-	function save_post($post_id) {
+	function inline_location( $new_value = null ) {
+		static $loc = null;
+		
+		if ( is_null( $new_value ) ) {
+			return $loc;
+		} else {
+			$loc = $new_value;
+		}
+	}
+
+	function replace_save_pre_shortcode( $shortcode_match ) {
+		$content = '';
+		if ( $shortcode_match[1] == 'geo_mashup_save_location' ) {
+			GeoMashup::inline_location( shortcode_parse_atts( stripslashes( $shortcode_match[2] ) ) );
+		} else {
+			$content = $shortcode_match[0];
+		}
+		return $content;
+	}
+
+	function content_save_pre( $content ) {
+		add_shortcode( 'geo_mashup_save_location', 'is_null' );
+		$pattern = get_shortcode_regex( );
+		return preg_replace_callback('/'.$pattern.'/s', array( 'GeoMashup', 'replace_save_pre_shortcode' ), $content);
+	}
+
+	function save_post($post_id, $post) {
+		if ($post->post_type == 'revision') {
+			return;
+		}
+		$inline_location = GeoMashup::inline_location( ); 
+		if ( !empty( $inline_location ) ) {
+			GeoMashupDB::set_post_location( $post_id, $inline_location );
+			GeoMashup::inline_location( '' );
+		}
+
 		if (!wp_verify_nonce($_POST['geo_mashup_edit_nonce'], 'geo-mashup-edit-post')) {
 			return $post_id;
 		}
