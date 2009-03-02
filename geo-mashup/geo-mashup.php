@@ -31,7 +31,7 @@ class GeoMashup {
 
 	function load() {
 		GeoMashup::load_constants();
-		load_plugin_textdomain('GeoMashup', 'wp-content/plugins/'.GEO_MASHUP_DIRECTORY.'/languages');
+		load_plugin_textdomain('GeoMashup', 'wp-content/plugins/'.GEO_MASHUP_DIRECTORY, GEO_MASHUP_DIRECTORY);
 
 		GeoMashup::load_dependencies();
 		GeoMashup::load_hooks();
