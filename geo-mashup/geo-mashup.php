@@ -531,7 +531,7 @@ class GeoMashup {
 		$args = wp_parse_args( $args );
 		$list_html = '<div class="gm-area-list">';
 		$countries = GeoMashupDB::get_distinct_located_values( 'country_code' );
-		$country_count = array_count_values( $countries );
+		$country_count = count( $countries );
 		foreach ( $countries as $country ) {
 			if ( $country_count > 1 ) {
 				$list_html .= '<h3>' . GeoMashupDB::get_administrative_name( $country->country_code ) . '</h3>';
@@ -547,7 +547,7 @@ class GeoMashup {
 				$post_locations = GeoMashupDB::get_post_locations( $location_query );
 				foreach ( $post_locations as $post_location ) { 
 					$list_html .= '<li><a href="' . 
-						get_permalink( $post_location->post_id .
+						get_permalink( $post_location->post_id ) .
 						'">' .
 						$post_location->post_title .
 						'</a>';
