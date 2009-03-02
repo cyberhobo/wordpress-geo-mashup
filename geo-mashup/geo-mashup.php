@@ -513,10 +513,7 @@ class GeoMashup {
 	/**
 	 * List all located posts.
 	 */
-	function list_located_posts($option_args = null)
-	{
-		global $geo_mashup_options;
-
+	function list_located_posts( $option_args = null ) {
 		$list_html = '<ul class="gm-index-posts">';
 		$locs = GeoMashupDB::get_post_locations( $option_args );
 		if ($locs)
@@ -527,6 +524,42 @@ class GeoMashup {
 			}
 		}
 		$list_html .= '</ul>';
+		return $list_html;
+	}
+
+	function list_located_posts_by_area( $args ) {
+		$args = wp_parse_args( $args );
+		$list_html = '<div class="gm-area-list">';
+		$countries = GeoMashupDB::get_distinct_located_values( 'country_code' );
+		$country_count = array_count_values( $countries );
+		foreach ( $countries as $country ) {
+			if ( $country_count > 1 ) {
+				$list_html .= '<h3>' . GeoMashupDB::get_administrative_name( $country->country_code ) . '</h3>';
+			}
+			foreach ( GeoMashupDB::get_distinct_located_values( 'admin_code', $country ) as $state ) { 
+				$list_html .= '<h4>' . 
+					GeoMashupDB::get_administrative_name( $country->country_code, $state->admin_code ) . 
+					'</h4><ul class="gm-index-posts">';
+				$location_query = array( 
+					'country_code' => $country->country_code,
+					'admin_code' => $state->admin_code 
+				);
+				$post_locations = GeoMashupDB::get_post_locations( $location_query );
+				foreach ( $post_locations as $post_location ) { 
+					$list_html .= '<li><a href="' . 
+						get_permalink( $post_location->post_id .
+						'">' .
+						$post_location->post_title .
+						'</a>';
+					if ( isset( $args['include_address'] ) && $args['include_address'] == 'true' ) {
+						$list_html .= '<p>' . $post_location->address . '</p>';
+					}
+					$list_html .= '</li>';
+				}
+				$list_html .= '</ul>';
+			}
+		}
+		$list_html .= '</div>';
 		return $list_html;
 	}
 
