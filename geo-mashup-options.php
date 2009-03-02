@@ -21,7 +21,7 @@ class GeoMashupOptions {
 			'category_color' => array ( ),
 			'category_line_zoom' => array ( ),
 			'marker_min_zoom' => '',
-			'map_control' => 'GSmallMapControl',
+			'map_control' => 'GSmallZoomControl3D',
 			'add_map_type_control' => 'true',
 			'add_overview_control' => 'false',
 			'show_post' => 'false',
@@ -34,7 +34,7 @@ class GeoMashupOptions {
 		'single_map' => array (
 			'width' => '400',
 			'height' => '400',
-			'map_control' => 'GSmallMapControl',
+			'map_control' => 'GSmallZoomControl3D',
 			'map_type' => 'G_NORMAL_MAP',
 			'zoom' => '11',
 			'background_color' => 'c0c0c0',
@@ -45,7 +45,7 @@ class GeoMashupOptions {
 		'context_map' => array (
 			'width' => '200',
 			'height' => '200',
-			'map_control' => 'GSmallMapControl',
+			'map_control' => 'GSmallZoomControl3D',
 			'map_type' => 'G_NORMAL_MAP',
 			'zoom' => '7',
 			'background_color' => 'c0c0c0',
@@ -207,7 +207,7 @@ class GeoMashupOptions {
 				return true;
 
 			case 'map_control':
-				$valid_map_controls = array ( 'GSmallZoomControl', 'GSmallMapControl', 'GLargeMapControl' );
+				$valid_map_controls = array ( 'GSmallZoomControl', 'GSmallMapControl', 'GLargeMapControl', 'GLargeMapControl3D', 'GSmallZoomControl3D' );
 				if ( !in_array ( $value, $valid_map_controls ) ) {
 					array_push ( $this->validation_errors, '"'. $value . '" ' . __('is invalid for', 'GeoMashup') . ' ' . $key .
 						__(', which must be a valid map control (see documentation)', 'GeoMashup') );

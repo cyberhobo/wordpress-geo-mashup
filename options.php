@@ -131,8 +131,10 @@ function geo_mashup_options_page()
 	$contextMapControlOptions = "";
 	$mapControls = Array(
 		'GSmallZoomControl' => __('Small Zoom', 'GeoMashup'),
+		'GSmallZoomControl3D' => __('Small Zoom 3D', 'GeoMashup'),
 		'GSmallMapControl' => __('Small Pan/Zoom', 'GeoMashup'),
-		'GLargeMapControl' => __('Large Pan/Zoom', 'GeoMashup'));
+		'GLargeMapControl' => __('Large Pan/Zoom', 'GeoMashup'),
+		'GLargeMapControl3D' => __('Large Pan/Zoom 3D', 'GeoMashup'));
 	foreach($mapControls as $type => $label) {
 		$selected = "";
 		if ($type == $geo_mashup_options->get ( 'global_map', 'map_control' )) {
