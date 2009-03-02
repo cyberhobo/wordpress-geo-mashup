@@ -857,12 +857,16 @@ var GeoMashup = {
 			this.requestPosts(false);
 		}
 
-		if (opts.map_control == 'GSmallZoomControl') {
+		if ('GSmallZoomControl' == opts.map_control) {
 			this.map.addControl(new GSmallZoomControl());
-		} else if (opts.map_control == 'GSmallMapControl') {
+		} else if ('GSmallZoomControl3D' == opts.map_control) {
+			this.map.addControl(new GSmallZoomControl3D());
+		} else if ('GSmallMapControl' == opts.map_control) {
 			this.map.addControl(new GSmallMapControl());
-		} else if (opts.map_control == 'GLargeMapControl') {
+		} else if ('GLargeMapControl' == opts.map_control) {
 			this.map.addControl(new GLargeMapControl());
+		} else if ('GLargeMapControl3D' == opts.map_control) {
+			this.map.addControl(new GLargeMapControl3D());
 		}
 
 		if (opts.add_map_type_control) {
