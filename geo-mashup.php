@@ -534,7 +534,8 @@ class GeoMashup {
 			if ( $country_count > 1 ) {
 				$list_html .= '<h3>' . GeoMashupDB::get_administrative_name( $country->country_code ) . '</h3>';
 			}
-			foreach ( GeoMashupDB::get_distinct_located_values( 'admin_code', $country ) as $state ) { 
+			$states = GeoMashupDB::get_distinct_located_values( 'admin_code', $country->country_code );
+			foreach ($states  as $state ) { 
 				$list_html .= '<h4>' . 
 					GeoMashupDB::get_administrative_name( $country->country_code, $state->admin_code ) . 
 					'</h4><ul class="gm-index-posts">';
