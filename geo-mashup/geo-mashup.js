@@ -180,7 +180,7 @@ var GeoMashup = {
 		for (category_id in hierarchy) {
 			if (category_id == search_id) {
 				return hierarchy[category_id];
-			} else {
+			} else if (hierarchy[category_id]) {
 				var child_search = this.searchCategoryHierarchy(search_id, hierarchy[category_id]);
 				if (child_search) {
 					return child_search;
