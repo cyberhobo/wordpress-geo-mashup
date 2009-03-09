@@ -89,7 +89,7 @@ function geo_mashup_render_map ( ) {
 
 	array_walk($map_properties, 'add_double_quotes');
 
-	$categories = get_categories( );
+	$categories = get_categories( 'orderby=slug' );
 	$category_opts = '{';
 	if (is_array($categories))
 	{
