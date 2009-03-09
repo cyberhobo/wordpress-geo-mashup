@@ -376,7 +376,7 @@ class GeoMashup {
 	function category_legend($args = null)
 	{
 		$args = wp_parse_args($args);
-		$for_map = 'gm-cat';
+		$for_map = 'gm-map-1';
 		if ( !empty( $args['for_map'] ) ) {
 			$for_map = $args['for_map'];
 		}	
@@ -492,7 +492,7 @@ class GeoMashup {
 
 		$list_html = '';
 
-		$for_map = 'geomashup';
+		$for_map = 'gm-map-1';
 		if ( !empty( $args['for_map'] ) ) {
 			$for_map = $args['for_map'];
 		}	
@@ -614,7 +614,7 @@ class GeoMashup {
 		$args = wp_parse_args($args);
 
 		wp_enqueue_script('jquery-ui-tabs');
-		$for_map = 'geomashup';
+		$for_map = 'gm-map-1';
 		if ( !empty( $args['for_map'] ) ) {
 			$for_map = $args['for_map'];
 		}	
