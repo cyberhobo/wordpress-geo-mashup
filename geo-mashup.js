@@ -278,6 +278,15 @@ var GeoMashup = {
 		html_array.push(this.categoryIndexId(category_id));
 		html_array.push('" class="gm-index-panel"><ul class="gm-index-posts">');
 		if (this.categories[category_id]) {
+			this.categories[category_id].posts.sort(function (a, b) {
+				var a_name = GeoMashup.posts[a].title;
+				var b_name = GeoMashup.posts[b].title;
+				if (a_name === b_name) {
+					return 0;
+				} else {
+					return a_name < b_name ? -1 : 1;
+				}
+			});
 			for (var i=0; i<this.categories[category_id].posts.length; ++i) {
 				html_array.push('<li>');
 				html_array.push(this.postLinkHtml(this.categories[category_id].posts[i]));
