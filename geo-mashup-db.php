@@ -234,7 +234,7 @@ class GeoMashupDB {
 		
 		$unconverted_metadata = $wpdb->last_result; 
 		if ( $unconverted_metadata ) {
-			echo '<p>Converting old locations';
+			echo '<p>' . __( 'Converting old locations', 'GeoMashup' );
 			foreach ( $unconverted_metadata as $postmeta ) {
 				$post_id = $postmeta->post_id;
 				list( $lat, $lng ) = split( ',', $postmeta->meta_value );
@@ -246,9 +246,11 @@ class GeoMashupDB {
 					echo '.';
 					flush( );
 				} else {
-					echo '<br/>Failed to convert location (' . $postmeta->meta_value .
-						'). You can <a href=\"post.php?action=edit&post=' . $post_id . 
-						'>edit the post</a> and try again.<br />';
+					echo '<br/>';
+					printf( __( 'Failed to convert location (%s). You can %sedit the post%s ' .
+						'to update the location, and try again.', 'GeoMashup' ),
+						$postmeta->meta_value, '<a href="post.php?action=edit&post=' . $post_id . '">', '</a>'
+					echo '<br/>';
 				}
 			}
 			echo '</p>';
@@ -256,17 +258,19 @@ class GeoMashupDB {
 
 		$geo_locations = get_settings( 'geo_locations' );
 		if ( is_array( $geo_locations ) ) {
-			echo '<p>Converting saved locations:<br/>';
+			echo '<p>'. __( 'Converting saved locations', 'GeoMashup' ) . ':<br/>';
 			foreach ( $geo_locations as $saved_name => $coordinates ) {
 				list( $lat, $lng, $converted ) = split( ',', $coordinates );
 				$location = array( 'lat' => trim( $lat ), 'lng' => trim( $lng ), 'saved_name' => $saved_name );
 				$set_id = GeoMashupDB::set_location( $location );
 				if ( $set_id ) {
 					$geo_locations[$saved_name] .= ',' . $wpdb->prefix . 'geo_mashup_locations.id=' . $set_id;
-					echo 'OK: ' . $saved_name . '<br/>';
+					echo __( 'OK: ', 'GeoMashup' ) . $saved_name . '<br/>';
 				} else {
-					echo $saved_name . ' - Failed to convert saved location (' . $coordinates . 
-						'). You\'ll have to save it again, sorry.';
+					echo $saved_name . ' - ' . 
+						sprintf( __( "Failed to convert saved location (%s). " .
+							"You'll have to save it again, sorry.", 'GeoMashup' ),
+						$coordinates );
 				}
 			}
 			echo '</p>';
