@@ -224,11 +224,12 @@ class GeoMashupOptions {
 				return true;
 
 			// strings
-			case 'google_key':
-			case 'mashup_page':
 			case 'category_link_separator':
 			case 'category_link_text':
 			case 'click_to_load_text':
+				if ( empty ( $value ) ) return true;
+			case 'google_key':
+			case 'mashup_page':
 				if ( !is_string ( $value ) ) {
 					array_push ( $this->validation_errors, '"'. $value . '" ' . __('is invalid for', 'GeoMashup') . ' ' . $key .
 						__(', which must be a string', 'GeoMashup') );
