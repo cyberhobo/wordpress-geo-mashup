@@ -353,9 +353,15 @@ class GeoMashup {
 		return geo_mashup_map(wp_parse_args($option_args));
 	}
 
-	function full_post($option_args = null)
+	function full_post($args = null)
 	{
-		return '<div id="gm-post"></div>';
+		$args = wp_parse_args($args);
+		$for_map = 'gm';
+		if ( !empty( $args['for_map'] ) ) {
+			$for_map = $args['for_map'];
+		}	
+
+		return '<div id="' . $for_map . '-post"></div>';
 	}
 
 	function category_name($option_args = null)
