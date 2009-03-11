@@ -249,7 +249,7 @@ class GeoMashupDB {
 					echo '<br/>';
 					printf( __( 'Failed to convert location (%s). You can %sedit the post%s ' .
 						'to update the location, and try again.', 'GeoMashup' ),
-						$postmeta->meta_value, '<a href="post.php?action=edit&post=' . $post_id . '">', '</a>'
+						$postmeta->meta_value, '<a href="post.php?action=edit&post=' . $post_id . '">', '</a>');
 					echo '<br/>';
 				}
 			}
