@@ -389,45 +389,22 @@ var GeoMashup = {
 		}
 	}, 
 
-	showPost : function (url) {
-		if (this.showing_url == url) {
-			return false;
-		}
-		var geoPost = parent.document.getElementById('geoPost');
-		if (!geoPost) {
-			this.opts.show_post = false;
-			return false;
-		}
-		this.showing_url = url;
-		var request = new GXmlHttp.create();
-		geoPost.innerHTML = '';
-		request.open('GET',url,true);
-		request.onreadystatechange = function() {
-			if (request.readyState == 4) {
-				if (request.status == 200) {
-					var node = parent.document.createElement('div');
-					node.innerHTML = request.responseText;
-					var divs = node.getElementsByTagName('div');
-					for (var i=0; i<divs.length; i++) {
-						if (divs[i].className=='post') { 
-							geoPost.appendChild(divs[i]);
-							break;
-						}
-					}
-				} else {
-					geoPost.innerHTML = 'Request for '+url+' failed: '+request.status;
-				}
-			}
-		};
-		request.send(null);
-	},
-
 	directLink : function(element) {
 		this.saveBackSettings();
 		if (parent) {
 			element.target = '_parent';
 		}
 		return true;
+	},
+
+	getShowPostElement : function() {
+	  if (!this.show_post_element && window.name) {
+			this.show_post_element = parent.document.getElementById(window.name + '-post');
+		}
+	  if (!this.show_post_element) {
+			this.show_post_element = parent.document.getElementById('gm-post');
+		}
+		return this.show_post_element;
 	},
 
 	createMarker : function(point,post) {
@@ -447,43 +424,59 @@ var GeoMashup = {
 
 		// Show this markers index in the info window when it is clicked
 		GEvent.addListener(marker, "click", function() {
+			var post_ids, i, url, info_window_request, post_element, post_request;
 			GeoMashup.map.closeInfoWindow();
 			if (GeoMashup.locations[point].loaded) {
 				marker.openInfoWindow(GeoMashup.locations[point].info_node);
+				if (GeoMashup.opts.show_post && GeoMashup.getShowPostElement()) {
+					GeoMashup.getShowPostElement().innerHTML = GeoMashup.locations[point].post_html;
+				}
 			} else {
 				marker.openInfoWindowHtml('<div align="center"><img src="' +
 					GeoMashup.opts.url_path + 
 					'/images/busy_icon.gif" alt="Loading..." /></div>');
-				var post_ids = '';
-				for(var i=0; i<GeoMashup.locations[point].posts.length; i++) {
+				post_ids = '';
+				for(i=0; i<GeoMashup.locations[point].posts.length; i++) {
 					if (i>0) post_ids += ',';
 					post_ids += GeoMashup.locations[point].posts[i];
 				}
-				var url = GeoMashup.opts.url_path + '/geo-query.php?post_ids=' + post_ids;
-				var request = new GXmlHttp.create();
-				request.open('GET', url, true);
-				request.onreadystatechange = function() {
-					if (request.readyState == 4 && request.status == 200) {
-						var node = document.createElement('div');
-						node.innerHTML = request.responseText;
-						var links = node.getElementsByTagName('a');
-						for (var i=0; i<links.length; ++i) {
+				url = GeoMashup.opts.url_path + '/geo-query.php?post_ids=' + post_ids;
+				info_window_request = new GXmlHttp.create();
+				info_window_request.open('GET', url, true);
+				info_window_request.onreadystatechange = function() {
+					var node, links, i;
+					if (info_window_request.readyState == 4 && info_window_request.status == 200) {
+						node = document.createElement('div');
+						node.innerHTML = info_window_request.responseText;
+						links = node.getElementsByTagName('a');
+						for (i=0; i<links.length; ++i) {
 							links[i].onclick = function () { return GeoMashup.directLink(this); }
 						}
 						GeoMashup.locations[point].info_node = node;
 						GeoMashup.locations[point].loaded = true;
 						marker.openInfoWindow(node);
+						if (GeoMashup.opts.show_post && GeoMashup.getShowPostElement()) {
+							url += '&template=full-post';
+							post_request = new GXmlHttp.create();
+							post_request.open('GET', url, true);
+							post_request.onreadystatechange = function() {
+								if (post_request.readyState == 4 && post_request.status == 200) {
+									GeoMashup.getShowPostElement().innerHTML = post_request.responseText;
+									GeoMashup.locations[point].post_html = post_request.responseText;
+								} // end readystate == 4
+							}; // end onreadystatechange function
+							post_request.send(null);
+						}
 					} // end readystate == 4
 				}; // end onreadystatechange function
-				request.send(null);
-			} 
+				info_window_request.send(null);
+			} // end post not loaded yet 
 		}); // end marker click
 
 		GEvent.addListener(marker, 'infowindowclose', function() {
-			var geoPost = parent.document.getElementById('geoPost');
-			if (geoPost && geoPost.firstChild) {
-				geoPost.removeChild(geoPost.firstChild);
-				GeoMashup.showing_url = '';
+			var post_element = GeoMashup.getShowPostElement();
+			if (post_element) {
+				post_element.innerHTML = '';
 			}
 		});
 
@@ -760,7 +753,6 @@ var GeoMashup = {
 
 	createMap : function(container, opts) {
 		this.container = container;
-		this.showing_url = '';
 		this.checkDependencies();
 		this.base_color_icon = new GIcon();
 		this.base_color_icon.image = opts.url_path + '/images/mm_20_black.png';
