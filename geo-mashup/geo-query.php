@@ -5,7 +5,7 @@ require_once('../../../wp-blog-header.php');
 if ( empty( $_GET['post_ids'] ) ) {
 	GeoMashupQuery::generate_location_json( );
 } else {
-	GeoMashupQuery::generate_post_html( $_GET['post_ids'] );
+	GeoMashupQuery::generate_post_html( );
 }
 
 /**
@@ -13,18 +13,28 @@ if ( empty( $_GET['post_ids'] ) ) {
  */
 class GeoMashupQuery {
 
-	function generate_post_html($post_ids) {
+	function generate_post_html( ) {
 		global $geo_mashup_options;
 
+		$post_ids = $_GET['post_ids'];
 		if ( !is_array( $post_ids ) ) {
 			$post_ids = split( ',', $post_ids );
 		}
 
 		query_posts( array( 'post__in' => $post_ids ) );
 
-		$template = locate_template( array('geo-mashup-info-window.php') );
+		if ( empty( $_GET['template'] ) ) {
+			$template_base = 'info-window';
+		} else {
+			$template_base = $_GET['template'];
+		}
+
+		$template = locate_template( array("geo-mashup-$template_base.php") );
 		if ( empty( $template ) ) {
-			$template = 'info-window.php';
+			$template = $template_base . '.php';
+		}
+		if ( !is_readable( $template ) ) {
+			$template = $template_base . '-default.php';
 		}
 		if ( !is_readable( $template ) ) {
 			$template = 'info-window-default.php';
