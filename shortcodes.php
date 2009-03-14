@@ -25,6 +25,14 @@ function geo_mashup_map($atts) {
 	if (!is_array($atts)) {
 		$atts = array();
 	}
+	// Backward compatibility conversion
+	if (isset($atts['auto_open_info_window'])) {
+		if (!isset($atts['auto_info_open'])) {
+			$atts['auto_info_open'] = $atts['auto_open_info_window'];
+		}
+		unset($atts['auto_open_info_window']);
+	}
+
 	// Map content type isn't required, so resolve it
 	$map_content = $atts['map_content'];
 	unset($atts['map_content']);
