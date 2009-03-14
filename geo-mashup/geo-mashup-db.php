@@ -456,18 +456,18 @@ class GeoMashupDB {
 			$location = (array) $location;
 		}
 
-		// Don't set blank entries
-		foreach ( $location as $name => $value ) {
-			if ( empty( $value ) ) {
-				unset( $location[$name] );
-			}
-		}
-
 		if ( is_numeric( $location['lat'] ) && is_numeric( $location['lng'] ) ) {
 			$location['lat'] = round( $location['lat'], 7 );
 			$location['lng'] = round( $location['lng'], 7 );
 		} else {
 			return false;
+		}
+
+		// Don't set blank entries
+		foreach ( $location as $name => $value ) {
+			if ( empty( $value ) ) {
+				unset( $location[$name] );
+			}
 		}
 
 		$location_table = $wpdb->prefix . 'geo_mashup_locations';
