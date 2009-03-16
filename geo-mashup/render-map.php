@@ -6,7 +6,7 @@ status_header ( 200 );
 geo_mashup_render_map ( );
 
 function add_double_quotes(&$item,$key) {
-	$quoted_keys = array ( 'background_color', 'show_future', 'map_control', 'map_content', 'map_type' );
+	$quoted_keys = array ( 'background_color', 'show_future', 'map_control', 'map_content', 'map_type', 'legend_format' );
 	if ( $key == 'post_data' ) {
 		// don't quote
 	} else if ( empty ( $item ) ) {
