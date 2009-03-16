@@ -319,13 +319,18 @@ var GeoMashup = {
 	},
 
 	showCategoryInfo : function() {
-		var legend_element = null;
-		var index_element = null;
-		var interactive = false;
+		var legend_element = null,
+			index_element = null,
+			legend_html,
+			label,
+			list_tag,
+			row_tag,
+			term_tag,
+			definition_tag,
+			id;
 		if (window.name) {
 			legend_element = parent.document.getElementById(window.name + "-legend");
 			index_element = parent.document.getElementById(window.name + "-tabbed-index");
-			interactive = true;
 		}
 		if (!legend_element) {
 			legend_element = parent.document.getElementById("gm-cat-legend");
@@ -333,7 +338,19 @@ var GeoMashup = {
 		if (!index_element) {
 			index_element = parent.document.getElementById("gm-tabbed-index");
 		}
-		var legend_html = ['<table class="gm-legend">'];
+		if (this.opts.legend_format && 'dl' === this.opts.legend_format) {
+			list_tag = 'dl';
+			row_tag = '';
+			term_tag = 'dt';
+			definition_tag = 'dd';
+		} else {
+			list_tag = 'table';
+			row_tag = 'tr';
+			term_tag = 'td';
+			definition_tag = 'td';
+		}
+
+		legend_html = ['<', list_tag, ' class="gm-legend">'];
 		for (category_id in this.categories) {
 			this.categories[category_id].line = new GPolyline(this.categories[category_id].points, 
 				this.categories[category_id].color);
@@ -342,9 +359,12 @@ var GeoMashup = {
 				this.categories[category_id].line.hide();
 			}
 			if (legend_element) {
-				var label;
-				if (window.name && interactive) {
-					var id = 'gm-cat-checkbox-' + category_id;
+				// Default is interactive
+				if (typeof this.opts.interactive_legend === 'undefined') {
+					this.opts.interactive_legend = true;
+				}
+				if (window.name && this.opts.interactive_legend) {
+					id = 'gm-cat-checkbox-' + category_id;
 					label = [
 						'<label for="',
 						id,
@@ -364,16 +384,31 @@ var GeoMashup = {
 				} else {
 					label = this.opts.category_opts[category_id].name;
 				}
-				legend_html = legend_html.concat(['<tr><td><img src="',
+				if (row_tag) {
+					legend_html.push('<' + row_tag + '>');
+				}
+				legend_html = legend_html.concat([
+					'<',
+					term_tag,
+					'><img src="',
 					this.categories[category_id].icon.image,
 					'" alt="',
 					category_id,
-					'"></td><td>',
+					'"></',
+					term_tag,
+					'><',
+					definition_tag,
+					'>',
 					label,
-					'</td></tr>']);
+					'</',
+					definition_tag,
+					'>']);
+				if (row_tag) {
+					legend_html.push('</' + row_tag + '>');
+				}
 			}
 		}
-		legend_html.push('</table>');
+		legend_html.push('</' + list_tag + '>');
 		if (legend_element) legend_element.innerHTML = legend_html.join('');
 		if (index_element) {
 			if (this.opts.start_tab_category_id) {
