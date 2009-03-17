@@ -221,9 +221,9 @@ var GeoMashup = {
 			var index_div = parent.document.getElementById(this.categoryIndexId(category_id));
 			if (index_div) {
 				if (category_id == select_category_id) {
-					index_div.className = '';
+					index_div.className = 'gm-tabs-panel';
 				} else {
-					index_div.className = 'gm-hidden';
+					index_div.className = 'gm-tabs-panel gm-hidden';
 					if (!this.opts.show_inactive_tab_markers) {
 						this.hideCategoryHierarchy(category_id);
 					}
@@ -276,7 +276,7 @@ var GeoMashup = {
 		var html_array = [];
 		html_array.push('<div id="');
 		html_array.push(this.categoryIndexId(category_id));
-		html_array.push('" class="gm-index-panel"><ul class="gm-index-posts">');
+		html_array.push('" class="gm-tabs-panel"><ul class="gm-index-posts">');
 		if (this.categories[category_id]) {
 			this.categories[category_id].posts.sort(function (a, b) {
 				var a_name = GeoMashup.posts[a].title;
