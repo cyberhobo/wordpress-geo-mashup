@@ -78,7 +78,7 @@ function geo_mashup_options_page()
 		<table>
 			<tr><th>'.__('Category', 'GeoMashup').'</th><th>'.__('Color').'</th>
 			<th>'.__('Show Connecting Line Until Zoom Level (0-20 or none)','GeoMashup')."</th></tr>\n";
-	$categories = get_categories( );
+	$categories = get_categories( array( 'hide_empty' => false ) );
 	if (is_array($categories))
 	{
 		foreach($categories as $category) {
