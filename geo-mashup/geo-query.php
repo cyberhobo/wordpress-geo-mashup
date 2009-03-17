@@ -22,6 +22,12 @@ class GeoMashupQuery {
 		}
 
 		query_posts( array( 'post__in' => $post_ids ) );
+		if ( !have_posts() && count( $post_ids ) > 0 ) {
+			// Hopefully no posts means we're looking for a single page
+			// Won't work when multiple posts and pages share a location,
+			// then our piggybacking on WP shows its limitations
+			query_posts( array( 'page_id' => $post_ids[0] ) );
+		}
 
 		if ( empty( $_GET['template'] ) ) {
 			$template_base = 'info-window';
