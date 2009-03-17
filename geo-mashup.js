@@ -490,7 +490,7 @@ var GeoMashup = {
 						GeoMashup.locations[point].info_node = node;
 						GeoMashup.locations[point].loaded = true;
 						marker.openInfoWindow(node);
-						if (GeoMashup.opts.show_post && GeoMashup.getShowPostElement()) {
+						if (GeoMashup.opts.show_post && 'full-post' !== GeoMashup.opts.template && GeoMashup.getShowPostElement()) {
 							url += '&template=full-post';
 							post_request = new GXmlHttp.create();
 							post_request.open('GET', url, true);
