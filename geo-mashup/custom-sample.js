@@ -82,11 +82,11 @@ function customGeoMashupColorIcon ( properties, color_name ) {
 function customGeoMashupCategoryIcon ( properties, categories ) {
   var icon = null;
 
-	// Make an icon for posts whose first category is 'Elephants'
+	// Make an icon for posts whose first category is 7
 	// using images from the current template directory
 	
 	/* DELETE this line to enable this example 
-  if (categories[0] == 'Elephants') {
+  if (categories[0] == 7) {
     icon = new GIcon();
     icon.image = properties.template_url_path + '/images/my_elephant_icon.png';
     icon.shadow = properties.template_url_path + '/images/my_shadow.png';
