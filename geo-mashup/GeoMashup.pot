@@ -1,13 +1,19 @@
-# Geo Mashup translation template.
-# Copyright (C) 2009
-# This file is distributed under the same license as the geo-mashup package.
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: 1.2.2\n"
+"Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-03-02 15:46-0700\n"
+"POT-Creation-Date: 2009-03-18 08:01-0600\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=utf-8\n"
+"Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
 #: edit-form.php:29
@@ -78,10 +84,40 @@ msgstr ""
 msgid "Save As:"
 msgstr ""
 
+#: geo-mashup-db.php:237
+msgid "Converting old locations"
+msgstr ""
+
+#: geo-mashup-db.php:250
+#, php-format
+msgid "Failed to convert location (%s). You can %sedit the post%s "
+msgstr ""
+
+#: geo-mashup-db.php:251
+msgid "to update the location, and try again."
+msgstr ""
+
+#: geo-mashup-db.php:261
+msgid "Converting saved locations"
+msgstr ""
+
+#: geo-mashup-db.php:268
+msgid "OK: "
+msgstr ""
+
+#: geo-mashup-db.php:271
+#, php-format
+msgid "Failed to convert saved location (%s). "
+msgstr ""
+
+#: geo-mashup-db.php:272
+msgid "You'll have to save it again, sorry."
+msgstr ""
+
 #: geo-mashup-options.php:203 geo-mashup-options.php:212
-#: geo-mashup-options.php:220 geo-mashup-options.php:233
-#: geo-mashup-options.php:246 geo-mashup-options.php:265
-#: geo-mashup-options.php:279 geo-mashup-options.php:291
+#: geo-mashup-options.php:220 geo-mashup-options.php:234
+#: geo-mashup-options.php:247 geo-mashup-options.php:266
+#: geo-mashup-options.php:280 geo-mashup-options.php:292
 msgid "is invalid for"
 msgstr ""
 
@@ -97,43 +133,43 @@ msgstr ""
 msgid ", which must be \"text\" or \"html\""
 msgstr ""
 
-#: geo-mashup-options.php:234
+#: geo-mashup-options.php:235
 msgid ", which must be a string"
 msgstr ""
 
-#: geo-mashup-options.php:247
+#: geo-mashup-options.php:248
 msgid ", which must be a number"
 msgstr ""
 
-#: geo-mashup-options.php:266
+#: geo-mashup-options.php:267
 msgid ", which must be \"true\" or \"false\""
 msgstr ""
 
-#: geo-mashup-options.php:280
+#: geo-mashup-options.php:281
 msgid ", which must be an array"
 msgstr ""
 
-#: geo-mashup-options.php:292
+#: geo-mashup-options.php:293
 msgid ", which must be a number from 0 to "
 msgstr ""
 
-#: geo-mashup.php:413
+#: geo-mashup.php:417
 msgid "Geo Mashup Options"
 msgstr ""
 
-#: geo-mashup.php:413
+#: geo-mashup.php:417
 msgid "Geo Mashup"
 msgstr ""
 
-#: geo-mashup.php:416 geo-mashup.php:417
+#: geo-mashup.php:420 geo-mashup.php:421
 msgid "Location"
 msgstr ""
 
-#: geo-mashup.php:439
+#: geo-mashup.php:443
 msgid "Show on map"
 msgstr ""
 
-#: geo-mashup.php:454
+#: geo-mashup.php:458
 msgid "Geotag Icon"
 msgstr ""
 
