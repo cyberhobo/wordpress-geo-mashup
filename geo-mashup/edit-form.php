@@ -24,8 +24,24 @@ function geo_mashup_edit_form() {
 	$locations_json .= '}';
 	$nonce = wp_create_nonce('geo-mashup-edit-post');
 ?>
+	<div id="geo-mashup-inline-help" class="hidden">
+		<p><?php _e('Put a green pin at the location for this post. There are many ways to do it:', 'GeoMashup'); ?></p>
+		<ul>
+			<li><?php _e('Search for a location name.', 'GeoMashup'); ?></li>
+			<li><?php _e('For multiple search results, mouse over pins to see location names, and click a result pin to select that location.', 'GeoMashup'); ?></li>
+			<li><?php _e('Search for a decimal latitude and longitude, like <em>40.123,-105.456</em>.', 'GeoMashup'); ?></li> 
+			<li><?php _e('Search for a street address, like <em>123 main st, anytown, acity</em>.', 'GeoMashup'); ?></li>
+			<li><?php _e('Click on the location. Zoom in if necessary so you can refine the location by dragging it or clicking a new location.', 'GeoMashup'); ?></li>
+		</ul>
+		<p><?php _e('To execute a search, type search text into the Find Location box and hit the enter key. If you type a name next to "Save As", the location will be saved under that name and added to the Saved Locations dropdown list.', 'GeoMashup'); ?></p>
+		<p><?php _e('To remove the location (green pin) for a post, clear the search box and hit the enter key.', 'GeoMashup'); ?></p>
+		<p><?php _e('When you are satisfied with the location, save or update the post.', 'GeoMashup'); ?></p>
+	</div>
 	<input id="geo_mashup_edit_nonce" name="geo_mashup_edit_nonce" type="hidden" value="<?php echo $nonce; ?>" />
-	<img id="geo_mashup_status_icon" src="<?php echo GEO_MASHUP_URL_PATH; ?>/images/idle_icon.gif" style="float:right" />
+	<img id="geo_mashup_status_icon" src="<?php echo GEO_MASHUP_URL_PATH; ?>/images/idle_icon.gif" />
+	<div id="geo-mashup-inline-help-link-wrap" class="hide-if-no-js">
+		<a href="#geo-mashup-inline-help" id="geo-mashup-inline-help-link"><?php _e('help', 'GeoMashup'); ?></a>
+	</div>
 	<label for="geo_mashup_search"><?php _e('Find location:', 'GeoMashup'); ?>
 	<input	id="geo_mashup_search" 
 		name="geo_mashup_search" 
@@ -37,20 +53,6 @@ function geo_mashup_edit_form() {
 	<select id="geo_mashup_select" name="geo_mashup_select" onchange="GeoMashupAdmin.onSelectChange(this);">
 		<option><?php _e('[Saved Locations]','GeoMashup'); ?></option>
 	</select>
-	<a href="#" onclick="document.getElementById(\'geo_mashup_inline_help\').style.display=\'block\'; return false;"><?php __('help', 'GeoMashup'); ?></a>
-	<div id="geo_mashup_inline_help" style="padding:5px; border:2px solid blue; background-color:#ffc; display:none;">
-		<p><?php _e('Put a green pin at the location for this post. There are many ways to do it:', 'GeoMashup'); ?>
-		<ul>
-			<li><?php _e('Search for a location name.', 'GeoMashup'); ?></li>
-			<li><?php _e('For multiple search results, mouse over pins to see location names, and click a result pin to select that location.', 'GeoMashup'); ?></li>
-			<li><?php _e('Search for a decimal latitude and longitude, like <em>40.123,-105.456</em>.', 'GeoMashup'); ?></li> 
-			<li><?php _e('Search for a street address, like <em>123 main st, anytown, acity</em>.', 'GeoMashup'); ?></li>
-			<li><?php _e('Click on the location. Zoom in if necessary so you can refine the location by dragging it or clicking a new location.', 'GeoMashup'); ?></li>
-		</ul>
-		<?php _e('To execute a search, type search text into the Find Location box and hit the enter key. If you type a name next to "Save As", the location will be saved under that name so you can find it again with a quick search. Saved names are searched before doing a GeoNames search for location names.', 'GeoMashup'); ?></p>
-		<p><?php _e('To remove the location (green pin) for a post, clear the search box and hit the enter key.', 'GeoMashup'); ?></p>
-		<p><a href="#" onclick="document.getElementById(\'geo_mashup_inline_help\').style.display=\'none\'; return false;"><?php _e('close', 'GeoMashup'); ?></a>
-	</div>
 	<div id="geo_mashup_map" style="width:400px;height:300px;">
 		<?php _e('Loading Google map. Check Geo Mashup options if the map fails to load.', 'GeoMashup'); ?>
 	</div>
