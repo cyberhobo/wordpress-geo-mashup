@@ -15,6 +15,14 @@ PURPOSE. See the GNU General Public License for more
 details.
 */
 
+jQuery(document).ready( function () {
+	jQuery('#geo-mashup-inline-help-link').click( function () {
+		jQuery('#geo-mashup-inline-help').slideToggle('fast').click( function () {
+			jQuery( this ).slideToggle('fast');
+		} );
+	} );
+} );
+
 function GeoMashupLocation (init_data) {
 	this.id = null;
 	this.title = '';
