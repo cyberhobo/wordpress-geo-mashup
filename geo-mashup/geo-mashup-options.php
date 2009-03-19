@@ -16,8 +16,6 @@ class GeoMashupOptions {
 			'map_type' => 'G_NORMAL_MAP',
 			'zoom' => '7',
 			'background_color' => 'c0c0c0',
-			'excerpt_format' => 'text',
-			'excerpt_length' => '250',
 			'category_color' => array ( ),
 			'category_line_zoom' => array ( ),
 			'marker_min_zoom' => '',
@@ -65,8 +63,6 @@ class GeoMashupOptions {
 		'map_height' => array ( 'global_map', 'height' ),
 		'map_type' => array ( 'global_map', 'map_type' ),
 		'zoom_level' => array ( 'global_map', 'zoom' ),
-		'excerpt_format' => array ( 'global_map', 'excerpt_format' ),
-		'excerpt_length' => array ( 'global_map', 'excerpt_length' ),
 		'category_color' => array ( 'global_map', 'category_color' ),
 		'category_line_zoom' => array ( 'global_map', 'category_line_zoom' ),
 		'marker_min_zoom' => array ( 'global_map', 'marker_min_zoom' ),
@@ -215,14 +211,6 @@ class GeoMashupOptions {
 				}
 				return true;
 
-			case 'excerpt_format':
-				if ( !in_array ( $value, array ( 'text', 'html' ) ) ) {
-					array_push ( $this->validation_errors, '"'. $value . '" ' . __('is invalid for', 'GeoMashup') . ' ' . $key .
-						__(', which must be "text" or "html"', 'GeoMashup') );
-					return false;
-				}
-				return true;
-
 			// strings
 			case 'category_link_separator':
 			case 'category_link_text':
@@ -242,7 +230,6 @@ class GeoMashupOptions {
 				if ( empty ( $value ) ) return true;
 			case 'width':
 			case 'height':
-			case 'excerpt_length':
 				if ( !is_numeric ( $value ) ) {
 					array_push ( $this->validation_errors, '"'. $value . '" ' . __('is invalid for', 'GeoMashup') . ' ' . $key .
 						__(', which must be a number', 'GeoMashup') );
