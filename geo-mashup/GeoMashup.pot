@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-03-18 08:01-0600\n"
+"POT-Creation-Date: 2009-03-19 07:18-0600\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,71 +16,70 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: edit-form.php:29
-msgid "Find location:"
-msgstr ""
-
-#: edit-form.php:38
-msgid "[Saved Locations]"
-msgstr ""
-
-#: edit-form.php:40
-msgid "help"
-msgstr ""
-
-#: edit-form.php:42
+#: edit-form.php:28
 msgid ""
 "Put a green pin at the location for this post. There are many ways to do it:"
 msgstr ""
 
-#: edit-form.php:44
+#: edit-form.php:30
 msgid "Search for a location name."
 msgstr ""
 
-#: edit-form.php:45
+#: edit-form.php:31
 msgid ""
 "For multiple search results, mouse over pins to see location names, and "
 "click a result pin to select that location."
 msgstr ""
 
-#: edit-form.php:46
+#: edit-form.php:32
 msgid ""
 "Search for a decimal latitude and longitude, like <em>40.123,-105.456</em>."
 msgstr ""
 
-#: edit-form.php:47
+#: edit-form.php:33
 msgid "Search for a street address, like <em>123 main st, anytown, acity</em>."
 msgstr ""
 
-#: edit-form.php:48
+#: edit-form.php:34
 msgid ""
 "Click on the location. Zoom in if necessary so you can refine the location "
 "by dragging it or clicking a new location."
 msgstr ""
 
-#: edit-form.php:50
+#: edit-form.php:36
 msgid ""
 "To execute a search, type search text into the Find Location box and hit the "
 "enter key. If you type a name next to \"Save As\", the location will be "
-"saved under that name so you can find it again with a quick search. Saved "
-"names are searched before doing a GeoNames search for location names."
+"saved under that name and added to the Saved Locations dropdown list."
 msgstr ""
 
-#: edit-form.php:51
+#: edit-form.php:37
 msgid ""
 "To remove the location (green pin) for a post, clear the search box and hit "
 "the enter key."
 msgstr ""
 
-#: edit-form.php:52
-msgid "close"
+#: edit-form.php:38
+msgid "When you are satisfied with the location, save or update the post."
 msgstr ""
 
-#: edit-form.php:55
+#: edit-form.php:43
+msgid "help"
+msgstr ""
+
+#: edit-form.php:45
+msgid "Find location:"
+msgstr ""
+
+#: edit-form.php:54
+msgid "[Saved Locations]"
+msgstr ""
+
+#: edit-form.php:57
 msgid "Loading Google map. Check Geo Mashup options if the map fails to load."
 msgstr ""
 
-#: edit-form.php:68
+#: edit-form.php:70
 msgid "Save As:"
 msgstr ""
 
@@ -114,42 +113,38 @@ msgstr ""
 msgid "You'll have to save it again, sorry."
 msgstr ""
 
-#: geo-mashup-options.php:203 geo-mashup-options.php:212
-#: geo-mashup-options.php:220 geo-mashup-options.php:234
-#: geo-mashup-options.php:247 geo-mashup-options.php:266
-#: geo-mashup-options.php:280 geo-mashup-options.php:292
+#: geo-mashup-options.php:199 geo-mashup-options.php:208
+#: geo-mashup-options.php:222 geo-mashup-options.php:234
+#: geo-mashup-options.php:253 geo-mashup-options.php:267
+#: geo-mashup-options.php:279
 msgid "is invalid for"
 msgstr ""
 
-#: geo-mashup-options.php:204
+#: geo-mashup-options.php:200
 msgid ", which must be a valid map type (see documentation)"
 msgstr ""
 
-#: geo-mashup-options.php:213
+#: geo-mashup-options.php:209
 msgid ", which must be a valid map control (see documentation)"
 msgstr ""
 
-#: geo-mashup-options.php:221
-msgid ", which must be \"text\" or \"html\""
-msgstr ""
-
-#: geo-mashup-options.php:235
+#: geo-mashup-options.php:223
 msgid ", which must be a string"
 msgstr ""
 
-#: geo-mashup-options.php:248
+#: geo-mashup-options.php:235
 msgid ", which must be a number"
 msgstr ""
 
-#: geo-mashup-options.php:267
+#: geo-mashup-options.php:254
 msgid ", which must be \"true\" or \"false\""
 msgstr ""
 
-#: geo-mashup-options.php:281
+#: geo-mashup-options.php:268
 msgid ", which must be an array"
 msgstr ""
 
-#: geo-mashup-options.php:293
+#: geo-mashup-options.php:280
 msgid ", which must be a number from 0 to "
 msgstr ""
 
@@ -219,214 +214,195 @@ msgstr ""
 msgid "Terrain"
 msgstr ""
 
-#: options.php:111
-msgid "Google Earth"
-msgstr ""
-
-#: options.php:133
+#: options.php:132
 msgid "Small Zoom"
 msgstr ""
 
-#: options.php:134
+#: options.php:133
 msgid "Small Zoom 3D"
 msgstr ""
 
-#: options.php:135
+#: options.php:134
 msgid "Small Pan/Zoom"
 msgstr ""
 
-#: options.php:136
+#: options.php:135
 msgid "Large Pan/Zoom"
 msgstr ""
 
-#: options.php:137
+#: options.php:136
 msgid "Large Pan/Zoom 3D"
 msgstr ""
 
-#: options.php:224
+#: options.php:223
 msgid "Yes"
 msgstr ""
 
-#: options.php:225
+#: options.php:224
 msgid "No"
 msgstr ""
 
-#: options.php:226
+#: options.php:225
 msgid "Only"
 msgstr ""
 
-#: options.php:257
+#: options.php:249
 msgid "Geo Mashup Plugin Options"
 msgstr ""
 
-#: options.php:262
+#: options.php:254
 msgid "The Geo Mashup database is out of date."
 msgstr ""
 
-#: options.php:263
+#: options.php:255
 msgid "Upgrade Database"
 msgstr ""
 
-#: options.php:269
+#: options.php:261
 msgid "Overall"
 msgstr ""
 
-#: options.php:270
+#: options.php:262
 msgid "Global Maps"
 msgstr ""
 
-#: options.php:271
+#: options.php:263
 msgid "Single Maps"
 msgstr ""
 
-#: options.php:272
+#: options.php:264
 msgid "Contextual Maps"
 msgstr ""
 
-#: options.php:276
+#: options.php:268
 msgid "Overall Geo Mashup Settings"
 msgstr ""
 
-#: options.php:279
+#: options.php:271
 msgid "Google Maps Key"
 msgstr ""
 
-#: options.php:281
+#: options.php:273
 msgid "Get yours here"
 msgstr ""
 
-#: options.php:284
+#: options.php:276
 msgid "Generated links go here"
 msgstr ""
 
-#: options.php:284
+#: options.php:276
 msgid "Global Mashup Page"
 msgstr ""
 
-#: options.php:290
+#: options.php:282
 msgid "Use Theme Style Sheet with Maps"
 msgstr ""
 
-#: options.php:294
+#: options.php:286
 msgid "Add Category Links"
 msgstr ""
 
-#: options.php:298
+#: options.php:290
 msgid "Category Link Separator"
 msgstr ""
 
-#: options.php:302
+#: options.php:294
 msgid "Category Link Text"
 msgstr ""
 
-#: options.php:306
+#: options.php:298
 msgid "Single Category Zoom Level"
 msgstr ""
 
-#: options.php:308 options.php:347 options.php:406 options.php:411
-#: options.php:477
+#: options.php:300 options.php:339 options.php:389 options.php:394
+#: options.php:460
 msgid "0 (max zoom out) - 20 (max zoom in)"
 msgstr ""
 
-#: options.php:311 options.php:360 options.php:441 options.php:490
+#: options.php:303 options.php:352 options.php:356 options.php:424
+#: options.php:473
 msgid "Update Options"
 msgstr ""
 
-#: options.php:314
+#: options.php:306
 msgid "Default settings for maps of a single located post."
 msgstr ""
 
-#: options.php:317 options.php:376 options.php:447
+#: options.php:309 options.php:359 options.php:430
 msgid "Map Width"
 msgstr ""
 
-#: options.php:318 options.php:322 options.php:377 options.php:381
-#: options.php:448 options.php:452
+#: options.php:310 options.php:314 options.php:360 options.php:364
+#: options.php:431 options.php:435
 msgid "px"
 msgstr ""
 
-#: options.php:321 options.php:380 options.php:451
+#: options.php:313 options.php:363 options.php:434
 msgid "Map Height"
 msgstr ""
 
-#: options.php:325 options.php:384 options.php:455
+#: options.php:317 options.php:367 options.php:438
 msgid "Map Control"
 msgstr ""
 
-#: options.php:331 options.php:390 options.php:461
+#: options.php:323 options.php:373 options.php:444
 msgid "Add Map Type Control"
 msgstr ""
 
-#: options.php:335 options.php:394 options.php:465
+#: options.php:327 options.php:377 options.php:448
 msgid "Add Overview Control"
 msgstr ""
 
-#: options.php:339 options.php:398 options.php:469
+#: options.php:331 options.php:381 options.php:452
 msgid "Default Map Type"
 msgstr ""
 
-#: options.php:345 options.php:404 options.php:475
+#: options.php:337 options.php:387 options.php:458
 msgid "Default Zoom Level"
 msgstr ""
 
-#: options.php:350 options.php:427 options.php:480
+#: options.php:342 options.php:410 options.php:463
 msgid "Click To Load"
 msgstr ""
 
-#: options.php:356 options.php:431 options.php:486
+#: options.php:348 options.php:414 options.php:469
 msgid "Click To Load Text"
 msgstr ""
 
-#: options.php:363
+#: options.php:355
 msgid "Default settings for global maps of located posts."
 msgstr ""
 
-#: options.php:366
-msgid "Post Excerpt Format"
-msgstr ""
-
-#: options.php:368
-msgid "Text"
-msgstr ""
-
-#: options.php:369
-msgid "HTML"
-msgstr ""
-
-#: options.php:372
-msgid "Post Excerpt Length"
-msgstr ""
-
-#: options.php:409
+#: options.php:392
 msgid "Hide Markers Until Zoom Level"
 msgstr ""
 
-#: options.php:414
+#: options.php:397
 msgid "Show Only Most Recent Posts"
 msgstr ""
 
-#: options.php:416
+#: options.php:399
 msgid "Number of posts to show, leave blank for all"
 msgstr ""
 
-#: options.php:419
+#: options.php:402
 msgid "Show Future Posts"
 msgstr ""
 
-#: options.php:423
+#: options.php:406
 msgid "Automatically Open Linked Post Info Window"
 msgstr ""
 
-#: options.php:435
+#: options.php:418
 msgid "Enable Full Post Display"
 msgstr ""
 
-#: options.php:444
+#: options.php:427
 msgid ""
 "Default settings for contextual maps, which include just the posts shown on "
 "a page, for example."
 msgstr ""
 
-#: options.php:493
+#: options.php:476
 msgid "Geo Mashup Documentation"
 msgstr ""
