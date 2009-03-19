@@ -107,8 +107,7 @@ function geo_mashup_options_page()
 		'G_NORMAL_MAP' => __('Roadmap', 'GeoMashup'), 
 		'G_SATELLITE_MAP' => __('Satellite', 'GeoMashup'),
 		'G_HYBRID_MAP' => __('Hybrid', 'GeoMashup'),
-		'G_PHYSICAL_MAP' => __('Terrain', 'GeoMashup'),
-		'G_SATELLITE_3D_MAP' => __('Google Earth', 'GeoMashup'));
+		'G_PHYSICAL_MAP' => __('Terrain', 'GeoMashup'));
 	foreach($mapTypes as $type => $label) {
 		$selected = "";
 		if ($type == $geo_mashup_options->get ( 'global_map', 'map_type' )) {
@@ -232,13 +231,6 @@ function geo_mashup_options_page()
 		$showFutureOptions .= '<option value="'.$value.'"'.$selected.'>'.$label."</option>\n";
 	}
 
-	if ($geo_mashup_options->get ( 'global_map', 'excerpt_format' ) == 'text') {
-		$textExcerptChecked = ' checked="true"';
-		$htmlExcerptChecked = '';
-	} else {
-		$textExcerptChecked = '';
-		$htmlExcerptChecked = ' checked="true"';
-	}
 	if ($geo_mashup_options->get ( 'global_map', 'auto_info_open' ) == 'true') {
 		$autoInfoOpenChecked = ' checked="true"';
 	} else {
@@ -361,17 +353,8 @@ function geo_mashup_options_page()
 			</fieldset>
 			<fieldset id="geo-mashup-global-map-settings">
 				<p><?php _e('Default settings for global maps of located posts.', 'GeoMashup'); ?></legend>
+				<div class="submit"><input type="submit" name="submit" value="<?php _e('Update Options', 'GeoMashup'); ?>" /></div>
 				<table width="100%" cellspacing="2" cellpadding="5" class="editform">
-					<tr>
-						<th width="33%" scope="row"><?php _e('Post Excerpt Format', 'GeoMashup'); ?></th>
-						<td><input name="global_map[excerpt_format]" type="radio" value="text"<?php echo $textExcerptChecked; ?> />
-						<?php echo _e('Text', 'GeoMashup'); ?><input name="global_map[excerpt_format]" type="radio" value="html"<?php echo $htmlExcerptChecked; ?> />
-						<?php echo _e('HTML', 'GeoMashup'); ?></td>
-					</tr>
-					<tr>
-						<th width="33%" scope="row"><?php _e('Post Excerpt Length', 'GeoMashup'); ?></th>
-						<td><input id="excerpt_length" name="global_map[excerpt_length]" type="text" size="5" value="<?php echo $geo_mashup_options->get ( 'global_map', 'excerpt_length' ); ?>" /></td>
-					</tr>
 					<tr>
 						<th scope="row"><?php _e('Map Width', 'GeoMashup'); ?></th>
 						<td><input id="map_width" name="global_map[width]" type="text" size="5" value="<?php echo $geo_mashup_options->get ( 'global_map', 'width' ); ?>" /><?php _e('px', 'GeoMashup'); ?></td>
