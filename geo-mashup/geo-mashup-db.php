@@ -69,6 +69,8 @@ class GeoMashupDB {
 			if ( $errors && preg_match( '/\[(?!Duplicate key|Multiple primary key)/', $errors ) ) {
 				// Any errors other than duplicate or multiple primary key could be trouble
 				echo $errors;
+				update_option( 'geo_mashup_activation_log', $errors );
+				die( $errors );
 			} else {
 				if ( GeoMashupDB::convert_prior_locations( ) ) {
 					GeoMashupDB::installed_version( GEO_MASHUP_DB_VERSION );
@@ -230,12 +232,16 @@ class GeoMashupDB {
 		$wpdb->query( $unconverted_select );
 
 		if ($wpdb->last_error) {
+			update_option( 'geo_mashup_activation_log', $wpdb->last_error );
 			return false;
 		}
-		
-		$unconverted_metadata = $wpdb->last_result; 
+
+		$unconverted_metadata = $wpdb->last_result;
+		$log = '';
 		if ( $unconverted_metadata ) {
-			echo '<p>' . __( 'Converting old locations', 'GeoMashup' );
+			$msg = '<p>' . __( 'Converting old locations', 'GeoMashup' );
+			$log .= $msg;
+			echo $msg;
 			foreach ( $unconverted_metadata as $postmeta ) {
 				$post_id = $postmeta->post_id;
 				list( $lat, $lng ) = split( ',', $postmeta->meta_value );
@@ -244,43 +250,52 @@ class GeoMashupDB {
 				if ( $set_id ) {
 					add_post_meta( $post_id, '_geo_converted', $wpdb->prefix . 'geo_mashup_locations.id = ' . $set_id );
 					// Echo a poor man's progress bar
+					$log .= '<br/>OK: post_id ' . $post_id;
 					echo '.';
 					flush( );
 				} else {
-					echo '<br/>';
-					printf( __( 'Failed to convert location (%s). You can %sedit the post%s ' .
+					$msg = '<br/>';
+					$msg .= sprintf( __( 'Failed to convert location (%s). You can %sedit the post%s ' .
 						'to update the location, and try again.', 'GeoMashup' ),
 						$postmeta->meta_value, '<a href="post.php?action=edit&post=' . $post_id . '">', '</a>');
-					echo '<br/>';
+					$msg .= '<br/>';
+					$log .= $msg;
+					echo $msg;
 				}
 			}
+			$log .= '</p>';
 			echo '</p>';
 		}
 
-		if ($wpdb->last_error) {
-			return false;
-		}
-		
-		$geo_locations = get_settings( 'geo_locations' );
+		$geo_locations = get_option( 'geo_locations' );
 		if ( is_array( $geo_locations ) ) {
-			echo '<p>'. __( 'Converting saved locations', 'GeoMashup' ) . ':<br/>';
+			$msg = '<p>'. __( 'Converting saved locations', 'GeoMashup' ) . ':<br/>';
+			$log .= $msg;
+			echo $msg;
 			foreach ( $geo_locations as $saved_name => $coordinates ) {
 				list( $lat, $lng, $converted ) = split( ',', $coordinates );
 				$location = array( 'lat' => trim( $lat ), 'lng' => trim( $lng ), 'saved_name' => $saved_name );
 				$set_id = GeoMashupDB::set_location( $location );
 				if ( $set_id ) {
 					$geo_locations[$saved_name] .= ',' . $wpdb->prefix . 'geo_mashup_locations.id=' . $set_id;
-					echo __( 'OK: ', 'GeoMashup' ) . $saved_name . '<br/>';
+					$msg = __( 'OK: ', 'GeoMashup' ) . $saved_name . '<br/>';
+					$log .= $msg;
+					echo $msg;
 				} else {
-					echo $saved_name . ' - ' . 
+					$msg = $saved_name . ' - ' . 
 						sprintf( __( "Failed to convert saved location (%s). " .
 							"You'll have to save it again, sorry.", 'GeoMashup' ),
 						$coordinates );
+					$log .= $msg;
+					echo $msg;
 				}
 			}
+			$log .= '</p>';
 			echo '</p>';
 			update_option( 'geo_locations', $geo_locations );
 		}
+
+		update_option( 'geo_mashup_activation_log', $log );
 
 		$wpdb->query( $unconverted_select );
 
