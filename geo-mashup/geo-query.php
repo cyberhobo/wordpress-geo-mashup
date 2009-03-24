@@ -29,6 +29,10 @@ class GeoMashupQuery {
 			query_posts( array( 'page_id' => $post_ids[0] ) );
 		}
 
+		if ( have_posts() ) {
+			status_header(200);
+		}
+
 		if ( empty( $_GET['template'] ) ) {
 			$template_base = 'info-window';
 		} else {
