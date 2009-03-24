@@ -119,8 +119,11 @@ function geo_mashup_render_map ( ) {
 	?>
 	<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
 			"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-	<html xmlns="http://www.w3.org/1999/xhtml"
-				xmlns:v="urn:schemas-microsoft-com:vml">
+	<html xmlns="http://www.w3.org/1999/xhtml">
+	<!--[if lte IE 6]>
+	<html xmlns:v="urn:schemas-microsoft-com:vml">
+	<![endif]-->
+
 		<head>
 			<meta http-equiv="content-type" content="text/html; charset=utf-8"/>
 		<title>Geo Mashup Map</title>

@@ -2,7 +2,7 @@
 Plugin Name: Geo Mashup
 Plugin URI: http://code.google.com/p/wordpress-geo-mashup/ 
 Description: Tools for adding maps to your blog, and plotting posts on a master map. Configure in <a href="options-general.php?page=geo-mashup/geo-mashup.php">Settings->Geo Mashup</a> after the plugin is activated.
-Version: 1.2
+Version: 1.2.1
 Author: Dylan Kuhn
 Author URI: http://www.cyberhobo.net/
 Minimum WordPress Version Required: 2.6
@@ -80,14 +80,14 @@ class GeoMashup {
 		define('GEO_MASHUP_DIRECTORY', substr(GEO_MASHUP_PLUGIN_NAME, 0, strpos(GEO_MASHUP_PLUGIN_NAME, '/')));
 		define('GEO_MASHUP_URL_PATH', WP_CONTENT_URL . '/plugins/' . GEO_MASHUP_DIRECTORY);
 		define('GEO_MASHUP_MAX_ZOOM', 20);
-		define('GEO_MASHUP_VERSION', '1.2.3');
-		define('GEO_MASHUP_DB_VERSION', '1.1');
+		define('GEO_MASHUP_VERSION', '1.2.4');
+		define('GEO_MASHUP_DB_VERSION', '1.2');
 	}
 
 	function load_scripts() {
 		global $geo_mashup_options;
 		if (is_admin()) {
-			if ($_GET['page'] == GEO_MASHUP_PLUGIN_NAME) {
+			if ( isset($_GET['page']) &&  GEO_MASHUP_PLUGIN_NAME === $_GET['page'] ) {
 
 				wp_enqueue_script('jquery-ui-tabs');
 
@@ -105,7 +105,7 @@ class GeoMashup {
 
 	function load_styles() {
 		if (is_admin()) {
-			if ($_GET['page'] == GEO_MASHUP_PLUGIN_NAME) {
+			if ( isset($_GET['page']) && GEO_MASHUP_PLUGIN_NAME === $_GET['page'] ) {
 
 				wp_enqueue_style('geo-mashup-tabs', GEO_MASHUP_URL_PATH.'/jquery.tabs.css', false, '2.5.0', 'screen');
 
@@ -213,7 +213,7 @@ class GeoMashup {
 
 	function admin_print_scripts($not_used)
 	{
-		if ($_GET['page'] == GEO_MASHUP_PLUGIN_NAME) {
+		if ( isset($_GET['page']) && GEO_MASHUP_PLUGIN_NAME === $_GET['page'] ) {
 
 			echo '
 				<script type="text/javascript"> 
@@ -288,7 +288,7 @@ class GeoMashup {
 			GeoMashup::inline_location( '' );
 		}
 
-		if (!wp_verify_nonce($_POST['geo_mashup_edit_nonce'], 'geo-mashup-edit-post')) {
+		if ( empty( $_POST['geo_mashup_edit_nonce'] ) || !wp_verify_nonce($_POST['geo_mashup_edit_nonce'], 'geo-mashup-edit-post')) {
 			return $post_id;
 		}
 		if ( 'page' == $_POST['post_type'] ) {
@@ -629,6 +629,7 @@ class GeoMashup {
 	}
 } // class GeoMashup
 
-GeoMashup::load();
+// Don't load yet, wait until WP is read to initialize
+add_action( 'init', array('GeoMashup', 'load') );
 
 ?>

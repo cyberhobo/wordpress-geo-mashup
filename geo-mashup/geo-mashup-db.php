@@ -215,22 +215,23 @@ class GeoMashupDB {
 	function convert_prior_locations( ) {
 		global $wpdb;
 
-		$unconverted_select = "SELECT post_id, meta_value
+		// NOT EXISTS doesn't work in MySQL 4, use left joins instead
+		$unconverted_select = "SELECT pm.post_id, pm.meta_value
 			FROM {$wpdb->postmeta} pm
-			WHERE meta_key = '_geo_location' 
-			AND length( meta_value ) > 1
-			AND NOT EXISTS (
-				SELECT 1 
-				FROM {$wpdb->postmeta} ipm 
-				WHERE ipm.post_id = pm.post_id 
-				AND ipm.meta_key = '_geo_converted' )
-		  AND NOT EXISTS (
-				SELECT 1
-				FROM {$wpdb->prefix}geo_mashup_location_relationships gmlr
-				WHERE gmlr.object_name = 'post' 
-				AND gmlr.object_id = pm.post_id )";
+			LEFT JOIN {$wpdb->postmeta} lpm ON lpm.post_id = pm.post_id 
+			AND lpm.meta_key = '_geo_converted'
+			LEFT JOIN {$wpdb->prefix}geo_mashup_location_relationships gmlr ON gmlr.object_id = pm.post_id
+			AND gmlr.object_name = 'post'
+			WHERE pm.meta_key = '_geo_location' 
+			AND length( pm.meta_value ) > 1
+			AND lpm.post_id IS NULL 
+			AND gmlr.object_id IS NULL";
 
 		$wpdb->query( $unconverted_select );
+
+		if ($wpdb->last_error) {
+			return false;
+		}
 		
 		$unconverted_metadata = $wpdb->last_result; 
 		if ( $unconverted_metadata ) {
@@ -256,6 +257,10 @@ class GeoMashupDB {
 			echo '</p>';
 		}
 
+		if ($wpdb->last_error) {
+			return false;
+		}
+		
 		$geo_locations = get_settings( 'geo_locations' );
 		if ( is_array( $geo_locations ) ) {
 			echo '<p>'. __( 'Converting saved locations', 'GeoMashup' ) . ':<br/>';
@@ -337,7 +342,7 @@ class GeoMashupDB {
 			$wpdb->prepare( 'WHERE gmlr.object_name = \'post\' AND gmlr.object_id = %d', $post_id );
 
 		$location = false;
-		$wpdb->query( $select_string, $output_type );
+		$wpdb->query( $select_string );
 		if ( $wpdb->last_result ) {
 			$location = $wpdb->last_result[0];
 		}
@@ -348,7 +353,13 @@ class GeoMashupDB {
 	{
 		global $wpdb;
 
-		$default_args = array( 'sort' => 'post_date DESC' );
+		$default_args = array( 'sort' => 'post_date DESC', 
+			'minlat' => null, 
+			'maxlat' => null, 
+			'minlon' => null, 
+			'maxlon' => null,
+			'show_future' => 'false', 
+	 		'limit' => 0 );
 		$query_args = wp_parse_args( $query_args, $default_args );
 		
 		// Construct the query 
@@ -473,7 +484,7 @@ class GeoMashupDB {
 		$location_table = $wpdb->prefix . 'geo_mashup_locations';
 		$select_string = "SELECT id FROM $location_table ";
 		// Check for existing location
-		if ( is_numeric( $location['id'] ) ) {
+		if ( isset( $location['id'] ) && is_numeric( $location['id'] ) ) {
 			$select_string .= $wpdb->prepare( 'WHERE id = %d', $location['id'] );
 		} else {
 			$delta = 0.000005;

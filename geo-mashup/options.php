@@ -103,6 +103,8 @@ function geo_mashup_options_page()
 	$categoryTable .= "</table>\n";
 
 	$mapTypeOptions = "";
+	$inPostMapTypeOptions = "";
+	$contextMapTypeOptions = "";
 	$mapTypes = Array(
 		'G_NORMAL_MAP' => __('Roadmap', 'GeoMashup'), 
 		'G_SATELLITE_MAP' => __('Satellite', 'GeoMashup'),
@@ -173,19 +175,19 @@ function geo_mashup_options_page()
 	if ($geo_mashup_options->get ( 'global_map', 'add_overview_control' ) == 'true') {
 		$overviewChecked = ' checked="true"';
 	} else {
-		$overviewmapChecked = '';
+		$overviewChecked = '';
 	}
 
 	if ($geo_mashup_options->get ( 'single_map', 'add_overview_control' ) == 'true') {
 		$inPostOverviewChecked = ' checked="true"';
 	} else {
-		$inPostOverviewmapChecked = '';
+		$inPostOverviewChecked = '';
 	}
 
 	if ($geo_mashup_options->get ( 'context_map', 'add_overview_control' ) == 'true') {
 		$contextOverviewChecked = ' checked="true"';
 	} else {
-		$contextOverviewmapChecked = '';
+		$contextOverviewChecked = '';
 	}
 
 	if ($geo_mashup_options->get ( 'overall', 'add_category_links' ) == 'true') {
