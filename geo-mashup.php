@@ -87,7 +87,7 @@ class GeoMashup {
 	function load_scripts() {
 		global $geo_mashup_options;
 		if (is_admin()) {
-			if ($_GET['page'] == GEO_MASHUP_PLUGIN_NAME) {
+			if ( isset($_GET['page']) &&  GEO_MASHUP_PLUGIN_NAME === $_GET['page'] ) {
 
 				wp_enqueue_script('jquery-ui-tabs');
 
@@ -105,7 +105,7 @@ class GeoMashup {
 
 	function load_styles() {
 		if (is_admin()) {
-			if ($_GET['page'] == GEO_MASHUP_PLUGIN_NAME) {
+			if ( isset($_GET['page']) && GEO_MASHUP_PLUGIN_NAME === $_GET['page'] ) {
 
 				wp_enqueue_style('geo-mashup-tabs', GEO_MASHUP_URL_PATH.'/jquery.tabs.css', false, '2.5.0', 'screen');
 
@@ -213,7 +213,7 @@ class GeoMashup {
 
 	function admin_print_scripts($not_used)
 	{
-		if ($_GET['page'] == GEO_MASHUP_PLUGIN_NAME) {
+		if ( isset($_GET['page']) && GEO_MASHUP_PLUGIN_NAME === $_GET['page'] ) {
 
 			echo '
 				<script type="text/javascript"> 
@@ -288,7 +288,7 @@ class GeoMashup {
 			GeoMashup::inline_location( '' );
 		}
 
-		if (!wp_verify_nonce($_POST['geo_mashup_edit_nonce'], 'geo-mashup-edit-post')) {
+		if ( empty( $_POST['geo_mashup_edit_nonce'] ) || !wp_verify_nonce($_POST['geo_mashup_edit_nonce'], 'geo-mashup-edit-post')) {
 			return $post_id;
 		}
 		if ( 'page' == $_POST['post_type'] ) {
@@ -629,6 +629,7 @@ class GeoMashup {
 	}
 } // class GeoMashup
 
-GeoMashup::load();
+// Don't load yet, wait until WP is read to initialize
+add_action( 'init', array('GeoMashup', 'load') );
 
 ?>
