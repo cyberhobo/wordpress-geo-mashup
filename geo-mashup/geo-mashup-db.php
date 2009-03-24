@@ -215,7 +215,6 @@ class GeoMashupDB {
 	function convert_prior_locations( ) {
 		global $wpdb;
 
-		$pre_error = $wpdb->last_error;
 		// NOT EXISTS doesn't work in MySQL 4, use left joins instead
 		$unconverted_select = "SELECT pm.post_id, pm.meta_value
 			FROM {$wpdb->postmeta} pm
@@ -230,7 +229,7 @@ class GeoMashupDB {
 
 		$wpdb->query( $unconverted_select );
 
-		if ($pre_error !== $wpdb->last_error) {
+		if ($wpdb->last_error) {
 			return false;
 		}
 		
@@ -258,7 +257,7 @@ class GeoMashupDB {
 			echo '</p>';
 		}
 
-		if ($pre_error !== $wpdb->last_error) {
+		if ($wpdb->last_error) {
 			return false;
 		}
 		
