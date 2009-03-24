@@ -92,7 +92,7 @@ class GeoMashupOptions {
 
 	function GeoMashupOptions ( ) {
 		$this->options = $this->default_options;
-		$settings = get_settings ( 'geo_mashup_options' );
+		$settings = get_option ( 'geo_mashup_options' );
 		if ( is_array ( $settings ) ) {
 			$settings = $this->convert_old_settings ( $settings );
 			$this->set_valid_options ( $settings );
