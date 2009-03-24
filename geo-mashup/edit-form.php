@@ -77,9 +77,9 @@ function geo_mashup_edit_form() {
 	<input id="geo_mashup_postal_code" name="geo_mashup_postal_code" type="hidden" value="<?php echo $location->postal_code; ?>" />
 	<input id="geo_mashup_country_code" name="geo_mashup_country_code" type="hidden" value="<?php echo $location->country_code; ?>" />
 	<input id="geo_mashup_admin_code" name="geo_mashup_admin_code" type="hidden" value="<?php echo $location->admin_code; ?>" />
-	<input id="geo_mashup_admin_name" name="geo_mashup_admin_name" type="hidden" value="<?php echo $location->admin_name; ?>" />
+	<input id="geo_mashup_admin_name" name="geo_mashup_admin_name" type="hidden" value="" />
 	<input id="geo_mashup_sub_admin_code" name="geo_mashup_sub_admin_code" type="hidden" value="<? echo $location->sub_admin_code; ?>" />
-	<input id="geo_mashup_sub_admin_name" name="geo_mashup_sub_admin_name" type="hidden" value="<? echo $location->sub_admin_name; ?>" />
+	<input id="geo_mashup_sub_admin_name" name="geo_mashup_sub_admin_name" type="hidden" value="" />
 	<input id="geo_mashup_locality_name" name="geo_mashup_locality_name" type="hidden" value="<? echo $location->locality_name; ?>" />
 	<input id="geo_mashup_changed" name="geo_mashup_changed" type="hidden" value="" />
 <?php

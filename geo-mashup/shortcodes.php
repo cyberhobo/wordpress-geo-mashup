@@ -34,7 +34,7 @@ function geo_mashup_map($atts) {
 	}
 
 	// Map content type isn't required, so resolve it
-	$map_content = $atts['map_content'];
+	$map_content = isset( $atts['map_content'] ) ? $atts['map_content'] : null;
 	unset($atts['map_content']);
 
 	if ( empty ( $map_content ) ) {
@@ -106,7 +106,7 @@ function geo_mashup_map($atts) {
 	unset($url_params['name']);
 
 	$map_image = '';
-	if ($url_params['static'] == 'true') {
+	if ( isset($url_params['static']) && 'true' === $url_params['static'] ) {
 		$locations = GeoMashupDB::get_post_locations($url_params);
 		if (!empty($locations)) {
 			$map_image = '<img src="http://maps.google.com/staticmap?size='.$url_params['width'].'x'.$url_params['height'];
@@ -140,14 +140,14 @@ function geo_mashup_map($atts) {
 				"background-repeat:no-repeat;background-position:center;cursor:pointer;";
 			$content = "<div class=\"gm-map\" style=\"$style\" " .
 				"onclick=\"GeoMashupLoader.addMapFrame(this,'$iframe_src',{$url_params['height']},{$url_params['width']},'$name')\">";
-			if ($url_params['static'] == 'true') {
+			if ( isset($url_params['static']) &&  'true' === $url_params['static'] ) {
 				// TODO: test whether click to load really works with a static map
 				$content .= $map_image . '</div>';
 			} else {
 				$content .= "<p style=\"text-align:center;\">$click_to_load_text</p></div>";
 			}
 		}
-	} else if ($url_params['static'] == 'true') {
+	} else if ( isset($url_params['static']) &&  'true' === $url_params['static'] ) {
 		$content = "<div class=\"gm-map\">$map_image</div>";
 	} else {
 		$content =  "<div class=\"gm-map\"><iframe name=\"{$name}\" src=\"{$iframe_src}\" " .
