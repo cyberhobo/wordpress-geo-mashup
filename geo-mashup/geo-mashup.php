@@ -27,6 +27,7 @@ details.
 /**
  * The Geo Mashup static class.
  */
+if ( !class_exists( 'GeoMashup' ) ) {
 class GeoMashup {
 
 	function load() {
@@ -35,13 +36,16 @@ class GeoMashup {
 
 		GeoMashup::load_dependencies();
 		GeoMashup::load_hooks();
+	}
+
+	function init() {
 		GeoMashup::load_styles();
 		GeoMashup::load_scripts();
 	}
 
 	function load_dependencies() {
-		include_once ( dirname( __FILE__) . '/geo-mashup-options.php' );
 		include_once( dirname( __FILE__ ) . '/geo-mashup-db.php' );
+		include_once( dirname( __FILE__) . '/geo-mashup-options.php' );
 		if ( !is_admin() ) {
 			include_once(dirname(__FILE__) . '/shortcodes.php');
 		}
@@ -628,8 +632,9 @@ class GeoMashup {
 		return '<div id="' . $for_map . '-tabbed-index"></div>';
 	}
 } // class GeoMashup
+GeoMashup::load();
+} // class exists
 
-// Don't load yet, wait until WP is read to initialize
-add_action( 'init', array('GeoMashup', 'load') );
+add_action( 'init', array('GeoMashup', 'init') );
 
 ?>
