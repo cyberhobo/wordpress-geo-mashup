@@ -223,8 +223,8 @@ class GeoMashupDB {
 			AND lpm.meta_key = '_geo_converted'
 			LEFT JOIN {$wpdb->prefix}geo_mashup_location_relationships gmlr ON gmlr.object_id = pm.post_id
 			AND gmlr.object_name = 'post'
-			WHERE meta_key = '_geo_location' 
-			AND length( meta_value ) > 1
+			WHERE pm.meta_key = '_geo_location' 
+			AND length( pm.meta_value ) > 1
 			AND lpm.post_id IS NULL 
 			AND gmlr.object_id IS NULL";
 
