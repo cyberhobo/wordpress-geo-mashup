@@ -40,17 +40,17 @@
 	text-decoration: none;
 	padding: .5em 1.7em;
 	color: #555555;
-	background: #e6e6e6 url(images/e6e6e6_40x100_textures_02_glass_75.png) 0 50% repeat-x;
+	background: #e6e6e6 /* url(images/e6e6e6_40x100_textures_02_glass_75.png) 0 50% repeat-x */;
 }
 .ui-tabs-nav li a:hover {
-	background: #dadada url(images/dadada_40x100_textures_02_glass_75.png) 0 50% repeat-x;
+	background: #dadada /* url(images/dadada_40x100_textures_02_glass_75.png) 0 50% repeat-x */;
 	color: #212121;
 }
 .ui-tabs-nav li.ui-tabs-selected {
 	border-bottom-color: #ffffff;
 }
 .ui-tabs-nav li.ui-tabs-selected a, .ui-tabs-nav li.ui-tabs-selected a:hover {
-	background: #ffffff url(images/ffffff_40x100_textures_02_glass_65.png) 0 50% repeat-x;
+	background: #ffffff /* url(images/ffffff_40x100_textures_02_glass_65.png) 0 50% repeat-x */;
 	color: #212121;
 }
 .ui-tabs-panel {
@@ -58,7 +58,7 @@
 	font-family: Verdana,Arial,sans-serif;
 	clear:left;
 	border: 1px solid #d3d3d3;
-	background: #ffffff url(images/ffffff_40x100_textures_01_flat_75.png) 0 0 repeat-x;
+	background: #ffffff /* url(images/ffffff_40x100_textures_01_flat_75.png) 0 0 repeat-x */;
 	color: #222222;
 	padding: 1.5em 1.7em;	
 	font-size: 1.1em;
