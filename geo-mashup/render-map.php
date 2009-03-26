@@ -89,7 +89,7 @@ function geo_mashup_render_map ( ) {
 
 	array_walk($map_properties, 'add_double_quotes');
 
-	$categories = get_categories( 'orderby=slug' );
+	$categories = GeoMashupDB::get_located_categories();
 	$category_opts = '{';
 	if (is_array($categories))
 	{
@@ -97,7 +97,7 @@ function geo_mashup_render_map ( ) {
 		$category_color = $geo_mashup_options->get('global_map', 'category_color');
 		$category_line_zoom = $geo_mashup_options->get('global_map', 'category_line_zoom');
 		foreach($categories as $category) {
-			$category_opts .= $cat_comma.'"'.$category->cat_ID.'":{"name":"' . addslashes( $category->name ) . '"';
+			$category_opts .= $cat_comma.'"'.$category->term_id.'":{"name":"' . addslashes( $category->name ) . '"';
 			$parent_id = '';
 			if ( !empty( $category->parent ) ) {
 				$parent_id = $category->parent;
