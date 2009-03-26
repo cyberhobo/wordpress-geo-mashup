@@ -66,7 +66,10 @@ class GeoMashupDB {
 			dbDelta( $sql );
 			$errors = ob_get_contents();
 			ob_end_clean();
-			if ( $errors && preg_match( '/\[(?!Duplicate key|Multiple primary key)/', $errors ) ) {
+			$have_create_errors = preg_match( '/^(CREATE|INSERT|UPDATE)/m', $errors );
+			$have_bad_alter_errors = preg_match( '/^ALTER TABLE.*ADD (?!KEY|PRIMARY KEY|UNIQUE KEY)/m', $errors ); 
+			$have_bad_errors = $have_create_errors || $have_bad_alter_errors;
+			if ( $errors && $have_bad_errors ) {
 				// Any errors other than duplicate or multiple primary key could be trouble
 				echo $errors;
 				update_option( 'geo_mashup_activation_log', $errors );
@@ -237,6 +240,7 @@ class GeoMashupDB {
 		}
 
 		$unconverted_metadata = $wpdb->last_result;
+		$start_time = time();
 		$log = '';
 		if ( $unconverted_metadata ) {
 			$msg = '<p>' . __( 'Converting old locations', 'GeoMashup' );
@@ -246,7 +250,8 @@ class GeoMashupDB {
 				$post_id = $postmeta->post_id;
 				list( $lat, $lng ) = split( ',', $postmeta->meta_value );
 				$location = array( 'lat' => trim( $lat ), 'lng' => trim( $lng ) );
-				$set_id = GeoMashupDB::set_post_location( $post_id, $location );
+				$do_lookups = ( ( time() - $start_time ) < 10 ) ? true : false;
+				$set_id = GeoMashupDB::set_post_location( $post_id, $location, $do_lookups );
 				if ( $set_id ) {
 					add_post_meta( $post_id, '_geo_converted', $wpdb->prefix . 'geo_mashup_locations.id = ' . $set_id );
 					// Echo a poor man's progress bar
@@ -275,7 +280,8 @@ class GeoMashupDB {
 			foreach ( $geo_locations as $saved_name => $coordinates ) {
 				list( $lat, $lng, $converted ) = split( ',', $coordinates );
 				$location = array( 'lat' => trim( $lat ), 'lng' => trim( $lng ), 'saved_name' => $saved_name );
-				$set_id = GeoMashupDB::set_location( $location );
+				$do_lookups = ( ( time() - $start_time ) < 15 ) ? true : false;
+				$set_id = GeoMashupDB::set_location( $location, $do_lookups );
 				if ( $set_id ) {
 					$geo_locations[$saved_name] .= ',' . $wpdb->prefix . 'geo_mashup_locations.id=' . $set_id;
 					$msg = __( 'OK: ', 'GeoMashup' ) . $saved_name . '<br/>';
@@ -440,7 +446,7 @@ class GeoMashupDB {
 		return $wpdb->last_result;
 	}
 
-	function set_post_location( $object_id, $location ) {
+	function set_post_location( $object_id, $location, $do_lookups = true ) {
 		global $wpdb;
 
 		if ( is_numeric( $location ) ) {
@@ -448,7 +454,7 @@ class GeoMashupDB {
 		} 
 
 		if ( !isset( $location_id ) ) {
-			$location_id = GeoMashupDB::set_location( $location );
+			$location_id = GeoMashupDB::set_location( $location, $do_lookups );
 		}
 
 		if ( !is_numeric( $location_id ) ) {
@@ -475,7 +481,7 @@ class GeoMashupDB {
 		return $set_id;
 	}
 
-	function set_location( $location ) {
+	function set_location( $location, $do_lookups = true ) {
 		global $wpdb;
 
 		if ( is_object( $location ) ) {
@@ -512,7 +518,8 @@ class GeoMashupDB {
 		$set_id = null;
 		if ( empty( $db_location ) ) {
 
-			if ( empty( $location['country_code'] ) || empty( $location['admin_code'] ) ) {
+			$have_missing_area_code = empty( $location['country_code'] ) || empty( $location['admin_code'] );
+			if ( $do_lookups && $have_missing_area_code ) {
 				$location = array_merge( $location, GeoMashupDB::get_geonames_subdivision( $location['lat'], $location['lng'] ) );
 			}
 
@@ -562,6 +569,20 @@ class GeoMashupDB {
 			WHERE tt.term_id = " . $wpdb->escape( $category_id ) ."
 			AND p.post_status='publish'";
 		return $wpdb->get_var( $select_string );
+	}
+
+	function get_located_categories( ) {
+		global $wpdb;
+
+		$select_string = "SELECT DISTINCT t.term_id, t.name, t.slug, tt.description, tt.parent
+			FROM {$wpdb->prefix}geo_mashup_location_relationships gmlr
+			INNER JOIN {$wpdb->term_relationships} tr ON tr.object_id = gmlr.object_id
+			INNER JOIN {$wpdb->term_taxonomy} tt ON tt.term_taxonomy_id = tr.term_taxonomy_id
+			INNER JOIN {$wpdb->terms} t ON t.term_id = tt.term_id
+			WHERE gmlr.object_name = 'post'
+			AND tt.taxonomy='category'
+			ORDER BY t.slug ASC";
+		return $wpdb->get_results( $select_string );
 	}
 }
 
