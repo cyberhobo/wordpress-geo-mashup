@@ -723,9 +723,9 @@ var GeoMashup = {
 	},
 
 	adjustZoom : function(old_level, new_level) {
-		if (old_level >= this.opts.min_marker_zoom && new_level < this.opts.min_marker_zoom) {
+		if (old_level >= this.opts.marker_min_zoom && new_level < this.opts.marker_min_zoom) {
 			this.hideMarkers();
-		} else if (old_level < this.opts.min_marker_zoom && new_level >= this.opts.min_marker_zoom) {
+		} else if (old_level < this.opts.marker_min_zoom && new_level >= this.opts.marker_min_zoom) {
 			this.showMarkers();
 		}
 		for (category_id in this.categories) {
