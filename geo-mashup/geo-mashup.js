@@ -417,9 +417,14 @@ var GeoMashup = {
 				this.tab_hierarchy = this.category_hierarchy;
 			}
 			index_element.innerHTML = this.categoryTabIndexHtml(this.tab_hierarchy);
-			for (category_id in this.tab_hierarchy) {
-				this.categoryTabSelect(category_id);
-				break;
+			if (!this.opts.disable_tab_auto_select) {
+				// Select the first tab
+				for (category_id in this.tab_hierarchy) {
+					if (this.tab_hierarchy.hasOwnProperty(category_id) && typeof category_id !== 'function') {
+						this.categoryTabSelect(category_id);
+						break;
+					}
+				}
 			}
 		}
 	}, 
