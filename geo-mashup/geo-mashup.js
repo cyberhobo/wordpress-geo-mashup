@@ -248,7 +248,9 @@ var GeoMashup = {
 		for (category_id in hierarchy) {
 			if (this.hasLocatedChildren(category_id, hierarchy[category_id])) {
 				html_array = html_array.concat([
-					'<li><a href="#',
+					'<li class="gm-tab-inactive gm-tab-inactive-',
+					category_id,
+					'"><a href="#',
 					this.categoryIndexId(category_id),
 					'" onclick="frames[\'',
 					window.name,
