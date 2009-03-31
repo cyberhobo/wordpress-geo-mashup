@@ -278,7 +278,7 @@ var GeoMashup = {
 		var html_array = [];
 		html_array.push('<div id="');
 		html_array.push(this.categoryIndexId(category_id));
-		html_array.push('" class="gm-tabs-panel"><ul class="gm-index-posts">');
+		html_array.push('" class="gm-tabs-panel gm-hidden"><ul class="gm-index-posts">');
 		if (this.categories[category_id]) {
 			this.categories[category_id].posts.sort(function (a, b) {
 				var a_name = GeoMashup.posts[a].title;
