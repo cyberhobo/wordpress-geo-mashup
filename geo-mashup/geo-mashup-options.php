@@ -230,6 +230,7 @@ class GeoMashupOptions {
 				if ( empty ( $value ) ) return true;
 			case 'width':
 			case 'height':
+				if ( substr ( $value, -1 ) == '%' && is_numeric ( substr ( $value, 0, -1 ) ) ) return true;
 				if ( !is_numeric ( $value ) ) {
 					array_push ( $this->validation_errors, '"'. $value . '" ' . __('is invalid for', 'GeoMashup') . ' ' . $key .
 						__(', which must be a number', 'GeoMashup') );
