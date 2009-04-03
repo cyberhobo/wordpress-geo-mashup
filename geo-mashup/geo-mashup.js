@@ -248,7 +248,9 @@ var GeoMashup = {
 		for (category_id in hierarchy) {
 			if (this.hasLocatedChildren(category_id, hierarchy[category_id])) {
 				html_array = html_array.concat([
-					'<li><a href="#',
+					'<li class="gm-tab-inactive gm-tab-inactive-',
+					category_id,
+					'"><a href="#',
 					this.categoryIndexId(category_id),
 					'" onclick="frames[\'',
 					window.name,
@@ -276,7 +278,7 @@ var GeoMashup = {
 		var html_array = [];
 		html_array.push('<div id="');
 		html_array.push(this.categoryIndexId(category_id));
-		html_array.push('" class="gm-tabs-panel"><ul class="gm-index-posts">');
+		html_array.push('" class="gm-tabs-panel gm-hidden"><ul class="gm-index-posts">');
 		if (this.categories[category_id]) {
 			this.categories[category_id].posts.sort(function (a, b) {
 				var a_name = GeoMashup.posts[a].title;
@@ -417,9 +419,14 @@ var GeoMashup = {
 				this.tab_hierarchy = this.category_hierarchy;
 			}
 			index_element.innerHTML = this.categoryTabIndexHtml(this.tab_hierarchy);
-			for (category_id in this.tab_hierarchy) {
-				this.categoryTabSelect(category_id);
-				break;
+			if (!this.opts.disable_tab_auto_select) {
+				// Select the first tab
+				for (category_id in this.tab_hierarchy) {
+					if (this.tab_hierarchy.hasOwnProperty(category_id) && typeof category_id !== 'function') {
+						this.categoryTabSelect(category_id);
+						break;
+					}
+				}
 			}
 		}
 	}, 
@@ -723,9 +730,9 @@ var GeoMashup = {
 	},
 
 	adjustZoom : function(old_level, new_level) {
-		if (old_level >= this.opts.min_marker_zoom && new_level < this.opts.min_marker_zoom) {
+		if (old_level >= this.opts.marker_min_zoom && new_level < this.opts.marker_min_zoom) {
 			this.hideMarkers();
-		} else if (old_level < this.opts.min_marker_zoom && new_level >= this.opts.min_marker_zoom) {
+		} else if (old_level < this.opts.marker_min_zoom && new_level >= this.opts.marker_min_zoom) {
 			this.showMarkers();
 		}
 		for (category_id in this.categories) {

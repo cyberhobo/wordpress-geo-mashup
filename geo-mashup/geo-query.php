@@ -21,7 +21,13 @@ class GeoMashupQuery {
 			$post_ids = split( ',', $post_ids );
 		}
 
-		query_posts( array( 'post__in' => $post_ids, 'post_type' => 'any', 'suppress_filters' => true ) );
+		$query_vars = array( 'post__in' => $post_ids, 'post_type' => 'any' );
+		// Don't filter this query through other plugins (e.g. event-calendar)
+		$query_vars['suppress_filters'] = true;
+		// No sticky posts please
+		$query_vars['caller_get_posts'] = true;
+
+		query_posts( $query_vars );
 		
 		if ( have_posts() ) {
 			status_header(200);
