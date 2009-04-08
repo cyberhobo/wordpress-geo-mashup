@@ -17,6 +17,9 @@
  * The old custom-marker.js from pre-1.0 versions of Geo Mashup is no longer used.
  */
 
+/*global customGeoMashupCategoryIcon, customGeoMashupColorIcon, customGeoMashupMultiplePostImage */
+/*global customGeoMashupSinglePostIcon, customizeGeoMashupMap */
+
 /**
  * Customize a Geo Mashup map after the relevant content has been loaded.
  *
@@ -24,12 +27,13 @@
  * @param map        the Google Map object documented at http://code.google.com/apis/maps/documentation/reference.html#GMap2
  */
 function customizeGeoMashupMap ( properties, map ) {
+	var kml;
 
 	// Load some KML only into global maps - for instance pictures of squirrels
 	
 	/* DELETE this line to enable this example
 	if (properties.map_content == 'global') {
-		var kml = new GGeoXml("http://api.flickr.com/services/feeds/geo/?g=52241987644@N01&lang=en-us&format=rss_200");
+		kml = new GGeoXml("http://api.flickr.com/services/feeds/geo/?g=52241987644@N01&lang=en-us&format=rss_200");
 		map.addOverlay(kml);
 	}
 	DELETE this line to enable this example */
