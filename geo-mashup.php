@@ -2,7 +2,7 @@
 Plugin Name: Geo Mashup
 Plugin URI: http://code.google.com/p/wordpress-geo-mashup/ 
 Description: Tools for adding maps to your blog, and plotting posts on a master map. Configure in <a href="options-general.php?page=geo-mashup/geo-mashup.php">Settings->Geo Mashup</a> after the plugin is activated. Documentation is <a href="http://code.google.com/p/wordpress-geo-mashup/wiki/Documentation">on the project site</a>.
-Version: 1.2.2
+Version: 1.3alpha
 Author: Dylan Kuhn
 Author URI: http://www.cyberhobo.net/
 Minimum WordPress Version Required: 2.6
@@ -82,7 +82,13 @@ class GeoMashup {
 	function load_constants() {
 		define('GEO_MASHUP_PLUGIN_NAME', plugin_basename(__FILE__));
 		define('GEO_MASHUP_DIRECTORY', substr(GEO_MASHUP_PLUGIN_NAME, 0, strpos(GEO_MASHUP_PLUGIN_NAME, '/')));
-		define('GEO_MASHUP_URL_PATH', WP_CONTENT_URL . '/plugins/' . GEO_MASHUP_DIRECTORY);
+		if ( defined( 'WPMU_PLUGIN_URL' ) &&  strpos( __FILE__, substr( MUPLUGINDIR, strpos( MUPLUGINDIR, '/' ) ) ) !== false ) {
+			// We are in an mu-plugins directory
+			define('GEO_MASHUP_URL_PATH', WPMU_PLUGIN_URL . '/' . GEO_MASHUP_DIRECTORY);
+		} else {
+			// We're in the usual plugin directory
+			define('GEO_MASHUP_URL_PATH', WP_PLUGIN_URL . '/' . GEO_MASHUP_DIRECTORY);
+		}
 		define('GEO_MASHUP_MAX_ZOOM', 20);
 		define('GEO_MASHUP_VERSION', '1.2.4');
 		define('GEO_MASHUP_DB_VERSION', '1.2');
@@ -97,9 +103,8 @@ class GeoMashup {
 
 			} else if (preg_match('/(post|page)(-new|).php/',$_SERVER['REQUEST_URI'])) {
 
-				wp_enqueue_script('geo-mashup-google-api', 'http://maps.google.com/maps?file=api&amp;v=2&amp;key='.$geo_mashup_options->get('overall', 'google_key'));
+				wp_enqueue_script('geo-mashup-google-api', 'http://www.google.com/jsapi?key='.$geo_mashup_options->get('overall', 'google_key'));
 				wp_enqueue_script('geo-mashup-admin', GEO_MASHUP_URL_PATH.'/geo-mashup-admin.js', array('jquery'), GEO_MASHUP_VERSION);
-				wp_enqueue_script('json-script-request', GEO_MASHUP_URL_PATH.'/JSONscriptRequest.js', false, '1.0.0');
 
 			}
 		} else {
