@@ -127,7 +127,7 @@ function geo_mashup_render_map ( ) {
 		<head>
 			<meta http-equiv="content-type" content="text/html; charset=utf-8"/>
 		<title>Geo Mashup Map</title>
-			<script src="http://maps.google.com/maps?file=api&amp;v=2&amp;key=<?php echo $geo_mashup_options->get('overall', 'google_key');?>" 
+			<script src="http://www.google.com/jsapi?key=<?php echo $geo_mashup_options->get('overall', 'google_key');?>" 
 							type="text/javascript"></script>
 			<?php if (is_readable('custom.js')): ?>
 			<script src="custom.js" type="text/javascript"></script>
