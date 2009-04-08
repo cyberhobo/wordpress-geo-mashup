@@ -15,6 +15,14 @@ PURPOSE. See the GNU General Public License for more
 details.
 */
 
+/*global jQuery */
+/*global google */
+
+/*global GeoMashupLocation, GeoMashupAdmin */
+var GeoMashupLocation, GeoMashupAdmin;
+
+google.load( 'maps', '2' );
+
 jQuery(document).ready( function () {
 	jQuery('#geo-mashup-inline-help-link').click( function () {
 		jQuery('#geo-mashup-inline-help').slideToggle('fast').click( function () {
@@ -23,7 +31,7 @@ jQuery(document).ready( function () {
 	} );
 } );
 
-function GeoMashupLocation (init_data) {
+GeoMashupLocation = function (init_data) {
 	this.id = null;
 	this.title = '';
 	this.geoname = '';
@@ -37,27 +45,43 @@ function GeoMashupLocation (init_data) {
 	this.address = '';
 
 	this.subValue = function(obj, keys, default_value) {
-		if (typeof default_value  != 'string') default_value = '';
-		if (typeof obj  != 'object') return default_value;
-		if (typeof keys  != 'object') return default_value;
-		if (typeof keys.length != 'number') return default_value;
-		var key = keys.shift();
-		if (typeof obj[key] == 'undefined') return default_value;
-		if (keys.length == 0) return obj[key];
+		var key;
+		if (typeof default_value !== 'string') {
+			default_value = '';
+		}
+		if (typeof obj !== 'object') {
+			return default_value;
+		}
+		if (typeof keys !== 'object') {
+			return default_value;
+		}
+		if (typeof keys.length !== 'number') {
+			return default_value;
+		}
+		key = keys.shift();
+		if (typeof obj[key] === 'undefined') {
+			return default_value;
+		}
+		if (keys.length === 0) {
+			return obj[key];
+		}
 		return this.subValue(obj[key], keys, default_value);
-	}
+	};
 
 	this.set = function (data) {
-		if (typeof data == 'string') {
-			if (isNaN(data)) this.title = data;
-			else this.id = data;
-		} else if (typeof data == 'number') {
+		if (typeof data === 'string') {
+			if (isNaN(data)) {
+				this.title = data;
+			} else {
+				this.id = data;
+			}
+		} else if (typeof data === 'number') {
 			this.id = data;
-		} else if (typeof data == 'object') {
-			if (typeof data.location_id == 'string') {
+		} else if (typeof data === 'object') {
+			if (typeof data.location_id === 'string') {
 				this.id = data.location_id;
 				this.title = data.name;
-			} else if (typeof data.name == 'string') { 
+			} else if (typeof data.name === 'string') { 
 				this.id = '';
 				this.title = data.name;
 				this.geoname = data.name; 
@@ -66,7 +90,7 @@ function GeoMashupLocation (init_data) {
 				this.admin_name = data.adminName1;
 				this.sub_admin_code = data.adminCode2;
 				this.sub_admin_name = data.adminName2;
-			} else if (typeof data.address == 'string') {
+			} else if (typeof data.address === 'string') {
 				this.title = data.address;
 				this.address = data.address;
 				this.country_code = this.subValue(data, ['AddressDetails','Country','CountryNameCode']);
@@ -81,34 +105,38 @@ function GeoMashupLocation (init_data) {
 				}
 			}
 		}
+	};
+
+	if (init_data) {
+		this.set(init_data);
 	}
-
-	if (init_data) this.set(init_data);
-}
+};
 
 
-var GeoMashupAdmin = {
+GeoMashupAdmin = {
 	
 	registerMap : function(container, opts) {
 		if (document.all&&window.attachEvent) { // IE-Win
 			window.attachEvent("onload", function () { GeoMashupAdmin.createMap(container, opts); });
-		  window.attachEvent("onunload", GUnload);
+		  window.attachEvent("onunload", google.maps.Unload);
 		} else if (window.addEventListener) { // Others
 			window.addEventListener("load", function () { GeoMashupAdmin.createMap(container, opts); }, false);
-			window.addEventListener("unload", GUnload, false);
+			window.addEventListener("unload", google.maps.Unload, false);
 		}
 	},
 
 	createMap : function(container, opts) {
+		var location_name, selected, latlng;
+
 		this.opts = opts;
-		this.red_icon = new GIcon();
+		this.red_icon = new google.maps.Icon();
 		this.red_icon.image = opts.link_url + '/images/mm_20_red.png';
 		this.red_icon.shadow = opts.link_url + '/images/mm_20_shadow.png';
-		this.red_icon.iconSize = new GSize(12, 20);
-		this.red_icon.shadowSize = new GSize(22, 20);
-		this.red_icon.iconAnchor = new GPoint(6, 20);
-		this.red_icon.infoWindowAnchor = new GPoint(5, 1);
-		this.green_icon = new GIcon(this.red_icon);
+		this.red_icon.iconSize = new google.maps.Size(12, 20);
+		this.red_icon.shadowSize = new google.maps.Size(22, 20);
+		this.red_icon.iconAnchor = new google.maps.Point(6, 20);
+		this.red_icon.infoWindowAnchor = new google.maps.Point(5, 1);
+		this.green_icon = new google.maps.Icon(this.red_icon);
 		this.green_icon.image = opts.link_url + '/images/mm_20_green.png';
 
 		this.name_textbox = document.getElementById("geo_mashup_location_name");
@@ -129,28 +157,28 @@ var GeoMashupAdmin = {
 
 		for (location_name in this.opts.saved_locations)
 		{
-			if (typeof location_name  == 'string')
+			if (typeof location_name === 'string')
 			{
-				var selected = (this.opts.post_location_name == location_name);
+				selected = (this.opts.post_location_name === location_name);
 				this.saved_select.options[this.saved_select.options.length] = new Option(location_name.replace(/\\/g,''),location_name,false,selected);
 			}
 		}
 
-		this.map = new GMap2(container,{draggableCursor:'pointer'});
-		this.map.setCenter(new GLatLng(0,0),1);
-		this.map.addControl(new GLargeMapControl());
-		this.map.addControl(new GMapTypeControl());
+		this.map = new google.maps.Map2(container,{draggableCursor:'pointer'});
+		this.map.setCenter(new google.maps.LatLng(0,0),1);
+		this.map.addControl(new google.maps.LargeMapControl());
+		this.map.addControl(new google.maps.MapTypeControl());
 		this.map.enableContinuousZoom();
 
 		if (opts.kml_url) {
 			this.loadKml(opts.kml_url);
 		}
 		if (opts.post_lat && opts.post_lng) {
-			var latlng = new GLatLng(opts.post_lat, opts.post_lng);
+			latlng = new google.maps.LatLng(opts.post_lat, opts.post_lng);
 			this.addSelectedMarker(latlng,opts.post_location_name);
 		}
 
-		GEvent.bind(this.map,'click',this,this.onclick);
+		google.maps.Event.bind(this.map,'click',this,this.onclick);
 
 	},
   
@@ -163,7 +191,7 @@ var GeoMashupAdmin = {
 	},
 
 	loadKml : function(kml_url) {
-		this.kml = new GGeoXml(kml_url, function () { GeoMashupAdmin.onKmlLoad(); });
+		this.kml = new google.maps.GeoXml(kml_url, function () { GeoMashupAdmin.onKmlLoad(); });
 		this.map.addOverlay(this.kml);
 	},
 
@@ -177,11 +205,13 @@ var GeoMashupAdmin = {
 	},
   
 	onSelectChange : function(select) {
+		var option, saved_location, latlng;
+
 		if  (select.selectedIndex > 0) {
-			var option = select.options[select.selectedIndex];
-			var saved_location = this.opts.saved_locations[option.value];
+			option = select.options[select.selectedIndex];
+			saved_location = this.opts.saved_locations[option.value];
 			if (saved_location) {
-				var latlng = new GLatLng(saved_location.lat, saved_location.lng);
+				latlng = new google.maps.LatLng(saved_location.lat, saved_location.lng);
 				this.addSelectedMarker(latlng, saved_location);
 			}
 		}
@@ -202,13 +232,14 @@ var GeoMashupAdmin = {
 	},
 
 	selectMarker : function(marker) {
-		if (marker != this.selected_marker) {
-			var deselected_marker = this.createMarker(this.selected_marker.getPoint(),this.selected_marker.geo_mashup_location);
+		var selected_marker, deselected_marker;
+		if (marker !== this.selected_marker) {
+			deselected_marker = this.createMarker(this.selected_marker.getPoint(),this.selected_marker.geo_mashup_location);
 			this.map.removeOverlay(this.selected_marker);
 			this.map.addOverlay(deselected_marker);
 			this.selected_marker = null;
 
-			var selected_marker = this.createMarker(marker.getPoint(),marker.geo_mashup_location);
+			selected_marker = this.createMarker(marker.getPoint(),marker.geo_mashup_location);
 			this.map.removeOverlay(marker);
 			this.map.addOverlay(selected_marker);
 			this.map.setCenter(selected_marker.getPoint());
@@ -217,8 +248,22 @@ var GeoMashupAdmin = {
 		}
 	},
 
+	showGeoNames : function (data) {
+		var i, result_latlng, marker;
+		if (data) {
+			for (i=0; i<data.totalResultsCount && i<100 && data.geonames[i]; i += 1) {
+				result_latlng = new google.maps.LatLng(data.geonames[i].lat, data.geonames[i].lng);
+				marker = this.createMarker(result_latlng, new GeoMashupLocation(data.geonames[i]));
+				this.map.addOverlay(marker);
+			}
+			this.setBusy(false);
+		}
+	},
+
 	searchKey : function(e, search_text) {
-		if ((e.keyCode && e.keyCode == 13) || (e.which && e.which == 13))
+		var latlng, latlng_array, geocoder, saved_locations_key, saved_loc,
+			geonames_request_url;
+		if ((e.keyCode && e.keyCode === 13) || (e.which && e.which === 13))
 		{
 			// Enter key was hit - new search
 			this.map.clearOverlays();
@@ -226,34 +271,30 @@ var GeoMashupAdmin = {
 			this.location_input.value = '';
 			this.changed_input.value = 'true';
 			this.saved_select.selectedIndex = 0;
-			var latlng;
-			if (search_text.match(/^[-\d\.\s]*,[-\d\.\s]*$/)) {
+			if (search_text.match(/^[\-\d\.\s]*,[\-\d\.\s]*$/)) {
 				// Coordinates
-				var latlng_array = search_text.split(',');
-				latlng = new GLatLng(latlng_array[0],latlng_array[1]);
+				latlng_array = search_text.split(',');
+				latlng = new google.maps.LatLng(latlng_array[0],latlng_array[1]);
 				this.addSelectedMarker(latlng);
 			} else if (search_text.match(/\d/) || search_text.match(',')) {
 				// Address
-				var geocoder = new GClientGeocoder();
+				geocoder = new google.maps.ClientGeocoder();
 				this.setBusy(true);
 				geocoder.getLocations(search_text, function (response) { GeoMashupAdmin.showAddresses(response); });
 			} else {
 				// Name
-				var saved_locations_key = search_text.replace("'","\\'");
+				saved_locations_key = search_text.replace("'","\\'");
 				if (this.opts.saved_locations[saved_locations_key]) {
 					// Saved location
-					var saved_loc = this.opts.saved_locations[saved_locations_key];
-					latlng = new GLatLng(saved_loc.lat,saved_loc.lng);
+					saved_loc = this.opts.saved_locations[saved_locations_key];
+					latlng = new google.maps.LatLng(saved_loc.lat, saved_loc.lng);
 					this.addSelectedMarker(latlng, saved_loc);
 				} else if (search_text.length > 0) {
 					// Location name search
-					var geonames_request_url = 'http://ws.geonames.org/search?type=json&maxRows=20&style=full&callback=GeoMashupAdmin.showGeoNames&name=' + 
+					geonames_request_url = 'http://ws.geonames.org/search?type=json&maxRows=20&style=full&callback=?&name=' + 
 						encodeURIComponent(search_text);
-					var jsonRequest = new JSONscriptRequest(geonames_request_url);
+					jQuery.getJSON( geonames_request_url, function(data) { GeoMashupAdmin.showGeoNames( data ); } );
 					this.setBusy(true);
-					jsonRequest.buildScriptTag();
-					jsonRequest.addScriptTag();
-					this.geoNamesRequest = jsonRequest;
 				}
 			}
 			return false;
@@ -266,7 +307,7 @@ var GeoMashupAdmin = {
 
 	setInputs : function (latlng, loc) {
 		var latlng_string = latlng.lat() + ',' + latlng.lng();
-		if ((this.location_id_input.value != loc.id) || (this.location_input.value != latlng_string)) {
+		if ((this.location_id_input.value !== loc.id) || (this.location_input.value !== latlng_string)) {
 			this.location_id_input.value = loc.id;
 			this.location_input.value = latlng_string;
 			this.geoname_input.value = loc.geoname;
@@ -283,21 +324,21 @@ var GeoMashupAdmin = {
 	},
 
 	createMarker : function(latlng, loc) {
-		var marker_opts = {title:loc.title};
+		var marker, marker_opts = {title:loc.title};
 		if (!this.selected_marker) {
 			marker_opts.icon = this.green_icon;
 			marker_opts.draggable = true;
 		} else {
 			marker_opts.icon = this.red_icon;
 		}
-		var marker = new GMarker(latlng,marker_opts);
+		marker = new google.maps.Marker(latlng,marker_opts);
 		marker.geo_mashup_location = loc;
 		if (!this.selected_marker) {
 			this.selected_marker = marker;
 			this.map.setCenter(latlng);
 			this.setInputs(latlng, loc);
 
-			GEvent.addListener(marker,'dragend',function () { 
+			google.maps.Event.addListener(marker,'dragend',function () { 
 				GeoMashupAdmin.setInputs(marker.getPoint(), new GeoMashupLocation());
 				GeoMashupAdmin.map.setCenter(marker.getPoint());
 			});
@@ -305,27 +346,16 @@ var GeoMashupAdmin = {
 		return marker;
 	},
 
-	showGeoNames : function(data) {
-		if (data)
-		{
-			for (var i=0; i<data.totalResultsCount && i<100; ++i) {
-				var result_latlng = new GLatLng(data.geonames[i].lat, data.geonames[i].lng);
-				var marker = this.createMarker(result_latlng, new GeoMashupLocation(data.geonames[i]));
-				this.map.addOverlay(marker);
-			}
-			this.geoNamesRequest.removeScriptTag();
-			this.setBusy(false);
-		}
-	},
-
 	showAddresses : function(response) {
-		if (!response || response.Status.code != 200) {
+		var i, latlng, marker;
+		if (!response || response.Status.code !== 200) {
 			alert('No locations found for that address');
 		} else {
-			for (var i=0; i<response.Placemark.length && i<20; ++i) {
-				var latlng = new GLatLng(response.Placemark[i].Point.coordinates[1],
-																 response.Placemark[i].Point.coordinates[0]);
-				var marker = this.createMarker(latlng, new GeoMashupLocation(response.Placemark[i]));
+			for (i=0; i<response.Placemark.length && i<20 && response.Placemark[i]; i += 1) {
+				latlng = new google.maps.LatLng(
+					response.Placemark[i].Point.coordinates[1],
+					response.Placemark[i].Point.coordinates[0]);
+				marker = this.createMarker(latlng, new GeoMashupLocation(response.Placemark[i]));
 				this.map.addOverlay(marker);
 			}
 			this.setBusy(false);
