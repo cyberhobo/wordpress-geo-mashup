@@ -107,6 +107,9 @@ function geo_mashup_map($atts) {
 
 	$map_image = '';
 	if ( isset($url_params['static']) && 'true' === $url_params['static'] ) {
+		// Static maps have a limit of 50 markers: http://code.google.com/apis/maps/documentation/staticmaps/#Markers
+		$url_params['limit'] = empty( $url_params['limit'] ) ? 50 : $url_params['limit'];
+
 		$locations = GeoMashupDB::get_post_locations($url_params);
 		if (!empty($locations)) {
 			$map_image = '<img src="http://maps.google.com/staticmap?size='.$url_params['width'].'x'.$url_params['height'];
