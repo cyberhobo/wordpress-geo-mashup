@@ -91,6 +91,10 @@ class GeoMashupOptions {
 	var $validation_errors = array();
 
 	function GeoMashupOptions ( ) {
+		$shared_google_api_key = get_option ( 'google_api_key' );
+		if ( $shared_google_api_key ) {
+			$this->default_options['overall']['google_key'] = $shared_google_api_key;
+		}
 		$this->options = $this->default_options;
 		$settings = get_option ( 'geo_mashup_options' );
 		if ( is_array ( $settings ) ) {
@@ -118,6 +122,12 @@ class GeoMashupOptions {
 		$saved = false;
 		if ($this->options == $this->valid_options ( $this->options ) ) {
 			$saved = update_option('geo_mashup_options', $this->options);
+			
+			// Share our Google API key
+			$google_api_key = $this->options['overall']['google_key'];
+			if ( !empty ( $google_api_key ) && !get_option ( 'google_api_key' ) ) {
+				update_option( 'google_api_key', $google_api_key );
+			}
 		}
 		return $saved;
 	}
