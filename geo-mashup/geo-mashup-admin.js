@@ -148,7 +148,7 @@ var GeoMashupAdmin = {
 		if (opts.post_lat && opts.post_lng) {
 			var latlng = new GLatLng(opts.post_lat, opts.post_lng);
 			var loc = { 
-				location_id : this.location_input.value, 
+				location_id : this.location_id_input.value, 
 				name : opts.post_location_name
 			};
 			this.addSelectedMarker(latlng, loc);
