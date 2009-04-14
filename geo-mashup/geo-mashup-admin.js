@@ -271,7 +271,7 @@ var GeoMashupAdmin = {
 	setInputs : function (latlng, loc) {
 		var latlng_string = latlng.lat() + ',' + latlng.lng();
 		if ((this.location_id_input.value != loc.id) || (this.location_input.value != latlng_string)) {
-			this.location_id_input.value = loc.id;
+			this.location_id_input.value = loc.id ? loc.id : '';
 			this.location_input.value = latlng_string;
 			this.geoname_input.value = loc.geoname;
 			this.address_input.value = loc.address;
