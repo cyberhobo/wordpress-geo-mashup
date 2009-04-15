@@ -17,7 +17,10 @@ function add_double_quotes(&$item,$key) {
 }
 
 function geo_mashup_render_map ( ) {
-	global $post, $geo_mashup_options;
+	global $post, $wp_scripts, $geo_mashup_options;
+
+	wp_enqueue_script( 'google-jsapi' );
+
 	$template_url_path = get_bloginfo( 'template_directory' );
 	$map_properties = array ( 
 		'url_path' => GEO_MASHUP_URL_PATH,
@@ -127,8 +130,7 @@ function geo_mashup_render_map ( ) {
 		<head>
 			<meta http-equiv="content-type" content="text/html; charset=utf-8"/>
 		<title>Geo Mashup Map</title>
-			<script src="http://www.google.com/jsapi?key=<?php echo $geo_mashup_options->get('overall', 'google_key');?>" 
-							type="text/javascript"></script>
+			<?php $wp_scripts->print_scripts( array( 'jquery', 'google-jsapi' ) ); ?>
 			<?php if (is_readable('custom.js')): ?>
 			<script src="custom.js" type="text/javascript"></script>
 			<?php endif; ?>
