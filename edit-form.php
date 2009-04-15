@@ -1,14 +1,15 @@
 <?php
-function geo_mashup_edit_form() {
-	global $post_ID;
+function geo_mashup_edit_form( $object_name, $object_id ) {
 
-	$location = GeoMashupDB::get_post_location( $post_ID );
+	$location = GeoMashupDB::get_object_location( $object_name, $object_id );
 	$location = ( empty( $location ) ) ? GeoMashupDB::blank_location( ) : $location;
 	$post_location_name = $location->saved_name;
 	$kml_url = '';
-	$kml_urls = GeoMashup::get_kml_attachment_urls($post_ID);
-	if (count($kml_urls)>0) {
-		$kml_url = array_pop($kml_urls);
+	if ( 'post' == $object_name) {
+		$kml_urls = GeoMashup::get_kml_attachment_urls( $object_id );
+		if (count($kml_urls)>0) {
+			$kml_url = array_pop($kml_urls);
+		}
 	}
 	$saved_locations = GeoMashupDB::get_saved_locations( );
 	$locations_json = '{';

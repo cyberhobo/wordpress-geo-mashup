@@ -245,6 +245,18 @@ function geo_mashup_options_page()
 		$themestylesheetwithmaps = '';
 	}
 
+	if ($geo_mashup_options->get ( 'overall', 'located_object_name', 'post' ) == 'true' ) {
+		$postsLocatedChecked = ' checked="true"';
+	} else {
+		$postsLocatedChecked = '';
+	}
+
+	if ($geo_mashup_options->get ( 'overall', 'located_object_name', 'user' ) == 'true' ) {
+		$usersLocatedChecked = ' checked="true"';
+	} else {
+		$usersLocatedChecked = '';
+	}
+
 	// Now for the HTML
 ?>
 	<div class="wrap">
@@ -297,9 +309,18 @@ function geo_mashup_options_page()
 						<td><input id="category_link_text" name="overall[category_link_text]" type="text" size="5" value="<? echo $geo_mashup_options->get ( 'overall', 'category_link_text' ); ?>" /></td>
 					</tr>
 					<tr>
-						<th scope="row"><?php _e('Single Category Zoom Level', 'GeoMashup'); ?></th>
+						<th scope="row"><?php _e('Category Link Zoom Level', 'GeoMashup'); ?></th>
 						<td><input id="category_zoom" name="overall[category_zoom]" type="text" size="2" value="<?php echo $geo_mashup_options->get ( 'overall', 'category_zoom' ); ?>" />
 						<?php _e('0 (max zoom out) - 20 (max zoom in)', 'GeoMashup'); ?></td>
+					</tr>
+					<tr>
+						<th scope="row"><?php _e('Collect Location For', 'GeoMashup'); ?></th>
+						<td>
+							<input id="locate_posts" name="overall[located_object_name][post]" type="checkbox" value="true"<?php echo $postsLocatedChecked; ?> />
+							<?php _e( 'posts and pages', 'GeoMashup' ); ?>
+							<input id="locate_users" name="overall[located_object_name][user]" type="checkbox" value="true"<?php echo $usersLocatedChecked; ?> />
+							<?php _e( 'users', 'GeoMashup' ); ?>
+						</td>
 					</tr>
 				</table>
 				<div class="submit"><input type="submit" name="submit" value="<?php _e('Update Options', 'GeoMashup'); ?>" /></div>

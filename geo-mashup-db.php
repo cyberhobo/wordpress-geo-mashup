@@ -251,7 +251,7 @@ class GeoMashupDB {
 				list( $lat, $lng ) = split( ',', $postmeta->meta_value );
 				$location = array( 'lat' => trim( $lat ), 'lng' => trim( $lng ) );
 				$do_lookups = ( ( time() - $start_time ) < 10 ) ? true : false;
-				$set_id = GeoMashupDB::set_post_location( $post_id, $location, $do_lookups );
+				$set_id = GeoMashupDB::set_object_location( 'post', $post_id, $location, $do_lookups );
 				if ( $set_id ) {
 					add_post_meta( $post_id, '_geo_converted', $wpdb->prefix . 'geo_mashup_locations.id = ' . $set_id );
 					// Echo a poor man's progress bar
@@ -292,6 +292,7 @@ class GeoMashupDB {
 						sprintf( __( "Failed to convert saved location (%s). " .
 							"You'll have to save it again, sorry.", 'GeoMashup' ),
 						$coordinates );
+					$msg .= '<br/>';
 					$log .= $msg;
 					echo $msg;
 				}
@@ -355,12 +356,16 @@ class GeoMashupDB {
 	}
 
 	function get_post_location( $post_id ) {
+		return GeoMashupDB::get_object_location( 'post', $post_id );
+	}
+
+	function get_object_location( $object_name, $object_id ) {
 		global $wpdb;
 
 		$select_string = "SELECT * 
 			FROM {$wpdb->prefix}geo_mashup_locations gml
 			JOIN {$wpdb->prefix}geo_mashup_location_relationships gmlr ON gmlr.location_id = gml.id " .
-			$wpdb->prepare( 'WHERE gmlr.object_name = \'post\' AND gmlr.object_id = %d', $post_id );
+			$wpdb->prepare( 'WHERE gmlr.object_name = %s AND gmlr.object_id = %d', $object_name, $object_id );
 
 		$location = false;
 		$wpdb->query( $select_string );
@@ -370,8 +375,11 @@ class GeoMashupDB {
 		return $location;
 	}
 	
-	function get_post_locations( $query_args = '' )
-	{
+	function get_post_locations( $query_args = '' ) {
+		return GeoMashupDB::get_object_locations( $query_args );
+	}
+
+	function get_object_locations( $query_args = '' ) {
 		global $wpdb;
 
 		$default_args = array( 'sort' => 'post_date DESC', 
@@ -379,15 +387,17 @@ class GeoMashupDB {
 			'maxlat' => null, 
 			'minlon' => null, 
 			'maxlon' => null,
+			'object_name' => 'post',
 			'show_future' => 'false', 
 	 		'limit' => 0 );
 		$query_args = wp_parse_args( $query_args, $default_args );
 		
 		// Construct the query 
 		$field_string = 'p.ID as post_id, post_title, gml.*';
-		$table_string = "{$wpdb->prefix}geo_mashup_locations gml
-			INNER JOIN {$wpdb->prefix}geo_mashup_location_relationships gmlr ON gmlr.object_name = 'post' AND gmlr.location_id = gml.id
-			INNER JOIN $wpdb->posts p ON p.ID = gmlr.object_id";
+		$table_string = "{$wpdb->prefix}geo_mashup_locations gml " . 
+			"INNER JOIN {$wpdb->prefix}geo_mashup_location_relationships gmlr " .
+			$wpdb->prepare( 'ON gmlr.object_name = %s AND gmlr.location_id = gml.id ', $query_args['object_name'] ) .
+			"INNER JOIN $wpdb->posts p ON p.ID = gmlr.object_id";
 		$wheres = array( );
 
 		if ( $query_args['show_future'] == 'true' ) {
@@ -446,7 +456,7 @@ class GeoMashupDB {
 		return $wpdb->last_result;
 	}
 
-	function set_post_location( $object_id, $location, $do_lookups = true ) {
+	function set_object_location( $object_name, $object_id, $location, $do_lookups = true ) {
 		global $wpdb;
 
 		if ( is_numeric( $location ) ) {
@@ -458,18 +468,17 @@ class GeoMashupDB {
 		}
 
 		if ( !is_numeric( $location_id ) ) {
-			GeoMashupDB::delete_post_location( $object_id );
+			GeoMashupDB::delete_object_location( $object_name, $object_id );
 			return false;
 		}
 
 		$relationship_table = "{$wpdb->prefix}geo_mashup_location_relationships"; 
 		$select_string = "SELECT * FROM $relationship_table " .
-			$wpdb->prepare( 'WHERE object_name = \'post\' AND object_id = %d', $object_id );
+			$wpdb->prepare( 'WHERE object_name = %s AND object_id = %d', $object_name, $object_id );
 
 		$db_location = $wpdb->get_row( $select_string, ARRAY_A );
 
 		$set_id = null;
-		$object_name = 'post';
 		if ( empty( $db_location ) ) {
 			if ( $wpdb->insert( $relationship_table, compact( 'object_name', 'object_id', 'location_id' ) ) ) {
 				$set_id = $location_id;
@@ -537,10 +546,11 @@ class GeoMashupDB {
 		return $set_id;
 	}
 
-	function delete_post_location( $post_id ) {
+	function delete_object_location( $object_name, $object_id ) {
 		global $wpdb;
 
-		$delete_string = $wpdb->prepare( "DELETE FROM {$wpdb->prefix}geo_mashup_location_relationships WHERE object_name = 'post' AND object_id = %d", $post_id );
+		$delete_string = "DELETE FROM {$wpdb->prefix}geo_mashup_location_relationships " .
+			$wpdb->prepare( 'WHERE object_name = %s AND object_id = %d', $object_name, $object_id );
 		return $wpdb->query( $delete_string );
 	}
 
@@ -579,8 +589,7 @@ class GeoMashupDB {
 			INNER JOIN {$wpdb->term_relationships} tr ON tr.object_id = gmlr.object_id
 			INNER JOIN {$wpdb->term_taxonomy} tt ON tt.term_taxonomy_id = tr.term_taxonomy_id
 			INNER JOIN {$wpdb->terms} t ON t.term_id = tt.term_id
-			WHERE gmlr.object_name = 'post'
-			AND tt.taxonomy='category'
+			WHERE tt.taxonomy='category'
 			ORDER BY t.slug ASC";
 		return $wpdb->get_results( $select_string );
 	}
