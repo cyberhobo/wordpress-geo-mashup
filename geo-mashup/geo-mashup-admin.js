@@ -175,7 +175,7 @@ GeoMashupAdmin = {
 		}
 		if (opts.post_lat && opts.post_lng) {
 			latlng = new google.maps.LatLng(opts.post_lat, opts.post_lng);
-			this.addSelectedMarker(latlng,opts.post_location_name);
+			this.addSelectedMarker(latlng, { location_id : this.location_id_input.value, name : opts.post_location_name });
 		}
 
 		google.maps.Event.bind(this.map,'click',this,this.onclick);
@@ -191,7 +191,8 @@ GeoMashupAdmin = {
 	},
 
 	loadKml : function(kml_url) {
-		this.kml = new google.maps.GeoXml(kml_url, function () { GeoMashupAdmin.onKmlLoad(); });
+		this.kml = new google.maps.GeoXml(kml_url);
+		google.maps.Event.bind(this.kml, 'load', this, this.onKmlLoad);
 		this.map.addOverlay(this.kml);
 	},
 
@@ -308,7 +309,7 @@ GeoMashupAdmin = {
 	setInputs : function (latlng, loc) {
 		var latlng_string = latlng.lat() + ',' + latlng.lng();
 		if ((this.location_id_input.value !== loc.id) || (this.location_input.value !== latlng_string)) {
-			this.location_id_input.value = loc.id;
+			this.location_id_input.value = loc.id ? loc.id : '';
 			this.location_input.value = latlng_string;
 			this.geoname_input.value = loc.geoname;
 			this.address_input.value = loc.address;
