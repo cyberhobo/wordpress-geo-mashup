@@ -9,7 +9,10 @@ class GeoMashupOptions {
 			'category_link_text' => 'map',
 			'category_zoom' => '7',
 			'add_category_links' => 'false',
-			'theme_stylesheet_with_maps' => 'false' ),
+			'theme_stylesheet_with_maps' => 'false',
+			'located_object_name' => array ( 
+				'post' => 'true',
+				'user' => 'false' ) ),
 		'global_map' => array (
 			'width' => '400',
 			'height' => '400',
@@ -86,6 +89,7 @@ class GeoMashupOptions {
 		'in_post_add_map_type_control' => array ( 'single_map', 'add_map_type_control' ),
 		'in_post_click_to_load' => array ( 'single_map', 'click_to_load' ),
 		'in_post_click_to_load_text' => array ( 'single_map', 'click_to_load_text' ) );
+	var $freeform_option_keys = array ( 'category_color', 'category_line_zoom' );
 	var $options;
 	var $corrupt_options = '';
 	var $validation_errors = array();
@@ -181,8 +185,8 @@ class GeoMashupOptions {
 
 		foreach ( $defaults as $key => $default_value ) {
 			if ( $this->is_valid ( $key, $option_array[$key] ) ) {
-				if ( is_array ( $option_array[$key] ) && !in_array ( $key, array ( 'category_color', 'category_line_zoom' ) ) ) {
-					// Validate options in sub-arrays, except those based on blog categories
+				if ( is_array ( $option_array[$key] ) && !in_array ( $key, $this->freeform_option_keys ) ) {
+					// Validate options in sub-arrays, except freeform array options, whose keys aren't known
 					$valid_options[$key] = $this->valid_options ( $option_array[$key], $default_value );
 				} else {
 					// Use the valid non-array value
@@ -257,6 +261,8 @@ class GeoMashupOptions {
 			case 'show_post':
 			case 'click_to_load':
 			case 'show_future':
+			case 'post':
+			case 'user':
 				if ( empty ( $value ) ) {
 					// fail quietly - it will be converted to false
 					return false;
@@ -274,6 +280,7 @@ class GeoMashupOptions {
 			case 'context_map':
 			case 'category_color':
 			case 'category_line_zoom':
+			case 'located_object_name':
 				if ( !is_array ( $value ) ) {
 					array_push ( $this->validation_errors, '"'. $value . '" ' . __('is invalid for', 'GeoMashup') . ' ' . $key .
 						__(', which must be an array', 'GeoMashup') );

@@ -53,26 +53,46 @@ class GeoMashup {
 
 	function load_hooks() {
 		global $geo_mashup_options;
+		// To load Flash uploaded content in the editor map - is_admin() not working here?
 		add_filter('media_meta', array('GeoMashup', 'media_meta'), 10, 2);
+		// To check saved content for location tags
 		add_filter('content_save_pre', array('GeoMashup', 'content_save_pre'));
 		if (is_admin()) {
+			// To upgrade tables
 			register_activation_hook( __FILE__, array( 'GeoMashupDB', 'install' ) );
+			// To add uploadable geo content types
 			add_filter('upload_mimes', array('GeoMashup', 'upload_mimes'));
+			// To register Browser uploaded content 
 			add_filter('wp_handle_upload', array('GeoMashup', 'wp_handle_upload'));
 
+			// To add Geo Mashup settings page
 			add_action('admin_menu', array('GeoMashup', 'admin_menu'));
+			// To add location to user profile
+			add_action('show_user_profile', array('GeoMashup', 'edit_form_advanced'));
+			add_action('edit_user_profile', array('GeoMashup', 'edit_form_advanced'));
+			// To process location for a post
 			add_action('save_post', array('GeoMashup', 'save_post'), 10, 2);
+			// To process location for an user
+			add_action('personal_options_update', array('GeoMashup', 'save_user'));
+			add_action('edit_user_profile_update', array('GeoMashup', 'save_user'));
+			// To load registered uploaded content in the post location editor
 			add_action('admin_print_scripts', array('GeoMashup', 'admin_print_scripts'));
 
 		} else {
 			if ($geo_mashup_options->get('overall','add_category_links') == 'true') {
+				// To add map links to a category list - flaky
 				add_filter('list_cats', array('GeoMashup', 'list_cats'), 10, 2);
 			}
 
+			// To output location meta tags in the page head
 			add_action('wp_head', array('GeoMashup', 'wp_head'));
+
+			// To add the GeoRSS namespace to RSS feeds
 			add_action('rss_ns', array('GeoMashup', 'rss_ns'));
 			add_action('rss2_ns', array('GeoMashup', 'rss_ns'));
 			add_action('atom_ns', array('GeoMashup', 'rss_ns'));
+
+			// To add GeoRSS location to RSS feeds
 			add_action('rss_item', array('GeoMashup', 'rss_item'));
 			add_action('rss2_item', array('GeoMashup', 'rss_item'));
 			add_action('atom_entry', array('GeoMashup', 'rss_item'));
@@ -104,7 +124,7 @@ class GeoMashup {
 
 				wp_enqueue_script('jquery-ui-tabs');
 
-			} else if (preg_match('/(post|page)(-new|).php/',$_SERVER['REQUEST_URI'])) {
+			} else if ( GeoMashup::should_add_edit_form() ) {
 
 				wp_enqueue_script('google-jsapi');
 				wp_enqueue_script('geo-mashup-admin', GEO_MASHUP_URL_PATH.'/geo-mashup-admin.js', array('jquery', 'google-jsapi'), GEO_MASHUP_VERSION);
@@ -121,12 +141,35 @@ class GeoMashup {
 
 				wp_enqueue_style('geo-mashup-tabs', GEO_MASHUP_URL_PATH.'/jquery.tabs.css', false, '2.5.0', 'screen');
 
-			} else if (preg_match('/(post|page)(-new|).php/', $_SERVER['REQUEST_URI'])) {
+			} else if ( GeoMashup::should_add_edit_form() ) {
 
 				wp_enqueue_style('geo-mashup-edit-form', GEO_MASHUP_URL_PATH.'/edit-form.css', false, '1.0.0', 'screen');
 
 			}
 		}
+	}
+
+	function should_add_edit_form() {
+		return GeoMashup::should_add_post_edit_form() || 
+			GeoMashup::should_add_user_edit_form();
+	}
+
+	function should_add_post_edit_form() {
+		static $answer = null;
+
+		if ( is_null( $cache ) ) {
+			$answer = preg_match( '/(post|page)(-new|).php/', $_SERVER['REQUEST_URI'] ); 
+		}
+		return $answer;
+	}
+
+	function should_add_user_edit_form() {
+		static $answer = null;
+
+		if ( is_null( $answer ) ) {
+			$answer = preg_match('/(profile|user-edit).php/', $_SERVER['REQUEST_URI']); 
+		}
+		return $answer;
 	}
 
 	function explode_assoc($glue1, $glue2, $array) {
@@ -188,7 +231,7 @@ class GeoMashup {
 
 		if (is_single())
 		{
-			$loc = GeoMashupDB::get_post_location( $wp_query->post->ID );
+			$loc = GeoMashupDB::get_object_location( 'post', $wp_query->post->ID );
 			if (!empty($loc)) {
 				$title = htmlspecialchars(convert_chars(strip_tags(get_bloginfo('name'))." - ".$wp_query->post->post_title));
 				echo "<meta name=\"ICBM\" content=\"{$loc->lat}, {$loc->lng}\" />\n";
@@ -260,8 +303,15 @@ class GeoMashup {
 
 	function edit_form_advanced()
 	{
+		global $post_ID, $user_id;
+
 		include_once(dirname(__FILE__) . '/edit-form.php');
-		geo_mashup_edit_form();
+		if ( GeoMashup::should_add_user_edit_form() ) {
+			echo '<h3>' . __( 'Location', 'GeoMashup' ) . '</h3>';
+			geo_mashup_edit_form( 'user', $user_id );
+		} else {
+			geo_mashup_edit_form( 'post', $post_ID );
+		}
 	}
 
 	function inline_location( $new_value = null ) {
@@ -290,19 +340,34 @@ class GeoMashup {
 		return preg_replace_callback('/'.$pattern.'/s', array( 'GeoMashup', 'replace_save_pre_shortcode' ), $content);
 	}
 
+	function save_user() {
+		if ( empty( $_POST['user_id'] ) ) {
+			return false;
+		}
+
+		$user_id = $_POST['user_id'];
+
+		if ( !is_numeric( $user_id ) ) {
+			return $user_id;
+		}
+
+		if ( !current_user_can( 'edit_user', $user_id ) ) {
+			return $user_id;
+		}
+
+		return GeoMashup::save_posted_object_location( 'user', $user_id );
+	}
+
 	function save_post($post_id, $post) {
 		if ($post->post_type == 'revision') {
 			return;
 		}
 		$inline_location = GeoMashup::inline_location( ); 
 		if ( !empty( $inline_location ) ) {
-			GeoMashupDB::set_post_location( $post_id, $inline_location );
+			GeoMashupDB::set_object_location( 'post', $post_id, $inline_location );
 			GeoMashup::inline_location( '' );
 		}
 
-		if ( empty( $_POST['geo_mashup_edit_nonce'] ) || !wp_verify_nonce($_POST['geo_mashup_edit_nonce'], 'geo-mashup-edit-post')) {
-			return $post_id;
-		}
 		if ( 'page' == $_POST['post_type'] ) {
 			if ( !current_user_can( 'edit_page', $post_id ) ) return $post_id;
 		} else {
@@ -311,11 +376,18 @@ class GeoMashup {
 
 		update_option('geo_mashup_temp_kml_url','');
 
+		return GeoMashup::save_posted_object_location( 'post', $post_id );
+	}
+
+	function save_posted_object_location( $object_name, $object_id ) {
+		if ( empty( $_POST['geo_mashup_edit_nonce'] ) || !wp_verify_nonce($_POST['geo_mashup_edit_nonce'], 'geo-mashup-edit-post')) {
+			return $object_id;
+		}
 		if (isset($_POST['geo_mashup_changed']) && $_POST['geo_mashup_changed'] == 'true') {
 			if ( empty( $_POST['geo_mashup_location'] ) ) {
-				GeoMashupDB::delete_post_location( $post_id );
+				GeoMashupDB::delete_object_location( $object_name, $object_id );
 			} else if ( !empty( $_POST['geo_mashup_location_id'] ) ) {
-				GeoMashupDB::set_post_location( $post_id, $_POST['geo_mashup_location_id'] );
+				GeoMashupDB::set_object_location( $object_name, $object_id, $_POST['geo_mashup_location_id'] );
 			} else {
 				list( $lat, $lng ) = split( ',', $_POST['geo_mashup_location'] );
 				$post_location = array( );
@@ -329,7 +401,7 @@ class GeoMashup {
 				$post_location['admin_code'] = $_POST['geo_mashup_admin_code'];
 				$post_location['sub_admin_code'] = $_POST['geo_mashup_sub_admin_code'];
 				$post_location['locality_name'] = $_POST['geo_mashup_locality_name'];
-				GeoMashupDB::set_post_location( $post_id, $post_location );
+				GeoMashupDB::set_object_location( $object_name, $object_id, $post_location );
 			}
 		}
 		
@@ -339,7 +411,7 @@ class GeoMashup {
 	function get_post_locations_json($query_args)
 	{
 		$json = '{ posts : [';
-		$posts = GeoMashupDB::get_post_locations($query_args);
+		$posts = GeoMashupDB::get_object_locations($query_args);
 		if ($posts) {
 			$comma = '';
 			foreach ($posts as $post) {
@@ -530,8 +602,10 @@ class GeoMashup {
 	 * List all located posts.
 	 */
 	function list_located_posts( $option_args = null ) {
+		$option_args = wp_parse_args( $option_args );
+		$option_args['object_name'] = 'post';
 		$list_html = '<ul class="gm-index-posts">';
-		$locs = GeoMashupDB::get_post_locations( $option_args );
+		$locs = GeoMashupDB::get_object_locations( $option_args );
 		if ($locs)
 		{
 			foreach ($locs as $loc) {
@@ -561,7 +635,7 @@ class GeoMashup {
 					'country_code' => $country->country_code,
 					'admin_code' => $state->admin_code 
 				);
-				$post_locations = GeoMashupDB::get_post_locations( $location_query );
+				$post_locations = GeoMashupDB::get_object_locations( 'post', $location_query );
 				foreach ( $post_locations as $post_location ) { 
 					$list_html .= '<li><a href="' . 
 						get_permalink( $post_location->post_id ) .
@@ -586,7 +660,7 @@ class GeoMashup {
 	function post_coordinates($places = 10) {
 		global $post;
 
-		$location = GeoMashupDB::get_post_location( $post->ID );
+		$location = GeoMashupDB::get_object_location( 'post', $post->ID );
 		$coordinates = array();
 		if ( !empty( $location ) ) {
 			$lat = $location->lat;
@@ -619,7 +693,7 @@ class GeoMashup {
 		global $wp_query;
 
 		// Using Simple GeoRSS for now
-		$location = GeoMashupDB::get_post_location( $wp_query->post->ID );
+		$location = GeoMashupDB::get_object_location( 'post', $wp_query->post->ID );
 		if ( !empty( $location ) ) {
 			echo '<georss:point>' . $location->lat . ' ' . $location->lng . '</georss:point>';
 		}
