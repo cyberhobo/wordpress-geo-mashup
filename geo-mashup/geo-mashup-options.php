@@ -184,7 +184,7 @@ class GeoMashupOptions {
 		if ( !is_array( $option_array ) ) return $defaults;
 
 		foreach ( $defaults as $key => $default_value ) {
-			if ( $this->is_valid ( $key, $option_array[$key] ) ) {
+			if ( isset( $option_array[$key] ) && $this->is_valid ( $key, $option_array[$key] ) ) {
 				if ( is_array ( $option_array[$key] ) && !in_array ( $key, $this->freeform_option_keys ) ) {
 					// Validate options in sub-arrays, except freeform array options, whose keys aren't known
 					$valid_options[$key] = $this->valid_options ( $option_array[$key], $default_value );
