@@ -508,7 +508,8 @@ class GeoMashupDB {
 		if ( isset( $location['id'] ) && is_numeric( $location['id'] ) ) {
 			$select_string .= $wpdb->prepare( 'WHERE id = %d', $location['id'] );
 		} else {
-			$delta = 0.000005;
+			// MySql appears to only distinguish 5 decimal places, ~8 feet, in the index
+			$delta = 0.00001;
 			$select_string .= $wpdb->prepare( 'WHERE lat BETWEEN %f AND %f AND lng BETWEEN %f AND %f', 
 				$location['lat'] - $delta, $location['lat'] + $delta, $location['lng'] - $delta, $location['lng'] + $delta );
 		} 
