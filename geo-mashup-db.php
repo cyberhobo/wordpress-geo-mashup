@@ -600,13 +600,6 @@ class GeoMashupDB {
 			return false;
 		}
 
-		// Don't set blank entries
-		foreach ( $location as $name => $value ) {
-			if ( empty( $value ) ) {
-				unset( $location[$name] );
-			}
-		}
-
 		// Check for existing location
 		$location_table = $wpdb->prefix . 'geo_mashup_locations';
 		$select_string = "SELECT id FROM $location_table ";
@@ -631,6 +624,13 @@ class GeoMashupDB {
 		$have_missing_area_code = empty( $location['country_code'] ) || empty( $location['admin_code'] );
 		if ( $do_lookups && $have_missing_area_code ) {
 			$location = array_merge( $location, GeoMashupDB::get_geonames_subdivision( $location['lat'], $location['lng'] ) );
+		}
+
+		// Don't set blank entries
+		foreach ( $location as $name => $value ) {
+			if ( empty( $value ) ) {
+				unset( $location[$name] );
+			}
 		}
 
 		$set_id = null;
