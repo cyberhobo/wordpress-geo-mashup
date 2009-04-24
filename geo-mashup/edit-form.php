@@ -26,7 +26,7 @@ function geo_mashup_edit_form( $object_name, $object_id ) {
 	$nonce = wp_create_nonce('geo-mashup-edit-post');
 ?>
 	<div id="geo-mashup-inline-help" class="hidden">
-		<p><?php _e('Put a green pin at the location for this post. There are many ways to do it:', 'GeoMashup'); ?></p>
+		<p><?php _e('Put a green pin at the location. There are many ways to do it:', 'GeoMashup'); ?></p>
 		<ul>
 			<li><?php _e('Search for a location name.', 'GeoMashup'); ?></li>
 			<li><?php _e('For multiple search results, mouse over pins to see location names, and click a result pin to select that location.', 'GeoMashup'); ?></li>
@@ -35,8 +35,8 @@ function geo_mashup_edit_form( $object_name, $object_id ) {
 			<li><?php _e('Click on the location. Zoom in if necessary so you can refine the location by dragging it or clicking a new location.', 'GeoMashup'); ?></li>
 		</ul>
 		<p><?php _e('To execute a search, type search text into the Find Location box and hit the enter key. If you type a name next to "Save As", the location will be saved under that name and added to the Saved Locations dropdown list.', 'GeoMashup'); ?></p>
-		<p><?php _e('To remove the location (green pin) for a post, clear the search box and hit the enter key.', 'GeoMashup'); ?></p>
-		<p><?php _e('When you are satisfied with the location, save or update the post.', 'GeoMashup'); ?></p>
+		<p><?php _e('To remove the location (green pin), clear the search box and hit the enter key.', 'GeoMashup'); ?></p>
+		<p><?php _e('When you are satisfied with the location, save or update.', 'GeoMashup'); ?></p>
 	</div>
 	<input id="geo_mashup_edit_nonce" name="geo_mashup_edit_nonce" type="hidden" value="<?php echo $nonce; ?>" />
 	<img id="geo_mashup_status_icon" src="<?php echo GEO_MASHUP_URL_PATH; ?>/images/idle_icon.gif" />
