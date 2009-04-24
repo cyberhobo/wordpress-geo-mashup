@@ -12,7 +12,9 @@ class GeoMashupOptions {
 			'theme_stylesheet_with_maps' => 'false',
 			'located_object_name' => array ( 
 				'post' => 'true',
-				'user' => 'false' ) ),
+				'user' => 'false',
+				'comment' => 'false' ),
+	 		'enable_reverse_geocoding' => 'true' ),
 		'global_map' => array (
 			'width' => '400',
 			'height' => '400',
@@ -263,6 +265,8 @@ class GeoMashupOptions {
 			case 'show_future':
 			case 'post':
 			case 'user':
+			case 'comment':
+			case 'enable_reverse_geocoding':
 				if ( empty ( $value ) ) {
 					// fail quietly - it will be converted to false
 					return false;
