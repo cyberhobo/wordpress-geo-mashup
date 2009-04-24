@@ -46,9 +46,8 @@ class GeoMashup {
 	function load_dependencies() {
 		include_once( GEO_MASHUP_DIR_PATH . '/geo-mashup-db.php' );
 		include_once( GEO_MASHUP_DIR_PATH . '/geo-mashup-options.php' );
-		if ( is_admin() ) {
-			include_once( GEO_MASHUP_DIR_PATH . '/geo-mashup-ui-managers.php' );
-		} else {
+		include_once( GEO_MASHUP_DIR_PATH . '/geo-mashup-ui-managers.php' );
+		if ( !is_admin() ) {
 			include_once( GEO_MASHUP_DIR_PATH . '/shortcodes.php');
 		}
 	}
@@ -114,7 +113,7 @@ class GeoMashup {
 				wp_enqueue_script( 'jquery-ui-tabs' );
 			}
 		} else {
-			wp_enqueue_script('geo-mashup-loader',GEO_MASHUP_URL_PATH.'/geo-mashup-loader.js',false, GEO_MASHUP_VERSION);
+			wp_enqueue_script( 'geo-mashup-loader', GEO_MASHUP_URL_PATH.'/geo-mashup-loader.js', array( 'google-jsapi' ), GEO_MASHUP_VERSION);
 		}
 	}
 
@@ -282,8 +281,13 @@ class GeoMashup {
 
 		if ($category) {
 			$count = GeoMashupDB::category_located_post_count( $category->cat_ID );
+			// Add map link only if there are geo-located posts to see
 			if ($count) {
-				// Add map link only if there are geo-located posts to see
+				// This feature doesn't work unless there is a category description
+				if ( empty( $category->description ) ) {
+					return $content . $geo_mashup_options->get('overall', 'category_link_separator') . 
+						__( 'You must add a description to this category to use this Geo Mashup feature.', 'GeoMashup' );
+				}
 				$link = '';
 				$url = get_page_link($geo_mashup_options->get('overall', 'mashup_page'));
 				if (strstr($url,'?')) {
