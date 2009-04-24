@@ -13,6 +13,12 @@ function geo_mashup_options_page()
 		}
 	}
 
+	if ( isset( $_POST['bulk_reverse_geocode'] ) ) {
+		check_admin_referer('geo-mashup-update-options');
+		$log = GeoMashupDB::bulk_reverse_geocode( ); 
+		echo '<div class="updated">' . $log . '</div>';
+	}
+
 	if ( isset( $_POST['upgrade_db'] ) ) {
 		check_admin_referer('geo-mashup-upgrade-db');
 		if ( GeoMashupDB::install( ) ) {
@@ -257,6 +263,18 @@ function geo_mashup_options_page()
 		$usersLocatedChecked = '';
 	}
 
+	if ($geo_mashup_options->get ( 'overall', 'located_object_name', 'comment' ) == 'true' ) {
+		$commentsLocatedChecked = ' checked="true"';
+	} else {
+		$commentsLocatedChecked = '';
+	}
+
+	if ($geo_mashup_options->get ( 'overall', 'enable_reverse_geocoding' ) == 'true' ) {
+		$reverseGeocodingChecked = ' checked="true"';
+	} else {
+		$reverseGeocodingChecked = '';
+	}
+
 	// Now for the HTML
 ?>
 	<div class="wrap">
@@ -298,7 +316,10 @@ function geo_mashup_options_page()
 					</tr>
 					<tr>
 						<th scope="row"><?php _e('Add Category Links', 'GeoMashup'); ?></th>
-						<td><input id="add_category_links" name="overall[add_category_links]" type="checkbox" value="true"<?php echo $categoryLinksChecked; ?> /></td>
+						<td>
+							<input id="add_category_links" name="overall[add_category_links]" type="checkbox" value="true"<?php echo $categoryLinksChecked; ?> />
+							<span class="setting-description"><?php _e( 'Add map links to category lists. Categories must have descriptions for this to work.', 'GeoMashup'); ?></span>
+						</td>
 					</tr>
 					<tr>
 						<th scope="row"><?php _e('Category Link Separator', 'GeoMashup'); ?></th>
@@ -320,8 +341,26 @@ function geo_mashup_options_page()
 							<?php _e( 'posts and pages', 'GeoMashup' ); ?>
 							<input id="locate_users" name="overall[located_object_name][user]" type="checkbox" value="true"<?php echo $usersLocatedChecked; ?> />
 							<?php _e( 'users', 'GeoMashup' ); ?>
+							<input id="locate_comments" name="overall[located_object_name][comment]" type="checkbox" value="true"<?php echo $commentsLocatedChecked; ?> />
+							<?php _e( 'comments', 'GeoMashup' ); ?>
 						</td>
 					</tr>
+					<tr>
+						<th scope="row"><?php _e('Enable Reverse Geocoding', 'GeoMashup'); ?></th>
+						<td>
+							<input id="enable_reverse_geocoding" name="overall[enable_reverse_geocoding]" type="checkbox" value="true"<?php echo $reverseGeocodingChecked; ?> />
+							<span class="setting-description"><?php _e('Try to look up missing address fields for new locations.', 'GeoMashup'); ?></span>
+						</td>
+					</tr>
+					<?php if ( $geo_mashup_options->get( 'overall', 'enable_reverse_geocoding' ) == 'true' ) : ?>
+					<tr>
+						<th scope="row"><?php _e('Bulk Reverse Geocode', 'GeoMashup'); ?></th>
+						<td>
+							<input type="submit" name="bulk_reverse_geocode" value="<?php _e('Start', 'GeoMashup'); ?>" class="button" />
+							<span class="setting-description"><?php _e('Try to look up missing address fields for existing locations. Could be slow.', 'GeoMashup'); ?></span>
+						</td>
+					</tr>
+					<?php endif; ?>
 				</table>
 				<div class="submit"><input type="submit" name="submit" value="<?php _e('Update Options', 'GeoMashup'); ?>" /></div>
 			</fieldset>
@@ -419,7 +458,7 @@ function geo_mashup_options_page()
 					<tr>
 						<th scope="row"><?php _e('Show Only Most Recent Posts', 'GeoMashup'); ?></th>
 						<td><input id="max_posts" name="global_map[max_posts]" type="text" size="4" value="<?php echo $geo_mashup_options->get ( 'global_map', 'max_posts' ); ?>" />
-						<?php _e('Number of posts to show, leave blank for all', 'GeoMashup'); ?></td>
+						<span class="setting-description"><?php _e('Number of posts to show, leave blank for all', 'GeoMashup'); ?></span></td>
 					</tr>
 					<tr>
 						<th scope="row"><?php _e('Show Future Posts', 'GeoMashup'); ?></th>
