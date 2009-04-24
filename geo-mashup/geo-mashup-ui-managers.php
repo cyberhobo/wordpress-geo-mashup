@@ -8,9 +8,9 @@
  */
 
 /**
- * A pattern for managing user interfaces for collecting and storing location.
+ * A base class for managing user interfaces for collecting and storing location.
  *
- * This is an abstract class with a little code common to Geo Mashup form managers.
+ * This is really just a little code common to Geo Mashup form managers.
  * It isn't necessary to extend this class to manage a location, i.e. this is 
  * an implementation, not an API.
  *
@@ -79,15 +79,17 @@ class GeoMashupUserUIManager extends GeoMashupUIManager {
 		global $geo_mashup_options;
 
 		// Enable this interface when the option is set and we're on a destination page
-		$enabled = $geo_mashup_options->get( 'overall', 'located_object_name', 'user' ) == 'true' &&
-			preg_match( '/(user-edit|profile).php/', $_SERVER['REQUEST_URI'] );
+		$enabled = is_admin() &&
+			$geo_mashup_options->get( 'overall', 'located_object_name', 'user' ) == 'true' &&
+			preg_match( '/(user-edit|user-new|profile).php/', $_SERVER['REQUEST_URI'] );
 
-		// If enabled, queue up all the interface elements
+		// If enabled, register all the interface elements
 		if ( $enabled ) { 
 
 			// Form generation
 			add_action( 'show_user_profile', array( $this, 'print_form' ) );
 			add_action( 'edit_user_profile', array( $this, 'print_form' ) );
+			// MAYBEDO: add location to registration page?
 
 			// Form processing
 			add_action( 'personal_options_update', array( $this, 'save_user'));
@@ -108,7 +110,7 @@ class GeoMashupUserUIManager extends GeoMashupUIManager {
 			$object_id = $user_id;
 		}
 		echo '<h3>' . __( 'Location', 'GeoMashup' ) . '</h3>';
-		geo_mashup_edit_form( 'user', $user_id );
+		geo_mashup_edit_form( 'user', $object_id );
 	}
 
 	function save_user() {
@@ -130,7 +132,7 @@ class GeoMashupUserUIManager extends GeoMashupUIManager {
 	}
 }
 
-// Single instance
+// Instantiate
 new GeoMashupUserUIManager();
 
 /**
@@ -169,7 +171,7 @@ class GeoMashupPostUIManager extends GeoMashupUIManager {
 			add_action( 'save_post', array( $this, 'save_post'), 10, 2 );
 
 			// If we're on a post editing page, queue up the form interface elements
-			if ( preg_match( '/(post|page)(-new|).php/', $_SERVER['REQUEST_URI'] ) ) {
+			if ( is_admin() && preg_match( '/(post|page)(-new|).php/', $_SERVER['REQUEST_URI'] ) ) {
 
 				// Form generation
 				add_action( 'admin_menu', array( $this, 'admin_menu' ) );
@@ -292,4 +294,66 @@ class GeoMashupPostUIManager extends GeoMashupUIManager {
 
 // Single instance
 new GeoMashupPostUIManager();
+
+/**
+ * A manager for comment location user interfaces.
+ *
+ * Singleton instantiated immediately.
+ *
+ * @package GeoMashup
+ * @since 1.3beta1
+ */
+class GeoMashupCommentUIManager {
+	/**
+	 * PHP4 Constructor
+	 */
+	function GeoMashupCommentUIManager() {
+		// Global $geo_mashup_options is available, but a better pattern might
+		// be to wait until init to be sure
+		add_action( 'init', array( $this, 'init' ) );
+	}
+
+	function init() {
+		global $geo_mashup_options;
+
+
+		// If enabled, register all the interface elements
+		if ( !is_admin() && $geo_mashup_options->get( 'overall', 'located_object_name', 'comment' ) == 'true' ) { 
+
+			// Form generation
+			add_action( 'comment_form', array( $this, 'print_form' ) );
+
+			// Form processing
+			add_action( 'comment_post', array( $this, 'save_comment'), 10, 2 );
+
+			// Google JSAPI provides client location by IP
+			wp_enqueue_script( 'google-jsapi' );
+			wp_enqueue_script( 'geo-mashup-loader' );
+		}
+	}
+
+	function print_form()
+	{
+		//TODO:handle logged in user with location?
+		$input_format = '<input id="geo_mashup_%s_input" name="comment_location[%s]" type="hidden" />';
+		printf( $input_format, 'lat', 'lat' );
+		printf( $input_format, 'lng', 'lng' );
+		printf( $input_format, 'country_code', 'country_code' );
+		printf( $input_format, 'locality', 'locality' );
+		printf( $input_format, 'address', 'address' );
+	}
+
+	function save_comment( $comment_id = 0, $approval = '' ) {
+		//TODO:handle logged in user with location?
+		if ( !$comment_id || !$approval || 'spam' == $approval || empty( $_POST['comment_location'] ) || !is_array( $_POST['comment_location'] ) ) {
+			return false;
+		}
+
+		GeoMashupDB::set_object_location( 'comment', $comment_id, $_POST['comment_location'] );
+	}
+}
+
+// Instantiate
+new GeoMashupCommentUIManager();
+
 ?>
