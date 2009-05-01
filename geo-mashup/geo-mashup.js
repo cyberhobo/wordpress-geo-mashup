@@ -274,11 +274,18 @@ var GeoMashup = {
 		return html_array.join('');
 	},
 
-	categoryIndexHtml : function(category_id, children) {
+	categoryIndexHtml : function(category_id, children, top_level) {
 		var html_array = [];
+		if ( typeof top_level === 'undefined' ) {
+			top_level = true;
+		}
 		html_array.push('<div id="');
 		html_array.push(this.categoryIndexId(category_id));
-		html_array.push('" class="gm-tabs-panel gm-hidden"><ul class="gm-index-posts">');
+		html_array.push('" class="gm-tabs-panel');
+		if ( top_level ) {
+			html_array.push(' gm-hidden');
+		}
+		html_array.push('"><ul class="gm-index-posts">');
 		if (this.categories[category_id]) {
 			this.categories[category_id].posts.sort(function (a, b) {
 				var a_name = GeoMashup.posts[a].title;
@@ -308,7 +315,8 @@ var GeoMashup = {
 			}
 			html_array.push('<span class="gm-sub-cat-title">');
 			html_array.push(this.opts.category_opts[child_id].name);
-			html_array.push(this.categoryIndexHtml(child_id, children[child_id]));
+			html_array.push('</span>');
+			html_array.push(this.categoryIndexHtml(child_id, children[child_id], false));
 			html_array.push('</li>');
 			group_count++;
 			if (this.opts.tab_index_group_size && group_count%this.opts.tab_index_group_size == 0) {
