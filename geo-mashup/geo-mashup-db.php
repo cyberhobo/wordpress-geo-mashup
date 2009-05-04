@@ -350,6 +350,7 @@ class GeoMashupDB {
 			}
 			$select_string .= ' WHERE ' . implode( ' AND ', $wheres );
 		}
+		$select_string .= ' ORDER BY ' . $wpdb->escape( $names );
 
 		return $wpdb->get_results( $select_string );
 	}
