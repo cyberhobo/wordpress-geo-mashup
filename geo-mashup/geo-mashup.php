@@ -549,7 +549,8 @@ class GeoMashup {
 			foreach ($states  as $state ) { 
 				$location_query = array( 
 					'country_code' => $country->country_code,
-					'admin_code' => $state->admin_code 
+					'admin_code' => $state->admin_code,
+					'sort' => 'post_title'
 				);
 				$post_locations = GeoMashupDB::get_post_locations( $location_query );
 				if ( count( $post_locations ) > 0 ) {
