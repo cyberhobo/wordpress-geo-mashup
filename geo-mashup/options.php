@@ -451,9 +451,11 @@ function geo_mashup_options_page()
 						<?php _e('0 (max zoom out) - 20 (max zoom in)', 'GeoMashup'); ?></td>
 					</tr>
 					<tr>
-						<th scope="row"><?php _e('Hide Markers Until Zoom Level', 'GeoMashup'); ?></th>
-						<td><input id="marker_min_zoom" name="global_map[marker_min_zoom]" type="text" size="2" value="<?php echo $geo_mashup_options->get ( 'global_map', 'marker_min_zoom' ); ?>" />
-						<?php _e('0 (max zoom out) - 20 (max zoom in)', 'GeoMashup'); ?></td>
+						<th scope="row"><?php _e('Cluster Markers Until Zoom Level', 'GeoMashup'); ?></th>
+						<td>
+							<input id="cluster_max_zoom" name="global_map[cluster_max_zoom]" type="text" size="2" value="<?php echo $geo_mashup_options->get( 'global_map', 'cluster_max_zoom' ); ?>" />
+							<span class="setting-description"><?php _e( 'Highest zoom level to cluster markers, or blank for no clustering.', 'GeoMashup'); ?></span>
+						</td>
 					</tr>
 					<tr>
 						<th scope="row"><?php _e('Show Only Most Recent Posts', 'GeoMashup'); ?></th>
