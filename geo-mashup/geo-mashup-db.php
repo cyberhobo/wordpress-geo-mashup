@@ -162,6 +162,9 @@ class GeoMashupDB {
 			'&lang=' . urlencode( $language );
 		$http = new WP_Http();
 		$country_info_response = $http->get( $country_info_url, array( 'timeout' => 3.0 ) );
+		if ( is_wp_error( $country_info_response ) ) {
+			return null;
+		}
 		$country_name = GeoMashupDB::get_simple_tag_content( 'countryName', $country_info_response['body'] );
 		$country_id = GeoMashupDB::get_simple_tag_content( 'geonameId', $country_info_response['body'] );
 		if ( !empty( $country_name ) ) {
@@ -176,6 +179,9 @@ class GeoMashupDB {
 
 		$children_url = 'http://ws.geonames.org/children?style=short&geonameId=' . $country_id;
 		$children_response = $http->get( $children_url, array( 'timeout' => 3.0 ) );
+		if ( is_wp_error( $children_response ) ) {
+			return null;
+		}
 		preg_match_all( '/<geonameId>(\d*)<\/geonameId>/is', $children_response['body'], $matches );
 		if ( empty( $matches ) ) return null;
 		$requested_name = null;
@@ -183,6 +189,9 @@ class GeoMashupDB {
 			// We have to query each child to get the admin code, so just cache them all
 			$child_url = 'http://ws.geonames.org/get?geonameId=' . $child_id . '&lang=' . urlencode( $language );
 			$child_response = $http->get( $child_url,  array( 'timeout' => 3.0 ) );
+			if ( is_wp_error( $child_response ) ) {
+				return null;
+			}
 			$child_name = GeoMashupDB::get_simple_tag_content( 'name', $child_response['body'] );
 			if ( !empty( $child_name ) ) {
 				$child_admin_code = GeoMashupDB::get_simple_tag_content( 'adminCode1', $child_response['body'] );
@@ -200,9 +209,11 @@ class GeoMashupDB {
 
 		$http = new WP_Http();
 		$response = $http->get( "http://ws.geonames.org/countrySubdivision?lat=$lat&lng=$lng", array( 'timeout' => 3.0 ) );
-		$result['country_code'] = GeoMashupDB::get_simple_tag_content( 'countryCode', $response['body'] );
-		$result['admin_code'] = GeoMashupDB::get_simple_tag_content( 'adminCode1', $response['body'] );
-		// TODO: Save administrative names?
+		if ( !is_wp_error( $response ) ) {
+			$result['country_code'] = GeoMashupDB::get_simple_tag_content( 'countryCode', $response['body'] );
+			$result['admin_code'] = GeoMashupDB::get_simple_tag_content( 'adminCode1', $response['body'] );
+			// TODO: Save administrative names?
+		}
 		return $result;
 	}
 
@@ -229,6 +240,9 @@ class GeoMashupDB {
 
 		$http = new WP_Http();
 		$response = $http->get( $google_geocode_url, array( 'timeout' => 3.0 ) );
+		if ( is_wp_error( $response ) ) {
+			return '0';
+		}
 
 		$status = GeoMashupDB::get_simple_tag_content( 'code', $response['body'] );
 		if ( '200' != $status ) {
