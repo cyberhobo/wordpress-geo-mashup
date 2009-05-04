@@ -207,7 +207,7 @@ class GeoMashupPostUIManager extends GeoMashupUIManager {
 	}
 
 	function save_post($post_id, $post) {
-		if ($post->post_type == 'revision') {
+		if ( 'revision' == $post->post_type ) {
 			return;
 		}
 
@@ -218,7 +218,7 @@ class GeoMashupPostUIManager extends GeoMashupUIManager {
 			$this->inline_location = null;
 		}
 
-		if ( 'page' == $_POST['post_type'] ) {
+		if ( 'page' == $post->post_type ) {
 			if ( !current_user_can( 'edit_page', $post_id ) ) return $post_id;
 		} else {
 			if ( !current_user_can( 'edit_post', $post_id ) ) return $post_id;
