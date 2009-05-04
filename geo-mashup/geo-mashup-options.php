@@ -14,7 +14,7 @@ class GeoMashupOptions {
 				'post' => 'true',
 				'user' => 'false',
 				'comment' => 'false' ),
-	 		'enable_reverse_geocoding' => 'true' ),
+			'enable_reverse_geocoding' => 'true' ),
 		'global_map' => array (
 			'width' => '400',
 			'height' => '400',
@@ -23,17 +23,16 @@ class GeoMashupOptions {
 			'background_color' => 'c0c0c0',
 			'category_color' => array ( ),
 			'category_line_zoom' => array ( ),
-			'marker_min_zoom' => '',
 			'map_control' => 'GSmallZoomControl3D',
 			'add_map_type_control' => 'true',
 			'add_overview_control' => 'false',
 			'show_post' => 'false',
 			'show_future' => 'false',
-			'marker_min_zoom' => '',
 			'max_posts' => '',
 			'auto_info_open' => 'true',
 			'click_to_load' => 'false',
-			'click_to_load_text' => '' ),
+			'click_to_load_text' => '',
+	 		'cluster_max_zoom' => ''	),
 		'single_map' => array (
 			'width' => '400',
 			'height' => '400',
@@ -70,13 +69,11 @@ class GeoMashupOptions {
 		'zoom_level' => array ( 'global_map', 'zoom' ),
 		'category_color' => array ( 'global_map', 'category_color' ),
 		'category_line_zoom' => array ( 'global_map', 'category_line_zoom' ),
-		'marker_min_zoom' => array ( 'global_map', 'marker_min_zoom' ),
 		'map_control' => array ( 'global_map', 'map_control' ),
 		'add_map_type_control' => array ( 'global_map', 'add_map_type_control' ),
 		'add_overview_control' => array ( 'global_map', 'add_overview_control' ),
 		'show_post' => array ( 'global_map', 'show_post' ),
 		'show_future' => array ( 'global_map', 'show_future' ),
-		'marker_min_zoom' => array ( 'global_map', 'marker_min_zoom' ),
 		'max_posts' => array ( 'global_map', 'max_posts' ),
 		'auto_info_open' => array ( 'global_map', 'auto_info_open' ),
 		'auto_open_info_window' => array ( 'global_map', 'auto_info_open' ),
@@ -293,7 +290,7 @@ class GeoMashupOptions {
 				return true;
 
 			// zoom levels
-			case 'marker_min_zoom':
+			case 'cluster_max_zoom':
 				if ( empty ( $value ) ) return true;
 			case 'zoom':
 			case 'category_zoom':
