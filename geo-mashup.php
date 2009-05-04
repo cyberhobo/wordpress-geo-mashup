@@ -9,7 +9,7 @@ Minimum WordPress Version Required: 2.6
 */
 
 /*
-Copyright (c) 2005-2007 Dylan Kuhn
+Copyright (c) 2005-2009 Dylan Kuhn
 
 This program is free software; you can redistribute it
 and/or modify it under the terms of the GNU General Public
@@ -99,7 +99,7 @@ class GeoMashup {
 			define('GEO_MASHUP_URL_PATH', WP_PLUGIN_URL . '/' . GEO_MASHUP_DIRECTORY);
 		}
 		define('GEO_MASHUP_MAX_ZOOM', 20);
-		define('GEO_MASHUP_VERSION', '1.2.4');
+		define('GEO_MASHUP_VERSION', '1.3.0.1');
 		define('GEO_MASHUP_DB_VERSION', '1.2');
 	}
 
