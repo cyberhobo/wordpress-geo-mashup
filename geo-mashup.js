@@ -68,7 +68,7 @@ GeoMashup = {
 		var key;
 		for( key in obj ) {
 			if ( obj.hasOwnProperty( key ) && typeof obj[key] !== 'function' ) {
-				callback.apply( this, [key] );
+				callback.apply( this, [key, obj[key]] );
 			}
 		}
 	},
@@ -123,11 +123,11 @@ GeoMashup = {
 
 	settingsToString : function (obj) {
 		var str = [], sep = '', key;
-		this.forEach( obj, function (key) {
+		this.forEach( obj, function (key, value) {
 			str.push(sep);
 			str.push(key);
 			str.push('=');
-			str.push(encodeURIComponent(obj[key]));
+			str.push(encodeURIComponent( value ));
 			sep = '&';
 		});
 		return str.join('');
@@ -243,7 +243,7 @@ GeoMashup = {
   },
 
 	categoryTabSelect : function(select_category_id) {
-		var i, tab_div, tab_list_element, tab_element, category_id, index_div;
+		var i, tab_div, tab_list_element, tab_element, id_match, category_id, index_div;
 
 		tab_div = parent.document.getElementById(window.name + '-tab-index');
 		if (!tab_div) {
@@ -252,7 +252,8 @@ GeoMashup = {
 		tab_list_element = tab_div.childNodes[0];
 		for (i=0; i<tab_list_element.childNodes.length; i += 1) {
 			tab_element = tab_list_element.childNodes[i];
-			category_id = tab_element.childNodes[0].href.match(/\d+$/);
+			id_match = tab_element.childNodes[0].href.match(/\d+$/);
+			category_id = id_match && id_match[0];
 			if (category_id === select_category_id) {
 				tab_element.className = 'gm-tab-active gm-tab-active-' + select_category_id;
 			} else {
@@ -397,12 +398,14 @@ GeoMashup = {
 		}
 
 		legend_html = ['<', list_tag, ' class="gm-legend">'];
-		this.forEach(this.categories, function (category_id) {
-			this.categories[category_id].line = new google.maps.Polyline(this.categories[category_id].points, 
-				this.categories[category_id].color);
-			this.map.addOverlay(this.categories[category_id].line);
-			if (this.map.getZoom() > this.categories[category_id].max_line_zoom) {
-				this.categories[category_id].line.hide();
+		this.forEach(this.categories, function (category_id, category) {
+			category.line = new google.maps.Polyline(category.points, category.color);
+			google.maps.Event.addListener( category.line, 'click', function () {
+				GeoMashup.map.zoomIn();
+			} );
+			this.map.addOverlay(category.line);
+			if (this.map.getZoom() > category.max_line_zoom) {
+				category.line.hide();
 			}
 			if (legend_element) {
 				// Default is interactive
@@ -437,7 +440,7 @@ GeoMashup = {
 					'<',
 					term_tag,
 					'><img src="',
-					this.categories[category_id].icon.image,
+					category.icon.image,
 					'" alt="',
 					category_id,
 					'"></',
@@ -476,14 +479,6 @@ GeoMashup = {
 			}
 		}
 	}, 
-
-	directLink : function(element) {
-		this.saveBackSettings();
-		if (parent) {
-			element.target = '_parent';
-		}
-		return true;
-	},
 
 	getShowPostElement : function() {
 	  if (!this.show_post_element && window.name) {
@@ -541,8 +536,10 @@ GeoMashup = {
 						node = document.createElement('div');
 						node.innerHTML = info_window_request.responseText;
 						links = node.getElementsByTagName('a');
-						for (i=0; i<links.length; i += 1) {
-							links[i].onclick = 'return GeoMashup.directLink(this);';
+						if (parent) {
+							for (i=0; i<links.length; i += 1) {
+								links[i].target = "_parent";
+							}
 						}
 						GeoMashup.locations[point].info_node = node;
 						GeoMashup.locations[point].loaded = true;
@@ -638,6 +635,32 @@ GeoMashup = {
 		}
 	},
 
+	uncluster : function() {
+		if (this.clusterer) {
+			this.clusterer.removeMarkers();
+			this.clusterer = null;
+		}
+	},
+
+	recluster : function() {
+		var visible_markers = [];
+		if (this.clusterer) {
+			this.clusterer.refresh( true );
+			return;
+		}
+		if (this.opts.cluster_max_zoom) {
+			this.forEach( this.locations, function( point, loc ) {
+				if ( !loc.marker.isHidden() ) {
+					visible_markers.push( loc.marker );
+				}
+			} );
+			this.clusterer = new ClusterMarker( this.map, { 
+				fitMapMaxZoom : this.opts.cluster_max_zoom,
+				markers : visible_markers } );
+			this.clusterer.refresh( true );
+		}
+	},
+
 	hideCategory : function(category_id) {
 		var i, point;
 
@@ -648,11 +671,13 @@ GeoMashup = {
 		if (this.categories[category_id].line) {
 			this.categories[category_id].line.hide();
 		}
+		this.uncluster();
 		for (i=0; i<this.categories[category_id].points.length; i+=1) {
 			point = this.categories[category_id].points[i];
 			this.locations[point].marker.hide();
 		}
 		this.categories[category_id].visible = false;
+		this.recluster();
 		this.updateVisibleList();
 	},
 
@@ -665,22 +690,25 @@ GeoMashup = {
 		if (this.categories[category_id].line && this.map.getZoom() <= this.categories[category_id].max_line_zoom) {
 			this.categories[category_id].line.show();
 		}
+		this.uncluster();
 		for (i=0; i<this.categories[category_id].points.length; i+=1) {
 			point = this.categories[category_id].points[i];
 			this.locations[point].marker.show();
 		}
 		this.categories[category_id].visible = true;
+		this.recluster();
 		this.updateVisibleList();
 	},
 
 	addPosts : function(response_data, add_category_info) {
-		var i, j, post_id, point, category_id, marker, plus_image;
+		var i, j, post_id, point, category_id, marker, plus_image,
+			added_markers = [];
 
 		if (add_category_info) {
-			this.forEach( this.categories, function (category_id) {
-				this.categories[category_id].points.length = 0;
-				if (this.categories[category_id].line) {
-					this.categories[category_id].line.hide();
+			this.forEach( this.categories, function (category_id, category) {
+				category.points.length = 0;
+				if (category.line) {
+					category.line.hide();
 				}
 			});
 		}
@@ -709,7 +737,11 @@ GeoMashup = {
 					marker = this.createMarker(point, response_data[i]);
 					this.posts[post_id].marker = marker;
 					this.locations[point].marker = marker;
-					this.map.addOverlay(marker);
+					if ( this.clusterer ) {
+						added_markers.push( marker );
+					} else {
+						this.map.addOverlay(marker);
+					}
 				} else {
 					// There is already a marker at this point, add the new post to it
 					this.locations[point].posts.push(post_id);
@@ -720,12 +752,19 @@ GeoMashup = {
 					if (!plus_image) {
 						plus_image = this.opts.url_path + '/images/mm_20_plus.png';
 					}
-					marker.setImage(plus_image);
+					// marker.setImage doesn't survive clustering
+					marker.getIcon().image = plus_image;
 					this.posts[post_id] = { marker : this.locations[point].marker };
 				}
 				this.posts[post_id].title = response_data[i].title;
 			}
 		} // end for each marker
+
+		if ( this.clusterer && added_markers.length > 0 ) {
+			this.clusterer.addMarkers( added_markers );
+			this.clusterer.refresh();
+		}
+
 		// Add category lines
 		if (add_category_info) {
 			this.showCategoryInfo();
@@ -799,11 +838,6 @@ GeoMashup = {
 	adjustZoom : function(old_level, new_level) {
 		var category_id;
 
-		if (old_level >= this.opts.marker_min_zoom && new_level < this.opts.marker_min_zoom) {
-			this.hideMarkers();
-		} else if (old_level < this.opts.marker_min_zoom && new_level >= this.opts.marker_min_zoom) {
-			this.showMarkers();
-		}
 		for (category_id in this.categories) {
 			if (old_level <= this.categories[category_id].max_line_zoom &&
 			  new_level > this.categories[category_id].max_line_zoom) {
@@ -829,7 +863,7 @@ GeoMashup = {
 	},
 
 	updateVisibleList : function() {
-		var list_element, header_element, list_html, map_bounds, marker, post_id;
+		var list_element, header_element, list_html, map_bounds, marker;
 
 		if (window.name) {
 			header_element = parent.document.getElementById(window.name + "-visible-list-header");
@@ -840,14 +874,14 @@ GeoMashup = {
 		}
 		if (list_element) {
 			list_html = ['<ul class="gm-visible-list">'];
-			this.forEach( this.posts, function (post_id) {
+			this.forEach( this.posts, function (post_id, post) {
 				map_bounds = this.map.getBounds();
-				marker = this.posts[post_id].marker;
+				marker = post.marker;
 				if (!marker.isHidden() && map_bounds.containsLatLng(marker.getLatLng())) {
 					list_html.push('<li><img src="');
 					list_html.push(marker.getIcon().image);
 					list_html.push('" alt="');
-					list_html.push(this.posts[post_id].title);
+					list_html.push(post.title);
 					list_html.push('" />');
 					list_html.push(this.postLinkHtml(post_id));
 					list_html.push('</li>');
@@ -885,6 +919,10 @@ GeoMashup = {
 			this.loadSettings(opts, this.getCookie('back_settings'));
 		}
 		this.opts = opts;
+
+		if (opts.cluster_max_zoom) {
+			this.clusterer = new ClusterMarker( this.map, { 'fitMapMaxZoom' : opts.cluster_max_zoom } );
+		}
 
 		if (typeof opts.zoom === 'string') {
 			opts.zoom = parseInt(opts.zoom, 10);
