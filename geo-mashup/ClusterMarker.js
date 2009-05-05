@@ -29,6 +29,20 @@ function ClusterMarker($map, $options){
 	if($options.clusterMarkerClick){
 		this.clusterMarkerClick=$options.clusterMarkerClick;
 	}
+	this.iconOptions={
+		primaryColor:"#ee3333",
+		labelSize:12,
+		labelColor:"#000000",
+		shape:"circle"
+	};
+	if ($options.iconOptions) {
+		for($opt in $options.iconOptions) {
+			if($options.hasOwnProperty($opt) && typeof $options[$opt] !== 'function') {
+				this.iconOptions[$opt] = $options[$opt];
+			}
+		}
+	}
+		/*
 	if($options.clusterMarkerIcon){
 		this.clusterMarkerIcon=$options.clusterMarkerIcon;
 	}else{
@@ -40,6 +54,11 @@ function ClusterMarker($map, $options){
 		this.clusterMarkerIcon.shadow='http://www.google.com/intl/en_us/mapfiles/arrowshadow.png';
 		this.clusterMarkerIcon.shadowSize=new GSize(39, 34);
 	}
+	*/
+	// create an array with which to cache all cluster marker icons as they are created
+	// avoiding repeated requests using MapIconMaker for the same marker
+	this.clusterMarkerIconCache=[];
+
 	this.clusterMarkerTitle=($options.clusterMarkerTitle)?$options.clusterMarkerTitle:'Click to zoom in and see %count markers';
 	if($options.fitMapMaxZoom){
 		this.fitMapMaxZoom=$options.fitMapMaxZoom;
@@ -71,6 +90,22 @@ ClusterMarker.prototype.addMarkers=function($markers){
 	this._mapMarkers=this._mapMarkers.concat($markers);
 };
 
+ClusterMarker.prototype.clusterMarkerIcon=function($count){
+	// a new method to return a dynamically created icon showing $count as text on the icon
+	// first check to see if the required icon has already been created
+	if(this.clusterMarkerIconCache[$count]){
+		return this.clusterMarkerIconCache[$count];
+	}else{
+		// create the required icon, cache it and return it from this method
+		var $count=$count.toString(), $icon, $iconOptions=this.iconOptions; 
+		$iconOptions.width=($count.length*$iconOptions.labelSize)+10;
+		$iconOptions.label=$count;
+		$icon=MapIconMaker.createFlatIcon($iconOptions);
+		this.clusterMarkerIconCache[$count]=$icon;
+		return $icon;
+	}
+};
+
 ClusterMarker.prototype._clusterMarker=function($clusterGroupIndexes){
 	function $newClusterMarker($location, $icon, $title){
 		return new GMarker($location, {icon:$icon, title:$title});
@@ -82,7 +117,7 @@ ClusterMarker.prototype._clusterMarker=function($clusterGroupIndexes){
 		$clusterGroupBounds.extend($marker.getLatLng());
 		$clusteredMarkers.push($marker);
 	}
-	$clusterMarker=$newClusterMarker($clusterGroupBounds.getCenter(), this.clusterMarkerIcon, this.clusterMarkerTitle.replace(/%count/gi, $clusterGroupIndexes.length));
+	$clusterMarker=$newClusterMarker($clusterGroupBounds.getCenter(), this.clusterMarkerIcon($clusterGroupIndexes.length), this.clusterMarkerTitle.replace(/%count/gi, $clusterGroupIndexes.length));
 	$clusterMarker.clusterGroupBounds=$clusterGroupBounds;	//	only req'd for default cluster marker click action
 	this._eventListeners.push(GEvent.addListener($clusterMarker, 'click', function(){
 		$this.clusterMarkerClick({clusterMarker:$clusterMarker, clusteredMarkers:$clusteredMarkers });

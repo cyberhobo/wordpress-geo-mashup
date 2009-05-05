@@ -19,7 +19,7 @@ details.
 /*global GeoMashup */
 /*global customizeGeoMashup, customizeGeoMashupMap, customGeoMashupColorIcon, customGeoMashupCategoryIcon */
 /*glboal customGeoMashupSinglePostIcon, customGeoMashupMultiplePostImage */
-/*global google, jQuery */
+/*global google */
 
 var GeoMashup, customizeGeoMashup, customizeGeoMashupMap, customGeoMashupColorIcon, customGeoMashupCategoryIcon, 
 	customGeoMashupSinglePostIcon, customGeoMashupMultiplePostImage;

@@ -150,7 +150,7 @@ function geo_mashup_render_map ( ) {
 		<head>
 			<meta http-equiv="content-type" content="text/html; charset=utf-8"/>
 		<title>Geo Mashup Map</title>
-			<?php $wp_scripts->print_scripts( array( 'jquery', 'google-jsapi' ) ); ?>
+			<?php $wp_scripts->print_scripts( array( 'google-jsapi' ) ); ?>
 
 			<?php if ( $custom_js_url_path ): ?>
 			<script src="<?php echo $custom_js_url_path; ?>" type="text/javascript"></script>
@@ -159,6 +159,7 @@ function geo_mashup_render_map ( ) {
 			<script src="geo-mashup.js?v=<?php echo GEO_MASHUP_VERSION; ?>" type="text/javascript"></script>
 
 			<?php if ( !empty( $map_properties['cluster_max_zoom'] ) ) : ?>
+			<script src="mapiconmaker.js?v=1.1" type="text/javascript"></script>
 			<script src="ClusterMarker.js?v=1.3.2" type="text/javascript"></script>
 			<?php endif; ?>
 
