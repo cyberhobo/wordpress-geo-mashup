@@ -432,26 +432,29 @@ class GeoMashup {
 			}
 			$states = GeoMashupDB::get_distinct_located_values( 'admin_code', $country->country_code );
 			foreach ($states  as $state ) { 
-				$list_html .= '<h4>' . 
-					GeoMashupDB::get_administrative_name( $country->country_code, $state->admin_code ) . 
-					'</h4><ul class="gm-index-posts">';
 				$location_query = array( 
 					'country_code' => $country->country_code,
-					'admin_code' => $state->admin_code 
+					'admin_code' => $state->admin_code,
+					'sort' => 'post_title'
 				);
 				$post_locations = GeoMashupDB::get_object_locations( 'post', $location_query );
-				foreach ( $post_locations as $post_location ) { 
-					$list_html .= '<li><a href="' . 
-						get_permalink( $post_location->post_id ) .
-						'">' .
-						$post_location->post_title .
-						'</a>';
-					if ( isset( $args['include_address'] ) && $args['include_address'] == 'true' ) {
-						$list_html .= '<p>' . $post_location->address . '</p>';
+				if ( count( $post_locations ) > 0 ) {
+					$list_html .= '<h4>' . 
+						GeoMashupDB::get_administrative_name( $country->country_code, $state->admin_code ) . 
+						'</h4><ul class="gm-index-posts">';
+					foreach ( $post_locations as $post_location ) { 
+						$list_html .= '<li><a href="' . 
+							get_permalink( $post_location->post_id ) .
+							'">' .
+							$post_location->post_title .
+							'</a>';
+						if ( isset( $args['include_address'] ) && $args['include_address'] == 'true' ) {
+							$list_html .= '<p>' . $post_location->address . '</p>';
+						}
+						$list_html .= '</li>';
 					}
-					$list_html .= '</li>';
+					$list_html .= '</ul>';
 				}
-				$list_html .= '</ul>';
 			}
 		}
 		$list_html .= '</div>';

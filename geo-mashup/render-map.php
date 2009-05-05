@@ -112,7 +112,7 @@ function geo_mashup_render_map ( ) {
 
 	array_walk($map_properties, 'add_double_quotes');
 
-	$categories = GeoMashupDB::get_located_categories();
+	$categories = get_categories( array( 'hide_empty' => false ) );
 	$category_opts = '{';
 	if (is_array($categories))
 	{
