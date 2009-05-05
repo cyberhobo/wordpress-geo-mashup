@@ -1,11 +1,11 @@
 /*
-	ClusterMarker Version 1.3.2
+	ClusterMarker Version 1.3.2 modified for GMarker show()/hide() compatibility
 	
 	A marker manager for the Google Maps API
 	http://googlemapsapi.martinpearman.co.uk/clustermarker
 	
-	Copyright Martin Pearman 2008
-	Last updated 29th September 2008
+	Copyright Martin Pearman 2009
+	Last updated 4th May 2009
 
 	This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 
@@ -64,7 +64,7 @@ ClusterMarker.prototype.addMarkers=function($markers){
 		$markers=$numArray;
 	}
 	for(i=$markers.length-1; i>=0; i--){
-		$markers[i]._isVisible=false;
+		$markers[i]._isVisible=true;	//	show()/hide() compatibility code
 		$markers[i]._isActive=false;
 		$markers[i]._makeVisible=false;
 	}
@@ -118,7 +118,7 @@ ClusterMarker.prototype._filterActiveMapMarkers=function(){
 		this._activeMarkersChanged=true;	//	force refresh(true) as zoomed to uncached zoom level
 		for(i=$mapMarkers.length-1; i>=0; i--){
 			$marker=$mapMarkers[i];
-			$marker._isActive=$activeAreaBounds.containsLatLng($marker.getLatLng())?true:false;
+			$marker._isActive=($activeAreaBounds.containsLatLng($marker.getLatLng()) && !$marker.isHidden())?true:false;	//	show()/hide() compatibility code
 			$marker._makeVisible=$marker._isActive;
 			if($marker._isActive){
 				$uncachedIconBoundsIndexes.push(i);
@@ -130,7 +130,7 @@ ClusterMarker.prototype._filterActiveMapMarkers=function(){
 		for(i=$mapMarkers.length-1; i>=0; i--){
 			$marker=$mapMarkers[i];
 			$oldState=$marker._isActive;
-			$marker._isActive=$activeAreaBounds.containsLatLng($marker.getLatLng())?true:false;
+			$marker._isActive=($activeAreaBounds.containsLatLng($marker.getLatLng()) && !$marker.isHidden())?true:false;	//	show()/hide() compatibility code
 			$marker._makeVisible=$marker._isActive;
 			if(!this._activeMarkersChanged && $oldState!==$marker._isActive){
 				this._activeMarkersChanged=true;
@@ -167,8 +167,10 @@ ClusterMarker.prototype._filterIntersectingMapMarkers=function(){
 
 ClusterMarker.prototype.fitMapToMarkers=function(){
 	var $mapMarkers=this._mapMarkers, $markersBounds=new GLatLngBounds(), i;
-	for(i=$mapMarkers.length-1; i>=0; i--){
-		$markersBounds.extend($mapMarkers[i].getLatLng());
+	for(i=$mapMarkers.length-1; i>=0; i--){	//	show()/hide() compatibility code
+		if(!$mapMarkers[i].isHidden()){
+			$markersBounds.extend($mapMarkers[i].getLatLng());
+		}
 	}
 	var $fitMapToMarkersZoom=this._map.getBoundsZoomLevel($markersBounds);
 		

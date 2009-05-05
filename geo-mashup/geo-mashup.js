@@ -635,32 +635,6 @@ GeoMashup = {
 		}
 	},
 
-	uncluster : function() {
-		if (this.clusterer) {
-			this.clusterer.removeMarkers();
-			this.clusterer = null;
-		}
-	},
-
-	recluster : function() {
-		var visible_markers = [];
-		if (this.clusterer) {
-			this.clusterer.refresh( true );
-			return;
-		}
-		if (this.opts.cluster_max_zoom) {
-			this.forEach( this.locations, function( point, loc ) {
-				if ( !loc.marker.isHidden() ) {
-					visible_markers.push( loc.marker );
-				}
-			} );
-			this.clusterer = new ClusterMarker( this.map, { 
-				fitMapMaxZoom : this.opts.cluster_max_zoom,
-				markers : visible_markers } );
-			this.clusterer.refresh( true );
-		}
-	},
-
 	hideCategory : function(category_id) {
 		var i, point;
 
@@ -671,13 +645,14 @@ GeoMashup = {
 		if (this.categories[category_id].line) {
 			this.categories[category_id].line.hide();
 		}
-		this.uncluster();
 		for (i=0; i<this.categories[category_id].points.length; i+=1) {
 			point = this.categories[category_id].points[i];
 			this.locations[point].marker.hide();
 		}
 		this.categories[category_id].visible = false;
-		this.recluster();
+		if (this.clusterer) { 
+			this.clusterer.refresh();
+		}
 		this.updateVisibleList();
 	},
 
@@ -690,13 +665,14 @@ GeoMashup = {
 		if (this.categories[category_id].line && this.map.getZoom() <= this.categories[category_id].max_line_zoom) {
 			this.categories[category_id].line.show();
 		}
-		this.uncluster();
 		for (i=0; i<this.categories[category_id].points.length; i+=1) {
 			point = this.categories[category_id].points[i];
 			this.locations[point].marker.show();
 		}
 		this.categories[category_id].visible = true;
-		this.recluster();
+		if (this.clusterer) { 
+			this.clusterer.refresh();
+		}
 		this.updateVisibleList();
 	},
 
@@ -739,9 +715,8 @@ GeoMashup = {
 					this.locations[point].marker = marker;
 					if ( this.clusterer ) {
 						added_markers.push( marker );
-					} else {
-						this.map.addOverlay(marker);
-					}
+					} 
+					this.map.addOverlay(marker);
 				} else {
 					// There is already a marker at this point, add the new post to it
 					this.locations[point].posts.push(post_id);
@@ -818,6 +793,9 @@ GeoMashup = {
 			if ( this.locations[point].marker ) {
 				this.locations[point].marker.hide();
 			}
+		}
+		if (this.clusterer) { 
+			this.clusterer.refresh();
 		}
 		this.updateVisibleList();
 	},
@@ -921,7 +899,10 @@ GeoMashup = {
 		this.opts = opts;
 
 		if (opts.cluster_max_zoom) {
-			this.clusterer = new ClusterMarker( this.map, { 'fitMapMaxZoom' : opts.cluster_max_zoom } );
+			this.clusterer = new ClusterMarker( this.map, { 
+				'fitMapMaxZoom' : opts.cluster_max_zoom,
+				'clusterMarkerTitle' : '%count'	
+			} );
 		}
 
 		if (typeof opts.zoom === 'string') {
