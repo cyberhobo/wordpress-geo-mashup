@@ -3,9 +3,9 @@
  *
  * Don't modify this file! It will be overwritten by upgrades.
  * 
- * Instead, copy this file to "map-style.css" in this directory or
- * your theme directory and modify that. It will take precedence over
- * the default.
+ * Instead, copy this file to your theme directory, 
+ * or info-window.php in the Geo Mashup Custom plugin directory, if you have that 
+ * installed. Those files take precedence over this one.
  */
 
 /* Post date and tags/categories */
@@ -14,6 +14,8 @@
 
 /* Info window */
 .locationinfo { font-size:80%; overflow:auto; width:300px; height:150px; }
+.user-location-info { font-size:80%; overflow:auto; width:150px; height:40px; }
+.comment-location-info { font-size:80%; overflow:auto; width:200px; height:140px; }
 
 /* Title link style */
 .locationinfo h2 a { text-decoration:none; margin:0; padding:0; } 

@@ -14,7 +14,7 @@ google.setOnLoadCallback( function() {
 			document.getElementById( 'geo_mashup_address_input' ).value = google.loader.ClientLocation.address.city +
 				', ' + google.loader.ClientLocation.address.region + ', ' + google.loader.ClientLocation.address.country_code;
 			document.getElementById( 'geo_mashup_country_code_input' ).value = google.loader.ClientLocation.address.country_code;
-			document.getElementById( 'geo_mashup_locality_input' ).value = google.loader.ClientLocation.address.city;
+			document.getElementById( 'geo_mashup_locality_name_input' ).value = google.loader.ClientLocation.address.city;
 		}
 	}
 } );

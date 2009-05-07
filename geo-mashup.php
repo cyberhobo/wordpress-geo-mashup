@@ -216,27 +216,27 @@ class GeoMashup {
 		}
 	}
 
-	function get_post_locations_json($query_args) {
-		$json = '{ posts : [';
-		$posts = GeoMashupDB::get_object_locations($query_args);
-		if ($posts) {
-			$comma = '';
-			foreach ($posts as $post) {
-				$json .= $comma.'{"post_id":"'.$post->post_id.'","title":"'.addslashes($post->post_title).
-					'","lat":"'.$post->lat.'","lng":"'.$post->lng.'","categories":[';
-				$categories = get_the_category( $post->post_id );
-				$categories_comma = '';
-				foreach ($categories as $category) {
-					$json .= $categories_comma.'"'.$category->cat_ID.'"';
-					$categories_comma = ',';
+	function get_locations_json( $query_args ) {
+		$default_args = array( 'object_name' => 'post' );
+		$query_args = wp_parse_args( $query_args, $default_args );
+		$object_literals = array();
+		$objects = GeoMashupDB::get_object_locations( $query_args );
+		if ( $objects ) {
+			foreach ($objects as $object) {
+				$category_ids = array();
+				if ( 'post' == $query_args['object_name'] ) {
+					// Only know about post categories now, but could abstract to objects
+					$categories = get_the_category( $object->object_id );
+					foreach ($categories as $category) {
+						$category_ids[] = $category->cat_ID;
+					}
 				}
-				$json .= ']}';
-				$comma = ',';
+				$object_literals[] = '{"object_id":"' . $object->object_id . '","title":"' . 
+					addslashes( $object->label ) . '","lat":"' . $object->lat . '","lng":"' . 
+					$object->lng . '","categories":[' . implode( ',', $category_ids ) . ']}';
 			}
 		}
-		$json .= ']}';
-
-		return $json;
+		return '{ objects : [' . implode( ',', $object_literals ) . '] }';
 	}
 
 	function map($option_args = null) {
