@@ -4,14 +4,14 @@
  *
  * Don't modify this file! It will be overwritten by upgrades.
  *
- * Instead, copy this file to "info-window.php" in this directory,
- * or "geo-mashup-info-window.php" in your theme directory. Those files will
- * take precedence over this one.
+ * Instead, copy this file to "geo-mashup-info-window.php" in your theme directory, 
+ * or info-window.php in the Geo Mashup Custom plugin directory, if you have that 
+ * installed. Those files take precedence over this one.
  *
  * For styling of the info window, see map-style-default.css.
  */
 ?>
-<div class="locationinfo">
+<div class="locationinfo post-location-info">
 <?php if (have_posts()) : ?>
 
 	<?php while (have_posts()) : the_post(); ?>

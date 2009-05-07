@@ -27,8 +27,8 @@ var GeoMashup, customizeGeoMashup, customizeGeoMashupMap, customGeoMashupColorIc
 google.load( 'maps', '2' );
 
 GeoMashup = {
-	posts : {},
-	post_count : 0,
+	objects : {},
+	object_count : 0,
 	locations : {},
 	categories : {}, // only categories on the map here
 	category_count : 0,
@@ -332,8 +332,8 @@ GeoMashup = {
 		html_array.push('"><ul class="gm-index-posts">');
 		if (this.categories[category_id]) {
 			this.categories[category_id].posts.sort(function (a, b) {
-				a_name = GeoMashup.posts[a].title;
-				b_name = GeoMashup.posts[b].title;
+				a_name = GeoMashup.objects[a].title;
+				b_name = GeoMashup.objects[b].title;
 				if (a_name === b_name) {
 					return 0;
 				} else {
@@ -342,7 +342,7 @@ GeoMashup = {
 			});
 			for (i=0; i<this.categories[category_id].posts.length; i += 1) {
 				html_array.push('<li>');
-				html_array.push(this.postLinkHtml(this.categories[category_id].posts[i]));
+				html_array.push(this.objectLinkHtml(this.categories[category_id].posts[i]));
 				html_array.push('</li>');
 			}
 		}
@@ -498,24 +498,27 @@ GeoMashup = {
 		return this.show_post_element;
 	},
 
-	createMarker : function(point,post) {
-		var marker, marker_opts = {title:post.title};
+	createMarker : function(point,obj) {
+		var marker, marker_opts = {title:obj.title};
 
 		if (typeof customGeoMashupCategoryIcon === 'function') {
-			marker_opts.icon = customGeoMashupCategoryIcon(this.opts, post.categories);
+			marker_opts.icon = customGeoMashupCategoryIcon(this.opts, obj.categories);
 		} 
 		if (!marker_opts.icon) {
-			if (post.categories.length > 1) {
+			if (obj.categories.length > 1) {
 				marker_opts.icon = new google.maps.Icon(this.multiple_category_icon);
+			} else if (obj.categories.length === 1) {
+				marker_opts.icon = new google.maps.Icon(this.categories[obj.categories[0]].icon);
 			} else {
-				marker_opts.icon = new google.maps.Icon(this.categories[post.categories[0]].icon);
-			}
+				marker_opts.icon = new google.maps.Icon(this.base_color_icon);
+				marker_opts.icon.image = this.opts.url_path + '/images/mm_20_red.png';
+			} 
 		}
 		marker = new google.maps.Marker(point,marker_opts);
 
 		// Show this markers index in the info window when it is clicked
 		google.maps.Event.addListener(marker, "click", function() {
-			var post_ids, i, url, info_window_request, post_element, post_request;
+			var object_ids, i, url, info_window_request, object_element, post_request;
 
 			GeoMashup.map.closeInfoWindow();
 			if (GeoMashup.locations[point].loaded) {
@@ -527,14 +530,15 @@ GeoMashup = {
 				marker.openInfoWindowHtml('<div align="center"><img src="' +
 					GeoMashup.opts.url_path + 
 					'/images/busy_icon.gif" alt="Loading..." /></div>');
-				post_ids = '';
-				for(i=0; i<GeoMashup.locations[point].posts.length; i += 1) {
+				object_ids = '';
+				for(i=0; i<GeoMashup.locations[point].objects.length; i += 1) {
 					if (i>0) {
-						post_ids += ',';
+						object_ids += ',';
 					}
-					post_ids += GeoMashup.locations[point].posts[i];
+					object_ids += GeoMashup.locations[point].objects[i];
 				}
-				url = GeoMashup.opts.url_path + '/geo-query.php?post_ids=' + post_ids;
+				url = GeoMashup.opts.url_path + '/geo-query.php?object_name=' + GeoMashup.opts.object_name +
+					'&object_ids=' + object_ids;
 				info_window_request = new google.maps.XmlHttp.create();
 				info_window_request.open('GET', url, true);
 				info_window_request.onreadystatechange = function() {
@@ -567,7 +571,7 @@ GeoMashup = {
 					} // end readystate === 4
 				}; // end onreadystatechange function
 				info_window_request.send(null);
-			} // end post not loaded yet 
+			} // end object not loaded yet 
 		}); // end marker click
 
 		google.maps.Event.addListener(marker, 'infowindowclose', function() {
@@ -590,16 +594,16 @@ GeoMashup = {
 		}
 	},
 
-	clickMarker : function(post_id, try_count) {
+	clickMarker : function(object_id, try_count) {
 		if (typeof try_count === 'undefined') {
 			try_count = 1;
 		}
-		if (this.posts[post_id] && try_count < 4) {
-			if (GeoMashup.posts[post_id].marker.isHidden()) {
+		if (this.objects[object_id] && try_count < 4) {
+			if (GeoMashup.objects[object_id].marker.isHidden()) {
 				try_count += 1;
-				setTimeout(function () { GeoMashup.clickMarker(post_id, try_count); }, 300);
+				setTimeout(function () { GeoMashup.clickMarker(object_id, try_count); }, 300);
 			} else {
-				google.maps.Event.trigger(GeoMashup.posts[post_id].marker,"click"); 
+				google.maps.Event.trigger(GeoMashup.objects[object_id].marker,"click"); 
 			}
 		}
 	},
@@ -684,8 +688,8 @@ GeoMashup = {
 		this.updateVisibleList();
 	},
 
-	addPosts : function(response_data, add_category_info) {
-		var i, j, post_id, point, category_id, marker, plus_image,
+	addObjects : function(response_data, add_category_info) {
+		var i, j, object_id, point, category_id, marker, plus_image,
 			added_markers = [];
 
 		if (add_category_info) {
@@ -697,37 +701,37 @@ GeoMashup = {
 			});
 		}
 		for (i = 0; i < response_data.length; i+=1) {
-			// Make a marker for each new post location
-			post_id = response_data[i].post_id;
+			// Make a marker for each new object location
+			object_id = response_data[i].object_id;
 			point = new google.maps.LatLng(
 				parseFloat(response_data[i].lat),
 				parseFloat(response_data[i].lng));
 			// Update categories
 			for (j = 0; j < response_data[i].categories.length; j+=1) {
 				category_id = response_data[i].categories[j];
-				this.extendCategory(point, category_id, post_id);
+				this.extendCategory(point, category_id, object_id);
 			}
-			if (this.opts.max_posts && this.post_count >= this.opts.max_posts) {
+			if (this.opts.max_posts && this.object_count >= this.opts.max_posts) {
 				break;
 			}
-			if (!this.posts[post_id]) {
-				// This post has not yet been loaded
-				this.post_count += 1;
+			if (!this.objects[object_id]) {
+				// This object has not yet been loaded
+				this.object_count += 1;
 				if (!this.locations[point]) {
-					// There are no other posts yet at this point, create a marker
-					this.locations[point] = { posts : [ post_id ] };
+					// There are no other objects yet at this point, create a marker
+					this.locations[point] = { objects : [ object_id ] };
 					this.locations[point].loaded = false;
-					this.posts[post_id] = {};
+					this.objects[object_id] = {};
 					marker = this.createMarker(point, response_data[i]);
-					this.posts[post_id].marker = marker;
+					this.objects[object_id].marker = marker;
 					this.locations[point].marker = marker;
 					if ( this.clusterer ) {
 						added_markers.push( marker );
 					} 
 					this.map.addOverlay(marker);
 				} else {
-					// There is already a marker at this point, add the new post to it
-					this.locations[point].posts.push(post_id);
+					// There is already a marker at this point, add the new object to it
+					this.locations[point].objects.push(object_id);
 					marker = this.locations[point].marker;
 					if (typeof customGeoMashupMultiplePostImage === 'function') {
 						plus_image = customGeoMashupMultiplePostImage(this.opts, marker.getIcon().image);
@@ -737,9 +741,9 @@ GeoMashup = {
 					}
 					// marker.setImage doesn't survive clustering
 					marker.getIcon().image = plus_image;
-					this.posts[post_id] = { marker : this.locations[point].marker };
+					this.objects[object_id] = { marker : this.locations[point].marker };
 				}
-				this.posts[post_id].title = response_data[i].title;
+				this.objects[object_id].title = response_data[i].title;
 			}
 		} // end for each marker
 
@@ -755,15 +759,15 @@ GeoMashup = {
 
 		if (this.firstLoad) {
 			this.firstLoad = false;
-			if (this.opts.auto_info_open && this.opts.open_post_id) {
-				this.clickMarker(this.opts.open_post_id);
+			if (this.opts.auto_info_open && this.opts.open_object_id) {
+				this.clickMarker(this.opts.open_object_id);
 			}
 		}
 	},
 
-	requestPosts : function(use_bounds) {
+	requestObjects : function(use_bounds) {
 		var request, url, map_bounds, map_span;
-		if (this.opts.max_posts && this.post_count >= this.opts.max_posts) {
+		if (this.opts.max_posts && this.object_count >= this.opts.max_posts) {
 			return;
 		}
 		request = google.maps.XmlHttp.create();
@@ -784,11 +788,11 @@ GeoMashup = {
 		}
 		request.open("GET", url, true);
 		request.onreadystatechange = function() {
-			var posts;
+			var objects;
 
 			if (request.readyState === 4 && request.status === 200) {
-				posts = window['eval']( '(' + request.responseText + ')' );
-				GeoMashup.addPosts(posts,!use_bounds);
+				objects = window['eval']( '(' + request.responseText + ')' );
+				GeoMashup.addObjects(objects,!use_bounds);
 			} // end readystate === 4
 		}; // end onreadystatechange function
 		request.send(null);
@@ -836,15 +840,15 @@ GeoMashup = {
 		}
 	},
 
-	postLinkHtml : function(post_id) {
+	objectLinkHtml : function(object_id) {
 		return ['<a href="#',
 			window.name,
 			'" onclick="frames[\'',
 			window.name,
 			'\'].GeoMashup.clickMarker(',
-			post_id,
+			object_id,
 			');">',
-			this.posts[post_id].title,
+			this.objects[object_id].title,
 			'</a>'].join('');
 	},
 
@@ -860,16 +864,16 @@ GeoMashup = {
 		}
 		if (list_element) {
 			list_html = ['<ul class="gm-visible-list">'];
-			this.forEach( this.posts, function (post_id, post) {
+			this.forEach( this.objects, function (object_id, obj) {
 				map_bounds = this.map.getBounds();
-				marker = post.marker;
+				marker = obj.marker;
 				if (!marker.isHidden() && map_bounds.containsLatLng(marker.getLatLng())) {
 					list_html.push('<li><img src="');
 					list_html.push(marker.getIcon().image);
 					list_html.push('" alt="');
-					list_html.push(post.title);
+					list_html.push(obj.title);
 					list_html.push('" />');
-					list_html.push(this.postLinkHtml(post_id));
+					list_html.push(this.objectLinkHtml(object_id));
 					list_html.push('</li>');
 				}
 			});
@@ -883,7 +887,7 @@ GeoMashup = {
 	},
 
 	createMap : function(container, opts) {
-		var type_num, center_latlng, map_types, request, url, posts, point, marker_opts, ov, credit_div;
+		var type_num, center_latlng, map_types, request, url, objects, point, marker_opts, ov, credit_div;
 
 		this.container = container;
 		this.checkDependencies();
@@ -903,6 +907,10 @@ GeoMashup = {
 		if (window.location.search === this.getCookie('back_search'))
 		{
 			this.loadSettings(opts, this.getCookie('back_settings'));
+		}
+
+		if (!opts.object_name) {
+			opts.object_name = 'post';
 		}
 		this.opts = opts;
 
@@ -953,14 +961,14 @@ GeoMashup = {
 			this.map.setCenter(new google.maps.LatLng(opts.center_lat, opts.center_lng), opts.zoom, opts.map_type);
 		} else if (this.kml) {
 			this.map.setCenter(this.kml.getDefaultCenter, opts.zoom, opts.map_type);
-		} else if (opts.post_data && opts.post_data.posts[0]) {
-			center_latlng = new google.maps.LatLng(opts.post_data.posts[0].lat, opts.post_data.posts[0].lng);
+		} else if (opts.object_data && opts.object_data.objects[0]) {
+			center_latlng = new google.maps.LatLng(opts.object_data.objects[0].lat, opts.object_data.objects[0].lng);
 			this.map.setCenter(center_latlng, opts.zoom, opts.map_type);
-			if (this.opts.auto_info_open && !this.opts.open_post_id) {
-				this.opts.open_post_id = opts.post_data.posts[0].post_id;
+			if (this.opts.auto_info_open && !this.opts.open_object_id) {
+				this.opts.open_object_id = opts.object_data.objects[0].object_id;
 			}
 		} else {
-			// Center on the most recent located post
+			// Center on the most recent located object
 			request = google.maps.XmlHttp.create();
 			url = this.opts.url_path + '/geo-query.php?limit=1';
 			if (opts.map_cat) {
@@ -968,12 +976,12 @@ GeoMashup = {
 			}
 			request.open("GET", url, false);
 			request.send(null);
-			posts = window['eval']( '(' + request.responseText + ')' );
-			if (posts.length>0) {
-				point = new google.maps.LatLng(posts[0].lat,posts[0].lng);
+			objects = window['eval']( '(' + request.responseText + ')' );
+			if (objects.length>0) {
+				point = new google.maps.LatLng(objects[0].lat,objects[0].lng);
 				this.map.setCenter(point,opts.zoom,opts.map_type);
 				if (this.opts.auto_info_open) {
-					this.opts.open_post_id = posts[0].post_id;
+					this.opts.open_object_id = objects[0].object_id;
 				}
 			} else {
 				this.map.setCenter(new google.maps.LatLng(0,0),opts.zoom,opts.map_type);
@@ -995,14 +1003,14 @@ GeoMashup = {
 					new google.maps.Marker(
 						new google.maps.LatLng(this.opts.center_lat,this.opts.center_lng), marker_opts));
 			}
-		} else if (opts.post_data) {
-			this.addPosts(opts.post_data.posts,true);
+		} else if (opts.object_data) {
+			this.addObjects(opts.object_data.objects,true);
 		} else {
-			// Request posts near visible range first
-			this.requestPosts(true);
+			// Request objects near visible range first
+			this.requestObjects(true);
 
-			// Request all posts
-			this.requestPosts(false);
+			// Request all objects
+			this.requestObjects(false);
 		}
 
 		if ('GSmallZoomControl' === opts.map_control) {

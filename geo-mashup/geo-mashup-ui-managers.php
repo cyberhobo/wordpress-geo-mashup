@@ -339,13 +339,13 @@ class GeoMashupCommentUIManager {
 		printf( $input_format, 'lat', 'lat' );
 		printf( $input_format, 'lng', 'lng' );
 		printf( $input_format, 'country_code', 'country_code' );
-		printf( $input_format, 'locality', 'locality' );
+		printf( $input_format, 'locality_name', 'locality_name' );
 		printf( $input_format, 'address', 'address' );
 	}
 
 	function save_comment( $comment_id = 0, $approval = '' ) {
 		//TODO:handle logged in user with location?
-		if ( !$comment_id || !$approval || 'spam' == $approval || empty( $_POST['comment_location'] ) || !is_array( $_POST['comment_location'] ) ) {
+		if ( !$comment_id || 'spam' === $approval || empty( $_POST['comment_location'] ) || !is_array( $_POST['comment_location'] ) ) {
 			return false;
 		}
 

@@ -2,10 +2,10 @@
 
 require_once('../../../wp-blog-header.php');
 
-if ( empty( $_GET['post_ids'] ) ) {
+if ( empty( $_GET['object_ids'] ) ) {
 	GeoMashupQuery::generate_location_json( );
 } else {
-	GeoMashupQuery::generate_post_html( );
+	GeoMashupQuery::generate_object_html( );
 }
 
 /**
@@ -13,30 +13,47 @@ if ( empty( $_GET['post_ids'] ) ) {
  */
 class GeoMashupQuery {
 
-	function generate_post_html( ) {
-		global $geo_mashup_options;
+	function generate_object_html( ) {
+		global $geo_mashup_options, $comments, $users;
 
-		$post_ids = $_GET['post_ids'];
-		if ( !is_array( $post_ids ) ) {
-			$post_ids = split( ',', $post_ids );
+		$object_ids = $_GET['object_ids'];
+		if ( !is_array( $object_ids ) ) {
+			$object_ids = split( ',', $object_ids );
 		}
+		$object_name = ( isset( $_GET['object_name'] ) ) ? $_GET['object_name'] : 'post';
+		$template_base = ( isset( $_GET['template_base'] ) ) ? $_GET['template_base'] : '';
 
-		$query_vars = array( 'post__in' => $post_ids, 'post_type' => 'any' );
-		// Don't filter this query through other plugins (e.g. event-calendar)
-		$query_vars['suppress_filters'] = true;
-		// No sticky posts please
-		$query_vars['caller_get_posts'] = true;
+		switch ( $object_name ) {
+			case 'post':
+				$query_vars = array( 'post__in' => $object_ids, 'post_type' => 'any' );
+				// Don't filter this query through other plugins (e.g. event-calendar)
+				$query_vars['suppress_filters'] = true;
+				// No sticky posts please
+				$query_vars['caller_get_posts'] = true;
 
-		query_posts( $query_vars );
-		
-		if ( have_posts() ) {
-			status_header(200);
-		}
+				query_posts( $query_vars );
+				
+				if ( have_posts() ) {
+					status_header(200);
+				}
+				$template_base = ( empty( $template_base ) ) ? 'info-window' : $template_base;
+				break;
 
-		if ( empty( $_GET['template'] ) ) {
-			$template_base = 'info-window';
-		} else {
-			$template_base = $_GET['template'];
+			case 'comment':
+				$comments = GeoMashupDB::get_comment_in( array( 'comment__in' => $object_ids ) );
+				if ( !empty( $comments ) ) {
+					status_header(200);
+				}
+				$template_base = ( empty( $template_base ) ) ? 'comment' : $template_base;
+				break;
+
+			case 'user':
+				$users = GeoMashupDB::get_user_in( array( 'user__in' => $object_ids ) );
+				if (!empty( $users ) ) {
+					status_header(200);
+				}
+				$template_base = ( empty( $template_base ) ) ? 'user' : $template_base;
+				break;
 		}
 
 		$template = locate_template( array("geo-mashup-$template_base.php") );
@@ -70,11 +87,11 @@ class GeoMashupQuery {
 		header( 'Pragma:' );
 		 */
 		status_header(200);
-		header('Content-type: text/plain; charset='.get_settings('blog_charset'), true);
+		header('Content-type: text/plain; charset='.get_option('blog_charset'), true);
 		header('Cache-Control: no-cache;', true);
 		header('Expires: -1;', true);
 
-		echo GeoMashup::get_post_locations_json($_GET);
+		echo GeoMashup::get_locations_json($_GET);
 	}
 }
 ?>

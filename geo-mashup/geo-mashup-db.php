@@ -18,6 +18,36 @@ class GeoMashupDB {
 		return $version;
 	}
 
+	function object_storage( $object_name, $new_storage = null ) {
+		global $wpdb;
+		static $objects = null;
+		
+		if ( is_null( $objects ) ) {
+			$objects = array( 
+				'post' => array( 
+					'table' => $wpdb->posts, 
+					'id_column' => 'ID', 
+					'label_column' => 'post_title', 
+					'sort' => 'post_status ASC, post_date DESC' ),
+				'user' => array( 
+					'table' => $wpdb->users, 
+					'id_column' => 'ID', 
+					'label_column' => 'display_name',
+			 		'sort' => 'display_name ASC' ),
+				'comment' => array( 
+					'table' => $wpdb->comments, 
+					'id_column' => 'comment_ID', 
+					'label_column' => 'comment_author',
+			 		'sort' => 'comment_date DESC'	) 
+			);
+		}
+
+		if ( !empty( $new_storage ) ) {
+			$objects[$object_name] = $new_storage;
+		} 
+		return ( isset( $objects[$object_name] ) ) ? $objects[$object_name] : false;
+	}
+
 	function install( ) {
 		global $wpdb;
 
@@ -222,7 +252,7 @@ class GeoMashupDB {
 
 		// Don't bother unless there are missing geocodable fields
 		$have_missing_field = false;
-		foreach( array( 'country_code', 'admin_code', 'address', 'locality', 'postal_code' ) as $field ) {
+		foreach( array( 'country_code', 'admin_code', 'address', 'locality_name', 'postal_code' ) as $field ) {
 			if ( empty( $location[$field] ) ) {
 				$have_missing_field = true;
 			}
@@ -489,7 +519,7 @@ class GeoMashupDB {
 	function get_object_locations( $query_args = '' ) {
 		global $wpdb;
 
-		$default_args = array( 'sort' => 'post_date DESC', 
+		$default_args = array( 
 			'minlat' => null, 
 			'maxlat' => null, 
 			'minlon' => null, 
@@ -500,19 +530,26 @@ class GeoMashupDB {
 		$query_args = wp_parse_args( $query_args, $default_args );
 		
 		// Construct the query 
-		$field_string = 'p.ID as post_id, post_title, gml.*';
+		$object_name = $query_args['object_name'];
+		$object_store = GeoMashupDB::object_storage( $object_name );
+		if ( empty( $object_store ) ) {
+			return null;
+		}
+		$field_string = "gmlr.object_id, o.{$object_store['label_column']} as label, gml.*";
 		$table_string = "{$wpdb->prefix}geo_mashup_locations gml " . 
 			"INNER JOIN {$wpdb->prefix}geo_mashup_location_relationships gmlr " .
-			$wpdb->prepare( 'ON gmlr.object_name = %s AND gmlr.location_id = gml.id ', $query_args['object_name'] ) .
-			"INNER JOIN $wpdb->posts p ON p.ID = gmlr.object_id";
+			$wpdb->prepare( 'ON gmlr.object_name = %s AND gmlr.location_id = gml.id ', $object_name ) .
+			"INNER JOIN {$object_store['table']} o ON o.{$object_store['id_column']} = gmlr.object_id";
 		$wheres = array( );
 
-		if ( $query_args['show_future'] == 'true' ) {
-			$wheres[] = 'post_status in ( \'publish\',\'future\' )';
-		} else if ( $query_args['show_future'] == 'only' ) {
-			$wheres[] = 'post_status = \'future\'';
-		} else {
-			$wheres[] = 'post_status = \'publish\'';
+		if ( 'post' == $object_name ) {
+			if ( $query_args['show_future'] == 'true' ) {
+				$wheres[] = 'post_status in ( \'publish\',\'future\' )';
+			} else if ( $query_args['show_future'] == 'only' ) {
+				$wheres[] = 'post_status = \'future\'';
+			} else {
+				$wheres[] = 'post_status = \'publish\'';
+			}
 		}
 
 		// Ignore nonsense bounds
@@ -530,17 +567,17 @@ class GeoMashupDB {
 		if ( is_numeric( $query_args['maxlon'] ) ) $wheres[] = "lng < {$query_args['maxlon']}";
 
 		if ( !empty ( $query_args['map_cat'] ) ) {
-			$table_string .= " JOIN $wpdb->term_relationships tr ON tr.object_id = p.ID " .
+			$table_string .= " JOIN $wpdb->term_relationships tr ON tr.object_id = gmlr.object_id " .
 				"JOIN $wpdb->term_taxonomy tt ON tt.term_taxonomy_id = tr.term_taxonomy_id " .
 				"AND tt.taxonomy = 'category'";
 			$cat = $wpdb->escape( $query_args['map_cat'] );
 			$wheres[] = "tt.term_id IN ($cat)";
 		} 
 
-		if ( isset( $query_args['post_id'] ) ) {
-			$wheres[] = 'p.ID = ' . $wpdb->escape( $query_args['post_id'] );
-		} else if ( isset( $query_args['post_ids'] ) ) {
-			$wheres[] = 'p.ID in ( ' . $wpdb->escape( $query_args['post_ids'] ) .' )';
+		if ( isset( $query_args['object_id'] ) ) {
+			$wheres[] = 'gmlr.object_id = ' . $wpdb->escape( $query_args['object_id'] );
+		} else if ( isset( $query_args['object_ids'] ) ) {
+			$wheres[] = 'gmlr.object_id in ( ' . $wpdb->escape( $query_args['object_ids'] ) .' )';
 		}
 
 		foreach ( GeoMashupDB::blank_location( ARRAY_A ) as $field => $blank ) {
@@ -549,8 +586,11 @@ class GeoMashupDB {
 			}
 		}
 
-		$query_string = "SELECT $field_string FROM $table_string WHERE " . implode( ' AND ', $wheres ) . 
-			' ORDER BY post_status ASC, ' . $wpdb->escape( $query_args['sort'] );
+		$where = ( empty( $wheres ) ) ? '' :  'WHERE ' . implode( ' AND ', $wheres ); 
+		$sort = ( isset( $query_args['sort'] ) ) ? $query_args['sort'] : $object_store['sort'];
+		$sort = ( empty( $sort ) ) ? '' : 'ORDER BY ' . $wpdb->escape( $sort );
+
+		$query_string = "SELECT $field_string FROM $table_string $where $sort";
 
 		if ( !( $query_args['minlat'] && $query_args['maxlat'] && $query_args['minlon'] && $query_args['maxlon'] ) && !$query_args['limit'] ) {
 			// result should contain all posts ( possibly for a category )
@@ -709,6 +749,34 @@ class GeoMashupDB {
 			INNER JOIN {$wpdb->terms} t ON t.term_id = tt.term_id
 			WHERE tt.taxonomy='category'
 			ORDER BY t.slug ASC";
+		return $wpdb->get_results( $select_string );
+	}
+
+	function get_comment_in( $args ) {
+		global $wpdb;
+
+		$args = wp_parse_args( $args );
+		if ( is_array( $args['comment__in'] ) ) {
+			$comment_ids = implode( ',', $args['comment__in'] );
+		} else {
+			$comment_ids = ( isset( $args['comment__in'] ) ) ? $args['comment__in'] : '0';
+		}
+		$select_string = "SELECT * FROM $wpdb->comments WHERE comment_ID IN (" .
+			$wpdb->prepare( $comment_ids ) . ') ORDER BY comment_date_gmt DESC';
+		return $wpdb->get_results( $select_string );
+	}
+
+	function get_user_in( $args ) {
+		global $wpdb;
+
+		$args = wp_parse_args( $args );
+		if ( is_array( $args['user__in'] ) ) {
+			$user_ids = implode( ',', $args['user__in'] );
+		} else {
+			$user_ids = ( isset( $args['user__in'] ) ) ? $args['user__in'] : '0';
+		}
+		$select_string = "SELECT * FROM $wpdb->users WHERE ID IN (" .
+			$wpdb->prepare( $user_ids ) . ') ORDER BY display_name ASC';
 		return $wpdb->get_results( $select_string );
 	}
 }

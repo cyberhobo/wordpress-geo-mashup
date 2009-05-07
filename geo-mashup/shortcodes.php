@@ -17,7 +17,7 @@ add_shortcode('geo_mashup_visible_posts_list','geo_mashup_visible_posts_list');
  * [geo_mashup_map ...]
  */
 function geo_mashup_map($atts) {
-	global $wp_query, $geo_mashup_options;
+	global $wp_query, $in_comment_loop, $geo_mashup_options;
 	static $map_number = 0;
 
 	$map_number++;
@@ -33,17 +33,26 @@ function geo_mashup_map($atts) {
 		unset($atts['auto_open_info_window']);
 	}
 
+	// Default query is for posts
+	$object_name = ( isset( $atts['object_name'] ) ) ? $atts['object_name'] : 'post';
+
 	// Map content type isn't required, so resolve it
 	$map_content = isset( $atts['map_content'] ) ? $atts['map_content'] : null;
 	unset($atts['map_content']);
 
 	if ( empty ( $map_content ) ) {
-		if (!$wp_query->in_the_loop) {
+		if ( ( 'post' == $object_name && !$wp_query->in_the_loop ) || ( 'comment' == $object_name && !$in_comment_loop ) ) {
 			$map_content = 'contextual';
 		} else {
-			// We are in a post or page, see if it's located
-			$coords = GeoMashup::post_coordinates();
-			if (empty($coords)) {
+			if ( 'user' == $object_name ) {
+				$context_object_id = $wp_query->post->post_author;
+			} else if ( 'comment' == $object_name ) {
+				$context_object_id = get_comment_ID();
+			} else {
+				$context_object_id = $wp_query->post->ID;
+			}
+			$location = GeoMashupDB::get_object_location( $object_name, $context_object_id );
+			if ( empty( $location ) ) {
 				// Not located, go global
 				$map_content = 'global';
 			} else {
@@ -58,17 +67,41 @@ function geo_mashup_map($atts) {
 		case 'contextual':
 			$url_params['map_content'] = 'contextual';
 			$url_params += $geo_mashup_options->get ( 'context_map', $option_keys );
-			$comma = '';
-			foreach ($wp_query->posts as $post) {
-				$url_params['post_ids'] .= $comma.$post->ID;
-				$comma = ',';
+			$object_ids = array();
+			if ( 'comment' == $object_name ) {
+				$context_objects = $wp_query->comments;
+			} else {
+				$context_objects = $wp_query->posts;
 			}
+			foreach ( $context_objects as $context_object ) {
+				if ( 'post' == $object_name ) {
+					$object_ids[] = $context_object->ID;
+				} else if ( 'user' == $object_name ) {
+					$object_ids[] = $context_object->post_author;
+				} else if ( 'comment' == $object_name ) {
+					$object_ids[] = $context_object->comment_ID;
+				}
+			}
+			$url_params['object_ids'] = implode( ',', $object_ids );
 			break;
 
 		case 'single':
 			$url_params['map_content'] = 'single';
 			$url_params += $geo_mashup_options->get ( 'single_map', $option_keys );
-			$url_params['post_id'] = $wp_query->post->ID;
+			if ( 'post' == $object_name ) {
+				$url_params['object_id'] = $wp_query->post->ID;
+			} else if ( 'user' == $object_name ) {
+				$url_params['object_id'] = $wp_query->post->post_author;
+			} else if ( 'comment' == $object_name ) {
+				$url_params['object_id'] = get_comment_ID();
+				if ( empty( $url_params['object_id'] ) ) { 
+					return '';
+				}
+				$location = GeoMashupDB::get_object_location( $object_name, $object_id ); 
+				if ( empty( $location ) ) {
+					return '';
+				}
+			}
 			break;
 
 		case 'global':
