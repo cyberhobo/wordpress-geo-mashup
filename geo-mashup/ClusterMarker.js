@@ -37,8 +37,8 @@ function ClusterMarker($map, $options){
 	};
 	if ($options.iconOptions) {
 		for($opt in $options.iconOptions) {
-			if($options.hasOwnProperty($opt) && typeof $options[$opt] !== 'function') {
-				this.iconOptions[$opt] = $options[$opt];
+			if($options.iconOptions.hasOwnProperty($opt) && typeof $options.iconOptions[$opt] !== 'function') {
+				this.iconOptions[$opt] = $options.iconOptions[$opt];
 			}
 		}
 	}
