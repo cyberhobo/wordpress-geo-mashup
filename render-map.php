@@ -154,11 +154,11 @@ function geo_mashup_render_map ( ) {
 		<title>Geo Mashup Map</title>
 			<?php $wp_scripts->print_scripts( array( 'google-jsapi' ) ); ?>
 
+			<script src="geo-mashup.js?v=<?php echo GEO_MASHUP_VERSION; ?>" type="text/javascript"></script>
+
 			<?php if ( $custom_js_url_path ): ?>
 			<script src="<?php echo $custom_js_url_path; ?>" type="text/javascript"></script>
 			<?php endif; ?>
-
-			<script src="geo-mashup.js?v=<?php echo GEO_MASHUP_VERSION; ?>" type="text/javascript"></script>
 
 			<?php if ( !empty( $map_properties['cluster_max_zoom'] ) ) : ?>
 			<script src="mapiconmaker.js?v=1.1" type="text/javascript"></script>
