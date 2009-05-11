@@ -6,7 +6,8 @@ status_header ( 200 );
 geo_mashup_render_map ( );
 
 function add_double_quotes(&$item,$key) {
-	$quoted_keys = array ( 'background_color', 'show_future', 'map_control', 'map_content', 'map_type', 'legend_format', 'template', 'object_name' );
+	$quoted_keys = array ( 'background_color', 'show_future', 'map_control', 'map_content', 'map_type', 
+		'legend_format', 'template', 'object_name', 'adsense_code' );
 	if ( $key == 'object_data' ) {
 		// don't quote
 	} else if ( empty ( $item ) ) {
@@ -62,7 +63,7 @@ function geo_mashup_render_map ( ) {
 		unset( $_GET['lng'] );
 	}
 
-	$option_keys = array ( 'width', 'height', 'map_control', 'map_type', 'add_map_type_control', 'add_overview_control' );
+	$option_keys = array ( 'width', 'height', 'map_control', 'map_type', 'add_map_type_control', 'add_overview_control', 'add_google_bar' );
 	if ( $map_content == 'single') {
 		$object_id = 0;
 		if ( isset( $_GET['object_id'] ) ) {
@@ -100,6 +101,9 @@ function geo_mashup_render_map ( ) {
 		$map_properties = array_merge ( $options, $map_properties );
 	}
 
+	if ( 'true' == $map_properties['add_google_bar'] ) {
+		$map_properties['adsense_code'] = $geo_mashup_options->get( 'overall', 'adsense_code' );
+	}
 	$map_properties = array_merge($map_properties, $_GET);
 	$width = $map_properties['width'];
 	if ( substr( $width, -1 ) != '%' ) {
