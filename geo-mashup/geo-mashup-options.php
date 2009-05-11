@@ -14,7 +14,8 @@ class GeoMashupOptions {
 				'post' => 'true',
 				'user' => 'false',
 				'comment' => 'false' ),
-			'enable_reverse_geocoding' => 'true' ),
+			'enable_reverse_geocoding' => 'true',
+			'adsense_code' => 'partner-pub-5088093001880917' ),
 		'global_map' => array (
 			'width' => '400',
 			'height' => '400',
@@ -26,6 +27,7 @@ class GeoMashupOptions {
 			'map_control' => 'GSmallZoomControl3D',
 			'add_map_type_control' => 'true',
 			'add_overview_control' => 'false',
+			'add_google_bar' => 'true',
 			'show_post' => 'false',
 			'show_future' => 'false',
 			'max_posts' => '',
@@ -42,6 +44,7 @@ class GeoMashupOptions {
 			'background_color' => 'c0c0c0',
 			'add_overview_control' => 'false',
 			'add_map_type_control' => 'true',
+			'add_google_bar' => 'true',
 			'click_to_load' => 'false',
 	 		'click_to_load_text' => '' ), 
 		'context_map' => array (
@@ -53,6 +56,7 @@ class GeoMashupOptions {
 			'background_color' => 'c0c0c0',
 			'add_overview_control' => 'false',
 			'add_map_type_control' => 'false',
+			'add_google_bar' => 'true',
 			'click_to_load' => 'false',
 	 		'click_to_load_text' => '' ) );
 	var $conversions = array (
@@ -204,7 +208,7 @@ class GeoMashupOptions {
 		return $valid_options;
 	}
 
-	function is_valid ( $key, $value ) {
+	function is_valid ( $key, &$value ) {
 		switch ( $key ) {
 			case 'map_type':
 				$valid_map_types = array ( 'G_NORMAL_MAP', 'G_SATELLITE_MAP', 'G_HYBRID_MAP', 'G_PHYSICAL_MAP', 'G_SATELLITE_3D_MAP' );
@@ -225,6 +229,8 @@ class GeoMashupOptions {
 				return true;
 
 			// strings
+			case 'adsense_code':
+				if ( empty( $value ) ) $value = 'partner-pub-5088093001880917';
 			case 'category_link_separator':
 			case 'category_link_text':
 			case 'click_to_load_text':
@@ -256,6 +262,7 @@ class GeoMashupOptions {
 			case 'add_category_links':
 			case 'add_map_type_control':
 			case 'add_overview_control':
+			case 'add_google_bar':
 			case 'theme_stylesheet_with_maps':
 			case 'show_post':
 			case 'click_to_load':

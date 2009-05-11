@@ -444,9 +444,9 @@ class GeoMashup {
 						'</h4><ul class="gm-index-posts">';
 					foreach ( $post_locations as $post_location ) { 
 						$list_html .= '<li><a href="' . 
-							get_permalink( $post_location->post_id ) .
+							get_permalink( $post_location->object_id ) .
 							'">' .
-							$post_location->post_title .
+							$post_location->label .
 							'</a>';
 						if ( isset( $args['include_address'] ) && $args['include_address'] == 'true' ) {
 							$list_html .= '<p>' . $post_location->address . '</p>';

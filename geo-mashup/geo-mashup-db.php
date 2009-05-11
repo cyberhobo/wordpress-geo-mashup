@@ -343,7 +343,7 @@ class GeoMashupDB {
 		global $wpdb;
 
 		$table_name = $wpdb->prefix . 'geo_mashup_administrative_names';
-		$cached_name = GeoMashupDB::get_cached_administrative_name( $country_code, $admin_code, $language ); 
+		$cached_name = GeoMashupDB::get_cached_administrative_name( $country_code, $admin_code, $isolanguage ); 
 		$rows = 0;
 		if ( empty( $cached_name ) ) {
 			$rows = $wpdb->insert( $table_name, compact( 'country_code', 'admin_code', 'isolanguage', 'name', 'geoname_id' ) );

@@ -275,6 +275,24 @@ function geo_mashup_options_page()
 		$reverseGeocodingChecked = '';
 	}
 
+	if ($geo_mashup_options->get ( 'global_map', 'add_google_bar' ) == 'true') {
+		$googleBarChecked = ' checked="true"';
+	} else {
+		$googleBarChecked = '';
+	}
+
+	if ($geo_mashup_options->get ( 'single_map', 'add_google_bar' ) == 'true') {
+		$inPostGoogleBarChecked = ' checked="true"';
+	} else {
+		$inPostGoogleBarChecked = '';
+	}
+	
+	if ($geo_mashup_options->get ( 'context_map', 'add_google_bar' ) == 'true') {
+		$contextGoogleBarChecked = ' checked="true"';
+	} else {
+		$contextGoogleBarChecked = '';
+	}
+	
 	// Now for the HTML
 ?>
 	<div class="wrap">
@@ -361,6 +379,13 @@ function geo_mashup_options_page()
 						</td>
 					</tr>
 					<?php endif; ?>
+					<tr>
+						<th scope="row"><?php _e('AdSense For Search ID', 'GeoMashup'); ?></th>
+						<td>
+							<input id="adsense_code_text" name="overall[adsense_code]" type="text" size="35" value="<? echo $geo_mashup_options->get ( 'overall', 'adsense_code' ); ?>" />
+							<span class="setting-description"><?php _e('Your client ID, used with the Google Bar. Leave the default value to use Geo Mashup\'s :).', 'GeoMashup'); ?></span>
+						</td>
+					</tr>
 				</table>
 				<div class="submit"><input type="submit" name="submit" value="<?php _e('Update Options', 'GeoMashup'); ?>" /></div>
 			</fieldset>
@@ -388,6 +413,10 @@ function geo_mashup_options_page()
 					<tr>
 						<th scope="row"><?php _e('Add Overview Control', 'GeoMashup'); ?></th>
 						<td><input id="in_post_add_overview_control" name="single_map[add_overview_control]" type="checkbox" value="true"<?php echo $inPostOverviewChecked; ?> /></td>
+					</tr>
+					<tr>
+						<th scope="row"><?php _e('Add Google Bar', 'GeoMashup'); ?></th>
+						<td><input id="in_post_add_google_bar" name="single_map[add_google_bar]" type="checkbox" value="true"<?php echo $inPostGoogleBarChecked; ?> /></td>
 					</tr>
 					<tr>
 						<th scope="row"><?php _e('Default Map Type', 'GeoMashup'); ?></th>
@@ -438,6 +467,10 @@ function geo_mashup_options_page()
 					<tr>
 						<th scope="row"><?php _e('Add Overview Control', 'GeoMashup'); ?></th>
 						<td><input id="add_overview_control" name="global_map[add_overview_control]" type="checkbox" value="true"<?php echo $overviewChecked; ?> /></td>
+					</tr>
+					<tr>
+						<th scope="row"><?php _e('Add Google Bar', 'GeoMashup'); ?></th>
+						<td><input id="add_google_bar" name="global_map[add_google_bar]" type="checkbox" value="true"<?php echo $googleBarChecked; ?> /></td>
 					</tr>
 					<tr>
 						<th scope="row"><?php _e('Default Map Type', 'GeoMashup'); ?></th>
@@ -511,6 +544,10 @@ function geo_mashup_options_page()
 					<tr>
 						<th scope="row"><?php _e('Add Overview Control', 'GeoMashup'); ?></th>
 						<td><input id="context_add_overview_control" name="context_map[add_overview_control]" type="checkbox" value="true"<?php echo $contextOverviewChecked; ?> /></td>
+					</tr>
+					<tr>
+						<th scope="row"><?php _e('Add Google Bar', 'GeoMashup'); ?></th>
+						<td><input id="context_add_google_bar" name="context_map[add_google_bar]" type="checkbox" value="true"<?php echo $contextGoogleBarChecked; ?> /></td>
 					</tr>
 					<tr>
 						<th scope="row"><?php _e('Default Map Type', 'GeoMashup'); ?></th>

@@ -929,8 +929,8 @@ GeoMashup = {
 	},
 
 	createMap : function(container, opts) {
-		var type_num, center_latlng, map_types, request, url, objects, point, marker_opts, 
-			clusterer_opts, single_marker, ov, credit_div;
+		var type_num, center_latlng, map_opts, map_types, request, url, objects, point, marker_opts, 
+			clusterer_opts, google_bar_opts, single_marker, ov, credit_div;
 
 		this.container = container;
 		this.checkDependencies();
@@ -943,7 +943,14 @@ GeoMashup = {
 		this.base_color_icon.infoWindowAnchor = new google.maps.Point(5, 1);
 		this.multiple_category_icon = new google.maps.Icon(this.base_color_icon);
 		this.multiple_category_icon.image = opts.url_path + '/images/mm_20_mixed.png';
-		this.map = new google.maps.Map2(this.container,{backgroundColor : '#' + opts.background_color});
+		map_opts = {
+			backgroundColor : '#' + opts.background_color,
+	 		googleBarOptions : { 
+				adsOptions : { client : ( opts.adsense_code ) ? opts.adsense_code : 'partner-pub-5088093001880917' }	
+			}
+		};
+		this.doAction( 'mapOptions', opts, map_opts );
+		this.map = new google.maps.Map2( this.container, map_opts );
 		this.map.setCenter(new google.maps.LatLng(0,0), 1);
 		this.map.addMapType(google.maps.PHYSICAL_MAP);
 
@@ -1047,6 +1054,9 @@ GeoMashup = {
 				if (typeof customGeoMashupSinglePostIcon === 'function') {
 					marker_opts.icon = customGeoMashupSinglePostIcon(this.opts);
 				}
+				if ( !marker_opts.icon ) {
+					marker_opts.icon = G_DEFAULT_ICON;
+				}
 				this.doAction( 'singleMarkerOptions', this.opts, marker_opts );
 				single_marker = new google.maps.Marker(
 					new google.maps.LatLng( this.opts.center_lat, this.opts.center_lng ), marker_opts );
@@ -1097,6 +1107,11 @@ GeoMashup = {
 			'/images/gm-credit.png"/></a></div>'].join( '' );
 		this.container.appendChild( credit_div );
 		
+		// Google bar must be added after the credit div so it layers on top
+		if ( opts.add_google_bar ) {
+			this.map.enableGoogleBar();
+		}
+
 		if (typeof customizeGeoMashupMap === 'function') {
 			customizeGeoMashupMap(this.opts, this.map);
 		}
