@@ -689,6 +689,7 @@ var GeoMashup = {
 			if (this.opts.auto_info_open && this.opts.open_post_id) {
 				this.clickMarker(this.opts.open_post_id);
 			}
+			this.updateVisibleList();
 		}
 	},
 
