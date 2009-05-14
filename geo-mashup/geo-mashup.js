@@ -362,11 +362,12 @@ var GeoMashup = {
 
 		legend_html = ['<', list_tag, ' class="gm-legend">'];
 		for (category_id in this.categories) {
-			this.categories[category_id].line = new GPolyline(this.categories[category_id].points, 
-				this.categories[category_id].color);
-			this.map.addOverlay(this.categories[category_id].line);
-			if (this.map.getZoom() > this.categories[category_id].max_line_zoom) {
-				this.categories[category_id].line.hide();
+			if ( this.categories[category_id].max_line_zoom ) {
+				this.categories[category_id].line = new GPolyline(this.categories[category_id].points, 
+					this.categories[category_id].color);
+				if (this.map.getZoom() <= this.categories[category_id].max_line_zoom) {
+					this.map.addOverlay(this.categories[category_id].line);
+				}
 			}
 			if (legend_element) {
 				// Default is interactive
@@ -602,7 +603,7 @@ var GeoMashup = {
 		}
 		this.map.closeInfoWindow();
 		if (this.categories[category_id].line) {
-			this.categories[category_id].line.hide();
+			this.map.addOverlay( this.categories[category_id].line );
 		}
 		for (var i=0; i<this.categories[category_id].points.length; i++) {
 			var point = this.categories[category_id].points[i];
@@ -617,7 +618,7 @@ var GeoMashup = {
 			return false;
 		}
 		if (this.categories[category_id].line && this.map.getZoom() <= this.categories[category_id].max_line_zoom) {
-			this.categories[category_id].line.show();
+			this.map.removeOverlay( this.categories[category_id].line );
 		}
 		for (var i=0; i<this.categories[category_id].points.length; i++) {
 			var point = this.categories[category_id].points[i];
@@ -632,7 +633,7 @@ var GeoMashup = {
 			for (category_id in this.categories) {
 				this.categories[category_id].points.length = 0;
 				if (this.categories[category_id].line) {
-					this.categories[category_id].line.hide();
+					this.map.removeOverlay( this.categories[category_id].line );
 				}
 			}
 		}
@@ -744,13 +745,15 @@ var GeoMashup = {
 			this.showMarkers();
 		}
 		for (category_id in this.categories) {
-			if (old_level <= this.categories[category_id].max_line_zoom &&
-			  new_level > this.categories[category_id].max_line_zoom) {
-				this.categories[category_id].line.hide();
-			} else if (this.categories[category_id].visible &&
-				old_level > this.categories[category_id].max_line_zoom &&
-			  new_level <= this.categories[category_id].max_line_zoom) {
-				this.categories[category_id].line.show();
+			if ( this.categories[category_id].line ) {
+				if (old_level <= this.categories[category_id].max_line_zoom &&
+					new_level > this.categories[category_id].max_line_zoom) {
+					this.map.removeOverlay( this.categories[category_id].line );
+				} else if (this.categories[category_id].visible &&
+					old_level > this.categories[category_id].max_line_zoom &&
+					new_level <= this.categories[category_id].max_line_zoom) {
+					this.map.addOverlay( this.categories[category_id].line );
+				}
 			}
 		}
 	},
