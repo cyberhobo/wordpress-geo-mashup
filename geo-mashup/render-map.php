@@ -17,11 +17,34 @@ function add_double_quotes(&$item,$key) {
 }
 
 function geo_mashup_render_map ( ) {
-	global $post, $geo_mashup_options;
-	$template_url_path = get_bloginfo( 'template_directory' );
+	global $post, $geo_mashup_options, $geo_mashup_custom;
+
+	// Resolve map style
+	$style_file_path = trailingslashit( get_stylesheet_directory() ) . 'map-style.css';
+	$style_url_path = get_stylesheet_directory_uri();
+	if ( is_readable( $style_file_path ) ) {
+		$style_url_path = trailingslashit( $style_url_path ) . 'map-style.css';
+	} else if ( isset( $geo_mashup_custom ) ) {
+		$style_url_path = $geo_mashup_custom->file_url( 'map-style.css' );
+	}
+	if ( empty( $style_url_path ) ) {
+		$style_url_path = 'map-style-default.css';
+	} 
+
+	// Resolve custom javascript
+	$custom_js_url_path = '';
+	if ( isset( $geo_mashup_custom ) ) {
+		$custom_js_url_path = $geo_mashup_custom->file_url( 'custom.js' );
+	} else if ( is_readable( 'custom.js' ) ) {
+		$custom_js_url_path = 'custom.js';
+	}
+					 
 	$map_properties = array ( 
 		'url_path' => GEO_MASHUP_URL_PATH,
- 		'template_url_path' => $template_url_path );
+ 		'template_url_path' => get_template_directory_uri() );
+	if ( isset( $geo_mashup_custom ) ) {
+		$map_properties['custom_url_path'] = $geo_mashup_custom->url_path;
+	}
 
 	$map_content = null;
 	if (strlen($_GET['map_content']) > 0) {
@@ -129,37 +152,19 @@ function geo_mashup_render_map ( ) {
 		<title>Geo Mashup Map</title>
 			<script src="http://maps.google.com/maps?file=api&amp;v=2&amp;key=<?php echo $geo_mashup_options->get('overall', 'google_key');?>" 
 							type="text/javascript"></script>
-			<?php if (is_readable('custom.js')): ?>
-			<script src="custom.js" type="text/javascript"></script>
-			<?php endif; ?>
 			<script src="geo-mashup.js?v=<?php echo GEO_MASHUP_VERSION; ?>" type="text/javascript"></script>
-			<?php
-				if ($geo_mashup_options->get('overall', 'theme_stylesheet_with_maps') == 'true')
-				{
-					echo '<link rel="stylesheet" href="';
-					echo bloginfo('stylesheet_url');
-					echo '" type="text/css" media="screen" />';
-				}
-			?>
+
+			<?php if ( $custom_js_url_path ): ?>
+			<script src="<?php echo $custom_js_url_path; ?>" type="text/javascript"></script>
+			<?php endif; ?>
 			
-			<?php 		
-				// find the css file needed
-				if (is_readable(TEMPLATEPATH . '/map-style.css'))
-				{
-					echo '<link rel="stylesheet" type="text/css" href="' . $template_url_path . '/map-style.css' . '" />';
-				}
-				else
-				{
-					if (is_readable('map-style.css'))
-					{
-						echo '<link rel="stylesheet" type="text/css" href="map-style.css" />';
-					}
-				 	else
-					{
-						echo '<link rel="stylesheet" type="text/css" href="map-style-default.css" />';
-					}	
-				}
-			?>
+			<?php if ( $geo_mashup_options->get('overall', 'theme_stylesheet_with_maps' ) == 'true' ) : ?>
+			<link rel="stylesheet" href="<?php echo get_stylesheet_uri(); ?>" type="text/css" media="screen" />
+			<?php endif; ?>
+
+			<?php if ( $style_url_path ) : ?>
+			<link rel="stylesheet" href="<?php echo $style_url_path; ?>" type="text/css" media="screen" />
+			<?php endif; ?>
 			
 			<style type="text/css">
 				v\:* { behavior:url(#default#VML); }

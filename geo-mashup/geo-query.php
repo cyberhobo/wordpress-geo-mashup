@@ -14,7 +14,7 @@ if ( empty( $_GET['post_ids'] ) ) {
 class GeoMashupQuery {
 
 	function generate_post_html( ) {
-		global $geo_mashup_options;
+		global $geo_mashup_options, $geo_mashup_custom;
 
 		$post_ids = $_GET['post_ids'];
 		if ( !is_array( $post_ids ) ) {
@@ -40,8 +40,8 @@ class GeoMashupQuery {
 		}
 
 		$template = locate_template( array("geo-mashup-$template_base.php") );
-		if ( empty( $template ) ) {
-			$template = $template_base . '.php';
+		if ( empty( $template ) && isset( $geo_mashup_custom ) && $geo_mashup_custom->file_url( $template_base . '.php' ) ) {
+			$template = trailingslashit( $geo_mashup_custom->dir_path ) . $template_base . '.php';
 		}
 		if ( !is_readable( $template ) ) {
 			$template = $template_base . '-default.php';
