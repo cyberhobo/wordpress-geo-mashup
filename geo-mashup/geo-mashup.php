@@ -363,7 +363,7 @@ class GeoMashup {
 			}
 			$open = '';
 			if ($geo_mashup_options->get('global_map', 'auto_info_open') == 'true') {
-				$open = '&open_post_id=' . $post->ID;
+				$open = '&open_object_id=' . $post->ID;
 			}
 			$zoom = '';
 			if ( !empty( $options['zoom'] ) ) {
