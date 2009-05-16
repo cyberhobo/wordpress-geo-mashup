@@ -30,6 +30,10 @@ class GeoMashupOptions {
 			'add_google_bar' => 'true',
 			'show_post' => 'false',
 			'show_future' => 'false',
+			'marker_select_info_window' => 'true',
+			'marker_select_highlight' => 'false',
+			'marker_select_center' => 'false',
+			'marker_select_attachments' => 'false',
 			'max_posts' => '',
 			'auto_info_open' => 'true',
 			'click_to_load' => 'false',
@@ -57,6 +61,10 @@ class GeoMashupOptions {
 			'add_overview_control' => 'false',
 			'add_map_type_control' => 'false',
 			'add_google_bar' => 'true',
+			'marker_select_info_window' => 'true',
+			'marker_select_highlight' => 'false',
+			'marker_select_center' => 'false',
+			'marker_select_attachments' => 'false',
 			'click_to_load' => 'false',
 	 		'click_to_load_text' => '' ) );
 	var $conversions = array (
@@ -263,6 +271,10 @@ class GeoMashupOptions {
 			case 'add_map_type_control':
 			case 'add_overview_control':
 			case 'add_google_bar':
+			case 'marker_select_info_window':
+			case 'marker_select_highlight':
+			case 'marker_select_center':
+			case 'marker_select_attachments':
 			case 'theme_stylesheet_with_maps':
 			case 'show_post':
 			case 'click_to_load':

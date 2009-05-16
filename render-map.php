@@ -24,9 +24,9 @@ function geo_mashup_render_map ( ) {
 
 	// Resolve map style
 	$style_file_path = trailingslashit( get_template_directory() ) . 'map-style.css';
-	$template_url_path = get_template_directory_uri();
+	$style_url_path = get_stylesheet_directory_uri();
 	if ( is_readable( $style_file_path ) ) {
-		$style_url_path = trailingslashit( $template_url_path ) . 'map-style.css';
+		$style_url_path = trailingslashit( $style_url_path ) . 'map-style.css';
 	} else if ( isset( $geo_mashup_custom ) ) {
 		$style_url_path = $geo_mashup_custom->file_url( 'map-style.css' );
 	}
@@ -44,7 +44,7 @@ function geo_mashup_render_map ( ) {
 					 
 	$map_properties = array ( 
 		'url_path' => GEO_MASHUP_URL_PATH,
- 		'template_url_path' => $template_url_path );
+ 		'template_url_path' => get_template_directory_uri() );
 	if ( isset( $geo_mashup_custom ) ) {
 		$map_properties['custom_url_path'] = $geo_mashup_custom->url_path;
 	}
@@ -85,6 +85,9 @@ function geo_mashup_render_map ( ) {
 		}
 	} else {
 		// Map content is not single
+		array_push( $option_keys, 'marker_select_info_window', 'marker_select_highlight', 
+			'marker_select_center', 'marker_select_attachments' );
+
 		if ( $map_content == 'contextual' ) {
 			$options = $geo_mashup_options->get ( 'context_map', $option_keys );
 			// If desired we could make these real options
@@ -170,7 +173,7 @@ function geo_mashup_render_map ( ) {
 			<?php endif; ?>
 
 			<?php if ( $geo_mashup_options->get('overall', 'theme_stylesheet_with_maps' ) == 'true' ) : ?>
-			<link rel="stylesheet" href="<?php echo bloginfo('stylesheet_url'); ?>" type="text/css" media="screen" />
+			<link rel="stylesheet" href="<?php echo get_stylesheet_uri(); ?>" type="text/css" media="screen" />
 			<?php endif; ?>
 
 			<?php if ( $style_url_path ) : ?>
