@@ -14,7 +14,7 @@ if ( empty( $_GET['object_ids'] ) ) {
 class GeoMashupQuery {
 
 	function generate_object_html( ) {
-		global $geo_mashup_options, $comments, $users;
+		global $geo_mashup_options, $geo_mashup_custom, $comments, $users;
 
 		$object_ids = $_GET['object_ids'];
 		if ( !is_array( $object_ids ) ) {

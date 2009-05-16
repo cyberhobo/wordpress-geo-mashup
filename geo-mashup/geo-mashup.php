@@ -208,10 +208,12 @@ class GeoMashup {
 		// Use jQuery to tabify the Geo Mashup options
 		if ( isset($_GET['page']) && GEO_MASHUP_PLUGIN_NAME === $_GET['page'] ) {
 
+			/*
 			echo '
 				<script type="text/javascript"> 
 					addLoadEvent(function() { jQuery("#geo-mashup-settings-form > ul").tabs(); }); 
 				</script>';
+			*/
 
 		}
 	}
@@ -224,16 +226,23 @@ class GeoMashup {
 		if ( $objects ) {
 			foreach ($objects as $object) {
 				$category_ids = array();
+				$attachments_string = '';
 				if ( 'post' == $query_args['object_name'] ) {
 					// Only know about post categories now, but could abstract to objects
 					$categories = get_the_category( $object->object_id );
 					foreach ($categories as $category) {
 						$category_ids[] = $category->cat_ID;
 					}
+					// Only posts have KML attachments
+					$attachments = GeoMashup::get_kml_attachment_urls( $object->object_id );
+					if ( !empty( $attachments ) ) {
+						$attachments_string = '"' . implode( '","', $attachments ) . '"';
+					}
 				}
 				$object_literals[] = '{"object_id":"' . $object->object_id . '","title":"' . 
 					addslashes( $object->label ) . '","lat":"' . $object->lat . '","lng":"' . 
-					$object->lng . '","categories":[' . implode( ',', $category_ids ) . ']}';
+					$object->lng . '","categories":[' . implode( ',', $category_ids ) . 
+					'],"attachment_urls":[' . $attachments_string . ']}';
 			}
 		}
 		return '{ objects : [' . implode( ',', $object_literals ) . '] }';
@@ -512,7 +521,6 @@ class GeoMashup {
 	function tabbed_category_index( $args ) {
 		$args = wp_parse_args($args);
 
-		wp_enqueue_script('jquery-ui-tabs');
 		$for_map = 'gm-map-1';
 		if ( !empty( $args['for_map'] ) ) {
 			$for_map = $args['for_map'];
