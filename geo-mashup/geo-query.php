@@ -21,7 +21,7 @@ class GeoMashupQuery {
 			$post_ids = split( ',', $post_ids );
 		}
 
-		$query_vars = array( 'post__in' => $post_ids, 'post_type' => 'any' );
+		$query_vars = array( 'post__in' => $post_ids, 'post_type' => 'any', 'post_status' => 'publish,future' );
 		// Don't filter this query through other plugins (e.g. event-calendar)
 		$query_vars['suppress_filters'] = true;
 		// No sticky posts please
