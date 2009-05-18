@@ -603,7 +603,7 @@ var GeoMashup = {
 		}
 		this.map.closeInfoWindow();
 		if (this.categories[category_id].line) {
-			this.map.addOverlay( this.categories[category_id].line );
+			this.map.removeOverlay( this.categories[category_id].line );
 		}
 		for (var i=0; i<this.categories[category_id].points.length; i++) {
 			var point = this.categories[category_id].points[i];
@@ -618,7 +618,7 @@ var GeoMashup = {
 			return false;
 		}
 		if (this.categories[category_id].line && this.map.getZoom() <= this.categories[category_id].max_line_zoom) {
-			this.map.removeOverlay( this.categories[category_id].line );
+			this.map.addOverlay( this.categories[category_id].line );
 		}
 		for (var i=0; i<this.categories[category_id].points.length; i++) {
 			var point = this.categories[category_id].points[i];
