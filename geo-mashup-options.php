@@ -25,7 +25,7 @@ class GeoMashupOptions {
 			'category_color' => array ( ),
 			'category_line_zoom' => array ( ),
 			'map_control' => 'GSmallZoomControl3D',
-			'add_map_type_control' => 'true',
+			'add_map_type_control' => array(),
 			'add_overview_control' => 'false',
 			'add_google_bar' => 'true',
 			'show_post' => 'false',
@@ -47,7 +47,7 @@ class GeoMashupOptions {
 			'zoom' => '11',
 			'background_color' => 'c0c0c0',
 			'add_overview_control' => 'false',
-			'add_map_type_control' => 'true',
+			'add_map_type_control' => array(),
 			'add_google_bar' => 'true',
 			'click_to_load' => 'false',
 	 		'click_to_load_text' => '' ), 
@@ -59,7 +59,7 @@ class GeoMashupOptions {
 			'zoom' => '7',
 			'background_color' => 'c0c0c0',
 			'add_overview_control' => 'false',
-			'add_map_type_control' => 'false',
+			'add_map_type_control' => array(),
 			'add_google_bar' => 'true',
 			'marker_select_info_window' => 'true',
 			'marker_select_highlight' => 'false',
@@ -100,7 +100,8 @@ class GeoMashupOptions {
 		'in_post_add_map_type_control' => array ( 'single_map', 'add_map_type_control' ),
 		'in_post_click_to_load' => array ( 'single_map', 'click_to_load' ),
 		'in_post_click_to_load_text' => array ( 'single_map', 'click_to_load_text' ) );
-	var $freeform_option_keys = array ( 'category_color', 'category_line_zoom' );
+	var $freeform_option_keys = array ( 'category_color', 'category_line_zoom', 'add_map_type_control' );
+	var $valid_map_types = array ( 'G_NORMAL_MAP', 'G_SATELLITE_MAP', 'G_HYBRID_MAP', 'G_PHYSICAL_MAP', 'G_SATELLITE_3D_MAP' );
 	var $options;
 	var $corrupt_options = '';
 	var $validation_errors = array();
@@ -219,11 +220,25 @@ class GeoMashupOptions {
 	function is_valid ( $key, &$value ) {
 		switch ( $key ) {
 			case 'map_type':
-				$valid_map_types = array ( 'G_NORMAL_MAP', 'G_SATELLITE_MAP', 'G_HYBRID_MAP', 'G_PHYSICAL_MAP', 'G_SATELLITE_3D_MAP' );
-				if ( !in_array ( $value, $valid_map_types ) ) {
+				if ( !in_array ( $value, $this->valid_map_types ) ) {
 					array_push ( $this->validation_errors, '"'. $value . '" ' . __('is invalid for', 'GeoMashup') . ' ' . $key .
 						__(', which must be a valid map type (see documentation)', 'GeoMashup') );
 					return false;
+				}
+				return true;
+
+			case 'add_map_type_control':
+				if ( !is_array ( $value ) ) {
+					array_push ( $this->validation_errors, '"'. $value . '" ' . __('is invalid for', 'GeoMashup') . ' ' . $key .
+						__(', which must be an array of valid map types (see documentation)', 'GeoMashup') );
+					return false;
+				}
+				foreach( $value as $map_type ) {
+					if ( !in_array ( $map_type, $this->valid_map_types ) ) {
+						array_push ( $this->validation_errors, '"'. $map_type . '" ' . __('is invalid for', 'GeoMashup') . ' ' . $key .
+							__(', which must be a valid map type (see documentation)', 'GeoMashup') );
+						return false;
+					}
 				}
 				return true;
 
@@ -268,7 +283,6 @@ class GeoMashupOptions {
 			// booleans
 			case 'auto_info_open':
 			case 'add_category_links':
-			case 'add_map_type_control':
 			case 'add_overview_control':
 			case 'add_google_bar':
 			case 'marker_select_info_window':
@@ -313,6 +327,7 @@ class GeoMashupOptions {
 				if ( empty ( $value ) ) return true;
 			case 'zoom':
 			case 'category_zoom':
+				if ( $value == 'auto' ) return true;
 				if ( !is_numeric ( $value ) || $value < 0 || $value > GEO_MASHUP_MAX_ZOOM ) {
 					array_push ( $this->validation_errors, '"'. $value . '" ' . __('is invalid for', 'GeoMashup') . ' ' . $key .
 						__(', which must be a number from 0 to ', 'GeoMashup') . GEO_MASHUP_MAX_ZOOM );

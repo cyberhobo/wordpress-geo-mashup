@@ -6,6 +6,16 @@ function geo_mashup_options_page() {
 	if (isset($_POST['submit'])) {
 		// Process option updates
 		check_admin_referer('geo-mashup-update-options');
+		// Missing add_map_type_control means empty array
+		if ( empty( $_POST['global_map']['add_map_type_control'] ) ) {
+			$_POST['global_map']['add_map_type_control']  = array();
+		}
+		if ( empty( $_POST['single_map']['add_map_type_control'] ) ) {
+			$_POST['single_map']['add_map_type_control']  = array();
+		}
+		if ( empty( $_POST['context_map']['add_map_type_control'] ) ) {
+			$_POST['context_map']['add_map_type_control']  = array();
+		}
 		$geo_mashup_options->set_valid_options ( $_POST );
 		if ($geo_mashup_options->save()) {
 			echo '<div class="updated fade"><p>'.__('Options updated.', 'GeoMashup').'</p></div>';
@@ -67,7 +77,8 @@ function geo_mashup_options_page() {
 		'G_NORMAL_MAP' => __('Roadmap', 'GeoMashup'), 
 		'G_SATELLITE_MAP' => __('Satellite', 'GeoMashup'),
 		'G_HYBRID_MAP' => __('Hybrid', 'GeoMashup'),
-		'G_PHYSICAL_MAP' => __('Terrain', 'GeoMashup'));
+		'G_PHYSICAL_MAP' => __('Terrain', 'GeoMashup'),
+		'G_SATELLITE_3D_MAP' => __('Earth Plugin', 'GeoMashup'));
 
 	$mapControls = Array(
 		'GSmallZoomControl' => __('Small Zoom', 'GeoMashup'),
@@ -81,17 +92,22 @@ function geo_mashup_options_page() {
 		'false' => __('No', 'GeoMashup'),
 		'only' => __('Only', 'GeoMashup'));
 
+	$zoomOptions = Array( 'auto' => __( 'auto', 'GeoMashup' ) );
+	for ( $i = 0; $i < GEO_MASHUP_MAX_ZOOM; $i++ ) {
+		$zoomOptions[$i] = $i;
+	}
+
 	$selected_tab = ( empty( $_POST['geo_mashup_selected_tab'] ) ) ? 0 : $_POST['geo_mashup_selected_tab'] 
 	// Now for the HTML
 ?>
 	<script type="text/javascript"> 
-	addLoadEvent(function() { 
+	jQuery(function() { 
 		jQuery( '#geo-mashup-settings-form > ul' ).tabs( {
 			selected: <?php echo $selected_tab ?>,
 			select: function ( event, ui ) {
 				jQuery( '#geo-mashup-selected-tab' ).val( ui.index );
 			}
-		} );
+		} ); 
  	} ); 
 	</script>
 	<div class="wrap">
@@ -202,12 +218,18 @@ function geo_mashup_options_page() {
 					<tr>
 						<th scope="row"><?php _e('Category Link Zoom Level', 'GeoMashup'); ?></th>
 						<td>
-							<input id="category_zoom" 
-								name="overall[category_zoom]" 
-								type="text" 
-								size="2" 
-								value="<?php echo $geo_mashup_options->get( 'overall', 'category_zoom' ); ?>" />
-							<?php _e('0 (max zoom out) - 20 (max zoom in)', 'GeoMashup'); ?>
+							<select id="category_zoom" name="overall[category_zoom]">
+								<?php foreach ( $zoomOptions as $value => $label ) : ?>
+								<option value="<?php echo $value; ?>"<?php
+									if ( strcmp( $value, $geo_mashup_options->get( 'overall', 'category_zoom' ) ) == 0 ) {
+										echo ' selected="selected"';
+									}
+								?>><?php echo $label; ?></option>
+								<?php endforeach; ?>
+							</select>
+							<span class="setting-description"><?php 
+								_e( '0 is zoomed all the way out.', 'GeoMashup' ); 
+							?></span>
 						</td>
 					</tr>
 					<tr>
@@ -310,12 +332,33 @@ function geo_mashup_options_page() {
 						</td>
 					</tr>
 					<tr>
+						<th scope="row"><?php _e('Default Map Type', 'GeoMashup'); ?></th>
+						<td>
+							<select id="in_post_map_type" name="single_map[map_type]">
+							<?php foreach ( $mapTypes as $type => $label ) : ?>
+								<option value="<?php echo $type; ?>"<?php
+									if ( $type == $geo_mashup_options->get ( 'single_map', 'map_type' ) ) {
+										echo ' selected="selected"';
+									}
+								?>><?php echo $label; ?></option>
+							<?php endforeach; ?>
+							</select>
+						</td>
+					</tr>
+					<tr>
 						<th scope="row"><?php _e('Add Map Type Control', 'GeoMashup'); ?></th>
-						<td><input id="in_post_add_map_type_control" name="single_map[add_map_type_control]" type="checkbox" value="true"<?php 
-							if ( $geo_mashup_options->get( 'single_map', 'add_map_type_control' ) == 'true' ) {
-								echo ' checked="checked"';
-							}
-						?> /></td>
+						<td>
+						<?php foreach ( $mapTypes as $type => $label ) : ?>
+						<input id="in_post_add_map_type_<?php echo $type; ?>" 
+							name="single_map[add_map_type_control][]" 
+							type="checkbox" 
+							value="<?php echo $type; ?>" <?php 
+								if ( in_array( $type, $geo_mashup_options->get ( 'single_map', 'add_map_type_control' ) ) ) {
+									echo ' checked="checked"';
+								}
+								?> /> <?php echo $label; ?>
+							<?php endforeach; ?>
+						</td>
 					</tr>
 					<tr>
 						<th scope="row"><?php _e('Add Overview Control', 'GeoMashup'); ?></th>
@@ -334,28 +377,20 @@ function geo_mashup_options_page() {
 						?> /></td>
 					</tr>
 					<tr>
-						<th scope="row"><?php _e('Default Map Type', 'GeoMashup'); ?></th>
+						<th scope="row"><?php _e('Default Zoom Level', 'GeoMashup'); ?></th>
 						<td>
-							<select id="in_post_map_type" name="single_map[map_type]">
-							<?php foreach ( $mapTypes as $type => $label ) : ?>
-								<option value="<?php echo $type; ?>"<?php
-									if ( $type == $geo_mashup_options->get ( 'single_map', 'map_type' ) ) {
+							<select id="in_post_zoom" name="single_map[zoom]">
+								<?php foreach ( $zoomOptions as $value => $label ) : ?>
+								<option value="<?php echo $value; ?>"<?php
+									if ( strcmp( $value, $geo_mashup_options->get( 'single_map', 'zoom' ) ) == 0 ) {
 										echo ' selected="selected"';
 									}
 								?>><?php echo $label; ?></option>
-							<?php endforeach; ?>
+								<?php endforeach; ?>
 							</select>
-						</td>
-					</tr>
-					<tr>
-						<th scope="row"><?php _e('Default Zoom Level', 'GeoMashup'); ?></th>
-						<td>
-							<input id="in_post_zoom" 
-								name="single_map[zoom]" 
-								type="text" 
-								size="2" 
-								value="<?php echo $geo_mashup_options->get ( 'single_map', 'zoom' ); ?>" />
-							<?php _e('0 (max zoom out) - 20 (max zoom in)', 'GeoMashup'); ?>
+							<span class="setting-description"><?php 
+								_e( '0 is zoomed all the way out.', 'GeoMashup' ); 
+							?></span>
 						</td>
 					</tr>
 					<tr>
@@ -422,13 +457,32 @@ function geo_mashup_options_page() {
 						</td>
 					</tr>
 					<tr>
+						<th scope="row"><?php _e('Default Map Type', 'GeoMashup'); ?></th>
+						<td>
+							<select id="map_type" name="global_map[map_type]">
+							<?php foreach($mapTypes as $type => $label) : ?>
+								<option value="<?php echo $type; ?>"<?php 
+									if ($type == $geo_mashup_options->get ( 'global_map', 'map_type' )) {
+										echo ' selected="selected"';
+									}
+								?>><?php echo $label; ?></option>
+							<?php endforeach; ?>
+							</select>
+						</td>
+					</tr>
+					<tr>
 						<th scope="row"><?php _e('Add Map Type Control', 'GeoMashup'); ?></th>
 						<td>
-							<input id="add_map_type_control" name="global_map[add_map_type_control]" type="checkbox" value="true"<?php
-								if ($geo_mashup_options->get( 'global_map', 'add_map_type_control' ) == 'true') {
+						<?php foreach ( $mapTypes as $type => $label ) : ?>
+						<input id="add_map_type_<?php echo $type; ?>" 
+							name="global_map[add_map_type_control][]" 
+							type="checkbox" 
+							value="<?php echo $type; ?>" <?php 
+								if ( in_array( $type, $geo_mashup_options->get ( 'global_map', 'add_map_type_control' ) ) ) {
 									echo ' checked="checked"';
 								}
-							?> />
+								?> /> <?php echo $label; ?>
+							<?php endforeach; ?>
 						</td>
 					</tr>
 					<tr>
@@ -452,28 +506,21 @@ function geo_mashup_options_page() {
 						</td>
 					</tr>
 					<tr>
-						<th scope="row"><?php _e('Default Map Type', 'GeoMashup'); ?></th>
+						<th scope="row"><?php _e('Default Zoom Level', 'GeoMashup'); ?></th>
 						<td>
-							<select id="map_type" name="global_map[map_type]">
-							<?php foreach($mapTypes as $type => $label) : ?>
-								<option value="<?php echo $type; ?>"<?php 
-									if ($type == $geo_mashup_options->get ( 'global_map', 'map_type' )) {
+							<select id="zoom" name="global_map[zoom]">
+								<?php foreach ( $zoomOptions as $value => $label ) : ?>
+								<option value="<?php echo $value; ?>"<?php
+									if ( strcmp( $value, $geo_mashup_options->get( 'global_map', 'zoom' ) ) == 0 ) {
 										echo ' selected="selected"';
 									}
 								?>><?php echo $label; ?></option>
-							<?php endforeach; ?>
+								<?php endforeach; ?>
 							</select>
+							<span class="setting-description"><?php 
+								_e( '0 is zoomed all the way out.', 'GeoMashup' ); 
+							?></span>
 						</td>
-					</tr>
-					<tr>
-						<th scope="row"><?php _e('Default Zoom Level', 'GeoMashup'); ?></th>
-						<td>
-							<input id="zoom" 
-								name="global_map[zoom]" 
-								type="text" 
-								size="2" 
-								value="<?php echo $geo_mashup_options->get ( 'global_map', 'zoom' ); ?>" />
-						<?php _e('0 (max zoom out) - 20 (max zoom in)', 'GeoMashup'); ?></td>
 					</tr>
 					<tr>
 						<th scope="row"><?php _e('Cluster Markers Until Zoom Level', 'GeoMashup'); ?></th>
@@ -637,13 +684,32 @@ function geo_mashup_options_page() {
 						</td>
 					</tr>
 					<tr>
+						<th scope="row"><?php _e('Default Map Type', 'GeoMashup'); ?></th>
+						<td>
+							<select id="context_map_type" name="context_map[map_type]">
+							<?php	foreach($mapTypes as $type => $label) : ?>
+								<option value="<?php echo $type; ?>"<?php
+									if ($type == $geo_mashup_options->get ( 'context_map', 'map_type' )) {
+										echo ' selected="selected"';
+									}
+								?>><?php echo $label; ?></option>
+							<?php endforeach; ?>
+							</select>
+						</td>
+					</tr>
+					<tr>
 						<th scope="row"><?php _e('Add Map Type Control', 'GeoMashup'); ?></th>
 						<td>
-							<input id="context_add_map_type_control" name="context_map[add_map_type_control]" type="checkbox" value="true"<?php 
-								if ($geo_mashup_options->get ( 'context_map', 'add_map_type_control' ) == 'true') {
+						<?php foreach ( $mapTypes as $type => $label ) : ?>
+						<input id="context_add_map_type_<?php echo $type; ?>" 
+							name="context_map[add_map_type_control][]" 
+							type="checkbox" 
+							value="<?php echo $type; ?>" <?php 
+								if ( in_array( $type, $geo_mashup_options->get ( 'context_map', 'add_map_type_control' ) ) ) {
 									echo ' checked="checked"';
 								}
-							?> />
+								?> /> <?php echo $label; ?>
+							<?php endforeach; ?>
 						</td>
 					</tr>
 					<tr>
@@ -665,32 +731,22 @@ function geo_mashup_options_page() {
 							}
 						?> />
 					</td>
-	
-
-					</tr>
-					<tr>
-						<th scope="row"><?php _e('Default Map Type', 'GeoMashup'); ?></th>
+				</tr>
+				<tr>
+					<th scope="row"><?php _e('Default Zoom Level', 'GeoMashup'); ?></th>
 						<td>
-							<select id="context_map_type" name="context_map[map_type]">
-							<?php	foreach($mapTypes as $type => $label) : ?>
-								<option value="<?php echo $type; ?>"<?php
-									if ($type == $geo_mashup_options->get ( 'context_map', 'map_type' )) {
+							<select id="zoom" name="context_map[zoom]">
+								<?php foreach ( $zoomOptions as $value => $label ) : ?>
+								<option value="<?php echo $value; ?>"<?php
+									if ( strcmp( $value, $geo_mashup_options->get( 'context_map', 'zoom' ) ) == 0 ) {
 										echo ' selected="selected"';
 									}
 								?>><?php echo $label; ?></option>
-							<?php endforeach; ?>
+								<?php endforeach; ?>
 							</select>
-						</td>
-					</tr>
-					<tr>
-						<th scope="row"><?php _e('Default Zoom Level', 'GeoMashup'); ?></th>
-						<td>
-							<input id="context_zoom" 
-								name="context_map[zoom]" 
-								type="text" 
-								size="2" 
-								value="<?php echo $geo_mashup_options->get ( 'context_map', 'zoom' ); ?>" />
-							<?php _e('0 (max zoom out) - 20 (max zoom in)', 'GeoMashup'); ?>
+							<span class="setting-description"><?php 
+								_e( '0 is zoomed all the way out.', 'GeoMashup' ); 
+							?></span>
 						</td>
 					</tr>
 					<tr>

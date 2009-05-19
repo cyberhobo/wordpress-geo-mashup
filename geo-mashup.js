@@ -855,8 +855,12 @@ GeoMashup = {
 				// This object has not yet been loaded
 				this.objects[object_id] = response_data[i];
 				this.object_count += 1;
+				if ( !this.opts.open_object_id ) {
+					this.opts.open_object_id = object_id;
+				}
 				if (!this.locations[point]) {
 					// There are no other objects yet at this point, create a marker
+					this.location_bounds.extend( point );
 					this.locations[point] = { objects : [ response_data[i] ] };
 					this.locations[point].loaded = false;
 					marker = this.createMarker(point, response_data[i]);
@@ -896,8 +900,11 @@ GeoMashup = {
 
 		if (this.firstLoad) {
 			this.firstLoad = false;
-			if (this.opts.auto_info_open && this.opts.open_object_id) {
+			if ( this.opts.auto_info_open && this.object_count > 0 ) {
 				this.clickMarker(this.opts.open_object_id);
+			}
+			if ( this.opts.zoom === 'auto' ) {
+				this.map.setCenter( this.location_bounds.getCenter(), this.map.getBoundsZoomLevel( this.location_bounds ) );
 			}
 			this.updateVisibleList();
 		}
@@ -1025,8 +1032,8 @@ GeoMashup = {
 	},
 
 	createMap : function(container, opts) {
-		var type_num, center_latlng, map_opts, map_types, request, url, objects, point, marker_opts, 
-			clusterer_opts, google_bar_opts, single_marker, ov, credit_div;
+		var i, type_num, center_latlng, map_opts, map_types, request, url, objects, point, marker_opts, 
+			clusterer_opts, google_bar_opts, single_marker, ov, credit_div, initial_zoom = 1;
 
 		this.container = container;
 		this.checkDependencies();
@@ -1039,8 +1046,31 @@ GeoMashup = {
 		this.base_color_icon.infoWindowAnchor = new google.maps.Point(5, 1);
 		this.multiple_category_icon = new google.maps.Icon(this.base_color_icon);
 		this.multiple_category_icon.image = opts.url_path + '/images/mm_20_mixed.png';
+
+		map_types = {
+			'G_NORMAL_MAP' : google.maps.NORMAL_MAP,
+			'G_SATELLITE_MAP' : google.maps.SATELLITE_MAP,
+			'G_HYBRID_MAP' : google.maps.HYBRID_MAP,
+			'G_PHYSICAL_MAP' : google.maps.PHYSICAL_MAP,
+			'G_SATELLITE_3D_MAP' : google.maps.SATELLITE_3D_MAP
+		};
+		if (typeof opts.map_type === 'string') {
+			if ( map_types[opts.map_type] ) {
+				opts.map_type = map_types[opts.map_type] ;
+			} else {
+				type_num = parseInt(opts.map_type, 10);
+				if (isNaN(type_num)) {
+					opts.map_type = google.maps.NORMAL_MAP;
+				} else {
+					opts.map_type = this.map.getMapTypes()[type_num];
+				}
+			}
+		} else if (typeof opts.map_type === 'undefined') {
+			opts.map_type = google.maps.NORMAL_MAP;
+		}
 		map_opts = {
 			backgroundColor : '#' + opts.background_color,
+			mapTypes : [ opts.map_type ],
 	 		googleBarOptions : { 
 				adsOptions : { client : ( opts.adsense_code ) ? opts.adsense_code : 'partner-pub-5088093001880917' }	
 			}
@@ -1048,7 +1078,6 @@ GeoMashup = {
 		this.doAction( 'mapOptions', opts, map_opts );
 		this.map = new google.maps.Map2( this.container, map_opts );
 		this.map.setCenter(new google.maps.LatLng(0,0), 1);
-		this.map.addMapType(google.maps.PHYSICAL_MAP);
 
 		this.doAction( 'newMap', opts, this.map );
 
@@ -1072,32 +1101,10 @@ GeoMashup = {
 			this.clusterer = new ClusterMarker( this.map, clusterer_opts );
 		}
 
-		if (typeof opts.zoom === 'string') {
-			opts.zoom = parseInt(opts.zoom, 10);
-		} else if (typeof opts.zoom === 'undefined') {
-			opts.zoom = 5;
-		}
-
-		map_types = {
-			'G_NORMAL_MAP' : google.maps.NORMAL_MAP,
-			'G_SATELLITE_MAP' : google.maps.SATELLITE_MAP,
-			'G_HYBRID_MAP' : google.maps.HYBRID_MAP,
-			'G_PHYSICAL_MAP' : google.maps.PHYSICAL_MAP,
-			'G_SATELLITE_3D_MAP' : google.maps.SATELLITE_3D_MAP
-		};
-		if (typeof opts.map_type === 'string') {
-			if ( map_types[opts.map_type] ) {
-				opts.map_type = map_types[opts.map_type] ;
-			} else {
-				type_num = parseInt(opts.map_type, 10);
-				if (isNaN(type_num)) {
-					opts.map_type = google.maps.NORMAL_MAP;
-				} else {
-					opts.map_type = this.map.getMapTypes()[type_num];
-				}
-			}
-		} else if (typeof opts.map_type === 'undefined') {
-			opts.map_type = google.maps.NORMAL_MAP;
+		if ( opts.zoom !== 'auto' && typeof opts.zoom === 'string' ) {
+			initial_zoom = parseInt(opts.zoom, 10);
+		} else {
+			initial_zoom = opts.zoom;
 		}
 
 		if (opts.load_kml) {
@@ -1107,17 +1114,16 @@ GeoMashup = {
 
 		this.buildCategoryHierarchy();
 
-		if (opts.center_lat && opts.center_lng) {
-			// Use the center form options
-			this.map.setCenter(new google.maps.LatLng(opts.center_lat, opts.center_lng), opts.zoom, opts.map_type);
+		if ( initial_zoom === 'auto' ) {
+			// Wait to center and zoom after loading
+		} else if (opts.center_lat && opts.center_lng) {
+			// Use the center from options
+			this.map.setCenter(new google.maps.LatLng(opts.center_lat, opts.center_lng), initial_zoom, opts.map_type);
 		} else if (this.kml) {
-			this.map.setCenter(this.kml.getDefaultCenter, opts.zoom, opts.map_type);
+			this.map.setCenter(this.kml.getDefaultCenter, initial_zoom, opts.map_type);
 		} else if (opts.object_data && opts.object_data.objects[0]) {
 			center_latlng = new google.maps.LatLng(opts.object_data.objects[0].lat, opts.object_data.objects[0].lng);
-			this.map.setCenter(center_latlng, opts.zoom, opts.map_type);
-			if (this.opts.auto_info_open && !this.opts.open_object_id) {
-				this.opts.open_object_id = opts.object_data.objects[0].object_id;
-			}
+			this.map.setCenter(center_latlng, initial_zoom, opts.map_type);
 		} else {
 			// Center on the most recent located object
 			request = google.maps.XmlHttp.create();
@@ -1130,17 +1136,16 @@ GeoMashup = {
 			objects = window['eval']( '(' + request.responseText + ')' );
 			if (objects.length>0) {
 				point = new google.maps.LatLng(objects[0].lat,objects[0].lng);
-				this.map.setCenter(point,opts.zoom,opts.map_type);
-				if (this.opts.auto_info_open) {
-					this.opts.open_object_id = objects[0].object_id;
-				}
+				this.map.setCenter(point,initial_zoom,opts.map_type);
 			} else {
-				this.map.setCenter(new google.maps.LatLng(0,0),opts.zoom,opts.map_type);
+				this.map.setCenter(new google.maps.LatLng(0,0),initial_zoom,opts.map_type);
 			}
 		}
 
 		google.maps.Event.bind(this.map, "zoomend", this, this.adjustZoom);
 		google.maps.Event.bind(this.map, "moveend", this, this.adjustViewport);
+
+		this.location_bounds = new google.maps.LatLngBounds();
 
 		if (opts.map_content === 'single')
 		{
@@ -1181,7 +1186,10 @@ GeoMashup = {
 			this.map.addControl(new google.maps.LargeMapControl3D());
 		}
 
-		if (opts.add_map_type_control) {
+		if (opts.add_map_type_control && opts.add_map_type_control.length ) {
+			for ( i = 0; i < opts.add_map_type_control.length; i += 1 ) {
+				this.map.addMapType( map_types[opts.add_map_type_control[i]] );
+			}
 			this.map.addControl(new google.maps.MapTypeControl());
 		}
 
