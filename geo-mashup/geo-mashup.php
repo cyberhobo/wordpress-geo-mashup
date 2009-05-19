@@ -62,9 +62,6 @@ class GeoMashup {
 			// To add Geo Mashup settings page
 			add_action('admin_menu', array('GeoMashup', 'admin_menu'));
 
-			// To activate jQuery tabs on the settings page
-			add_action('admin_print_scripts', array('GeoMashup', 'admin_print_scripts'));
-
 		} else {
 
 			if ($geo_mashup_options->get('overall','add_category_links') == 'true') {
@@ -201,20 +198,6 @@ class GeoMashup {
 					}
 				}
 			}
-		}
-	}
-
-	function admin_print_scripts($not_used) {
-		// Use jQuery to tabify the Geo Mashup options
-		if ( isset($_GET['page']) && GEO_MASHUP_PLUGIN_NAME === $_GET['page'] ) {
-
-			/*
-			echo '
-				<script type="text/javascript"> 
-					addLoadEvent(function() { jQuery("#geo-mashup-settings-form > ul").tabs(); }); 
-				</script>';
-			*/
-
 		}
 	}
 

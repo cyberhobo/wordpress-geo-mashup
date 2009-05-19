@@ -5,14 +5,12 @@ require_once ( '../../../wp-blog-header.php' );
 status_header ( 200 );
 geo_mashup_render_map ( );
 
-function add_double_quotes(&$item,$key) {
-	$quoted_keys = array ( 'background_color', 'show_future', 'map_control', 'map_content', 'map_type', 
-		'legend_format', 'template', 'object_name', 'adsense_code' );
-	if ( $key == 'object_data' ) {
-		// don't quote
-	} else if ( empty ( $item ) ) {
+function add_double_quotes( &$item, $key ) {
+	if ( empty ( $item ) || $item == 'false' ) {
 		$item = '""';
-	} else if ( in_array ( $key, $quoted_keys ) || is_int(strpos($item,',')) || is_int(strpos($item,':'))) {
+	} else if ( is_array( $item ) && $item[0] ) {
+		$item = '["' . implode( '","', $item ) . '"]';
+	} else if ( is_string( $item ) && $item[0] != '{' && $item[0] != '[' ) {
 		$item = '"'.$item.'"';
 	}
 }
