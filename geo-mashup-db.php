@@ -468,9 +468,14 @@ class GeoMashupDB {
 	function get_distinct_located_values( $names, $where = null ) {
 		global $wpdb;
 
-		if ( is_array( $names ) ) {
-			$names = implode( ',', $names );
+		if ( is_string( $names ) ) {
+			$names = preg_split( '/\s*,\s*/', $names );
 		}
+		$wheres = array( );
+		foreach( $names as $name ) {
+			$wheres[] = $wpdb->escape( $name ) . ' IS NOT NULL';
+		}
+		$names = implode( ',', $names );
 
 		if ( is_object( $where ) ) {
 			$where = (array) $where;
@@ -481,7 +486,6 @@ class GeoMashupDB {
 			JOIN {$wpdb->prefix}geo_mashup_location_relationships gmlr ON gmlr.location_id = gml.id";
 
 		if ( is_array( $where ) && !empty( $where ) ) {
-			$wheres = array( );
 			foreach ( $where as $name => $value ) {
 				$wheres[] = $wpdb->escape( $name ) . ' = \'' . $wpdb->escape( $value ) .'\'';
 			}
@@ -496,20 +500,36 @@ class GeoMashupDB {
 		return GeoMashupDB::get_object_location( 'post', $post_id );
 	}
 
-	function get_object_location( $object_name, $object_id ) {
+	function translate_object( $obj, $output = OBJECT ) {
+		if ( !is_object( $obj ) ) {
+			return $obj;
+		}
+
+		if ( $output == OBJECT ) {
+		} elseif ( $output == ARRAY_A ) {
+			$obj = get_object_vars($obj);
+		} elseif ( $output == ARRAY_N ) {
+			$obj = array_values(get_object_vars($obj));
+		}
+		return $obj;
+	}
+
+	function get_object_location( $object_name, $object_id, $output = OBJECT ) {
 		global $wpdb;
 
-		$select_string = "SELECT * 
-			FROM {$wpdb->prefix}geo_mashup_locations gml
-			JOIN {$wpdb->prefix}geo_mashup_location_relationships gmlr ON gmlr.location_id = gml.id " .
-			$wpdb->prepare( 'WHERE gmlr.object_name = %s AND gmlr.object_id = %d', $object_name, $object_id );
+		$cache_id = $object_name . '-' . $object_id;
 
-		$location = false;
-		$wpdb->query( $select_string );
-		if ( $wpdb->last_result ) {
-			$location = $wpdb->last_result[0];
+		$location = wp_cache_get( $cache_id, 'locations' );
+		if ( !$location ) {
+			$select_string = "SELECT * 
+				FROM {$wpdb->prefix}geo_mashup_locations gml
+				JOIN {$wpdb->prefix}geo_mashup_location_relationships gmlr ON gmlr.location_id = gml.id " .
+				$wpdb->prepare( 'WHERE gmlr.object_name = %s AND gmlr.object_id = %d', $object_name, $object_id );
+
+			$location = $wpdb->get_row( $select_string );
+			wp_cache_add( $cache_id, $location, 'locations' );
 		}
-		return $location;
+		return GeoMashupDB::translate_object( $location, $output );
 	}
 	
 	function get_post_locations( $query_args = '' ) {

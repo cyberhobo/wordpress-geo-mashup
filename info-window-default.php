@@ -10,6 +10,10 @@
  *
  * For styling of the info window, see map-style-default.css.
  */
+
+// A potentially heavy-handed way to remove shortcode-like content
+add_filter( 'the_excerpt', array( 'GeoMashupQuery', 'strip_brackets' ) );
+
 ?>
 <div class="locationinfo post-location-info">
 <?php if (have_posts()) : ?>
