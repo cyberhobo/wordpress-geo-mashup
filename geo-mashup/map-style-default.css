@@ -14,7 +14,7 @@
 
 /* Info window */
 .locationinfo { font-size:80%; overflow:auto; width:300px; height:150px; }
-.user-location-info { font-size:80%; overflow:auto; width:150px; height:40px; }
+.user-location-info { font-size:80%; overflow:auto; width:150px; height:80px; }
 .comment-location-info { font-size:80%; overflow:auto; width:200px; height:140px; }
 
 /* Title link style */

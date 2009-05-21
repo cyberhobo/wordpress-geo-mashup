@@ -13,6 +13,16 @@ if ( empty( $_GET['object_ids'] ) ) {
  */
 class GeoMashupQuery {
 
+	/**
+	 * Strip content in square brackets.
+	 *
+	 * Shortcodes are not registered in the bare-bones query environments, 
+	 * but we can strip all bracketed content.
+	 */
+	function strip_brackets( $content ) {
+		return preg_replace( '/\[.*?\]/', '', $content );
+	}
+
 	function generate_object_html( ) {
 		global $geo_mashup_options, $geo_mashup_custom, $comments, $users;
 
@@ -68,6 +78,116 @@ class GeoMashupQuery {
 		}
 		load_template( $template );
 	}
+
+	/** 
+	 * Set the comment global. Not sure why WP 2.7 comment templating
+	 * requires this for callbacks, but it does.
+	 *
+	 * @since 1.3
+	 *
+	 * @param object $comment The comment object to make global.
+	 */
+	function set_the_comment( $comment ) {
+		$GLOBALS['comment'] = $comment;
+	}
+
+	/** 
+	 * Wrap access to comments global.
+	 *
+	 * @since 1.3
+	 *
+	 * @returns bool Whether there are any comments to be listed.
+	 */
+	function have_comments( ) {
+		global $comments;
+
+		return ( !empty( $comments ) );
+	}
+
+	/**
+	 * A wrapper for wp_list_comments when it exists,
+	 * otherwise a simple comment loop.
+	 *
+	 * @since 1.3
+	 * @see wp_list_comments()
+	 *
+	 * @param string|array $args Formatting options
+	 */
+	function list_comments( $args = '' ) {
+		global $wp_query, $comments, $in_comment_loop;
+
+		if ( function_exists( 'wp_list_comments' ) ) {
+			wp_list_comments( $args, $comments );
+		} else {
+			if ( empty( $comments ) ) {
+				return;
+			}
+			$args = wp_parse_args( $args );
+			$in_comment_loop = true;
+			foreach( $comments as $comment) {
+				if ( !empty( $args['callback'] ) ) {
+					call_user_func( $args['callback'], $comment, $args, 1 );
+				} else {
+					echo '<p>' . $comment->comment_author . ':<br/>' . $comment->comment_content . '</p>';
+				}
+			}
+			$in_comment_loop = false;
+		}
+	}
+
+	/** 
+	 * Set the user global. Probably only Geo Mashup using it here
+	 * for a templated list of users.
+	 *
+	 * @since 1.3
+	 *
+	 * @param object $user The user object to make global.
+	 */
+	function set_the_user( $user ) {
+		$GLOBALS['user'] = $user;
+	}
+
+	/** 
+	 * Wrap access to users global. Probably only Geo Mashup using it here
+	 * for a templated list of users.
+	 *
+	 * @since 1.3
+	 *
+	 * @returns bool Whether there are any users to be listed.
+	 */
+	function have_users( ) {
+		global $users;
+
+		return ( !empty( $users ) );
+	}
+
+	/**
+	 * A simple user loop that takes a callback option for formatting.
+	 *
+	 * @since 1.3
+	 *
+	 * @param string|array $args Formatting options
+	 */
+	function list_users( $args = '' ) {
+		global $wp_query, $users, $in_user_loop;
+
+		if ( empty( $users ) ) {
+			return;
+		}
+		$defaults = array( 'callback' => '' );
+		$args = wp_parse_args( $args, $defaults );
+		$in_user_loop = true;
+		foreach( $users as $user) {
+			if ( !empty( $args['callback'] ) ) {
+				call_user_func( $args['callback'], $user, $args );
+			} else {
+				echo '<p>' . $user->display_name .
+					( empty( $user->user_url ) ? '' : ' - ' . $user->url ) . '</p>';
+			}
+		}
+		$in_user_loop = false;
+	}
+
 
 	function generate_location_json( ) {
 		/*

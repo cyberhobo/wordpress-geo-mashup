@@ -10,23 +10,11 @@
  *
  * For styling of the info window, see map-style-default.css.
  */
-global $users;
 ?>
 <div class="locationinfo user-location-info">
-<?php if ( count( $users ) > 0 ) : ?>
+<?php if ( GeoMashupQuery::have_users() ) : ?>
 
-	<?php foreach( $users as $user ) : ?>
-	<div id="div-user-<?php echo $user->ID ?>" class="vcard">
-		<div class="fn">
-		<?php printf(__('<span class="type">Display Name</span>: <span class="value">%s</span>'), $user->display_name) ?>
-		</div>
-		<?php if ( isset( $user->user_url ) && strlen( $user->user_url ) > 7 ) : ?>
-		<div class="url">
-		<?php printf(__('<span class="type">Website</span>: <a class="value" href="%s">%s</a>'), $user->user_url, $user->user_url) ?>
-		</div>
-		<?php endif; ?>
-	</div>
-	<?php endforeach; ?>
+<?php GeoMashupQuery::list_users( 'callback=geo_mashup_user_default_template' ); ?>
 
 <?php else : ?>
 
@@ -34,5 +22,21 @@ global $users;
 	<p class="center">Sorry, but you are looking for something that isn't here.</p>
 
 <?php endif; ?>
-
 </div>
+<?php 
+function geo_mashup_user_default_template( $user ) { 
+	GeoMashupQuery::set_the_user( $user );
+?>
+<div id="div-user-<?php echo $user->ID ?>" class="vcard">
+	<div class="fn">
+		<span class="type"><?php _e( 'Display Name' ); ?></span>: <span class="value"><?php echo $user->display_name; ?></span>
+	</div>
+	<?php echo GeoMashup::location_info( 'fields=locality_name,admin_code&format=<div class="adr"><span class="locality">%s</span>, <span class="region">%s</span></div>' ); ?>
+	<?php if ( isset( $user->user_url ) && strlen( $user->user_url ) > 7 ) : ?>
+	<div class="url">
+		<span class="type"><?php _e( 'Website' ); ?></span>: <a class="value" href="<?php echo $user->user_url; ?>"><?php echo $user->user_url; ?></a>
+	</div>
+	<?php endif; ?>
+</div>
+<?php } ?>
+

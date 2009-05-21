@@ -10,12 +10,28 @@
  *
  * For styling of the info window, see map-style-default.css.
  */
-global $comments;
 ?>
 <div class="locationinfo comment-location-info">
-<?php if ( count( $comments ) > 0 ) : ?>
+<?php if ( GeoMashupQuery::have_comments() ) : ?>
 
-	<?php foreach( $comments as $comment ) : ?>
+	<?php GeoMashupQuery::list_comments( 'callback=geo_mashup_comment_default' ); ?>
+
+<?php else : ?>
+
+	<h2 class="center">Not Found</h2>
+	<p class="center">Sorry, but you are looking for something that isn't here.</p>
+
+<?php endif; ?>
+
+</div>
+<?php 
+// Use the newer form of template, where the individual comment template goes in 
+// a function that matches the callback argument to list_comments
+function geo_mashup_comment_default( $comment, $args, $depth ) {
+	// Enable the WordPress comment functions
+	GeoMashupQuery::set_the_comment( $comment );
+	// From here to the closing curly brace should look like a familiar template
+?>
 	<div id="div-comment-<?php comment_ID() ?>" class="<?php comment_class(''); ?>">
 		<div class="comment-author vcard">
 		<?php printf(__('<cite class="fn">%s</cite> <span class="says">says:</span>'), get_comment_author_link()) ?>
@@ -26,13 +42,4 @@ global $comments;
 		<?php comment_text() ?>
 
 	</div>
-	<?php endforeach; ?>
-
-<?php else : ?>
-
-	<h2 class="center">Not Found</h2>
-	<p class="center">Sorry, but you are looking for something that isn't here.</p>
-
-<?php endif; ?>
-
-</div>
+<?php } ?>
