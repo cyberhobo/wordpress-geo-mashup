@@ -663,6 +663,9 @@ var GeoMashup = {
 					this.posts[post_id].marker = marker;
 					this.locations[point].marker = marker;
 					this.map.addOverlay(marker);
+					if ( this.map.getZoom() < this.opts.marker_min_zoom ) {
+						marker.hide();
+					}
 				} else {
 					// There is already a marker at this point, add the new post to it
 					this.locations[point].posts.push(post_id);
