@@ -2,7 +2,17 @@
 /**
  * Geo Mashup Data Access
  */
+
+// Actions to maintain data integrity with WordPress
+add_action( 'delete_post', array( 'GeoMashupDB', 'delete_post' ) );
+add_action( 'delete_comment', array( 'GeoMashupDB', 'delete_comment' ) );
+add_action( 'delete_user', array( 'GeoMashupDB', 'delete_user' ) );
 		 
+/**
+ * Static class used as a namespace for Geo Mashup data functions.
+ *
+ * @since 1.2
+ */
 class GeoMashupDB {
 
 	function installed_version( $new_version = null ) {
@@ -798,6 +808,18 @@ class GeoMashupDB {
 		$select_string = "SELECT * FROM $wpdb->users WHERE ID IN (" .
 			$wpdb->prepare( $user_ids ) . ') ORDER BY display_name ASC';
 		return $wpdb->get_results( $select_string );
+	}
+
+	function delete_post( $id ) {
+		GeoMashupDB::delete_object_location( 'post', $id );
+	}
+
+	function delete_comment( $id ) {
+		GeoMashupDB::delete_object_location( 'comment', $id );
+	}
+
+	function delete_user( $id ) {
+		GeoMashupDB::delete_object_location( 'user', $id );
 	}
 }
 
