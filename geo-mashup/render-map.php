@@ -22,8 +22,9 @@ function geo_mashup_render_map ( ) {
 
 	// Resolve map style
 	$style_file_path = trailingslashit( get_template_directory() ) . 'map-style.css';
-	$style_url_path = get_stylesheet_directory_uri();
+	$style_url_path = '';
 	if ( is_readable( $style_file_path ) ) {
+		$style_url_path = get_stylesheet_directory_uri();
 		$style_url_path = trailingslashit( $style_url_path ) . 'map-style.css';
 	} else if ( isset( $geo_mashup_custom ) ) {
 		$style_url_path = $geo_mashup_custom->file_url( 'map-style.css' );
