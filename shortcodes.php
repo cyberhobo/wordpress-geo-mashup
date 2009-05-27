@@ -9,7 +9,8 @@
  */
 
 add_shortcode('geo_mashup_map', array( 'GeoMashup', 'map' ) );
-add_shortcode('geo_mashup_show_on_map_link', array( 'GeoMashup', 'post_link' ) );
+add_shortcode('geo_mashup_show_on_map_link', array( 'GeoMashup', 'show_on_map_link' ) );
+add_shortcode('geo_mashup_show_on_map_link_url', array( 'GeoMashup', 'show_on_map_link_url' ) );
 add_shortcode('geo_mashup_full_post', array( 'GeoMashup', 'full_post' ) );
 add_shortcode('geo_mashup_category_name', array( 'GeoMashup', 'category_name' ) );
 add_shortcode('geo_mashup_category_legend', array( 'GeoMashup', 'category_legend') );
