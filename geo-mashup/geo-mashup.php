@@ -566,51 +566,79 @@ class GeoMashup {
 
 	/**
 	 * A tag to insert a link to a post on the mashup.
+	 * 
+	 * @see show_on_map_link()
 	 */
 	function post_link($option_args = '') {
+		return GeoMashup::show_on_map_link($option_args);
+	}
+
+	/**
+	 * A tag to return a URL for the current location on the 
+	 * global map page. Replaces post_link().
+	 *
+	 * @since 1.3
+	 *
+	 * @return string The URL, empty if no current location is found.
+	 */
+	function show_on_map_link_url( $args = null ) {
 		global $geo_mashup_options;
-		$options = array('text' => __('Show on map','GeoMashup'),
-			 'display' => false,
-			 'show_icon' => true);
-		$options = wp_parse_args($option_args, $options);
-		$location = GeoMashupDB::get_object_location( 'post', get_the_ID() );
-		$link = '';
+
+		$defaults = array( 'zoom' => '' );
+		$args = wp_parse_args( $args, $defaults );
+
+		$url = '';
+		$location = GeoMashup::current_location();
 		if ( $location ) {
-			$icon = '';
-			if ($options['show_icon'] && strcmp( $options['show_icon'], 'false' ) != 0) {
-				$icon = '<img src="'.GEO_MASHUP_URL_PATH.
-					'/images/geotag_16.png" alt="'.__('Geotag Icon','GeoMashup').'"/>';
-			}
 			$url = get_page_link($geo_mashup_options->get('overall', 'mashup_page'));
-			if (strstr($url,'?')) {
+			if ( !$url ) {
+				return $url;
+			}
+			if ( strstr( $url, '?' ) ) {
 				$url .= '&amp;';
 			} else {
 				$url .= '?';
 			}
 			$open = '';
-			if ($geo_mashup_options->get('global_map', 'auto_info_open') == 'true') {
-				$open = '&open_object_id=' . get_the_ID();
+			if ( $geo_mashup_options->get( 'global_map', 'auto_info_open' ) == 'true' ) {
+				$open = '&open_object_id=' . $location->object_id;
 			}
 			$zoom = '';
-			if ( !empty( $options['zoom'] ) ) {
-				$zoom = '&zoom=' . $options['zoom'];
+			if ( !empty( $args['zoom'] ) ) {
+				$zoom = '&zoom=' . $args['zoom'];
 			}
-			$link = '<a class="gm-link" href="'.$url.
-				htmlentities("center_lat={$location->lat}&center_lng={$location->lng}$open$zoom").'">'.
-				$icon.' '.$options['text'].'</a>';
-			if ($options['display']) {
-				echo $link;
-				return true;
-			}
+			$url .= htmlentities("center_lat={$location->lat}&center_lng={$location->lng}$open$zoom");
 		}
-		return $link;
+		return $url;
 	}
 
 	/**
-	* A better name for the post_link tag.
-	*/
-	function show_on_map_link($option_args = null) {
-		return GeoMashup::post_link($option_args);
+	 * A tag to insert a link to the current location post on the 
+	 * global map page. Replaces post_link().
+	 *
+	 * @return string The link HTML, empty if no current location is found.
+	 */
+	function show_on_map_link( $args = null ) {
+		$defaults = array( 'text' => __( 'Show on map', 'GeoMashup' ),
+			 'display' => false,
+			 'zoom' => '',
+			 'show_icon' => true );
+		$options = wp_parse_args($args, $defaults);
+		$link = '';
+		$url = GeoMashup::show_on_map_link_url( $args );
+		if ( $url ) {
+			$icon = '';
+			if ($options['show_icon'] && strcmp( $options['show_icon'], 'false' ) != 0) {
+				$icon = '<img src="'.GEO_MASHUP_URL_PATH.
+					'/images/geotag_16.png" alt="'.__('Geotag Icon','GeoMashup').'"/>';
+			}
+			$link = '<a class="gm-link" href="'.$url.'">'.
+				$icon.' '.$options['text'].'</a>';
+			if ($options['display']) {
+				echo $link;
+			}
+		}
+		return $link;
 	}
 
 	/** 
