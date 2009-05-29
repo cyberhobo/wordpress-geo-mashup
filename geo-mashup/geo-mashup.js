@@ -1110,6 +1110,9 @@ GeoMashup = {
 		if (opts.load_kml) {
 			this.kml = new google.maps.GeoXml(opts.load_kml);
 			this.map.addOverlay(this.kml);
+			if ( initial_zoom === 'auto' ) {
+				this.kml.gotoDefaultViewport( this.map );
+			}
 		}
 
 		this.buildCategoryHierarchy();
