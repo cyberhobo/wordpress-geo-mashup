@@ -16,9 +16,11 @@
 .locationinfo { font-size:80%; overflow:auto; width:300px; height:150px; }
 .user-location-info { font-size:80%; overflow:auto; width:150px; height:80px; }
 .comment-location-info { font-size:80%; overflow:auto; width:200px; height:140px; }
+.info-window-max { font-size:80%; overflow:auto; }
+
 
 /* Title link style */
-.locationinfo h2 a { text-decoration:none; margin:0; padding:0; } 
+.locationinfo h2 a, .info-window-max h2 a { text-decoration:none; margin:0; padding:0; } 
 
 /* Excerpt */
 .storycontent { font-family: Verdana Sans-Serif; }

@@ -23,6 +23,10 @@ class GeoMashupQuery {
 		return preg_replace( '/\[.*?\]/', '', $content );
 	}
 
+	function strip_map_shortcodes( $content ) {
+		return preg_replace( '/\[geo_mashup_map.*?\]/', '', $content );
+	}
+
 	function generate_object_html( ) {
 		global $geo_mashup_options, $geo_mashup_custom, $comments, $users;
 
@@ -31,7 +35,7 @@ class GeoMashupQuery {
 			$object_ids = split( ',', $object_ids );
 		}
 		$object_name = ( isset( $_GET['object_name'] ) ) ? $_GET['object_name'] : 'post';
-		$template_base = ( isset( $_GET['template_base'] ) ) ? $_GET['template_base'] : '';
+		$template_base = ( isset( $_GET['template'] ) ) ? $_GET['template'] : '';
 
 		switch ( $object_name ) {
 			case 'post':

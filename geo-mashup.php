@@ -552,7 +552,13 @@ class GeoMashup {
 				if ( isset( $location[$field] ) ) {
 					array_push( $values, $location[$field] );
 				} else {
-					array_push( $values, '' );
+					if ( 'country_name' == $field ) { 
+						array_push( $values, GeoMashupDB::get_administrative_name( $location['country_code'] ) );
+					} else if ( 'admin_name' == $field ) {
+						array_push( $values, GeoMashupDB::get_administrative_name( $location['country_code'], $location['admin_code'] ) );
+					} else {
+						array_push( $values, '' );
+					}
 				} 
 			}
 			if ( empty( $format ) ) {
