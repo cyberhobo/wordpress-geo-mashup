@@ -58,6 +58,15 @@ class GeoMashupDB {
 		return ( isset( $objects[$object_name] ) ) ? $objects[$object_name] : false;
 	}
 
+	function lookup_status( $new_status = null ) {
+		static $status = '0';
+
+		if ( $new_status ) {
+			$status = $new_status;
+		}
+		return $status;
+	}
+
 	function install( ) {
 		global $wpdb;
 
@@ -203,8 +212,10 @@ class GeoMashupDB {
 		$http = new WP_Http();
 		$country_info_response = $http->get( $country_info_url, array( 'timeout' => 3.0 ) );
 		if ( is_wp_error( $country_info_response ) ) {
+			GeoMashupDB::lookup_status( 0 );
 			return null;
 		}
+		GeoMashupDB::lookup_status( $country_info_response['response']['code'] );
 		$country_name = GeoMashupDB::get_simple_tag_content( 'countryName', $country_info_response['body'] );
 		$country_id = GeoMashupDB::get_simple_tag_content( 'geonameId', $country_info_response['body'] );
 		if ( !empty( $country_name ) ) {
@@ -250,10 +261,12 @@ class GeoMashupDB {
 		$http = new WP_Http();
 		$response = $http->get( "http://ws.geonames.org/countrySubdivision?lat=$lat&lng=$lng", array( 'timeout' => 3.0 ) );
 		if ( !is_wp_error( $response ) ) {
+			GeoMashupDB::lookup_status( 0 );
 			$result['country_code'] = GeoMashupDB::get_simple_tag_content( 'countryCode', $response['body'] );
 			$result['admin_code'] = GeoMashupDB::get_simple_tag_content( 'adminCode1', $response['body'] );
 			// TODO: Save administrative names?
 		}
+		GeoMashupDB::lookup_status( $response['response']['code'] );
 		return $result;
 	}
 
@@ -281,11 +294,11 @@ class GeoMashupDB {
 		$http = new WP_Http();
 		$response = $http->get( $google_geocode_url, array( 'timeout' => 3.0 ) );
 		if ( is_wp_error( $response ) ) {
-			return '0';
+			return GeoMashupDB::lookup_status( 0 );
 		}
 
-		$status = GeoMashupDB::get_simple_tag_content( 'code', $response['body'] );
-		if ( '200' != $status ) {
+		$status = GeoMashupDB::lookup_status( $response['response']['code'] );
+		if ( 200 != $status ) {
 			return $status;
 		}
 
@@ -307,6 +320,10 @@ class GeoMashupDB {
 		}
 		if ( empty( $location['locality_name'] ) ) {
 			$location['locality_name'] = GeoMashupDB::get_simple_tag_content( 'LocalityName', $response['body'] );
+		}
+		// Less accurate locality may exist in first address line
+		if ( empty( $location['locality_name'] ) ) {
+			$location['locality_name'] = GeoMashupDB::get_simple_tag_content( 'AddressLine', $response['body'] );
 		}
 		return $status;
 	}
@@ -334,17 +351,25 @@ class GeoMashupDB {
 		} else {
 			$time_limit -= ( $time_limit / 10 );
 		}
+		$delay = 100000; // one tenth of a second
 		$log .= __( 'Time limit: ', 'GeoMashup' ) . $time_limit . '<br />';
 		$start_time = time();
 		foreach ( $locations as $location ) {
 			GeoMashupDB::set_location( $location, true );
-			$log .= 'id: ' . $location['id'] . 
-				' address: ' . $location['address'] . 
-				' postal_code: ' . $location['postal_code'] . '<br />';
+			$log .= 'id: ' . $location['id']; 
+			if ( GeoMashupDB::lookup_status() == 604 ) {
+				$delay += 100000;
+				$log .= __( 'Too many requests, increasing delay to', 'GeoMashup' ) . ' ' . ( $delay / 1000000 ) .
+					'<br/>';
+			} else {
+				$log .= ' address: ' . $location['address'] . 
+					' postal_code: ' . $location['postal_code'] . '<br />';
+			}
 			if ( time() - $start_time > $time_limit ) {
 				$log .= __( 'Time limit exceeded, retry to continue.', 'GeoMashup' ) . '<br />';
 				break;
 			}
+			usleep( $delay );
 		}
 		return $log;
 	}

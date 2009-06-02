@@ -528,13 +528,22 @@ GeoMashup = {
 		return this.show_post_element;
 	},
 
+	parentizeLinks : function( node ) {
+		var i, links = node.getElementsByTagName('a');
+		if (parent) {
+			for (i=0; i<links.length; i += 1) {
+				links[i].target = "_parent";
+			}
+		}
+	},
+
 	openInfoWindow : function( marker, point ) {
 		var object_ids, i, url, info_window_request, object_element;
 
 		this.map.closeInfoWindow();
 			
 		if (this.locations[point].loaded) {
-			marker.openInfoWindow(this.locations[point].info_node);
+			marker.openInfoWindow( this.locations[point].info_node, this.locations[point].info_window_options );
 		} else {
 			marker.openInfoWindowHtml('<div align="center"><img src="' +
 				this.opts.url_path + 
@@ -551,20 +560,30 @@ GeoMashup = {
 			info_window_request = new google.maps.XmlHttp.create();
 			info_window_request.open('GET', url, true);
 			info_window_request.onreadystatechange = function() {
-				var node, links, i;
+				var node, info_window_max_request, info_window_max_url;
 
-				if (info_window_request.readyState === 4 && info_window_request.status === 200) {
+				if (this.readyState === 4 && this.status === 200) {
 					node = document.createElement('div');
 					node.innerHTML = info_window_request.responseText;
-					links = node.getElementsByTagName('a');
-					if (parent) {
-						for (i=0; i<links.length; i += 1) {
-							links[i].target = "_parent";
-						}
-					}
+					GeoMashup.parentizeLinks( node );
 					GeoMashup.locations[point].info_node = node;
-					GeoMashup.locations[point].loaded = true;
-					marker.openInfoWindow(node);
+					info_window_max_url = url + '&template=info-window-max';
+					info_window_max_request = new google.maps.XmlHttp.create();
+					info_window_max_request.open( 'GET', info_window_max_url, true );
+					info_window_max_request.onreadystatechange = function() {
+						var max_node, max_options;
+						if (this.readyState === 4 && this.status == 200 ) {
+							max_node = document.createElement( 'div' );
+							max_node.innerHTML = info_window_max_request.responseText;
+							GeoMashup.parentizeLinks( max_node );
+							max_options = { maxContent : max_node };
+							GeoMashup.doAction( 'markerInfoWindowOptions', GeoMashup.opts, GeoMashup.locations[point], max_options );
+							GeoMashup.locations[point].info_window_options = max_options;
+							GeoMashup.locations[point].loaded = true;
+							marker.openInfoWindow( node, max_options );
+						} // end max readState === 4
+					}; // end max onreadystatechange function
+					info_window_max_request.send( null );
 				} // end readystate === 4
 			}; // end onreadystatechange function
 			info_window_request.send(null);
@@ -983,6 +1002,18 @@ GeoMashup = {
 				this.categories[category_id].line.show();
 			}
 		}
+
+		if ( this.clusterer ) {
+			if ( old_level <= this.opts.cluster_max_zoom && 
+					new_level > this.opts.cluster_max_zoom ) {
+				this.clusterer.clusteringEnabled = false;
+				this.clusterer.refresh( true );
+			} else if ( old_level > this.opts.cluster_max_zoom &&
+					new_level <= this.opts.cluster_max_zoom ) {
+				this.clusterer.clusteringEnabled = true;
+				this.clusterer.refresh( true );
+			}
+		}
 	},
 
 	objectLinkHtml : function(object_id) {
@@ -1072,12 +1103,12 @@ GeoMashup = {
 			backgroundColor : '#' + opts.background_color,
 			mapTypes : [ opts.map_type ],
 	 		googleBarOptions : { 
-				adsOptions : { client : ( opts.adsense_code ) ? opts.adsense_code : 'partner-pub-5088093001880917' }	
+				adsOptions : { client : ( opts.adsense_code ) ? opts.adsense_code : 'pub-5088093001880917' }	
 			}
 		};
 		this.doAction( 'mapOptions', opts, map_opts );
 		this.map = new google.maps.Map2( this.container, map_opts );
-		this.map.setCenter(new google.maps.LatLng(0,0), 1);
+		this.map.setCenter(new google.maps.LatLng(0,0), 0);
 
 		this.doAction( 'newMap', opts, this.map );
 
@@ -1091,11 +1122,15 @@ GeoMashup = {
 		}
 		this.opts = opts;
 
+		google.maps.Event.bind(this.map, "zoomend", this, this.adjustZoom);
+		google.maps.Event.bind(this.map, "moveend", this, this.adjustViewport);
+
 		if (opts.cluster_max_zoom) {
 			clusterer_opts = { 
 				'iconOptions' : {},
 				'fitMapMaxZoom' : opts.cluster_max_zoom,
-				'clusterMarkerTitle' : '%count'	
+				'clusterMarkerTitle' : '%count',
+				'intersectPadding' : 3	
 			};
 			this.doAction( 'clusterOptions', this.opts, clusterer_opts );
 			this.clusterer = new ClusterMarker( this.map, clusterer_opts );
@@ -1144,9 +1179,6 @@ GeoMashup = {
 				this.map.setCenter(new google.maps.LatLng(0,0),initial_zoom,opts.map_type);
 			}
 		}
-
-		google.maps.Event.bind(this.map, "zoomend", this, this.adjustZoom);
-		google.maps.Event.bind(this.map, "moveend", this, this.adjustViewport);
 
 		this.location_bounds = new google.maps.LatLngBounds();
 
