@@ -356,20 +356,29 @@ class GeoMashupDB {
 		$start_time = time();
 		foreach ( $locations as $location ) {
 			GeoMashupDB::set_location( $location, true );
-			$log .= 'id: ' . $location['id']; 
+			$log .= 'id: ' . $location['id'] . ' '; 
 			if ( GeoMashupDB::lookup_status() == 604 ) {
 				$delay += 100000;
 				$log .= __( 'Too many requests, increasing delay to', 'GeoMashup' ) . ' ' . ( $delay / 1000000 ) .
 					'<br/>';
+			} else if ( isset( $location['address'] ) ) {
+				$log .= __( 'address', 'GeoMashup' ) . ': ' . $location['address'] . ' ' .
+					__( 'postal code', 'GeoMashup' ) . ': ' . $location['postal_code'] . '<br />';
 			} else {
-				$log .= ' address: ' . $location['address'] . 
-					' postal_code: ' . $location['postal_code'] . '<br />';
+				$log .= '(' .$location['lat'] . ', ' . $location['lng'] . ') ' . 
+					__( 'No address info found, status', 'GeoMashup' ) .  ': ' . GeoMashupDB::lookup_status() .  
+					'<br/>';
 			}
 			if ( time() - $start_time > $time_limit ) {
 				$log .= __( 'Time limit exceeded, retry to continue.', 'GeoMashup' ) . '<br />';
 				break;
 			}
-			usleep( $delay );
+			if ( function_exists( 'usleep' ) ) {
+				usleep( $delay );
+			} else {
+				// PHP 4 has to settle for a full second
+				sleep( 1 );
+			}
 		}
 		return $log;
 	}
@@ -738,7 +747,7 @@ class GeoMashupDB {
 
 		// Don't set blank entries
 		foreach ( $location as $name => $value ) {
-			if ( empty( $value ) ) {
+			if ( !is_numeric( $value ) && empty( $value ) ) {
 				unset( $location[$name] );
 			}
 		}
@@ -749,12 +758,17 @@ class GeoMashupDB {
 				$set_id = $wpdb->insert_id;
 			}
 		} else {
+			// Don't update coordinates
+			$tmp_lat = $location['lat']; 
+			$tmp_lng = $location['lng']; 
 			unset( $location['lat'] );
 			unset( $location['lng'] );
 			if ( !empty ( $location ) ) {
 				$wpdb->update( $location_table, $location, array( 'id' => $db_location['id'] ) );
 			}
 			$set_id = $db_location['id'];
+			$location['lat'] = $tmp_lat;
+			$location['lng'] = $tmp_lng;
 		}
 		return $set_id;
 	}
