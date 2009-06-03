@@ -1120,7 +1120,9 @@ GeoMashup = {
 			opts.url_path + '/images/busy_icon.gif"/></a></div>';
 		this.container.appendChild( spinner_div );
 		google.maps.Event.addListener( this.map, 'tilesloaded', function() {
-			spinner_div.parentNode.removeChild( spinner_div );
+			if ( spinner_div.parentNode ) {
+				spinner_div.parentNode.removeChild( spinner_div );
+			}
 		} );
 
 		if (window.location.search === this.getCookie('back_search'))
