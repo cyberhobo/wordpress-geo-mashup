@@ -1064,7 +1064,7 @@ GeoMashup = {
 
 	createMap : function(container, opts) {
 		var i, type_num, center_latlng, map_opts, map_types, request, url, objects, point, marker_opts, 
-			clusterer_opts, google_bar_opts, single_marker, ov, credit_div, initial_zoom = 1;
+			clusterer_opts, google_bar_opts, single_marker, ov, credit_div, spinner_div, initial_zoom = 1;
 
 		this.container = container;
 		this.checkDependencies();
@@ -1111,6 +1111,17 @@ GeoMashup = {
 		this.map.setCenter(new google.maps.LatLng(0,0), 0);
 
 		this.doAction( 'newMap', opts, this.map );
+
+		// Add a loading spinner
+		spinner_div = document.createElement( 'div' );
+		spinner_div.innerHTML = '<div id="gm-loading-icon" style="-moz-user-select: none; z-index: 100; position: absolute; left: ' +
+			( this.map.getSize().width / 2 ) + 'px; top: ' + ( this.map.getSize().height / 2 ) + 'px;">' +
+			'<img style="border: 0px none ; margin: 0px; padding: 0px; width: 16px; height: 16px; -moz-user-select: none;" src="' +
+			opts.url_path + '/images/busy_icon.gif"/></a></div>';
+		this.container.appendChild( spinner_div );
+		google.maps.Event.addListener( this.map, 'tilesloaded', function() {
+			spinner_div.parentNode.removeChild( spinner_div );
+		} );
 
 		if (window.location.search === this.getCookie('back_search'))
 		{
