@@ -212,7 +212,7 @@ class GeoMashupDB {
 		$http = new WP_Http();
 		$country_info_response = $http->get( $country_info_url, array( 'timeout' => 3.0 ) );
 		if ( is_wp_error( $country_info_response ) ) {
-			GeoMashupDB::lookup_status( 0 );
+			GeoMashupDB::lookup_status( $country_info_response->get_error_code() );
 			return null;
 		}
 		GeoMashupDB::lookup_status( $country_info_response['response']['code'] );
@@ -231,6 +231,7 @@ class GeoMashupDB {
 		$children_url = 'http://ws.geonames.org/children?style=short&geonameId=' . $country_id;
 		$children_response = $http->get( $children_url, array( 'timeout' => 3.0 ) );
 		if ( is_wp_error( $children_response ) ) {
+			GeoMashupDB::lookup_status( $children_response->get_error_code() );
 			return null;
 		}
 		preg_match_all( '/<geonameId>(\d*)<\/geonameId>/is', $children_response['body'], $matches );
@@ -241,6 +242,7 @@ class GeoMashupDB {
 			$child_url = 'http://ws.geonames.org/get?geonameId=' . $child_id . '&lang=' . urlencode( $language );
 			$child_response = $http->get( $child_url,  array( 'timeout' => 3.0 ) );
 			if ( is_wp_error( $child_response ) ) {
+				GeoMashupDB::lookup_status( $child_response->get_error_code() );
 				return null;
 			}
 			$child_name = GeoMashupDB::get_simple_tag_content( 'name', $child_response['body'] );
@@ -261,12 +263,13 @@ class GeoMashupDB {
 		$http = new WP_Http();
 		$response = $http->get( "http://ws.geonames.org/countrySubdivision?lat=$lat&lng=$lng", array( 'timeout' => 3.0 ) );
 		if ( !is_wp_error( $response ) ) {
-			GeoMashupDB::lookup_status( 0 );
+			GeoMashupDB::lookup_status( $response['response']['code'] );
 			$result['country_code'] = GeoMashupDB::get_simple_tag_content( 'countryCode', $response['body'] );
 			$result['admin_code'] = GeoMashupDB::get_simple_tag_content( 'adminCode1', $response['body'] );
 			// TODO: Save administrative names?
+		} else {
+			GeoMashupDB::lookup_status( $response->get_error_code() );
 		}
-		GeoMashupDB::lookup_status( $response['response']['code'] );
 		return $result;
 	}
 
@@ -294,7 +297,7 @@ class GeoMashupDB {
 		$http = new WP_Http();
 		$response = $http->get( $google_geocode_url, array( 'timeout' => 3.0 ) );
 		if ( is_wp_error( $response ) ) {
-			return GeoMashupDB::lookup_status( 0 );
+			return GeoMashupDB::lookup_status( $response->get_error_code() );
 		}
 
 		$status = GeoMashupDB::lookup_status( $response['response']['code'] );
