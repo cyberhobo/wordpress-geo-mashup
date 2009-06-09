@@ -170,27 +170,31 @@ class GeoMashupPostUIManager extends GeoMashupUIManager {
 			// Save post handles both inline and form processing
 			add_action( 'save_post', array( $this, 'save_post'), 10, 2 );
 
+			// Browser upload processing
+			add_filter( 'wp_handle_upload', array( $this, 'wp_handle_upload' ) );
+
 			// If we're on a post editing page, queue up the form interface elements
 			if ( is_admin() && preg_match( '/(post|page)(-new|).php/', $_SERVER['REQUEST_URI'] ) ) {
+					// Form generation
+					add_action( 'admin_menu', array( $this, 'admin_menu' ) );
 
-				// Form generation
-				add_action( 'admin_menu', array( $this, 'admin_menu' ) );
+					// Uploadable geo content type expansion
+					add_filter( 'upload_mimes', array( $this, 'upload_mimes' ) );
 
-				// Uploadable geo content type expansion
-				add_filter( 'upload_mimes', array( $this, 'upload_mimes' ) );
+					$this->enqueue_form_client_items();
+
+			} else if ( strpos( $_SERVER['REQUEST_URI'], 'async-upload.php' ) > 0 ) {
 
 				// Flash upload display
 				add_filter( 'media_meta', array( $this, 'media_meta' ), 10, 2 );
 
-				// Browser upload processing
-				add_filter( 'wp_handle_upload', array( $this, 'wp_handle_upload' ) );
+			} else if ( strpos( $_SERVER['REQUEST_URI'], 'upload.php' ) > 0 ) {
 
 				// Browser upload display
 				add_action( 'admin_print_scripts', array( $this, 'admin_print_scripts' ) );
 
-				$this->enqueue_form_client_items();
-			}
-		}
+			} 
+		} // end if enabled
 	}
 
 	function admin_menu() {
@@ -251,7 +255,7 @@ class GeoMashupPostUIManager extends GeoMashupUIManager {
 
 	function media_meta( $content, $post ) {
 		// Only chance to run some javascript after a flash upload?
-		if (strpos($_SERVER['REQUEST_URI'], 'async-upload.php') > 0 && strlen($post->guid) > 0) {
+		if (strlen($post->guid) > 0) {
 			$content .= '<script type="text/javascript"> ' .
 				'if (parent.GeoMashupAdmin) parent.GeoMashupAdmin.loadKml(\''.$post->guid.'\');' .
 				'</script>';
@@ -261,17 +265,16 @@ class GeoMashupPostUIManager extends GeoMashupUIManager {
 
 	function admin_print_scripts( $not_used ) {
 		// Load any uploaded KML into the search map - only works with browser uploader
-		if ( strpos( $_SERVER['REQUEST_URI'], 'upload.php' ) > 0 ) {
-			// See if wp_upload_handler found uploaded KML
-			$kml_url = get_option( 'geo_mashup_temp_kml_url' );
-			if (strlen($kml_url) > 0) {
-				// Load the KML in the location editor
-				echo '
-					<script type="text/javascript"> 
-						if (parent.GeoMashupAdmin) parent.GeoMashupAdmin.loadKml(\'' . $kml_url . '\');
-					</script>';
-				update_option( 'geo_mashup_temp_kml_url', '' );
-			}
+		
+		// See if wp_upload_handler found uploaded KML
+		$kml_url = get_option( 'geo_mashup_temp_kml_url' );
+		if (strlen($kml_url) > 0) {
+			// Load the KML in the location editor
+			echo '
+				<script type="text/javascript"> 
+					if (parent.GeoMashupAdmin) parent.GeoMashupAdmin.loadKml(\'' . $kml_url . '\');
+				</script>';
+			update_option( 'geo_mashup_temp_kml_url', '' );
 		}
 	}
 
