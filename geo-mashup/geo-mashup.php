@@ -218,14 +218,7 @@ class GeoMashup {
 
 	function admin_print_scripts($not_used)
 	{
-		if ( isset($_GET['page']) && GEO_MASHUP_PLUGIN_NAME === $_GET['page'] ) {
-
-			echo '
-				<script type="text/javascript"> 
-					addLoadEvent(function() { jQuery("#geo-mashup-settings-form > ul").tabs(); }); 
-				</script>';
-
-		} else if (strpos($_SERVER['REQUEST_URI'], 'upload.php') > 0) {
+		if (strpos($_SERVER['REQUEST_URI'], 'upload.php') > 0) {
 			// Load any uploaded KML into the search map - only works with browser uploader
 
 			$kml_url = get_option('geo_mashup_temp_kml_url');

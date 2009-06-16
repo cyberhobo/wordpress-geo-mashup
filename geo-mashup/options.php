@@ -247,6 +247,16 @@ function geo_mashup_options_page()
 
 	// Now for the HTML
 ?>
+	<script type="text/javascript"> 
+	jQuery(function() { 
+		var selector = '#geo-mashup-settings-form';
+		if ( typeof jQuery.prototype.selector === 'undefined' ) {
+			// We have jQuery 1.2.x, tabs work better on UL
+			selector += ' > ul';
+		}
+		jQuery( selector ).tabs();
+ 	} ); 
+	</script>
 	<div class="wrap">
 		<h2><?php _e('Geo Mashup Plugin Options', 'GeoMashup'); ?></h2>
 		<?php if ( GeoMashupDB::installed_version( ) != GEO_MASHUP_DB_VERSION ) : ?>
@@ -265,8 +275,8 @@ function geo_mashup_options_page()
 			<li><a href="#geo-mashup-single-map-settings"><span><?php _e('Single Maps', 'GeoMashup'); ?></span></a></li>
 			<li><a href="#geo-mashup-context-map-settings"><span><?php _e('Contextual Maps', 'GeoMashup'); ?></span></a></li>
 			</ul>
-			<?php wp_nonce_field('geo-mashup-update-options'); ?>
 			<fieldset id="geo-mashup-overall-settings">
+				<?php wp_nonce_field('geo-mashup-update-options'); ?>
 				<p><?php _e('Overall Geo Mashup Settings', 'GeoMashup'); ?></p>
 				<table width="100%" cellspacing="2" cellpadding="5" class="editform">
 					<tr>
