@@ -1,7 +1,7 @@
 <?php
 
 function geo_mashup_options_page() {
-	global $geo_mashup_options;
+	global $geo_mashup_options, $wp_roles;
 
 	if (isset($_POST['submit'])) {
 		// Process option updates
@@ -97,15 +97,21 @@ function geo_mashup_options_page() {
 		$zoomOptions[$i] = $i;
 	}
 
-	$selected_tab = ( empty( $_POST['geo_mashup_selected_tab'] ) ) ? 0 : $_POST['geo_mashup_selected_tab'] 
+	$selected_tab = ( empty( $_POST['geo_mashup_selected_tab'] ) ) ? 0 : $_POST['geo_mashup_selected_tab']; 
 	// Now for the HTML
+	var_dump( $wp_roles );
 ?>
 	<script type="text/javascript"> 
-	jQuery(function() { 
-		jQuery( '#geo-mashup-settings-form > ul' ).tabs( {
+	jQuery(function( $ ) { 
+		var selector = '#geo-mashup-settings-form';
+		if ( typeof $.ui.version === 'undefined' || $.ui.version < 1.7 ) {
+			// Older jQuery tabs work better on UL
+			selector += ' > ul';
+		}
+		$( selector ).tabs( {
 			selected: <?php echo $selected_tab ?>,
 			select: function ( event, ui ) {
-				jQuery( '#geo-mashup-selected-tab' ).val( ui.index );
+				$( '#geo-mashup-selected-tab' ).val( ui.index );
 			}
 		} ); 
  	} ); 
@@ -122,18 +128,18 @@ function geo_mashup_options_page() {
 			</div>
 		<?php endif; ?>
 		<form method="post" id="geo-mashup-settings-form" action="<?php echo $_SERVER['REQUEST_URI']; ?>">
-			<input id="geo-mashup-selected-tab" 
-				name="geo_mashup_selected_tab" 
-				type="hidden" 
-				value="<?php echo $selected_tab; ?>" />
 			<ul>
 			<li><a href="#geo-mashup-overall-settings"><span><?php _e('Overall', 'GeoMashup'); ?></span></a></li>
 			<li><a href="#geo-mashup-global-map-settings"><span><?php _e('Global Maps', 'GeoMashup'); ?></span></a></li>
 			<li><a href="#geo-mashup-single-map-settings"><span><?php _e('Single Maps', 'GeoMashup'); ?></span></a></li>
 			<li><a href="#geo-mashup-context-map-settings"><span><?php _e('Contextual Maps', 'GeoMashup'); ?></span></a></li>
 			</ul>
-			<?php wp_nonce_field('geo-mashup-update-options'); ?>
 			<fieldset id="geo-mashup-overall-settings">
+				<?php wp_nonce_field('geo-mashup-update-options'); ?>
+				<input id="geo-mashup-selected-tab" 
+					name="geo_mashup_selected_tab" 
+					type="hidden" 
+					value="<?php echo $selected_tab; ?>" />
 				<p><?php _e('Overall Geo Mashup Settings', 'GeoMashup'); ?></p>
 				<table width="100%" cellspacing="2" cellpadding="5" class="editform">
 					<tr>
