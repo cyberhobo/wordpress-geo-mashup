@@ -103,7 +103,7 @@ function geo_mashup_options_page() {
 	<script type="text/javascript"> 
 	jQuery(function( $ ) { 
 		var selector = '#geo-mashup-settings-form';
-		if ( typeof $.ui.version === 'undefined' || $.ui.version < 1.7 ) {
+		if ( typeof $.ui.version === 'undefined' || $.ui.version < '1.7' ) {
 			// Older jQuery tabs work better on UL
 			selector += ' > ul';
 		}
