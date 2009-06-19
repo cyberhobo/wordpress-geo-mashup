@@ -1,7 +1,7 @@
 <?php
 
 function geo_mashup_options_page() {
-	global $geo_mashup_options, $wp_roles;
+	global $geo_mashup_options;
 
 	if (isset($_POST['submit'])) {
 		// Process option updates
@@ -99,7 +99,6 @@ function geo_mashup_options_page() {
 
 	$selected_tab = ( empty( $_POST['geo_mashup_selected_tab'] ) ) ? 0 : $_POST['geo_mashup_selected_tab']; 
 	// Now for the HTML
-	var_dump( $wp_roles );
 ?>
 	<script type="text/javascript"> 
 	jQuery(function( $ ) { 
