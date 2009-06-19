@@ -215,17 +215,11 @@ class GeoMashupPostUIManager extends GeoMashupUIManager {
 			return;
 		}
 
-		// Inline locations circumvent the form checks, since they originate elsewhere
-		// TODO: Relying a bit on WP for validation here, examine
-		if ( !empty( $this->inline_location ) ) {
-			GeoMashupDB::set_object_location( 'post', $post_id, $inline_location );
-			$this->inline_location = null;
-		}
+		// WP has already saved the post - allow location saving without added capability checks
 
-		if ( 'page' == $post->post_type ) {
-			if ( !current_user_can( 'edit_page', $post_id ) ) return $post_id;
-		} else {
-			if ( !current_user_can( 'edit_post', $post_id ) ) return $post_id;
+		if ( !empty( $this->inline_location ) ) {
+			GeoMashupDB::set_object_location( 'post', $post_id, $this->inline_location );
+			$this->inline_location = null;
 		}
 
 		update_option('geo_mashup_temp_kml_url','');
