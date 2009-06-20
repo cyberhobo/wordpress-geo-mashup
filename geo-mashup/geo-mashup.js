@@ -458,19 +458,29 @@ var GeoMashup = {
 		return this.show_post_element;
 	},
 
+	addObjectIcon : function( obj ) {
+		if (typeof customGeoMashupCategoryIcon === 'function') {
+			obj.icon = customGeoMashupCategoryIcon(this.opts, obj.categories);
+		} 
+		if (!obj.icon) {
+			if (obj.categories.length > 1) {
+				obj.icon = new google.maps.Icon(this.multiple_category_icon);
+			} else if (obj.categories.length === 1) {
+				obj.icon = new google.maps.Icon(this.categories[obj.categories[0]].icon);
+			} else {
+				obj.icon = new google.maps.Icon(this.base_color_icon);
+				obj.icon.image = this.opts.url_path + '/images/mm_20_red.png';
+			} 
+		}
+	},
+
 	createMarker : function(point,post) {
 		var marker_opts = {title:post.title};
-		if (typeof(customGeoMashupCategoryIcon) == 'function') {
-			// TODO: build array of category names for beta1 compatibility?
-			marker_opts.icon = customGeoMashupCategoryIcon(this.opts, post.categories);
-		} 
-		if (!marker_opts.icon) {
-			if (post.categories.length > 1) {
-				marker_opts.icon = new GIcon(this.multiple_category_icon);
-			} else {
-				marker_opts.icon = new GIcon(this.categories[post.categories[0]].icon);
-			}
+		if ( !post.icon ) {
+			this.addObjectIcon( post );
 		}
+		marker_opts.icon = post.icon;
+
 		var marker = new GMarker(point,marker_opts);
 
 		// Show this markers index in the info window when it is clicked
@@ -658,7 +668,7 @@ var GeoMashup = {
 					this.locations[point].posts = new Array();
 					this.locations[point].posts.push(post_id);
 					this.locations[point].loaded = false;
-					this.posts[post_id] = new Object();
+					this.posts[post_id] = response_data[i];
 					var marker = this.createMarker(point, response_data[i]);
 					this.posts[post_id].marker = marker;
 					this.locations[point].marker = marker;
@@ -678,7 +688,8 @@ var GeoMashup = {
 						plus_image = this.opts.url_path + '/images/mm_20_plus.png';
 					}
 					marker.setImage(plus_image);
-					this.posts[post_id] = new Object();
+					this.posts[post_id] = response_data[i];
+					this.addObjectIcon( this.posts[post_id] );
 					this.posts[post_id].marker = this.locations[point].marker;
 				}
 				this.posts[post_id].title = response_data[i].title;
@@ -791,7 +802,7 @@ var GeoMashup = {
 				var marker = this.posts[post_id].marker;
 				if (!marker.isHidden() && map_bounds.containsLatLng(marker.getLatLng())) {
 					list_html.push('<li><img src="');
-					list_html.push(marker.getIcon().image);
+					list_html.push(this.posts[post_id].icon.image);
 					list_html.push('" alt="');
 					list_html.push(this.posts[post_id].title);
 					list_html.push('" />');
