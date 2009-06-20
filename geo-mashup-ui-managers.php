@@ -72,7 +72,7 @@ class GeoMashupUserUIManager extends GeoMashupUIManager {
 	function GeoMashupUserUIManager() {
 		// Global $geo_mashup_options is available, but a better pattern might
 		// be to wait until init to be sure
-		add_action( 'init', array( $this, 'init' ) );
+		add_action( 'init', array( &$this, 'init' ) );
 	}
 
 	function init() {
@@ -87,13 +87,13 @@ class GeoMashupUserUIManager extends GeoMashupUIManager {
 		if ( $enabled ) { 
 
 			// Form generation
-			add_action( 'show_user_profile', array( $this, 'print_form' ) );
-			add_action( 'edit_user_profile', array( $this, 'print_form' ) );
+			add_action( 'show_user_profile', array( &$this, 'print_form' ) );
+			add_action( 'edit_user_profile', array( &$this, 'print_form' ) );
 			// MAYBEDO: add location to registration page?
 
 			// Form processing
-			add_action( 'personal_options_update', array( $this, 'save_user'));
-			add_action( 'edit_user_profile_update', array( $this, 'save_user'));
+			add_action( 'personal_options_update', array( &$this, 'save_user'));
+			add_action( 'edit_user_profile_update', array( &$this, 'save_user'));
 
 			$this->enqueue_form_client_items();
 		}
@@ -152,7 +152,7 @@ class GeoMashupPostUIManager extends GeoMashupUIManager {
 	function GeoMashupPostUIManager() {
 		// Global $geo_mashup_options is available, but a better pattern might
 		// be to wait until init to be sure
-		add_action( 'init', array( $this, 'init' ) );
+		add_action( 'init', array( &$this, 'init' ) );
 	}
 
 	function init() {
@@ -165,33 +165,33 @@ class GeoMashupPostUIManager extends GeoMashupUIManager {
 			// Queue inline location handlers
 
 			// Pre-save filter checks saved content for inline location tags
-			add_filter( 'content_save_pre', array( $this, 'content_save_pre') );
+			add_filter( 'content_save_pre', array( &$this, 'content_save_pre') );
 
 			// Save post handles both inline and form processing
-			add_action( 'save_post', array( $this, 'save_post'), 10, 2 );
+			add_action( 'save_post', array( &$this, 'save_post'), 10, 2 );
 
 			// Browser upload processing
-			add_filter( 'wp_handle_upload', array( $this, 'wp_handle_upload' ) );
+			add_filter( 'wp_handle_upload', array( &$this, 'wp_handle_upload' ) );
 
 			// If we're on a post editing page, queue up the form interface elements
 			if ( is_admin() && preg_match( '/(post|page)(-new|).php/', $_SERVER['REQUEST_URI'] ) ) {
 					// Form generation
-					add_action( 'admin_menu', array( $this, 'admin_menu' ) );
+					add_action( 'admin_menu', array( &$this, 'admin_menu' ) );
 
 					// Uploadable geo content type expansion
-					add_filter( 'upload_mimes', array( $this, 'upload_mimes' ) );
+					add_filter( 'upload_mimes', array( &$this, 'upload_mimes' ) );
 
 					$this->enqueue_form_client_items();
 
 			} else if ( strpos( $_SERVER['REQUEST_URI'], 'async-upload.php' ) > 0 ) {
 
 				// Flash upload display
-				add_filter( 'media_meta', array( $this, 'media_meta' ), 10, 2 );
+				add_filter( 'media_meta', array( &$this, 'media_meta' ), 10, 2 );
 
 			} else if ( strpos( $_SERVER['REQUEST_URI'], 'upload.php' ) > 0 ) {
 
 				// Browser upload display
-				add_action( 'admin_print_scripts', array( $this, 'admin_print_scripts' ) );
+				add_action( 'admin_print_scripts', array( &$this, 'admin_print_scripts' ) );
 
 			} 
 		} // end if enabled
@@ -199,8 +199,8 @@ class GeoMashupPostUIManager extends GeoMashupUIManager {
 
 	function admin_menu() {
 		// Not adding a menu, but at this stage add_meta_box is defined, so we can add the location form
-		add_meta_box( 'geo_mashup_post_edit', __( 'Location', 'GeoMashup' ), array( $this, 'print_form' ), 'post', 'advanced' );
-		add_meta_box( 'geo_mashup_post_edit', __( 'Location', 'GeoMashup' ), array( $this, 'print_form' ), 'page', 'advanced' );
+		add_meta_box( 'geo_mashup_post_edit', __( 'Location', 'GeoMashup' ), array( &$this, 'print_form' ), 'post', 'advanced' );
+		add_meta_box( 'geo_mashup_post_edit', __( 'Location', 'GeoMashup' ), array( &$this, 'print_form' ), 'page', 'advanced' );
 	}
 
 	function print_form() {
@@ -231,7 +231,7 @@ class GeoMashupPostUIManager extends GeoMashupUIManager {
 		// Piggyback on the shortcode interface to find inline tags [geo_mashup_save_location ...] 
 		add_shortcode( 'geo_mashup_save_location', 'is_null' );
 		$pattern = get_shortcode_regex( );
-		return preg_replace_callback('/'.$pattern.'/s', array( $this, 'replace_save_pre_shortcode' ), $content);
+		return preg_replace_callback('/'.$pattern.'/s', array( &$this, 'replace_save_pre_shortcode' ), $content);
 	}
 
 	function replace_save_pre_shortcode( $shortcode_match ) {
@@ -307,7 +307,7 @@ class GeoMashupCommentUIManager {
 	function GeoMashupCommentUIManager() {
 		// Global $geo_mashup_options is available, but a better pattern might
 		// be to wait until init to be sure
-		add_action( 'init', array( $this, 'init' ) );
+		add_action( 'init', array( &$this, 'init' ) );
 	}
 
 	function init() {
@@ -318,10 +318,10 @@ class GeoMashupCommentUIManager {
 		if ( !is_admin() && $geo_mashup_options->get( 'overall', 'located_object_name', 'comment' ) == 'true' ) { 
 
 			// Form generation
-			add_action( 'comment_form', array( $this, 'print_form' ) );
+			add_action( 'comment_form', array( &$this, 'print_form' ) );
 
 			// Form processing
-			add_action( 'comment_post', array( $this, 'save_comment'), 10, 2 );
+			add_action( 'comment_post', array( &$this, 'save_comment'), 10, 2 );
 
 			// Google JSAPI provides client location by IP
 			wp_enqueue_script( 'google-jsapi' );
