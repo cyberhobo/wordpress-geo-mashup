@@ -692,22 +692,48 @@ GeoMashup = {
 		this.selected_marker = null;
 	},
 
-	createMarker : function(point,obj) {
-		var marker, marker_opts = {title:obj.title};
+	getObjectIcon : function( obj ) {
+		var icon = null;
 
 		if (typeof customGeoMashupCategoryIcon === 'function') {
-			marker_opts.icon = customGeoMashupCategoryIcon(this.opts, obj.categories);
+			icon = customGeoMashupCategoryIcon(this.opts, obj.categories);
 		} 
-		if (!marker_opts.icon) {
+		if (!icon) {
 			if (obj.categories.length > 1) {
-				marker_opts.icon = new google.maps.Icon(this.multiple_category_icon);
+				icon = new google.maps.Icon(this.multiple_category_icon);
 			} else if (obj.categories.length === 1) {
-				marker_opts.icon = new google.maps.Icon(this.categories[obj.categories[0]].icon);
+				icon = new google.maps.Icon(this.categories[obj.categories[0]].icon);
 			} else {
-				marker_opts.icon = new google.maps.Icon(this.base_color_icon);
+				icon = new google.maps.Icon(this.base_color_icon);
 				marker_opts.icon.image = this.opts.url_path + '/images/mm_20_red.png';
 			} 
 		}
+
+	},
+
+	addObjectIcon : function( obj ) {
+		if (typeof customGeoMashupCategoryIcon === 'function') {
+			obj.icon = customGeoMashupCategoryIcon(this.opts, obj.categories);
+		} 
+		if (!obj.icon) {
+			if (obj.categories.length > 1) {
+				obj.icon = new google.maps.Icon(this.multiple_category_icon);
+			} else if (obj.categories.length === 1) {
+				obj.icon = new google.maps.Icon(this.categories[obj.categories[0]].icon);
+			} else {
+				obj.icon = new google.maps.Icon(this.base_color_icon);
+				obj.icon.image = this.opts.url_path + '/images/mm_20_red.png';
+			} 
+		}
+	},
+
+	createMarker : function(point,obj) {
+		var marker, marker_opts = {title:obj.title};
+
+		if ( !obj.icon ) {
+			this.addObjectIcon( obj );
+		}
+		marker_opts.icon = obj.icon;
 		this.doAction( 'objectMarkerOptions', this.opts, marker_opts, obj );
 		marker = new google.maps.Marker(point,marker_opts);
 
@@ -903,6 +929,7 @@ GeoMashup = {
 					marker.getIcon().image = plus_image;
 					this.doAction( 'multipleIcon', this.opts, marker.getIcon() );
 					this.objects[object_id].marker = this.locations[point].marker;
+					this.addObjectIcon( this.objects[object_id] );
 				}
 			}
 		} // end for each marker
@@ -1045,7 +1072,7 @@ GeoMashup = {
 				marker = obj.marker;
 				if (!marker.isHidden() && map_bounds.containsLatLng(marker.getLatLng())) {
 					list_html.push('<li><img src="');
-					list_html.push(marker.getIcon().image);
+					list_html.push(obj.icon.image);
 					list_html.push('" alt="');
 					list_html.push(obj.title);
 					list_html.push('" />');
