@@ -235,9 +235,10 @@ class GeoMashupPostUIManager extends GeoMashupUIManager {
 	}
 
 	function replace_save_pre_shortcode( $shortcode_match ) {
-		if ( $shortcode_match[1] == 'geo_mashup_save_location' ) {
+		$tag_index = array_search( 'geo_mashup_save_location',  $shortcode_match ); 
+		if ( $tag_index !== false ) {
 			// There is an inline location - save the attributes
-			$this->inline_location = shortcode_parse_atts( stripslashes( $shortcode_match[2] ) );
+			$this->inline_location = shortcode_parse_atts( stripslashes( $shortcode_match[$tag_index+1] ) );
 			// Remove the tag
 			$content = '';
 		} else {
