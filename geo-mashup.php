@@ -2,7 +2,7 @@
 Plugin Name: Geo Mashup
 Plugin URI: http://code.google.com/p/wordpress-geo-mashup/ 
 Description: Tools for adding maps to your blog, and plotting posts on a master map. Configure in <a href="options-general.php?page=geo-mashup/geo-mashup.php">Settings->Geo Mashup</a> after the plugin is activated. Documentation is <a href="http://code.google.com/p/wordpress-geo-mashup/wiki/Documentation">on the project site</a>.
-Version: 1.3alpha
+Version: 1.3alpha1
 Author: Dylan Kuhn
 Author URI: http://www.cyberhobo.net/
 Minimum WordPress Version Required: 2.6
@@ -96,7 +96,8 @@ class GeoMashup {
 			define('GEO_MASHUP_URL_PATH', WP_PLUGIN_URL . '/' . GEO_MASHUP_DIRECTORY);
 		}
 		define('GEO_MASHUP_MAX_ZOOM', 20);
-		define('GEO_MASHUP_VERSION', '1.3.0.1');
+		// Make numeric versions: -.02 for alpha, -.01 for beta
+		define('GEO_MASHUP_VERSION', '1.2.98.1');
 		define('GEO_MASHUP_DB_VERSION', '1.2');
 	}
 
