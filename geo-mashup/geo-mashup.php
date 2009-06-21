@@ -2,7 +2,7 @@
 Plugin Name: Geo Mashup
 Plugin URI: http://code.google.com/p/wordpress-geo-mashup/ 
 Description: Tools for adding maps to your blog, and plotting posts on a master map. Configure in <a href="options-general.php?page=geo-mashup/geo-mashup.php">Settings->Geo Mashup</a> after the plugin is activated. Documentation is <a href="http://code.google.com/p/wordpress-geo-mashup/wiki/Documentation">on the project site</a>.
-Version: 1.2.6
+Version: 1.2.7
 Author: Dylan Kuhn
 Author URI: http://www.cyberhobo.net/
 Minimum WordPress Version Required: 2.6
@@ -85,7 +85,7 @@ class GeoMashup {
 		define('GEO_MASHUP_URL_PATH', WP_CONTENT_URL . '/plugins/' . GEO_MASHUP_DIRECTORY);
 		define('GEO_MASHUP_MAX_ZOOM', 20);
 		// This version is for javascripts. WP wants numbers, so it's incremented for betas too.
-		define('GEO_MASHUP_VERSION', '1.2.8');
+		define('GEO_MASHUP_VERSION', '1.2.9');
 		define('GEO_MASHUP_DB_VERSION', '1.2');
 	}
 
@@ -262,8 +262,10 @@ class GeoMashup {
 
 	function replace_save_pre_shortcode( $shortcode_match ) {
 		$content = '';
-		if ( $shortcode_match[1] == 'geo_mashup_save_location' ) {
-			GeoMashup::inline_location( shortcode_parse_atts( stripslashes( $shortcode_match[2] ) ) );
+		$tag_index = array_search( 'geo_mashup_save_location',  $shortcode_match ); 
+		if ( $tag_index !== false ) {
+			// There is an inline location - save the attributes
+			GeoMashup::inline_location( shortcode_parse_atts( stripslashes( $shortcode_match[$tag_index+1] ) ) );
 		} else {
 			$content = $shortcode_match[0];
 		}
