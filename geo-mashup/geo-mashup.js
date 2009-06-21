@@ -724,6 +724,7 @@ GeoMashup = {
 				obj.icon = new google.maps.Icon(this.base_color_icon);
 				obj.icon.image = this.opts.url_path + '/images/mm_20_red.png';
 			} 
+			this.doAction( 'objectIcon', this.opts, obj.icon );
 		}
 	},
 
