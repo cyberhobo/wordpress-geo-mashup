@@ -158,6 +158,9 @@ class GeoMashupPostUIManager extends GeoMashupUIManager {
 	function init() {
 		global $geo_mashup_options;
 
+		// Uploadable geo content type expansion always enabled
+		add_filter( 'upload_mimes', array( &$this, 'upload_mimes' ) );
+
 		// Enable this interface when the option is set 
 		$enabled = $geo_mashup_options->get( 'overall', 'located_object_name', 'post' ) == 'true';
 
@@ -177,9 +180,6 @@ class GeoMashupPostUIManager extends GeoMashupUIManager {
 			if ( is_admin() && preg_match( '/(post|page)(-new|).php/', $_SERVER['REQUEST_URI'] ) ) {
 					// Form generation
 					add_action( 'admin_menu', array( &$this, 'admin_menu' ) );
-
-					// Uploadable geo content type expansion
-					add_filter( 'upload_mimes', array( &$this, 'upload_mimes' ) );
 
 					$this->enqueue_form_client_items();
 
