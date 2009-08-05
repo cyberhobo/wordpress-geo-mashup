@@ -610,6 +610,7 @@ class GeoMashupDB {
 		$wheres = array( );
 
 		if ( 'post' == $object_name ) {
+			$field_string .= ', o.post_author';
 			if ( $query_args['show_future'] == 'true' ) {
 				$wheres[] = 'post_status in ( \'publish\',\'future\' )';
 			} else if ( $query_args['show_future'] == 'only' ) {

@@ -2,7 +2,7 @@
 Plugin Name: Geo Mashup
 Plugin URI: http://code.google.com/p/wordpress-geo-mashup/ 
 Description: Tools for adding maps to your blog, and plotting posts on a master map. Configure in <a href="options-general.php?page=geo-mashup/geo-mashup.php">Settings->Geo Mashup</a> after the plugin is activated. Documentation is <a href="http://code.google.com/p/wordpress-geo-mashup/wiki/Documentation">on the project site</a>.
-Version: 1.3alpha1
+Version: 1.3alpha2
 Author: Dylan Kuhn
 Author URI: http://www.cyberhobo.net/
 Minimum WordPress Version Required: 2.6
@@ -97,7 +97,7 @@ class GeoMashup {
 		}
 		define('GEO_MASHUP_MAX_ZOOM', 20);
 		// Make numeric versions: -.02 for alpha, -.01 for beta
-		define('GEO_MASHUP_VERSION', '1.2.98.1');
+		define('GEO_MASHUP_VERSION', '1.1.98.2');
 		define('GEO_MASHUP_DB_VERSION', '1.2');
 	}
 
@@ -211,6 +211,7 @@ class GeoMashup {
 			foreach ($objects as $object) {
 				$category_ids = array();
 				$attachments_string = '';
+				$author_name = '';
 				if ( 'post' == $query_args['object_name'] ) {
 					// Only know about post categories now, but could abstract to objects
 					$categories = get_the_category( $object->object_id );
@@ -222,11 +223,15 @@ class GeoMashup {
 					if ( !empty( $attachments ) ) {
 						$attachments_string = '"' . implode( '","', $attachments ) . '"';
 					}
+					// Include post author
+					$author = get_userdata( $object->post_author );
+					$author_name = $author->display_name;
 				}
 				$object_literals[] = '{"object_id":"' . $object->object_id . '","title":"' . 
 					addslashes( $object->label ) . '","lat":"' . $object->lat . '","lng":"' . 
-					$object->lng . '","categories":[' . implode( ',', $category_ids ) . 
-					'],"attachment_urls":[' . $attachments_string . ']}';
+					$object->lng . '","author_name":"' . $author_name .  '","categories":[' . 
+					implode( ',', $category_ids ) . '],"attachment_urls":[' . 
+					$attachments_string . ']}';
 			}
 		}
 		return '{ objects : [' . implode( ',', $object_literals ) . '] }';
