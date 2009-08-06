@@ -685,11 +685,10 @@ class GeoMashup {
 		$option_args['object_name'] = 'post';
 		$list_html = '<ul class="gm-index-posts">';
 		$locs = GeoMashupDB::get_object_locations( $option_args );
-		if ($locs)
-		{
+		if ($locs) {
 			foreach ($locs as $loc) {
-				$list_html .= '<li><a href="'.get_permalink($loc->post_id).'">'.
-					$loc->post_title."</a></li>\n";
+				$list_html .= '<li><a href="'.get_permalink($loc->object_id).'">'.
+					$loc->label."</a></li>\n";
 			}
 		}
 		$list_html .= '</ul>';
