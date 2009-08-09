@@ -97,7 +97,7 @@ class GeoMashup {
 		}
 		define('GEO_MASHUP_MAX_ZOOM', 20);
 		// Make numeric versions: -.02 for alpha, -.01 for beta
-		define('GEO_MASHUP_VERSION', '1.1.98.2');
+		define('GEO_MASHUP_VERSION', '1.2.98.2');
 		define('GEO_MASHUP_DB_VERSION', '1.2');
 	}
 
@@ -163,8 +163,11 @@ class GeoMashup {
 		if ($attachments) {
 			foreach ($attachments as $attachment) {
 				$attachment_url = $attachment->guid;
-				if (stripos($attachment_url,'.kml') == strlen($attachment_url)-4)
-				{
+				$dot_pos = stripos( $attachment_url, '.kml');
+				if ( $dot_pos === false ) {
+					$dot_pos = stripos( $attachment_url, '.kmz');
+				}
+				if ( $dot_pos == strlen( $attachment_url ) - 4) {
 					array_push($urls,$attachment_url);
 				}
 			}
