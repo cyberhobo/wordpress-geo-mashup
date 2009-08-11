@@ -562,7 +562,7 @@ GeoMashup = {
 			info_window_request.onreadystatechange = function() {
 				var node, info_window_max_request, info_window_max_url;
 
-				if (this.readyState === 4 && this.status === 200) {
+				if (info_window_request.readyState === 4 && info_window_request.status === 200) {
 					node = document.createElement('div');
 					node.innerHTML = info_window_request.responseText;
 					GeoMashup.parentizeLinks( node );
@@ -572,7 +572,7 @@ GeoMashup = {
 					info_window_max_request.open( 'GET', info_window_max_url, true );
 					info_window_max_request.onreadystatechange = function() {
 						var max_node, max_options;
-						if (this.readyState === 4 && this.status == 200 ) {
+						if (info_window_max_request.readyState === 4 && info_window_max_request.status === 200 ) {
 							max_node = document.createElement( 'div' );
 							max_node.innerHTML = info_window_max_request.responseText;
 							GeoMashup.parentizeLinks( max_node );
