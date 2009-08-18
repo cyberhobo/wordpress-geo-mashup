@@ -23,11 +23,35 @@ var GeoMashupLocation, GeoMashupAdmin;
 
 google.load( 'maps', '2' );
 
-jQuery(document).ready( function () {
-	jQuery('#geo-mashup-inline-help-link').click( function () {
-		jQuery('#geo-mashup-inline-help').slideToggle('fast').click( function () {
-			jQuery( this ).slideToggle('fast');
+jQuery( function( $ ) {
+	$('#geo-mashup-inline-help-link').click( function() {
+		$('#geo-mashup-inline-help').slideToggle('fast').click( function() {
+			$( this ).slideToggle('fast');
 		} );
+	} );
+	if ( typeof $.datepicker == 'object' ) {
+		// We've managed to load the datepicker script
+		$('#geo_mashup_date').datepicker( { 
+			dateFormat: 'M d, yy', 
+			changeYear: true,
+			onSelect: function( newDate, picker) {
+				$('#geo_mashup_changed').val( 'true' );
+			} 
+		} );
+	} else {
+		// Datepicker is not available
+		$('#geo_mashup_date').change( function() {
+			$('#geo_mashup_changed').val( 'true' );
+		} );
+	}
+	$('#geo_mashup_hour').change( function() {
+		$('#geo_mashup_changed').val( 'true' );
+	} );
+	$('#geo_mashup_minute').change( function() {
+		$('#geo_mashup_changed').val( 'true' );
+	} );
+	$('#geo_mashup_address').change( function() {
+		$('#geo_mashup_address_display').text( this.value );
 	} );
 } );
 

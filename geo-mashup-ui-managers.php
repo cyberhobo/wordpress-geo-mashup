@@ -33,10 +33,13 @@ class GeoMashupUIManager {
 			return $object_id;
 		}
 		if ( isset( $_POST['geo_mashup_changed'] ) && $_POST['geo_mashup_changed'] == 'true' ) {
+			$date_string = $_POST['geo_mashup_date'] . ' ' . $_POST['geo_mashup_hour'] . ':' . 
+				$_POST['geo_mashup_minute'] . ':00';
+			$geo_date = date( 'Y-m-d H:i:s', strtotime( $date_string ) );
 			if ( empty( $_POST['geo_mashup_location'] ) ) {
 				GeoMashupDB::delete_object_location( $object_name, $object_id );
 			} else if ( !empty( $_POST['geo_mashup_location_id'] ) ) {
-				GeoMashupDB::set_object_location( $object_name, $object_id, $_POST['geo_mashup_location_id'] );
+				GeoMashupDB::set_object_location( $object_name, $object_id, $_POST['geo_mashup_location_id'], true, $geo_date );
 			} else {
 				list( $lat, $lng ) = split( ',', $_POST['geo_mashup_location'] );
 				$post_location = array( );
@@ -50,7 +53,7 @@ class GeoMashupUIManager {
 				$post_location['admin_code'] = $_POST['geo_mashup_admin_code'];
 				$post_location['sub_admin_code'] = $_POST['geo_mashup_sub_admin_code'];
 				$post_location['locality_name'] = $_POST['geo_mashup_locality_name'];
-				GeoMashupDB::set_object_location( $object_name, $object_id, $post_location );
+				GeoMashupDB::set_object_location( $object_name, $object_id, $post_location, true, $geo_date );
 			}
 		}
 		return $object_id;
@@ -156,7 +159,7 @@ class GeoMashupPostUIManager extends GeoMashupUIManager {
 	}
 
 	function init() {
-		global $geo_mashup_options;
+		global $geo_mashup_options, $wp_scripts;
 
 		// Uploadable geo content type expansion always enabled
 		add_filter( 'upload_mimes', array( &$this, 'upload_mimes' ) );
@@ -182,6 +185,20 @@ class GeoMashupPostUIManager extends GeoMashupUIManager {
 					add_action( 'admin_menu', array( &$this, 'admin_menu' ) );
 
 					$this->enqueue_form_client_items();
+
+					// If we have jQuery x, add the datepicker
+					if ( is_a( $wp_scripts, 'WP_Scripts' ) ) {
+						$query = $wp_scripts->query( 'jquery-ui-core', 'registered' );
+						if ( is_object( $query ) && $query->ver > '1.7' ) {
+							wp_enqueue_script( 'jquery-ui-datepicker', 
+								trailingslashit( GEO_MASHUP_URL_PATH ) . 'jquery-ui.datepicker.js',
+								array( 'jquery', 'jquery-ui-core'),
+								'1.7.2'	);
+						}
+					}
+
+					// Styles
+					wp_enqueue_style( 'geo-mashup-datepicker', GEO_MASHUP_URL_PATH . '/jquery.smoothness.css', false, '2.5.0', 'screen' );
 
 			} else if ( strpos( $_SERVER['REQUEST_URI'], 'async-upload.php' ) > 0 ) {
 

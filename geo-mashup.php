@@ -98,7 +98,7 @@ class GeoMashup {
 		define('GEO_MASHUP_MAX_ZOOM', 20);
 		// Make numeric versions: -.02 for alpha, -.01 for beta
 		define('GEO_MASHUP_VERSION', '1.2.98.2');
-		define('GEO_MASHUP_DB_VERSION', '1.2');
+		define('GEO_MASHUP_DB_VERSION', '1.3');
 	}
 
 	function load_scripts() {
@@ -118,9 +118,19 @@ class GeoMashup {
 	function load_styles() {
 		if (is_admin()) {
 			if ( isset($_GET['page']) && GEO_MASHUP_PLUGIN_NAME === $_GET['page'] ) {
-				wp_enqueue_style( 'geo-mashup-tabs', GEO_MASHUP_URL_PATH . '/jquery.tabs.css', false, '2.5.0', 'screen' );
+				wp_enqueue_style( 'geo-mashup-tabs', GEO_MASHUP_URL_PATH . '/jquery.smoothness.css', false, '2.5.0', 'screen' );
 			}
 		}
+	}
+
+	/**
+	 * Limit query_posts to located posts only, and add Geo Mashup extensions.
+	 *
+	 * @since 1.3
+	 * @param bool $yes_or_no Whether to activate the join or not.
+	 */
+	function join_post_queries( $yes_or_no ) {
+		GeoMashupDB::join_post_queries( $yes_or_no );
 	}
 
 	function explode_assoc($glue1, $glue2, $array) {
