@@ -7,7 +7,7 @@
 add_action( 'delete_post', array( 'GeoMashupDB', 'delete_post' ) );
 add_action( 'delete_comment', array( 'GeoMashupDB', 'delete_comment' ) );
 add_action( 'delete_user', array( 'GeoMashupDB', 'delete_user' ) );
-		 
+
 /**
  * Static class used as a namespace for Geo Mashup data functions.
  *
@@ -38,7 +38,7 @@ class GeoMashupDB {
 					'table' => $wpdb->posts, 
 					'id_column' => 'ID', 
 					'label_column' => 'post_title', 
-					'sort' => 'post_status ASC, post_date DESC' ),
+					'sort' => 'post_status ASC, geo_date DESC' ),
 				'user' => array( 
 					'table' => $wpdb->users, 
 					'id_column' => 'ID', 
@@ -67,6 +67,71 @@ class GeoMashupDB {
 		return $status;
 	}
 
+	function join_post_queries( $new_value = null) {
+		static $active = null;
+
+		if ( is_bool( $new_value ) ) {
+			if ( is_null( $active ) && $new_value ) {
+
+				// Register hooks to add fields and options to WP query_posts
+				add_filter( 'posts_join', array( 'GeoMashupDB', 'posts_join' ) );
+				add_filter( 'posts_orderby', array( 'GeoMashupDB', 'posts_orderby' ) );
+				add_action( 'parse_query', array( 'GeoMashupDB', 'parse_query' ) );
+			}
+ 
+			$active = $new_value;
+		}
+		return $active;
+	}
+
+	function query_orderby( $new_value = null ) {
+		static $orderby = null;
+
+		if ( !is_null( $new_value ) ) {
+			$orderby = $new_value;
+		}
+		return $orderby;
+	}
+
+	function parse_query( $query ) {
+		global $wpdb;
+
+		// Check for geo mashup fields in the orderby before they are removed as invalid
+		switch ( $query->query_vars['orderby'] ) {
+			case 'geo_mashup_date':
+				GeoMashupDB::query_orderby( $wpdb->prefix . 'geo_mashup_location_relationships.geo_date' );
+				break;
+
+			case 'geo_mashup_locality':
+				GeoMashupDB::query_orderby( $wpdb->prefix . 'geo_mashup_locations.locality_name' );
+				break;
+		}
+	}
+
+	function posts_join( $join ) {
+		global $wpdb;
+
+		if ( GeoMashupDB::join_post_queries() ) {
+			$gmlr = $wpdb->prefix . 'geo_mashup_location_relationships';
+			$gml = $wpdb->prefix . 'geo_mashup_locations';
+			$join .= " INNER JOIN $gmlr ON ($gmlr.object_name = 'post' AND $gmlr.object_id = $wpdb->posts.ID)" .
+				" INNER JOIN $gml ON ($gml.id = $gmlr.location_id) ";
+		}
+		return $join;
+	}
+
+	function posts_orderby( $orderby ) {
+		global $wpdb;
+
+		if ( GeoMashupDB::query_orderby() ) {
+			$orderby = str_replace( "$wpdb->posts.post_date", GeoMashupDB::query_orderby(), $orderby );
+
+			// Reset for subsequent queries
+			GeoMashupDB::query_orderby( false );
+		}
+		return $orderby;
+	}
+
 	function install( ) {
 		global $wpdb;
 
@@ -80,7 +145,7 @@ class GeoMashupDB {
 					lat FLOAT( 11,7 ) NOT NULL,
 					lng FLOAT( 11,7 ) NOT NULL,
 					address TINYTEXT NULL,
-					saved_name VARCHAR( 50 ) NULL,
+					saved_name TINYTEXT NULL,
 					geoname TINYTEXT NULL, 
 					postal_code TINYTEXT NULL,
 					country_code VARCHAR( 2 ) NULL,
@@ -97,8 +162,10 @@ class GeoMashupDB {
 					object_name VARCHAR( 80 ) NOT NULL,
 					object_id BIGINT( 20 ) NOT NULL,
 					location_id MEDIUMINT( 9 ) NOT NULL,
+					geo_date DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
 					PRIMARY KEY  ( object_name, object_id, location_id ),
-					KEY object_name ( object_name, object_id )
+					KEY object_name ( object_name, object_id ),
+					KEY object_date_key ( object_name, geo_date )
 				);
 				CREATE TABLE $administrative_names_table_name (
 					country_code VARCHAR( 2 ) NOT NULL,
@@ -485,6 +552,25 @@ class GeoMashupDB {
 			update_option( 'geo_locations', $geo_locations );
 		}
 
+		$geo_date_update = "UPDATE {$wpdb->prefix}geo_mashup_location_relationships gmlr, $wpdb->posts p " .
+			"SET gmlr.geo_date = p.post_date " .
+			"WHERE gmlr.object_name='post' " .
+			"AND gmlr.object_id = p.ID " .
+			"AND gmlr.geo_date = '0000-00-00 00:00:00'";
+
+		$geo_date_count = $wpdb->query( $geo_date_update );
+
+		$log .= '<p>';
+		echo '<p>';
+		if ( $geo_date_count === false ) {
+			$msg = __( 'Failed to initialize geo dates from post dates: ', 'GeoMashup' );
+			$msg .= $wpdb->last_error;
+		} else {
+			$msg = sprintf( __( 'Initialized %d geo dates from corresponding post dates.', 'GeoMashup' ), $geo_date_count );
+		}
+		$log .= $msg . '</p>';
+		echo $msg . '</p>';
+			
 		update_option( 'geo_mashup_activation_log', $log );
 
 		$wpdb->query( $unconverted_select );
@@ -504,7 +590,10 @@ class GeoMashupDB {
 			'country_code' => null,
 			'admin_code' => null,
 			'sub_admin_code' => null,
-			'locality_name' => null);
+			'locality_name' => null,
+		  'object_name' => null,
+		  'object_id' => null,
+		  'geo_date' => null );
 		if ( $format == OBJECT ) {
 			return (object) $blank_location;
 		} else {
@@ -648,8 +737,9 @@ class GeoMashupDB {
 			$wheres[] = 'gmlr.object_id in ( ' . $wpdb->escape( $query_args['object_ids'] ) .' )';
 		}
 
+		$no_where_fields = array( 'object_name', 'object_id', 'geo_date' );
 		foreach ( GeoMashupDB::blank_location( ARRAY_A ) as $field => $blank ) {
-			if ( isset( $query_args[$field] ) ) {
+			if ( !in_array( $field, $no_where_fields) && isset( $query_args[$field] ) ) {
 				$wheres[] = $wpdb->prepare( "gml.$field = %s", $query_args[$field] );
 			}
 		}
@@ -671,7 +761,7 @@ class GeoMashupDB {
 		return $wpdb->last_result;
 	}
 
-	function set_object_location( $object_name, $object_id, $location, $do_lookups = true ) {
+	function set_object_location( $object_name, $object_id, $location, $do_lookups = true, $geo_date = '' ) {
 		global $wpdb;
 
 		if ( is_numeric( $location ) ) {
@@ -687,6 +777,10 @@ class GeoMashupDB {
 			return false;
 		}
 
+		if ( empty( $geo_date ) ) {
+			$geo_date = date( 'Y-m-d H:i:s' );
+		}
+
 		$relationship_table = "{$wpdb->prefix}geo_mashup_location_relationships"; 
 		$select_string = "SELECT * FROM $relationship_table " .
 			$wpdb->prepare( 'WHERE object_name = %s AND object_id = %d', $object_name, $object_id );
@@ -695,11 +789,11 @@ class GeoMashupDB {
 
 		$set_id = null;
 		if ( empty( $db_location ) ) {
-			if ( $wpdb->insert( $relationship_table, compact( 'object_name', 'object_id', 'location_id' ) ) ) {
+			if ( $wpdb->insert( $relationship_table, compact( 'object_name', 'object_id', 'location_id', 'geo_date' ) ) ) {
 				$set_id = $location_id;
 			}
 		} else {
-			$wpdb->update( $relationship_table, compact( 'location_id' ), compact( 'object_name', 'object_id' ) ); 
+			$wpdb->update( $relationship_table, compact( 'location_id', 'geo_date' ), compact( 'object_name', 'object_id' ) ); 
 			$set_id = $location_id;
 		}
 		return $set_id;

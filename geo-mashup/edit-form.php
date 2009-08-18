@@ -5,12 +5,42 @@ function geo_mashup_edit_form( $object_name, $object_id ) {
 	$location = ( empty( $location ) ) ? GeoMashupDB::blank_location( ) : $location;
 	$post_location_name = $location->saved_name;
 	$kml_url = '';
+	$changed = '';
+	$date_missing = ( empty( $location->geo_date ) || '0000-00-00 00:00:00' == $location->geo_date );
 	if ( 'post' == $object_name) {
+		if ( $date_missing ) {
+			$post = get_post( $object_id );
+			$location->geo_date = $post->post_date;
+			if ( !empty( $location->id ) ) {
+				$changed = 'true';
+			}
+		}
 		$kml_urls = GeoMashup::get_kml_attachment_urls( $object_id );
 		if (count($kml_urls)>0) {
 			$kml_url = array_pop($kml_urls);
 		}
+	} else if ( 'user' == $object_name && $date_missing ) {
+		$user = get_userdata( $object_id );
+		$location->geo_date = $user->user_registered;
+		if ( !empty( $location->id ) ) {
+			$changed = 'true';
+		}
+	} else if ( 'comment' == $object_name && $date_missing ) {
+		$comment = get_comment( $object_id );
+		$location->geo_date = $comment->comment_date;
+		if ( !empty( $location->id ) ) {
+			$changed = 'true';
+		}
+	}	
+	if ( empty( $location->geo_date ) ) {
+		$location_datetime = mktime();
+	} else {
+		$location_datetime = strtotime( $location->geo_date );
 	}
+	$location_date = date( 'M j, Y', $location_datetime );
+	$location_hour = date( 'G', $location_datetime );
+	$location_minute = date( 'i', $location_datetime );
+
 	$saved_locations = GeoMashupDB::get_saved_locations( );
 	$locations_json = '{';
 	if ( !empty( $saved_locations ) ) {
@@ -68,8 +98,19 @@ function geo_mashup_edit_form( $object_name, $object_id ) {
 			"status_icon":document.getElementById("geo_mashup_status_icon")});
 	// ]]>
 	</script>
+	<label><?php _e( 'Address:', 'GeoMashup' ); ?></label>
+	<span id="geo_mashup_address_display"><?php echo $location->address; ?></span>
+	<div id="geo_mashup_date_ui">
+		<label for="geo_mashup_date"><?php _e('Geo Date:', 'GeoMashup'); ?>
+			<input id="geo_mashup_date" name="geo_mashup_date" type="text" size="20" value="<?php echo $location_date; ?>" />
+		</label>
+		@
+		<input id="geo_mashup_hour" name="geo_mashup_hour" type="text" size="2" maxlength="2" value="<?php echo $location_hour; ?>" />
+		:
+		<input id="geo_mashup_minute" name="geo_mashup_minute" type="text" size="2" maxlength="2" value="<?php echo $location_minute; ?>" />
+	</div>
 	<label for="geo_mashup_location_name"><?php _e('Save As:', 'GeoMashup'); ?>
-		<input id="geo_mashup_location_name" name="geo_mashup_location_name" type="text" maxlength="50" size="45" />
+		<input id="geo_mashup_location_name" name="geo_mashup_location_name" type="text" size="45" />
 	</label>
 	<input id="geo_mashup_location" name="geo_mashup_location" type="hidden" value="<?php echo $location->lat.','.$location->lng; ?>" />
 	<input id="geo_mashup_location_id" name="geo_mashup_location_id" type="hidden" value="<?php echo $location->id; ?>" />
@@ -82,7 +123,7 @@ function geo_mashup_edit_form( $object_name, $object_id ) {
 	<input id="geo_mashup_sub_admin_code" name="geo_mashup_sub_admin_code" type="hidden" value="<? echo $location->sub_admin_code; ?>" />
 	<input id="geo_mashup_sub_admin_name" name="geo_mashup_sub_admin_name" type="hidden" value="" />
 	<input id="geo_mashup_locality_name" name="geo_mashup_locality_name" type="hidden" value="<? echo $location->locality_name; ?>" />
-	<input id="geo_mashup_changed" name="geo_mashup_changed" type="hidden" value="" />
+	<input id="geo_mashup_changed" name="geo_mashup_changed" type="hidden" value="<?php echo $changed; ?>" />
 <?php
 }
 ?>
