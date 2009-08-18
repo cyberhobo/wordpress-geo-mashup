@@ -240,16 +240,19 @@ GeoMashup = {
 		if (!hierarchy) {
 			hierarchy = this.category_hierarchy;
 		}
-		this.forEach( hierarchy, function (category_id) {
-			if (category_id === search_id) {
-				return hierarchy[category_id];
-			} else if (hierarchy[category_id]) {
-				child_search = this.searchCategoryHierarchy(search_id, hierarchy[category_id]);
-				if (child_search) {
-					return child_search;
+		// Use a regular loop, so it can return a value for this function
+		for( category_id in hierarchy ) {
+			if ( hierarchy.hasOwnProperty( category_id ) && typeof hierarchy[category_id] !== 'function' ) {
+				if (category_id === search_id) {
+					return hierarchy[category_id];
+				} else if (hierarchy[category_id]) {
+					child_search = this.searchCategoryHierarchy(search_id, hierarchy[category_id]);
+					if (child_search) {
+						return child_search;
+					}
 				}
 			}
-		});
+		}
 		return null;
 	},
 
