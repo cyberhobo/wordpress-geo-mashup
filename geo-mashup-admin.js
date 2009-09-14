@@ -68,6 +68,14 @@ GeoMashupLocation = function (init_data) {
 	this.locality_name = '';
 	this.address = '';
 
+	this.definedValue = function( val, alt ) {
+		if ( typeof val === 'undefined' ) {
+			return alt;
+		} else {
+			return val;
+		}
+	}
+
 	this.subValue = function(obj, keys, default_value) {
 		var key;
 		if (typeof default_value !== 'string') {
@@ -109,11 +117,11 @@ GeoMashupLocation = function (init_data) {
 				this.id = '';
 				this.title = data.name;
 				this.geoname = data.name; 
-				this.country_code = data.countryCode;
-				this.admin_code = data.adminCode1;
-				this.admin_name = data.adminName1;
-				this.sub_admin_code = data.adminCode2;
-				this.sub_admin_name = data.adminName2;
+				this.country_code = this.definedValue( data.countryCode, '' );
+				this.admin_code = this.definedValue( data.adminCode1, '' );
+				this.admin_name = this.definedValue( data.adminName1, '' );
+				this.sub_admin_code = this.definedValue( data.adminCode2, '' );
+				this.sub_admin_name = this.definedValue( data.adminName2, '' );
 			} else if (typeof data.address === 'string') {
 				this.title = data.address;
 				this.address = data.address;
