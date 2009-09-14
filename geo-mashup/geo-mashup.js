@@ -594,17 +594,22 @@ GeoMashup = {
 	},
 
 	addGlowMarker : function( marker, point ) {
+		var glow_icon;
+
 		if ( this.glow_marker ) {
 			this.map.removeOverlay( this.glow_marker );
 			this.glow_marker.setLatLng( point );
 		} else {
+			glow_icon = new google.maps.Icon( {
+				image : this.opts.url_path + '/images/mm_20_glow.png',
+				iconSize : new google.maps.Size( 22, 30 ),
+				iconAnchor : new google.maps.Point( 11, 27 ) 
+			} );
+			this.doAction( 'glowMarkerIcon', this.opts, glow_icon );
 			this.glow_marker = new google.maps.Marker( point, {
 				clickable : false,
-				icon : new google.maps.Icon( {
-					image : this.opts.url_path + '/images/mm_20_glow.png',
-					iconSize : new google.maps.Size( 22, 30 ),
-					iconAnchor : new google.maps.Point( 11, 27 ) } )
-				} );
+				icon : glow_icon
+			} );
 		}
 		this.map.addOverlay( this.glow_marker );
 	},
@@ -681,6 +686,7 @@ GeoMashup = {
 				post_request.send(null);
 			}
 		}
+		this.doAction( 'selectedMarker', this.opts, this.selected_marker, this.map );
 	},
 
 	deselectMarker : function() {
@@ -693,25 +699,6 @@ GeoMashup = {
 		}
 		this.hideAttachments();
 		this.selected_marker = null;
-	},
-
-	getObjectIcon : function( obj ) {
-		var icon = null;
-
-		if (typeof customGeoMashupCategoryIcon === 'function') {
-			icon = customGeoMashupCategoryIcon(this.opts, obj.categories);
-		} 
-		if (!icon) {
-			if (obj.categories.length > 1) {
-				icon = new google.maps.Icon(this.multiple_category_icon);
-			} else if (obj.categories.length === 1) {
-				icon = new google.maps.Icon(this.categories[obj.categories[0]].icon);
-			} else {
-				icon = new google.maps.Icon(this.base_color_icon);
-				marker_opts.icon.image = this.opts.url_path + '/images/mm_20_red.png';
-			} 
-		}
-
 	},
 
 	addObjectIcon : function( obj ) {
@@ -727,7 +714,7 @@ GeoMashup = {
 				obj.icon = new google.maps.Icon(this.base_color_icon);
 				obj.icon.image = this.opts.url_path + '/images/mm_20_red.png';
 			} 
-			this.doAction( 'objectIcon', this.opts, obj.icon );
+			this.doAction( 'objectIcon', this.opts, obj );
 		}
 	},
 
