@@ -145,7 +145,7 @@ class GeoMashupDB {
 					lat FLOAT( 11,7 ) NOT NULL,
 					lng FLOAT( 11,7 ) NOT NULL,
 					address TINYTEXT NULL,
-					saved_name TINYTEXT NULL,
+					saved_name VARCHAR( 100 ) NULL,
 					geoname TINYTEXT NULL, 
 					postal_code TINYTEXT NULL,
 					country_code VARCHAR( 2 ) NULL,
