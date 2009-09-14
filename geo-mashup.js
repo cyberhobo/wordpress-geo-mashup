@@ -388,10 +388,10 @@ GeoMashup = {
 				html_array.push('<img src="');
 				html_array.push(this.categories[child_id].icon.image);
 				html_array.push('" />');
+				html_array.push('<span class="gm-sub-cat-title">');
+				html_array.push(this.opts.category_opts[child_id].name);
+				html_array.push('</span>');
 			}
-			html_array.push('<span class="gm-sub-cat-title">');
-			html_array.push(this.opts.category_opts[child_id].name);
-			html_array.push('</span>');
 			html_array.push(this.categoryIndexHtml(child_id, children[child_id], false));
 			html_array.push('</li>');
 			group_count += 1;
