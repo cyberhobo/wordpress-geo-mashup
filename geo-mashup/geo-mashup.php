@@ -309,6 +309,9 @@ class GeoMashup {
 				} else {
 					$context_objects = $wp_query->posts;
 				}
+				if ( !is_array( $context_objects ) ) {
+					return '<!-- ' . __( 'Geo Mashup found no objects to map in this context', 'GeoMashup' ) . '-->';
+				}
 				foreach ( $context_objects as $context_object ) {
 					if ( 'post' == $object_name ) {
 						$object_ids[] = $context_object->ID;
@@ -331,11 +334,11 @@ class GeoMashup {
 				} else if ( 'comment' == $object_name ) {
 					$url_params['object_id'] = get_comment_ID();
 					if ( empty( $url_params['object_id'] ) ) { 
-						return '';
+						return '<!-- ' . __( 'Geo Mashup found no current object to map', 'GeoMashup' ) . '-->';
 					}
 					$location = GeoMashupDB::get_object_location( $object_name, $object_id ); 
 					if ( empty( $location ) ) {
-						return '';
+						return '<!-- ' . __( 'Geo Mashup ommitted a map for an object with no location', 'GeoMashup' ) . '-->';
 					}
 				}
 				break;
