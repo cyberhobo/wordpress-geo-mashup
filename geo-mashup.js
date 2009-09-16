@@ -220,6 +220,32 @@ GeoMashup = {
 		}
 	},
 
+	setCenterUpToMaxZoom : function( latlng, zoom, callback ) {
+		var map_type = this.map.getCurrentMapType();
+		if ( map_type == google.maps.SATELLITE_MAP || map_type == google.maps.HYBRID_MAP ) {
+			map_type.getMaxZoomAtLatLng( latlng, function( response ) {
+				if ( response && response['status'] === google.maps.GEO_SUCCESS ) {
+					if ( response['zoom'] < zoom ) {
+						zoom = response['zoom'];
+					}
+				}
+				GeoMashup.map.setCenter( latlng, zoom );
+				if ( typeof callback === 'function' ) {
+					callback( zoom );
+				}
+			}, zoom );
+		} else {
+			// Current map type doesn't have getMaxZoomAtLatLng
+			if ( map_type.getMaximumResolution() < zoom ) {
+				zoom = map_type.getMaximumResolution();
+			}	
+			this.map.setCenter( latlng, zoom );
+			if ( typeof callback === 'function' ) {
+				callback( zoom );
+			}
+		}
+	},
+
 	hasLocatedChildren : function(category_id, hierarchy) {
 		var child_id;
 
@@ -941,7 +967,11 @@ GeoMashup = {
 				this.clickMarker(this.opts.open_object_id);
 			}
 			if ( this.opts.zoom === 'auto' ) {
-				this.map.setCenter( this.location_bounds.getCenter(), this.map.getBoundsZoomLevel( this.location_bounds ) );
+				this.setCenterUpToMaxZoom( 
+					this.location_bounds.getCenter(), 
+					this.map.getBoundsZoomLevel( this.location_bounds ),
+					function() { GeoMashup.updateVisibleList(); } 
+				);
 			}
 			this.updateVisibleList();
 		}
