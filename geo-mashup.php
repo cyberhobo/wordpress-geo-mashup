@@ -65,7 +65,7 @@ class GeoMashup {
 		} else {
 
 			if ($geo_mashup_options->get('overall','add_category_links') == 'true') {
-				// To add map links to a category list - flaky
+				// To add map links to a category list - flaky, requires non-empty category description
 				add_filter('list_cats', array('GeoMashup', 'list_cats'), 10, 2);
 			}
 
@@ -81,6 +81,11 @@ class GeoMashup {
 			add_action('rss_item', array('GeoMashup', 'rss_item'));
 			add_action('rss2_item', array('GeoMashup', 'rss_item'));
 			add_action('atom_entry', array('GeoMashup', 'rss_item'));
+
+			// To add custom renderings
+			add_filter( 'query_vars', array( 'GeoMashup', 'query_vars' ) );
+			add_action( 'template_redirect', array( 'GeoMashup', 'template_redirect' ) );
+
 		}
 	}
 
@@ -119,6 +124,45 @@ class GeoMashup {
 		if (is_admin()) {
 			if ( isset($_GET['page']) && GEO_MASHUP_PLUGIN_NAME === $_GET['page'] ) {
 				wp_enqueue_style( 'geo-mashup-tabs', GEO_MASHUP_URL_PATH . '/jquery.smoothness.css', false, '2.5.0', 'screen' );
+			}
+		}
+	}
+
+	/**
+	 * Add Geo Mashup query variables.
+	 *
+	 * @see query_vars filter
+	 */
+	function query_vars( $public_query_vars ) {
+		$public_query_vars[] = 'geo_mashup_content';
+		return $public_query_vars;
+	}
+
+	/**
+	 * Deliver templated Geo Mashup content.
+	 *
+	 * This used to be done by direct calls to PHP files that would load WP.
+	 *
+	 * @see template_redirect filter
+	 */
+	function template_redirect() {
+		$geo_mashup_content = get_query_var( 'geo_mashup_content' );
+		if ( $geo_mashup_content ) {
+			// The parameter's purpose is to get us here, we can remove it now
+			unset( $_GET['geo_mashup_content'] );
+
+			check_ajax_referer( 'geo-mashup-content', '_wpnonce' );
+			unset( $_GET['_wpnonce'] );
+
+			switch( $geo_mashup_content ) {
+			case 'render-map':
+				require_once( 'render-map.php' );
+				exit;
+
+			case 'geo-query':
+				unset( $_GET['geo_mashup_content'] );
+				require_once( 'geo-query.php' );
+				exit;
 			}
 		}
 	}
@@ -402,7 +446,9 @@ class GeoMashup {
 			}
 		}
 					
-		$iframe_src = GEO_MASHUP_URL_PATH . '/render-map.php?' . GeoMashup::implode_assoc('=', '&amp;', $url_params, false, true);
+		$iframe_src = get_option( 'siteurl' ) . '?geo_mashup_content=render-map&amp;_wpnonce=' . 
+			wp_create_nonce( 'geo-mashup-content' ) . '&amp;' .
+			GeoMashup::implode_assoc('=', '&amp;', $url_params, false, true);
 		$content = "";
 
 		if ($click_to_load == 'true') {

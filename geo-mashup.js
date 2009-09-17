@@ -584,7 +584,7 @@ GeoMashup = {
 				}
 				object_ids += this.locations[point].objects[i].object_id;
 			}
-			url = this.opts.url_path + '/geo-query.php?object_name=' + this.opts.object_name +
+			url = this.geo_query_url + '&object_name=' + this.opts.object_name +
 				'&object_ids=' + object_ids;
 			info_window_request = new google.maps.XmlHttp.create();
 			info_window_request.open('GET', url, true);
@@ -699,7 +699,7 @@ GeoMashup = {
 				for(i=0; i<this.locations[point].objects.length; i += 1) {
 					object_ids.push( this.locations[point].objects[i].object_id );
 				}
-				url = this.opts.url_path + '/geo-query.php?object_name=' + this.opts.object_name +
+				url = this.geo_query_url + '&object_name=' + this.opts.object_name +
 					'&object_ids=' + object_ids.join( ',' ) + '&template=full-post';
 				post_request = new google.maps.XmlHttp.create();
 				post_request.open('GET', url, true);
@@ -983,7 +983,7 @@ GeoMashup = {
 			return;
 		}
 		request = google.maps.XmlHttp.create();
-		url = this.opts.url_path + '/geo-query.php?i=1';
+		url = this.geo_query_url;
 		if (use_bounds) {
 			map_bounds = this.map.getBounds();
 			map_span = map_bounds.toSpan();
@@ -1182,6 +1182,7 @@ GeoMashup = {
 			opts.object_name = 'post';
 		}
 		this.opts = opts;
+		this.geo_query_url = opts.siteurl + '?geo_mashup_content=geo-query&_wpnonce=' + opts.nonce;
 
 		google.maps.Event.bind(this.map, "zoomend", this, this.adjustZoom);
 		google.maps.Event.bind(this.map, "moveend", this, this.adjustViewport);
@@ -1226,7 +1227,7 @@ GeoMashup = {
 		} else {
 			// Center on the most recent located object
 			request = google.maps.XmlHttp.create();
-			url = this.opts.url_path + '/geo-query.php?limit=1';
+			url = this.geo_query_url + '&limit=1';
 			if (opts.map_cat) {
 				url += '&cat='+opts.map_cat;
 			}

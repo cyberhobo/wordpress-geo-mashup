@@ -1,7 +1,4 @@
 <?php
-
-require_once('../../../wp-blog-header.php');
-
 /**
  * Establish locate_template for WP 2.6.
  */
@@ -101,10 +98,10 @@ class GeoMashupQuery {
 			$template = trailingslashit( $geo_mashup_custom->dir_path ) . $template_base . '.php';
 		}
 		if ( !is_readable( $template ) ) {
-			$template = $template_base . '-default.php';
+			$template = trailingslashit( GEO_MASHUP_DIR_PATH ) . $template_base . '-default.php';
 		}
 		if ( !is_readable( $template ) ) {
-			$template = 'info-window-default.php';
+			$template = trailingslashit( GEO_MASHUP_DIR_PATH ) . 'info-window-default.php';
 		}
 		load_template( $template );
 	}
