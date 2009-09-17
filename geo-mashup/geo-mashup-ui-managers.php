@@ -350,17 +350,28 @@ class GeoMashupCommentUIManager {
 
 	function print_form()
 	{
-		//TODO:handle logged in user with location?
-		$input_format = '<input id="geo_mashup_%s_input" name="comment_location[%s]" type="hidden" />';
-		printf( $input_format, 'lat', 'lat' );
-		printf( $input_format, 'lng', 'lng' );
-		printf( $input_format, 'country_code', 'country_code' );
-		printf( $input_format, 'locality_name', 'locality_name' );
-		printf( $input_format, 'address', 'address' );
+		// If there's a logged in user with a location, use that as a default.
+		// The client-side location will override it if available
+		$default_lat = $default_lng = '';
+		$user = wp_get_current_user();
+		if ( $user ) {
+			$location = GeoMashupDB::get_object_location( 'user', $user->ID );
+			if ( $location ) {
+				$default_lat = $location->lat;
+				$default_lng = $location->lng;
+			}
+		}
+
+		// Print the form
+		$input_format = '<input id="geo_mashup_%s_input" name="comment_location[%s]" type="hidden" value="%s" />';
+		printf( $input_format, 'lat', 'lat', $default_lat );
+		printf( $input_format, 'lng', 'lng', $default_lng );
+		printf( $input_format, 'country_code', 'country_code', '' );
+		printf( $input_format, 'locality_name', 'locality_name', '' );
+		printf( $input_format, 'address', 'address', '' );
 	}
 
 	function save_comment( $comment_id = 0, $approval = '' ) {
-		//TODO:handle logged in user with location?
 		if ( !$comment_id || 'spam' === $approval || empty( $_POST['comment_location'] ) || !is_array( $_POST['comment_location'] ) ) {
 			return false;
 		}
