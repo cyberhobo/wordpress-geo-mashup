@@ -1,7 +1,5 @@
 <?php
 
-require_once ( '../../../wp-blog-header.php' );
-
 status_header ( 200 );
 geo_mashup_render_map ( );
 
@@ -30,7 +28,7 @@ function geo_mashup_render_map ( ) {
 		$style_url_path = $geo_mashup_custom->file_url( 'map-style.css' );
 	}
 	if ( empty( $style_url_path ) ) {
-		$style_url_path = 'map-style-default.css';
+		$style_url_path = trailingslashit( GEO_MASHUP_URL_PATH ) . 'map-style-default.css';
 	} 
 
 	// Resolve custom javascript
@@ -38,10 +36,12 @@ function geo_mashup_render_map ( ) {
 	if ( isset( $geo_mashup_custom ) ) {
 		$custom_js_url_path = $geo_mashup_custom->file_url( 'custom.js' );
 	} else if ( is_readable( 'custom.js' ) ) {
-		$custom_js_url_path = 'custom.js';
+		$custom_js_url_path = trailingslashit( GEO_MASHUP_URL_PATH ) . 'custom.js';
 	}
 					 
 	$map_properties = array ( 
+		'siteurl' => get_option( 'siteurl' ),
+		'nonce' => wp_create_nonce( 'geo-mashup-content' ),
 		'url_path' => GEO_MASHUP_URL_PATH,
  		'template_url_path' => get_template_directory_uri() );
 	if ( isset( $geo_mashup_custom ) ) {
@@ -147,7 +147,6 @@ function geo_mashup_render_map ( ) {
 	$category_opts .= '}';
 	$map_properties['category_opts'] = $category_opts;
 
-	//var_dump( $_GET );
 	?>
 	<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
 			"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
@@ -161,15 +160,15 @@ function geo_mashup_render_map ( ) {
 		<title>Geo Mashup Map</title>
 			<?php $wp_scripts->print_scripts( array( 'google-jsapi' ) ); ?>
 
-			<script src="geo-mashup.js?v=<?php echo GEO_MASHUP_VERSION; ?>" type="text/javascript"></script>
+			<script src="<?php echo trailingslashit( GEO_MASHUP_URL_PATH ); ?>geo-mashup.js?v=<?php echo GEO_MASHUP_VERSION; ?>" type="text/javascript"></script>
 
 			<?php if ( $custom_js_url_path ): ?>
 			<script src="<?php echo $custom_js_url_path; ?>" type="text/javascript"></script>
 			<?php endif; ?>
 
 			<?php if ( !empty( $map_properties['cluster_max_zoom'] ) ) : ?>
-			<script src="mapiconmaker.js?v=1.1" type="text/javascript"></script>
-			<script src="ClusterMarker.js?v=1.3.2" type="text/javascript"></script>
+			<script src="<?php echo trailingslashit( GEO_MASHUP_URL_PATH ); ?>mapiconmaker.js?v=1.1" type="text/javascript"></script>
+			<script src="<?php echo trailingslashit( GEO_MASHUP_URL_PATH ); ?>ClusterMarker.js?v=1.3.2" type="text/javascript"></script>
 			<?php endif; ?>
 
 			<?php if ( $geo_mashup_options->get('overall', 'theme_stylesheet_with_maps' ) == 'true' ) : ?>
