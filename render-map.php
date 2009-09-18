@@ -3,8 +3,11 @@
 status_header ( 200 );
 geo_mashup_render_map ( );
 
-function add_double_quotes( &$item, $key ) {
-	if ( empty ( $item ) || $item == 'false' ) {
+function add_double_quotes(&$item,$key) {
+	$quoted_keys = array ( 'background_color', 'show_future', 'map_control', 'map_content', 'map_type', 'legend_format', 'template' );
+	if ( $key == 'post_data' ) {
+		// don't quote
+	} else if ( !is_numeric( $item ) && empty ( $item ) ) {
 		$item = '""';
 	} else if ( is_array( $item ) && $item[0] ) {
 		$item = '["' . implode( '","', $item ) . '"]';
@@ -178,7 +181,6 @@ function geo_mashup_render_map ( ) {
 			<?php if ( $style_url_path ) : ?>
 			<link rel="stylesheet" href="<?php echo $style_url_path; ?>" type="text/css" media="screen" />
 			<?php endif; ?>
-			
 			<style type="text/css">
 				v\:* { behavior:url(#default#VML); }
 				#geo-mashup {
