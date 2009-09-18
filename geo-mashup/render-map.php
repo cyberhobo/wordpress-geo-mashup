@@ -9,7 +9,7 @@ function add_double_quotes(&$item,$key) {
 	$quoted_keys = array ( 'background_color', 'show_future', 'map_control', 'map_content', 'map_type', 'legend_format', 'template' );
 	if ( $key == 'post_data' ) {
 		// don't quote
-	} else if ( empty ( $item ) ) {
+	} else if ( !is_numeric( $item ) && empty ( $item ) ) {
 		$item = '""';
 	} else if ( in_array ( $key, $quoted_keys ) || is_int(strpos($item,',')) || is_int(strpos($item,':'))) {
 		$item = '"'.$item.'"';
