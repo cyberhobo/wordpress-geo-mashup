@@ -943,7 +943,9 @@ var GeoMashup = {
 		}
 
 		if (opts.add_overview_control) {
-			this.map.addControl(new GOverviewMapControl());
+			this.overview_control = new GOverviewMapControl();
+			this.overview_control.setMapType( opts.map_type );
+			this.map.addControl( this.overview_control );
 			var ov = document.getElementById('gm-overview');
 			if (ov) {
 				ov.style.position = 'absolute';
