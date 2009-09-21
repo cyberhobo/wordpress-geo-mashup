@@ -1291,7 +1291,10 @@ GeoMashup = {
 		}
 
 		if (opts.add_overview_control) {
-			this.map.addControl(new google.maps.OverviewMapControl());
+			this.overview_control = new google.maps.OverviewMapControl();
+			this.overview_control.setMapType( opts.map_type );
+			this.doAction( 'overviewControl', this.opts, this.overview_control );
+			this.map.addControl( this.overview_control );
 			ov = document.getElementById('gm-overview');
 			if (ov) {
 				ov.style.position = 'absolute';
