@@ -442,7 +442,7 @@ var GeoMashup = {
 
 	directLink : function(element) {
 		this.saveBackSettings();
-		if (parent) {
+		if ( parent && ( element.target.length === 0 || element.target === '_self' ) ) {
 			element.target = '_parent';
 		}
 		return true;
