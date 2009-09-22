@@ -305,6 +305,7 @@ class GeoMashup {
 				$category_ids = array();
 				$author_name = '';
 				if ( 'post' == $query_args['object_name'] ) {
+
 					// Only know about post categories now, but could abstract to objects
 					$categories = get_the_category( $object->object_id );
 					foreach ($categories as $category) {
@@ -318,7 +319,9 @@ class GeoMashup {
 					$author = get_userdata( $object->post_author );
 					$author_name = $author->display_name;
 				}
+
 				$json_object = array(
+					'object_name' => $query_args['object_name'],
 					'object_id' => $object->object_id,
 					'title' => $object->label,
 					'lat' => $object->lat,
