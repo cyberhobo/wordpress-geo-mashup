@@ -682,6 +682,7 @@ class GeoMashupDB {
 			'maxlon' => null,
 			'object_name' => 'post',
 			'show_future' => 'false', 
+			'suppress_filters' => false,
 	 		'limit' => 0 );
 		$query_args = wp_parse_args( $query_args, $default_args );
 		
@@ -747,14 +748,17 @@ class GeoMashupDB {
 		$where = ( empty( $wheres ) ) ? '' :  'WHERE ' . implode( ' AND ', $wheres ); 
 		$sort = ( isset( $query_args['sort'] ) ) ? $query_args['sort'] : $object_store['sort'];
 		$sort = ( empty( $sort ) ) ? '' : 'ORDER BY ' . $wpdb->escape( $sort );
+		$limit = ( is_numeric( $query_args['limit'] ) && $query_args['limit']>0 ) ? " LIMIT 0,{$query_args['limit']}" : '';
 
-		$query_string = "SELECT $field_string FROM $table_string $where $sort";
-
-		if ( !( $query_args['minlat'] && $query_args['maxlat'] && $query_args['minlon'] && $query_args['maxlon'] ) && !$query_args['limit'] ) {
-			// result should contain all posts ( possibly for a category )
-		} else if ( is_numeric( $query_args['limit'] ) && $query_args['limit']>0 ) {
-			$query_string .= " LIMIT 0,{$query_args['limit']}";
+		if ( ! $query_args['suppress_filters'] ) {
+			$field_string	= apply_filters( 'geo_mashup_locations_fields', $field_string );
+			$table_string = apply_filters( 'geo_mashup_locations_join', $table_string );
+			$where = apply_filters( 'geo_mashup_locations_where', $where );
+			$sort = apply_filters( 'geo_mashup_locations_orderby', $sort );
+			$limit = apply_filters( 'geo_mashup_locations_limits', $limit );
 		}
+		
+		$query_string = "SELECT $field_string FROM $table_string $where $sort $limit";
 
 		$wpdb->query( $query_string );
 		
