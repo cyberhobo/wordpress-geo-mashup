@@ -1128,6 +1128,13 @@ GeoMashup = {
 		this.multiple_category_icon = new google.maps.Icon(this.base_color_icon);
 		this.multiple_category_icon.image = opts.url_path + '/images/mm_20_mixed.png';
 
+		// Falsify options to make tests simpler
+		this.forEach( opts, function( key, value ) {
+			if ( 'false' === value || 'FALSE' === value ) {
+				opts[key] = false;
+			}
+		} );
+
 		map_types = {
 			'G_NORMAL_MAP' : google.maps.NORMAL_MAP,
 			'G_SATELLITE_MAP' : google.maps.SATELLITE_MAP,
@@ -1135,6 +1142,7 @@ GeoMashup = {
 			'G_PHYSICAL_MAP' : google.maps.PHYSICAL_MAP,
 			'G_SATELLITE_3D_MAP' : google.maps.SATELLITE_3D_MAP
 		};
+
 		if (typeof opts.map_type === 'string') {
 			if ( map_types[opts.map_type] ) {
 				opts.map_type = map_types[opts.map_type] ;
