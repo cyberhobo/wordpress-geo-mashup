@@ -559,9 +559,11 @@ GeoMashup = {
 
 	parentizeLinks : function( node ) {
 		var i, links = node.getElementsByTagName('a');
-		if (parent) {
+		if ( parent ) {
 			for (i=0; i<links.length; i += 1) {
-				links[i].target = "_parent";
+				if ( links[i].target.length === 0 || links[i].target === '_self' ) {
+					links[i].target = "_parent";
+				}
 			}
 		}
 	},
