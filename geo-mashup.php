@@ -200,6 +200,42 @@ class GeoMashup {
 		return implode($outer_glue, $output);
 	}
 
+	/**
+	 * Encode an item as a JSON string.
+	 *
+	 * I believe WP 2.9 will include a function like this.
+	 *
+	 * @param scalar|array Scalars are quoted, number-indexed arrays become JSON arrays, string-indexed arrays become JSON objects.
+	 * @return string JSON encoded string, empty if not encodable.
+	 */
+	function json_encode( $item ) {
+		$json = '';
+		if ( is_scalar( $item ) ) {
+
+			$json =  '"' . addslashes( trim( (string) $item, '"' ) ) . '"';
+
+		} else if ( is_array( $item ) ) {
+
+			$keys = array_keys( $item );
+			if ( ! empty( $keys ) && is_string( $keys[0] ) ) {
+
+				// String indexes to JSON object
+				$json_properties = array();
+				foreach( $item as $name => $value ) {
+					$json_properties[] = '"' . $name . '":' . GeoMashup::json_encode( $value );
+				}
+				$json = '{' . implode( ',', $json_properties ) . '}';
+
+			} else {
+
+				// Numeric indexes to JSON array
+				$json = '[' . implode( ',', array_map( array( 'GeoMashup', 'json_encode' ), $item ) ) . ']';
+
+			}
+		}
+		return $json;
+	}
+
 	function get_kml_attachment_urls($post_id)
 	{
 		if ( empty( $post_id ) )
@@ -262,12 +298,11 @@ class GeoMashup {
 	function get_locations_json( $query_args ) {
 		$default_args = array( 'object_name' => 'post' );
 		$query_args = wp_parse_args( $query_args, $default_args );
-		$object_literals = array();
+		$json_ojbects = array();
 		$objects = GeoMashupDB::get_object_locations( $query_args );
 		if ( $objects ) {
 			foreach ($objects as $object) {
 				$category_ids = array();
-				$attachments_string = '';
 				$author_name = '';
 				if ( 'post' == $query_args['object_name'] ) {
 					// Only know about post categories now, but could abstract to objects
@@ -275,23 +310,31 @@ class GeoMashup {
 					foreach ($categories as $category) {
 						$category_ids[] = $category->cat_ID;
 					}
+
 					// Only posts have KML attachments
 					$attachments = GeoMashup::get_kml_attachment_urls( $object->object_id );
-					if ( !empty( $attachments ) ) {
-						$attachments_string = '"' . implode( '","', $attachments ) . '"';
-					}
+
 					// Include post author
 					$author = get_userdata( $object->post_author );
 					$author_name = $author->display_name;
 				}
-				$object_literals[] = '{"object_id":"' . $object->object_id . '","title":"' . 
-					addslashes( $object->label ) . '","lat":"' . $object->lat . '","lng":"' . 
-					$object->lng . '","author_name":"' . $author_name .  '","categories":[' . 
-					implode( ',', $category_ids ) . '],"attachment_urls":[' . 
-					$attachments_string . ']}';
+				$json_object = array(
+					'object_id' => $object->object_id,
+					'title' => $object->label,
+					'lat' => $object->lat,
+					'lng' => $object->lng,
+					'author_name' => $author_name,
+					'categories' => $category_ids,
+					'attachment_urls' => $attachments
+				);
+
+				// Allow companion plugins to add data
+				$json_object = apply_filters( 'geo_mashup_locations_json_object', $json_object, $object );
+
+				$json_objects[] = $json_object;
 			}
 		}
-		return '{ objects : [' . implode( ',', $object_literals ) . '] }';
+		return GeoMashup::json_encode( array( 'objects' => $json_objects ) );
 	}
 
 	function map( $atts = null ) {
