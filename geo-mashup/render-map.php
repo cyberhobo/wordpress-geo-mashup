@@ -190,7 +190,11 @@ function geo_mashup_render_map ( ) {
 			</style>
 		</head>
 		<body>
-		<div id="geo-mashup"></div>
+		<div id="geo-mashup">
+			<noscript>
+				<?php _e( 'This map requires JavaScript. You may have to enable it in your settings.', 'GeoMashup' ); ?>
+			</noscript>
+		</div>
 		<script type="text/javascript">
 			//<![CDATA[
 			GeoMashup.createMap(document.getElementById('geo-mashup'), { <?php echo GeoMashup::implode_assoc(':',',',$map_properties); ?> });	
