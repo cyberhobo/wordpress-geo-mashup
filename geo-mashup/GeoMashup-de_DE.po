@@ -1,304 +1,617 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: Geo Mashup v1.1.3\n"
-"PO-Revision-Date: 2009-01-05 10:47+0100\n"
-"Last-Translator: michel@designdifferent.org\n"
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2009-09-21 07:50-0600\n"
+"PO-Revision-Date: \n"
+"Last-Translator: Thomas G. Morvay <thomas@morvay.biz>\n"
+"Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Poedit-Language: German\n"
-"X-Poedit-Country: GERMANY\n"
 "X-Poedit-SourceCharset: utf-8\n"
-"X-Poedit-KeywordsList: __;_e;__ngettext:1,2;__ngettext_noop:1,2;_c\n"
-"X-Poedit-Basepath: ../\n"
-"X-Poedit-SearchPath-0: ."
 
-#: geo-mashup.php:274
-msgid "Find location:"
-msgstr "Ort suchen:"
+#: comment-default.php:37
+#, php-format
+msgid "<cite class=\"fn\">%s</cite> <span class=\"says\">says:</span>"
+msgstr "<cite class=\"fn\">%s</cite> <span class=\"says\">says:</span>"
 
-#: geo-mashup.php:283
-msgid "[Saved Locations]"
-msgstr "[Gespeicherte Orte]"
+#: comment-default.php:40
+#, php-format
+msgid "%1$s at %2$s"
+msgstr "%1$s at %2$s"
 
-#: geo-mashup.php:285
+#: edit-form.php:59
+msgid "Put a green pin at the location. There are many ways to do it:"
+msgstr "Setze den grünen Marker auf den Ort, der dem Artikel zugeordnet werden soll. Dies kann auf verschiedene Arten erfolgen:"
+
+#: edit-form.php:61
+msgid "Search for a location name."
+msgstr "Suche einen Ortsnamen"
+
+#: edit-form.php:62
+msgid "For multiple search results, mouse over pins to see location names, and click a result pin to select that location."
+msgstr "Werden mehrere Orte angezeigt, fahre mit der Maus über den Marker , um den Ortsnamen angezeigt zu bekommen. Klicke auf den Marker, um den gewünschten Ort auszuwählen."
+
+#: edit-form.php:63
+msgid "Search for a decimal latitude and longitude, like <em>40.123,-105.456</em>."
+msgstr "Suche nach Länge und Breite in Dezimalform, beispielsweise <em>40.123, -105.456</em>."
+
+#: edit-form.php:64
+msgid "Search for a street address, like <em>123 main st, anytown, acity</em>."
+msgstr "Suche nach einer Anschrift, beispielsweise <em>Hauptstrasse 123, 87654 Stadt</em>"
+
+#: edit-form.php:65
+msgid "Click on the location. Zoom in if necessary so you can refine the location by dragging it or clicking a new location."
+msgstr "Klicke auf die gewünschte Stelle. Falls notwendig, erhöhe den Zoom-Faktor, um eine genauere Positionsbestimmung vorzunehmen und den Marker dorthin zu ziehen oder durch erneutes Klicken zu setzen."
+
+#: edit-form.php:67
+msgid "To execute a search, type search text into the Find Location box and hit the enter key. If you type a name next to \"Save As\", the location will be saved under that name and added to the Saved Locations dropdown list."
+msgstr "Um eine Suche durchzuführen, setze den Text in das Feld \"Ort suchen\" und drücke die ENTER-Taste. Wenn das Feld \"Diesen Ort speichern als\" ausgefüllt ist, wird die Position unter dieser Bezeichnung gespeichert und in der Dropdown-Liste angezeigt."
+
+#: edit-form.php:68
+msgid "To remove the location (green pin), clear the search box and hit the enter key."
+msgstr "Um einen grünen Marker zu entfernen, lösche den Inhalt des Suchfeldes und drücke die ENTER-Taste."
+
+#: edit-form.php:69
+msgid "When you are satisfied with the location, save or update."
+msgstr "Wenn du mit der Positionierung einverstanden bist, speichere oder aktualisiere den Artikel"
+
+#: edit-form.php:74
 msgid "help"
 msgstr "Hilfe"
 
-#: geo-mashup.php:287
-msgid "Put a green pin at the location for this post."
-msgstr "Bewege den grünen Pin auf der Karte zum Ort des Artikels"
+#: edit-form.php:76
+msgid "Find location:"
+msgstr "Ort suchen:"
 
-#: geo-mashup.php:287
-msgid "There are many ways to do it:"
-msgstr "Es gibt verschiedene Möglichkeiten das zu tun:"
+#: edit-form.php:85
+msgid "[Saved Locations]"
+msgstr "[Gespeicherte Orte]"
 
-#: geo-mashup.php:289
-msgid "Search for a location name."
-msgstr "Nach Ortsnamen suchen."
-
-#: geo-mashup.php:290
-msgid "For multiple search results, mouse over pins to see location names, and click a result pin to select that location."
-msgstr "Bei mehreren Suchergebissen die Maus über den Pin bewegen um eine Beschreibung zusehen. Den richtigen Pin durch einen Klick auswählen."
-
-#: geo-mashup.php:291
-msgid "Search for a decimal latitude and longitude, like <em>40.123,-105.456</em>."
-msgstr "Suche nach Koordinaten wie <em>40.123,-105.456</em>."
-
-#: geo-mashup.php:292
-msgid "Search for a street address, like <em>123 main st, anytown, acity</em>."
-msgstr "Suche nach einer Adresse wie <em>Domplatz 7, Wetzlar, Deutschland</em>."
-
-#: geo-mashup.php:293
-msgid "Click on the location. Zoom in if necessary so you can refine the location by dragging it or clicking a new location."
-msgstr "Klicke auf den Ort. Du kannst den Ausschnitt der Karte verkleinern um eine genauere Auswahl zu Treffen. Halte den grünen Pin mit dem Mauszeiger fest und bewege ihn aus der Karte an einen neuen Ort."
-
-#: geo-mashup.php:295
-msgid "To execute a search, type search text into the Find Location box and hit the enter key. If you type a name next to \"Save As\", the location will be saved under that name so you can find it again with a quick search. Saved names are searched before doing a GeoNames search for location names."
-msgstr "So geben Sie den Artikel einen Ort: 1. Suchen Sie mit dem Suchfeld. 2. Geben Sie dem Ort einen Namen, unter dem er später wieder verwendet wird."
-
-#: geo-mashup.php:296
-msgid "To remove the location (green pin) for a post, clear the search box and hit the enter key."
-msgstr "Um den Ort zu löschen musst du das Suchfeld entleeren und ENTER drücken."
-
-#: geo-mashup.php:297
-msgid "close"
-msgstr "Schlissen"
-
-#: geo-mashup.php:300
+#: edit-form.php:88
 msgid "Loading Google map. Check Geo Mashup options if the map fails to load."
-msgstr "Google Map wird geladen. Schau in die Geo Mashup Einstellungen falls die Karte nicht geladen wird."
+msgstr "Google Map wird geladen. Falls die Karte nicht geladen wird, überprüfe die Einstellungen von Geo Mashup"
 
-#: geo-mashup.php:313
+#: edit-form.php:101
+msgid "Address:"
+msgstr "Adresse:"
+
+#: edit-form.php:104
+msgid "Geo Date:"
+msgstr "Geo Datum:"
+
+#: edit-form.php:112
 msgid "Save As:"
 msgstr "Diesen Ort speichern als:"
 
-#: geo-mashup.php:494
-#: geo-mashup.php:495
+#: geo-mashup-db.php:414
+msgid "No locations found with missing address fields."
+msgstr "Keine Positionen zum umgekehrten Geocoding, mit fehlenden Adressfeldern, gefunden."
+
+#: geo-mashup-db.php:417
+msgid "Locations to geocode: "
+msgstr "Zu bestimmende Positionen:"
+
+#: geo-mashup-db.php:425
+msgid "Time limit: "
+msgstr "Zeitbeschränkung:"
+
+#: geo-mashup-db.php:432
+msgid "Too many requests, increasing delay to"
+msgstr "Zu viele Anfragen, erhöhe Zeitfenster auf"
+
+#: geo-mashup-db.php:435
+msgid "address"
+msgstr "Adresse"
+
+#: geo-mashup-db.php:436
+msgid "postal code"
+msgstr "Postleitzahhl"
+
+#: geo-mashup-db.php:439
+msgid "No address info found, status"
+msgstr "Keine Adress-Informationen gefunden, Statusmeldung"
+
+#: geo-mashup-db.php:443
+msgid "Time limit exceeded, retry to continue."
+msgstr "Zeitbeschränkung überschritten, versuche es erneut"
+
+#: geo-mashup-db.php:496
+msgid "Converting old locations"
+msgstr "Alte Positionsmarker werden übernommen"
+
+#: geo-mashup-db.php:513
+#, php-format
+msgid "Failed to convert location (%s). You can %sedit the post%s "
+msgstr "Failed to convert location (%s). You can %sedit the post%s "
+
+#: geo-mashup-db.php:514
+msgid "to update the location, and try again."
+msgstr "to update the location, and try again."
+
+#: geo-mashup-db.php:527
+msgid "Converting saved locations"
+msgstr "Positionsmarker werden konvertiert"
+
+#: geo-mashup-db.php:537
+msgid "OK: "
+msgstr "OK:"
+
+#: geo-mashup-db.php:542
+#, php-format
+msgid "Failed to convert saved location (%s). "
+msgstr "Die gespeicherte Position (%s) konnte nicht konvertiert werden"
+
+#: geo-mashup-db.php:543
+msgid "You'll have to save it again, sorry."
+msgstr "Es tut mir leid, Du musst sie erneut abspeichern."
+
+#: geo-mashup-db.php:566
+msgid "Failed to initialize geo dates from post dates: "
+msgstr "Konnte Geo Date nicht aus dem Erscheinungsdatum des Artikels bestimmen."
+
+#: geo-mashup-db.php:569
+#, php-format
+msgid "Initialized %d geo dates from corresponding post dates."
+msgstr "Geo Date %d aus entsprechenden Daten des Artikels bestimmt."
+
+#: geo-mashup-options.php:224
+#: geo-mashup-options.php:232
+#: geo-mashup-options.php:238
+#: geo-mashup-options.php:248
+#: geo-mashup-options.php:264
+#: geo-mashup-options.php:277
+#: geo-mashup-options.php:304
+#: geo-mashup-options.php:319
+#: geo-mashup-options.php:332
+msgid "is invalid for"
+msgstr "ist ungültig für"
+
+#: geo-mashup-options.php:225
+#: geo-mashup-options.php:239
+msgid ", which must be a valid map type (see documentation)"
+msgstr ", welches ein gültiger Kartentyp sein muss (siehe Dokumentation)"
+
+#: geo-mashup-options.php:233
+msgid ", which must be an array of valid map types (see documentation)"
+msgstr ", welches ein gültiges Array von Kartentypen sein muss (siehe Dokumentation)"
+
+#: geo-mashup-options.php:249
+msgid ", which must be a valid map control (see documentation)"
+msgstr ", welches eine gültige Kartzensteuerung sein muss (siehe Dokumentation)"
+
+#: geo-mashup-options.php:265
+msgid ", which must be a string"
+msgstr ",welches eine gültige Zeichenkette sein muss"
+
+#: geo-mashup-options.php:278
+msgid ", which must be a number"
+msgstr ", welches eine Zahl sein muss"
+
+#: geo-mashup-options.php:305
+msgid ", which must be \"true\" or \"false\""
+msgstr ", welches \"wahr\" oder \"falsch\" sein muss"
+
+#: geo-mashup-options.php:320
+msgid ", which must be an array"
+msgstr ", welches ein Array sein muss"
+
+#: geo-mashup-options.php:333
+msgid ", which must be a number from 0 to "
+msgstr ", welches eine Zahl sein muss zwischen 0 und "
+
+#: geo-mashup-ui-managers.php:115
+#: geo-mashup-ui-managers.php:219
+#: geo-mashup-ui-managers.php:220
 msgid "Location"
 msgstr "Ort"
 
-#: geo-mashup.php:552
-msgid "Options updated."
-msgstr "Einstellungen aktualisiert."
+#: geo-mashup.php:357
+msgid "Geo Mashup found no objects to map in this context"
+msgstr "Geo Mashup hat in diesem Kontext keine darzustellenden Objekte gewfunden"
 
-#: geo-mashup.php:557
-msgid "Currenly using default options."
-msgstr "Es werden die Voreinstellungen benutzt."
+#: geo-mashup.php:381
+msgid "Geo Mashup found no current object to map"
+msgstr "Geo Mashup hat kein aktuelles darzustellendes Objekt gefunden"
 
-#: geo-mashup.php:600
-msgid "Category"
-msgstr "Kategorie"
+#: geo-mashup.php:385
+msgid "Geo Mashup ommitted a map for an object with no location"
+msgstr "keine Karte für ein Objekt mit fehlender Position"
 
-#: geo-mashup.php:600
-msgid "Color"
-msgstr "Farbe"
+#: geo-mashup.php:523
+msgid "You must add a description to this category to use this Geo Mashup feature."
+msgstr "Diese Kategorie muss eine Beschreibung enthalten, damit dieses Feature verwendet werden kann"
 
-#: geo-mashup.php:601
-msgid "Show Connecting Line Until Zoom Level (0-17 or none)"
-msgstr "Zeige Verbindungslinien ab Zoom (0-17 oder frei lassen)"
+#: geo-mashup.php:543
+msgid "Geo Mashup Options"
+msgstr "Geo Mashup Einstellungen"
 
-#: geo-mashup.php:634
-msgid "Roadmap"
-msgstr "Straßenkarte"
+#: geo-mashup.php:543
+msgid "Geo Mashup"
+msgstr "Geo Mashup"
 
-#: geo-mashup.php:635
-msgid "Satellite"
-msgstr "Satellitenbild"
-
-#: geo-mashup.php:636
-msgid "Hybrid"
-msgstr "Beides"
-
-#: geo-mashup.php:637
-msgid "Terrain"
-msgstr "Terrain"
-
-#: geo-mashup.php:653
-msgid "Small Zoom"
-msgstr "Kleiner Zoom"
-
-#: geo-mashup.php:654
-msgid "Small Pan/Zoom"
-msgstr "Kleine Navigation und Zoom"
-
-#: geo-mashup.php:655
-msgid "Large Pan/Zoom"
-msgstr "Große Navigation und Zoom"
+#: geo-mashup.php:696
+msgid "Show on map"
+msgstr "Auf der Karte anzeigen"
 
 #: geo-mashup.php:707
+msgid "Geotag Icon"
+msgstr "Geotag"
+
+#: options.php:21
+msgid "Options updated."
+msgstr "Einstellungen wurden aktualisiert."
+
+#: options.php:34
+msgid "Database upgraded."
+msgstr "Datenbank-Upgrade durchgeführt."
+
+#: options.php:40
+msgid "Saved options may be corrupted, try updating again. Corrupt values: "
+msgstr "Die gespeicherten Einstellungen könnten fehlerhaft sein. Versuche erneut zu aktualisieren. Fehlerhafte Einstellungen:"
+
+#: options.php:48
+msgid "Some invalid options will not be used. If you've just upgraded, do an update to initialize new options."
+msgstr "Einige ungültige Einstellungen werden nicht verwendet. Fallls Du eben erst ein Upgrade durchgeführt hast, aktualisiere , um die neuen Einstellungen wirksam werden zu lassen."
+
+#: options.php:77
+msgid "Roadmap"
+msgstr "Strassenkarte"
+
+#: options.php:78
+msgid "Satellite"
+msgstr "Satellit"
+
+#: options.php:79
+msgid "Hybrid"
+msgstr "Hybrid"
+
+#: options.php:80
+msgid "Terrain"
+msgstr "Gelände"
+
+#: options.php:81
+msgid "Earth Plugin"
+msgstr "Google Earth"
+
+#: options.php:84
+msgid "Small Zoom"
+msgstr "Mini Zoom"
+
+#: options.php:85
+msgid "Small Zoom 3D"
+msgstr "Mini Zoom 3D"
+
+#: options.php:86
+msgid "Small Pan/Zoom"
+msgstr "Mini Leiste / Zoom"
+
+#: options.php:87
+msgid "Large Pan/Zoom"
+msgstr "Grosse Leiste/Zoom"
+
+#: options.php:88
+msgid "Large Pan/Zoom 3D"
+msgstr "Grosse Leiste/Zoom 3D"
+
+#: options.php:91
 msgid "Yes"
 msgstr "Ja"
 
-#: geo-mashup.php:708
+#: options.php:92
 msgid "No"
 msgstr "Nein"
 
-#: geo-mashup.php:709
+#: options.php:93
 msgid "Only"
 msgstr "Nur"
 
-#: geo-mashup.php:735
+#: options.php:95
+msgid "auto"
+msgstr "automatisch"
+
+#: options.php:119
 msgid "Geo Mashup Plugin Options"
 msgstr "Geo Mashup Plugin Einstellungen"
 
-#: geo-mashup.php:737
-msgid "Overall Settings"
-msgstr "Einstellungen für alle Karten"
+#: options.php:124
+msgid "The Geo Mashup database is out of date."
+msgstr "Die Geo Mashup Datenbank ist nicht aktuell."
 
-#: geo-mashup.php:740
+#: options.php:125
+msgid "Upgrade Database"
+msgstr "Führe ein Upgrade der Datenbank durch"
+
+#: options.php:131
+msgid "Overall"
+msgstr "Allgemein"
+
+#: options.php:132
+msgid "Global Maps"
+msgstr "Gobale Karte"
+
+#: options.php:133
+msgid "Single Maps"
+msgstr "Einzelkarte"
+
+#: options.php:134
+msgid "Contextual Maps"
+msgstr "Kontext-Karte"
+
+#: options.php:142
+msgid "Overall Geo Mashup Settings"
+msgstr "Allgemeine Geo Mashup Einstellungen"
+
+#: options.php:145
 msgid "Google Maps Key"
-msgstr "Google Maps API Key"
+msgstr "Google Map Schlüssel"
 
-#: geo-mashup.php:742
+#: options.php:152
 msgid "Get yours here"
-msgstr "Google Maps API Keys sind hier erhältlich"
+msgstr "hier erhältlich"
 
-#: geo-mashup.php:747
-msgid "Default Settings For Maps In Located Posts and Pages"
-msgstr "Voreinstellungen für Karten in Artikeln und Seiten mit Ortsangaben"
-
-#: geo-mashup.php:750
-#: geo-mashup.php:786
-msgid "Map Control"
-msgstr "Kartensteuerung"
-
-#: geo-mashup.php:756
-#: geo-mashup.php:792
-msgid "Add Map Type Control"
-msgstr "Kartenart Steuerung anzeigen"
-
-#: geo-mashup.php:760
-#: geo-mashup.php:796
-msgid "Add Overview Control"
-msgstr "Kartenübersicht anzeigen"
-
-#: geo-mashup.php:764
-#: geo-mashup.php:800
-msgid "Default Map Type"
-msgstr "Standard Kartenart"
-
-#: geo-mashup.php:770
-#: geo-mashup.php:806
-msgid "Default Zoom Level"
-msgstr "Standard Zoom-Stufe"
-
-#: geo-mashup.php:772
-#: geo-mashup.php:808
-#: geo-mashup.php:813
-#: geo-mashup.php:847
-msgid "0 (max zoom out) - 17 (max zoom in)"
-msgstr "0 (Sehr großer Ausschnitt) - 17 (kleiner Ausschnitt)"
-
-#: geo-mashup.php:777
-msgid "Default Settings For Global Maps"
-msgstr "Voreinstellungen für die globale Karte"
-
-#: geo-mashup.php:780
+#: options.php:156
 msgid "Generated links go here"
-msgstr "Der erzeugte Link wird hier eingefügt"
+msgstr "Die erzeugten Links werden hier dargestellt"
 
-#: geo-mashup.php:780
+#: options.php:157
 msgid "Global Mashup Page"
-msgstr "Auf welcher Seite befindet sich die globale Karte?"
+msgstr "Globale Karte wird auf dieser Seite dargestellt"
 
-#: geo-mashup.php:811
-msgid "Hide Markers Until Zoom Level"
-msgstr "Marker ausblenden bis zum Zoom-Stufe"
+#: options.php:171
+msgid "No pages available."
+msgstr "Es sind keine Seiten vorhanden"
 
-#: geo-mashup.php:816
-msgid "Show Only Most Recent Posts"
-msgstr "Nur neueste Beiträge anzeigen"
+#: options.php:177
+msgid "Use Theme Style Sheet with Maps"
+msgstr "Verwende die CSS-Deklarationen des Themes"
 
-#: geo-mashup.php:818
-msgid "Number of posts to show, leave blank for all"
-msgstr "Wie viele Artikel sollen auf der Karte angezeigt werden? (Keine Angabe = Alle)"
-
-#: geo-mashup.php:821
-msgid "Show Future Posts"
-msgstr "Artikel anzeigen, die noch nicht veröffentlicht sind"
-
-#: geo-mashup.php:825
-msgid "Automatically Open Linked Post Info Window"
-msgstr "Fenster für den verlinkten Artikel automatisch öffnen"
-
-#: geo-mashup.php:829
-msgid "Enable Full Post Display"
-msgstr "Ganze Artikel auf der Karte anzeigen"
-
-#: geo-mashup.php:833
+#: options.php:190
 msgid "Add Category Links"
-msgstr "Kategorie Link hinzufügen"
+msgstr "Kategorien Link hinzufügen"
 
-#: geo-mashup.php:837
+#: options.php:198
+msgid "Add map links to category lists. Categories must have descriptions for this to work."
+msgstr "Links zur Kategorienkarte hinzufügen. Kategiroen müssen eine Beschreibung haben, damit dieses Feature funktioniert."
+
+#: options.php:203
 msgid "Category Link Separator"
-msgstr "Trenner zwischen Kategorie Links"
+msgstr "Trenner zwischen Kategorien Links"
 
-#: geo-mashup.php:841
+#: options.php:214
 msgid "Category Link Text"
-msgstr "Text für Kategorie Link"
+msgstr "Text für Kategorienkarten"
 
-#: geo-mashup.php:845
-msgid "Single Category Zoom Level"
-msgstr "Zoom für Karten mit nur einer Kategorie"
+#: options.php:224
+msgid "Category Link Zoom Level"
+msgstr "Zoom für Kategorienkarten"
 
-#: geo-mashup.php:854
-msgid "Presentation"
-msgstr "Anzeige"
+#: options.php:236
+#: options.php:397
+#: options.php:526
+#: options.php:753
+msgid "0 is zoomed all the way out."
+msgstr "0 ist die kleinste Auflösung"
 
-#: geo-mashup.php:857
-msgid "Post Excerpt Format"
-msgstr "Format der Artikel Einleitung"
+#: options.php:241
+msgid "Collect Location For"
+msgstr "Positionen ermitteln für"
 
-#: geo-mashup.php:859
-msgid "Text"
-msgstr "Nur Text"
+#: options.php:247
+msgid "posts and pages"
+msgstr "Artikel und Seiten"
 
-#: geo-mashup.php:860
-msgid "HTML"
-msgstr "HTML"
+#: options.php:252
+msgid "users"
+msgstr "Benutzer"
 
-#: geo-mashup.php:863
-msgid "Post Excerpt Length"
-msgstr "Länge der Artikel Einleitung"
+#: options.php:257
+msgid "comments"
+msgstr "Kommentare"
 
-#: geo-mashup.php:867
-msgid "Global Map Width"
-msgstr "Breite der globalen Karte"
+#: options.php:261
+msgid "Enable Reverse Geocoding"
+msgstr "Umgekehrtes Geocoding erlauben"
 
-#: geo-mashup.php:868
-#: geo-mashup.php:872
-#: geo-mashup.php:876
-#: geo-mashup.php:880
-msgid "px"
-msgstr "px"
+#: options.php:269
+msgid "Try to look up missing address fields for new locations."
+msgstr "Versuche fehlende Adressangaben für neue Positionen zu ergänzen"
 
-#: geo-mashup.php:871
-msgid "Global Map Height"
-msgstr "Höhe der globalen Karte"
+#: options.php:275
+msgid "Bulk Reverse Geocode"
+msgstr "Massenweises umgekehrtes Geocoding"
 
-#: geo-mashup.php:875
-msgid "In-Post Map Width"
-msgstr "Breite der Karte in einem Artikel"
+#: options.php:277
+msgid "Start"
+msgstr "Start"
 
-#: geo-mashup.php:879
-msgid "In-Post Map Height"
-msgstr "Höhe der Karte in einem Artikel"
+#: options.php:279
+msgid "Try to look up missing address fields for existing locations. Could be slow."
+msgstr "Versuche für bestehende Positionen die fehlenden Aderssangaben zu ermitteln. Dies könnte zu längeren Ausführungszeiten führen."
 
-#: geo-mashup.php:884
+#: options.php:285
+msgid "AdSense For Search ID"
+msgstr "Zu verwendende ID für AdSense Suche"
+
+#: options.php:293
+msgid "Your client ID, used with the Google Bar. Leave the default value to use Geo Mashup's :)."
+msgstr "Deine Kunden ID, welche für die Google Leiste verwendet wird. Um die ID von Geo Mashup zu verwenden, kannst Du dieses Feld leer lassen :)"
+
+#: options.php:298
+#: options.php:422
+#: options.php:426
+#: options.php:650
+#: options.php:799
 msgid "Update Options"
 msgstr "Einstellungen aktualisieren"
 
-#: geo-mashup.php:886
+#: options.php:301
+msgid "Default settings for maps of a single located post."
+msgstr "Standardeinstellungen für die Darstellung einzelner Artikel mit Positionsangaben"
+
+#: options.php:304
+#: options.php:429
+#: options.php:656
+msgid "Map Width"
+msgstr "Breite"
+
+#: options.php:311
+#: options.php:436
+#: options.php:663
+msgid "Pixels, or append %."
+msgstr "in Pixel oder Prozentwerte zur Anpassung"
+
+#: options.php:315
+#: options.php:440
+#: options.php:667
+msgid "Map Height"
+msgstr "Höhe"
+
+#: options.php:322
+#: options.php:447
+#: options.php:674
+msgid "px"
+msgstr "px"
+
+#: options.php:326
+#: options.php:451
+#: options.php:678
+msgid "Map Control"
+msgstr "Kartensteuerung"
+
+#: options.php:340
+#: options.php:465
+#: options.php:692
+msgid "Default Map Type"
+msgstr "Standard Kartenart"
+
+#: options.php:354
+#: options.php:479
+#: options.php:706
+msgid "Add Map Type Control"
+msgstr "Kartenart Steuerung anzeigen"
+
+#: options.php:369
+#: options.php:494
+#: options.php:721
+msgid "Add Overview Control"
+msgstr "Kartenübersicht anzeigen"
+
+#: options.php:377
+#: options.php:504
+#: options.php:731
+msgid "Add Google Bar"
+msgstr "Google Leiste hinzufügen"
+
+#: options.php:385
+#: options.php:514
+#: options.php:741
+msgid "Default Zoom Level"
+msgstr "Standard Zoom-Stufe"
+
+#: options.php:402
+#: options.php:601
+#: options.php:779
+msgid "Click To Load"
+msgstr "Zur Darstellung muss Karte angeklickt werden"
+
+#: options.php:412
+#: options.php:611
+#: options.php:789
+msgid "Click To Load Text"
+msgstr "Text, um Benutzer auf Klicken hinzuweisen"
+
+#: options.php:425
+msgid "Default settings for global maps of located items."
+msgstr "Standardeinstellungen für die globale Karte positionsbezogener Inhalte"
+
+#: options.php:531
+msgid "Cluster Markers Until Zoom Level"
+msgstr "Positionsmarker zusammenfassen bis zu dieser Zoom-Stufe"
+
+#: options.php:539
+msgid "Highest zoom level to cluster markers, or blank for no clustering."
+msgstr "Dies ist die höchste Zoom-Stufe, um Positionsmarker zusammenzufassen"
+
+#: options.php:544
+#: options.php:758
+msgid "Marker Selection Behaviors"
+msgstr "Anklicken von Positionsmarker bewirkt:"
+
+#: options.php:549
+#: options.php:763
+msgid "Open info window"
+msgstr "Sprechblase öffnen"
+
+#: options.php:553
+#: options.php:767
+msgid "Highlight"
+msgstr "Hervorheben"
+
+#: options.php:557
+#: options.php:771
+msgid "Center"
+msgstr "Karte zentrieren"
+
+#: options.php:561
+#: options.php:775
+msgid "Show Geo Attachments"
+msgstr "Show Geo Attachments"
+
+#: options.php:565
+msgid "Automatic Selection"
+msgstr "Automatische Anwahl"
+
+#: options.php:573
+msgid "Selects the linked or most recent item when the map loads."
+msgstr "Wählt die verlinkten oder die neuesten Inhalte beim Laden der Karte "
+
+#: options.php:578
+msgid "Show Only Most Recent Items"
+msgstr "Zeige nur die neuesten Inhalte"
+
+#: options.php:585
+msgid "Number of items to show, leave blank for all"
+msgstr "Anzahl anzuzeigender Inhalte, leer lassen um alle anzuzeigen"
+
+#: options.php:589
+msgid "Show Future Posts"
+msgstr "Noch nicht veröffentlichte Artikel anzeigen"
+
+#: options.php:622
+msgid "Category"
+msgstr "Kateggorie"
+
+#: options.php:622
+msgid "Color"
+msgstr "Farbe"
+
+#: options.php:623
+msgid "Show Connecting Line Until Zoom Level (0-20 or none)"
+msgstr "Verbindungen anzeigen bis Zoom-Stufe (0-20 oder leer lassen)"
+
+#: options.php:653
+msgid "Default settings for contextual maps, which include just the items shown on a page, for example."
+msgstr "Standardeinstellungen für kontextbezogene Karten, welche beispielsweise Inhalte auf einer bestimmten Seite zeigen."
+
+#: options.php:804
+msgid "Activation Log"
+msgstr "Log-Datei Aktivierungen"
+
+#: options.php:808
+msgid "View Activation Log"
+msgstr "Aktivierungs-Logdatei ansehen"
+
+#: options.php:810
 msgid "Geo Mashup Documentation"
-msgstr "Geo Mashup Dokumantation"
+msgstr "Geo Mashup Dokumentation"
 
-#: geo-mashup.php:903
-msgid "Show on map"
-msgstr "Auf Karte anzeigen"
+#: user-default.php:32
+msgid "Display Name"
+msgstr "Angezeigter Name"
 
-#: geo-mashup.php:918
-msgid "Geotag Icon"
-msgstr "Geotag Symbol"
+#: user-default.php:37
+msgid "Website"
+msgstr "Web-Seite"
 
