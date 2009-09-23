@@ -568,6 +568,18 @@ GeoMashup = {
 		}
 	},
 
+	showLoadingIcon : function() {
+		if ( ! this.spinner_div.parentNode ) {
+			this.container.appendChild( this.spinner_div );
+		}
+	},
+
+	hideLoadingIcon : function() {
+		if ( this.spinner_div.parentNode ) {
+			this.spinner_div.parentNode.removeChild( this.spinner_div );
+		}
+	},
+
 	openInfoWindow : function( marker, point ) {
 		var object_ids, i, url, info_window_request, object_element;
 
@@ -1114,7 +1126,7 @@ GeoMashup = {
 
 	createMap : function(container, opts) {
 		var i, type_num, center_latlng, map_opts, map_types, request, url, objects, point, marker_opts, 
-			clusterer_opts, google_bar_opts, single_marker, ov, credit_div, spinner_div, initial_zoom = 1;
+			clusterer_opts, google_bar_opts, single_marker, ov, credit_div, initial_zoom = 1;
 
 		this.container = container;
 		this.checkDependencies();
@@ -1170,18 +1182,14 @@ GeoMashup = {
 
 		this.doAction( 'newMap', opts, this.map );
 
-		// Add a loading spinner
-		spinner_div = document.createElement( 'div' );
-		spinner_div.innerHTML = '<div id="gm-loading-icon" style="-moz-user-select: none; z-index: 100; position: absolute; left: ' +
+		// Create the loading spinner icon and show it
+		this.spinner_div = document.createElement( 'div' );
+		this.spinner_div.innerHTML = '<div id="gm-loading-icon" style="-moz-user-select: none; z-index: 100; position: absolute; left: ' +
 			( this.map.getSize().width / 2 ) + 'px; top: ' + ( this.map.getSize().height / 2 ) + 'px;">' +
 			'<img style="border: 0px none ; margin: 0px; padding: 0px; width: 16px; height: 16px; -moz-user-select: none;" src="' +
 			opts.url_path + '/images/busy_icon.gif"/></a></div>';
-		this.container.appendChild( spinner_div );
-		google.maps.Event.addListener( this.map, 'tilesloaded', function() {
-			if ( spinner_div.parentNode ) {
-				spinner_div.parentNode.removeChild( spinner_div );
-			}
-		} );
+		this.showLoadingIcon();
+		google.maps.Event.bind( this.map, 'tilesloaded', this, this.hideLoadingIcon );
 
 		if (window.location.search === this.getCookie('back_search'))
 		{
