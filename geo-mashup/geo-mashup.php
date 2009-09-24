@@ -54,14 +54,21 @@ class GeoMashup {
 	function load_hooks() {
 		global $geo_mashup_options;
 		add_filter('media_meta', array('GeoMashup', 'media_meta'), 10, 2);
+
+		// Pre-save filter checks saved content for inline location tags
 		add_filter('content_save_pre', array('GeoMashup', 'content_save_pre'));
+
+		// Save post handles both inline and form processing
+		add_action('save_post', array('GeoMashup', 'save_post'), 10, 2);
+
+		// Browser upload processing
+		add_filter('wp_handle_upload', array('GeoMashup', 'wp_handle_upload'));
+
 		if (is_admin()) {
 			register_activation_hook( __FILE__, array( 'GeoMashupDB', 'install' ) );
 			add_filter('upload_mimes', array('GeoMashup', 'upload_mimes'));
-			add_filter('wp_handle_upload', array('GeoMashup', 'wp_handle_upload'));
 
 			add_action('admin_menu', array('GeoMashup', 'admin_menu'));
-			add_action('save_post', array('GeoMashup', 'save_post'), 10, 2);
 			add_action('admin_print_scripts', array('GeoMashup', 'admin_print_scripts'));
 
 		} else {
