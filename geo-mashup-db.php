@@ -120,6 +120,10 @@ class GeoMashupDB {
 		return $join;
 	}
 
+	function posts_where( $where ) {
+		return $where;
+	}
+
 	function posts_orderby( $orderby ) {
 		global $wpdb;
 
@@ -724,13 +728,50 @@ class GeoMashupDB {
 		if ( is_numeric( $query_args['maxlat'] ) ) $wheres[] = "lat < {$query_args['maxlat']}";
 		if ( is_numeric( $query_args['maxlon'] ) ) $wheres[] = "lng < {$query_args['maxlon']}";
 
-		if ( !empty ( $query_args['map_cat'] ) ) {
+		// Handle inclusion and exclusion of categories
+		if ( ! empty( $query_args['map_cat'] ) ) {
+
+			$cats = preg_split( '/[,\s]+/', $query_args['map_cat'] );
+
+			$escaped_include_ids = array();
+			$escaped_include_slugs = array();
+			$escaped_exclude_ids = array();
+
+			foreach( $cats as $cat ) {
+
+				if ( is_numeric( $cat ) ) {
+
+					if ( $cat < 0 ) {
+						$escaped_exclude_ids[] = abs( $cat );
+						$escaped_exclude_ids = array_merge( $escaped_exclude_ids, get_term_children( $cat, 'category' ) );
+					} else {
+						$escaped_include_ids[] = intval( $cat );
+						$escaped_include_ids = array_merge( $escaped_include_ids, get_term_children( $cat, 'category' ) );
+					}
+
+				} else {
+
+					// Slugs might begin with a dash, so we only include them
+					$term = get_term_by( 'slug', $cat, 'category' );
+					if ( $term ) {
+						$escaped_include_ids[] = $term->term_id;
+						$escaped_include_ids = array_merge( $escaped_include_ids, get_term_children( $term->term_id, 'category' ) );
+					}
+				}
+			} 
+
 			$table_string .= " JOIN $wpdb->term_relationships tr ON tr.object_id = gmlr.object_id " .
 				"JOIN $wpdb->term_taxonomy tt ON tt.term_taxonomy_id = tr.term_taxonomy_id " .
 				"AND tt.taxonomy = 'category'";
-			$cat = $wpdb->escape( $query_args['map_cat'] );
-			$wheres[] = "tt.term_id IN ($cat)";
-		} 
+
+			if ( ! empty( $escaped_include_ids ) ) {
+				$wheres[] = 'tt.term_id IN (' . implode( ',', $escaped_include_ids ) . ')';
+			}
+
+			if ( ! empty( $escaped_exclude_ids ) ) {
+				$wheres[] = 'tt.term_id NOT IN (' . implode( ',', $escaped_exclude_ids ) . ')';
+			}
+		} // end if map_cat exists 
 
 		if ( isset( $query_args['object_id'] ) ) {
 			$wheres[] = 'gmlr.object_id = ' . $wpdb->escape( $query_args['object_id'] );
