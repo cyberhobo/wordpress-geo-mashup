@@ -340,6 +340,21 @@ class GeoMashup {
 		return GeoMashup::json_encode( array( 'objects' => $json_objects ) );
 	}
 
+	function convert_map_attributes( &$atts ) {
+		$attribute_conversions = array( 
+			'auto_open_info_window' => 'auto_info_open',
+			'open_post_id' => 'open_object_id'
+		);
+		foreach ( $attribute_conversions as $old_key => $new_key ) {
+			if ( isset( $atts[$old_key] ) ) {
+				if ( ! isset( $atts[$new_key] ) ) {
+					$atts[$new_key] = $atts[$old_key];
+				}
+				unset( $atts[$old_key] );
+			}
+		}
+	}
+
 	function map( $atts = null ) {
 		global $wp_query, $in_comment_loop, $geo_mashup_options;
 		static $map_number = 0;
@@ -348,13 +363,7 @@ class GeoMashup {
 		$url_params = array();
 		$atts = wp_parse_args( $atts );
 
-		// Backward compatibility conversion
-		if (isset($atts['auto_open_info_window'])) {
-			if (!isset($atts['auto_info_open'])) {
-				$atts['auto_info_open'] = $atts['auto_open_info_window'];
-			}
-			unset($atts['auto_open_info_window']);
-		}
+		GeoMashup::convert_map_attributes( $atts );
 
 		// Default query is for posts
 		$object_name = ( isset( $atts['object_name'] ) ) ? $atts['object_name'] : 'post';
