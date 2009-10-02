@@ -123,7 +123,13 @@ class GeoMashup {
 	function load_styles() {
 		if (is_admin()) {
 			if ( isset($_GET['page']) && GEO_MASHUP_PLUGIN_NAME === $_GET['page'] ) {
-				wp_enqueue_style( 'geo-mashup-tabs', GEO_MASHUP_URL_PATH . '/jquery.smoothness.css', false, '2.5.0', 'screen' );
+				$tabs_css = trailingslashit( GEO_MASHUP_URL_PATH );
+				if ( get_bloginfo( 'version' ) < '2.8' ) {
+					$tabs_css .= 'jquery-ui.1.6.smoothness.css';
+				} else {
+					$tabs_css .= 'jquery.smoothness.css';
+				}
+				wp_enqueue_style( 'geo-mashup-tabs', $tabs_css, false, '2.5.0', 'screen' );
 			}
 		}
 	}
