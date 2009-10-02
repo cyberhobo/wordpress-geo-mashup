@@ -159,7 +159,7 @@ class GeoMashupPostUIManager extends GeoMashupUIManager {
 	}
 
 	function init() {
-		global $geo_mashup_options, $wp_scripts;
+		global $geo_mashup_options;
 
 		// Uploadable geo content type expansion always enabled
 		add_filter( 'upload_mimes', array( &$this, 'upload_mimes' ) );
@@ -181,24 +181,28 @@ class GeoMashupPostUIManager extends GeoMashupUIManager {
 
 			// If we're on a post editing page, queue up the form interface elements
 			if ( is_admin() && preg_match( '/(post|page)(-new|).php/', $_SERVER['REQUEST_URI'] ) ) {
-					// Form generation
-					add_action( 'admin_menu', array( &$this, 'admin_menu' ) );
 
-					$this->enqueue_form_client_items();
+				// Form generation
+				add_action( 'admin_menu', array( &$this, 'admin_menu' ) );
 
-					// If we have jQuery x, add the datepicker
-					if ( is_a( $wp_scripts, 'WP_Scripts' ) ) {
-						$query = $wp_scripts->query( 'jquery-ui-core', 'registered' );
-						if ( is_object( $query ) && $query->ver > '1.7' ) {
-							wp_enqueue_script( 'jquery-ui-datepicker', 
-								trailingslashit( GEO_MASHUP_URL_PATH ) . 'jquery-ui.datepicker.js',
-								array( 'jquery', 'jquery-ui-core'),
-								'1.7.2'	);
-						}
-					}
+				$this->enqueue_form_client_items();
 
-					// Styles
-					wp_enqueue_style( 'geo-mashup-datepicker', GEO_MASHUP_URL_PATH . '/jquery.smoothness.css', false, '2.5.0', 'screen' );
+				// Add the appropriate datepicker for the WP version
+				$datepicker_js_path = trailingslashit( GEO_MASHUP_URL_PATH ); 
+				$datepicker_css_path = trailingslashit( GEO_MASHUP_URL_PATH ); 
+				if ( get_bloginfo( 'version' ) < '2.8' ) {
+					$datepicker_js_path .= 'jquery-ui.1.6.datepicker.min.js';
+					$datepicker_css_path .= 'jquery-ui.1.6.smoothness.css'; 
+					$datepicker_js_version = '1.6';
+				} else {
+					$datepicker_js_path .= 'jquery-ui.1.7.datepicker.min.js';
+					$datepicker_css_path .= 'jquery-ui.1.7.smoothness.css'; 
+					$datepicker_js_version = '1.7';
+				}
+
+				wp_enqueue_script( 'jquery-ui-datepicker', $datepicker_js_path, array( 'jquery', 'jquery-ui-core'), $datepicker_js_version );
+
+				wp_enqueue_style( 'geo-mashup-datepicker', $datepicker_css_path, false, $datepicker_js_version, 'screen' );
 
 			} else if ( strpos( $_SERVER['REQUEST_URI'], 'async-upload.php' ) > 0 ) {
 
