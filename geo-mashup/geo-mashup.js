@@ -192,7 +192,7 @@ GeoMashup = {
 			child_count = 0;
 			for (child_id in this.opts.category_opts) {
 				if (this.opts.category_opts[child_id].parent_id && 
-					this.opts.category_opts[child_id].parent_id === category_id) {
+					this.opts.category_opts[child_id].parent_id == category_id) {
 						children[child_id] = this.buildCategoryHierarchy(child_id);
 						child_count += 1;
 				}
@@ -210,7 +210,7 @@ GeoMashup = {
 
 	isCategoryAncestor : function(ancestor_id, child_id) {
 		if (this.opts.category_opts[child_id].parent_id) {
-			if (this.opts.category_opts[child_id].parent_id === ancestor_id) {
+			if (this.opts.category_opts[child_id].parent_id == ancestor_id) {
 				return true;
 			} else {
 				return this.isCategoryAncestor(ancestor_id, this.opts.category_opts[child_id].parent_id);
