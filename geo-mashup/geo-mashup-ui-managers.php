@@ -10,52 +10,137 @@
 /**
  * A base class for managing user interfaces for collecting and storing location.
  *
- * This is really just a little code common to Geo Mashup form managers.
- * It isn't necessary to extend this class to manage a location, i.e. this is 
- * an implementation, not an API.
+ * This could be extended to make the existing editor work for new objects in a separate plugin.
  *
  * @since 1.3beta1
  */
 class GeoMashupUIManager {
-	
+	/**
+	 * Retrieve a single instaniated manager by name.
+	 *
+	 * @param string $name The class name of the manager.
+	 * @return GeoMashupUIManager The singleton object.
+	 */
+	function &get_instance( $name ) {
+		static $instances = array();
+
+		if ( ! isset( $instances[$name] ) ) {
+			$instances[$name] = new $name();
+		}
+		return $instances[$name];
+	}
+
+	function enqueue_jquery_styles() {
+		if ( get_bloginfo( 'version' ) < '2.8' ) {
+			$smoothness_css = 'jquery-ui.1.6.smoothness.css'; 
+		} else {
+			$smoothness_css = 'jquery-ui.1.7.smoothness.css'; 
+		}
+
+		wp_enqueue_style( 'jquery-smoothness', trailingslashit( GEO_MASHUP_URL_PATH ) . $smoothness_css, false, get_bloginfo( 'version' ), 'screen' );
+	}
+
 	function enqueue_form_client_items() {	
-		wp_enqueue_style( 'geo-mashup-edit-form', GEO_MASHUP_URL_PATH . '/edit-form.css', false, '1.0.0', 'screen' );
+
+		wp_enqueue_style( 'geo-mashup-edit-form', trailingslashit( GEO_MASHUP_URL_PATH ) . 'edit-form.css', false, '1.0.0', 'screen' );
 
 		wp_enqueue_script( 'google-jsapi' );
-		wp_enqueue_script( 'geo-mashup-admin', 
-			GEO_MASHUP_URL_PATH . '/geo-mashup-admin.js', 
+		wp_enqueue_script( 'geo-mashup-location-editor', 
+			GEO_MASHUP_URL_PATH . '/geo-mashup-location-editor.js', 
 			array( 'jquery', 'google-jsapi' ), 
 			GEO_MASHUP_VERSION );
 	}
 
+	function get_submit_action() {
+
+		$action = null;
+
+		if ( isset( $_POST['geo_mashup_add_location'] ) or isset( $_POST['geo_mashup_update_location'] ) ) {
+
+			// Clients without javascript may need server side geocoding
+			if ( ! empty( $_POST['geo_mashup_search'] ) and isset( $_POST['geo_mashup_no_js'] ) and 'true' == $_POST['geo_mashup_no_js'] ) {
+
+				$action = 'geocode';
+
+			} else {
+
+				$action = 'save';
+
+			}
+
+		} else if ( isset( $_POST['geo_mashup_changed'] ) and 'true' == $_POST['geo_mashup_changed'] and ! empty( $_POST['geo_mashup_location'] ) ) {
+
+			// The geo mashup submit button wasn't used, but a change was made and the post saved
+			$action = 'save';
+				 
+		} else if ( isset( $_POST['geo_mashup_delete_location'] ) ) {
+
+			$action = 'delete';
+
+		} else if ( ! empty( $_POST['geo_mashup_location_id'] ) and empty( $_POST['geo_mashup_location'] ) ) {
+
+			// There was a location, but it was cleared before this save
+			$action = 'delete';
+
+		}
+		return $action;
+	}
+
 	function save_posted_object_location( $object_name, $object_id ) {
-		if ( empty( $_POST['geo_mashup_edit_nonce'] ) || !wp_verify_nonce( $_POST['geo_mashup_edit_nonce'], 'geo-mashup-edit-post' ) ) {
+
+		// Check the nonce
+		if ( empty( $_POST['geo_mashup_nonce'] ) || !wp_verify_nonce( $_POST['geo_mashup_nonce'], 'geo-mashup-edit' ) ) {
 			return $object_id;
 		}
-		if ( isset( $_POST['geo_mashup_changed'] ) && $_POST['geo_mashup_changed'] == 'true' ) {
+		
+		$action = $this->get_submit_action();
+
+		if ( 'save' == $action or 'geocode' == $action ) {
+
 			$date_string = $_POST['geo_mashup_date'] . ' ' . $_POST['geo_mashup_hour'] . ':' . 
 				$_POST['geo_mashup_minute'] . ':00';
 			$geo_date = date( 'Y-m-d H:i:s', strtotime( $date_string ) );
-			if ( empty( $_POST['geo_mashup_location'] ) ) {
-				GeoMashupDB::delete_object_location( $object_name, $object_id );
-			} else if ( !empty( $_POST['geo_mashup_location_id'] ) ) {
-				GeoMashupDB::set_object_location( $object_name, $object_id, $_POST['geo_mashup_location_id'], true, $geo_date );
+
+			$post_location = array();
+			$post_location['saved_name'] = $_POST['geo_mashup_location_name'];
+
+			if ( 'geocode' == $action ) {
+
+				$status = GeoMashupDB::geocode( $_POST['geo_mashup_search'], $post_location );
+				if ( $status != 200 ) {
+					$post_location = array();
+				}
+
 			} else {
-				list( $lat, $lng ) = split( ',', $_POST['geo_mashup_location'] );
-				$post_location = array( );
-				$post_location['lat'] = trim( $lat );
-				$post_location['lng'] = trim( $lng );
-				$post_location['saved_name'] = $_POST['geo_mashup_location_name'];
-				$post_location['geoname'] = $_POST['geo_mashup_geoname'];
-				$post_location['address'] = $_POST['geo_mashup_address'];
-				$post_location['postal_code'] = $_POST['geo_mashup_postal_code'];
-				$post_location['country_code'] = $_POST['geo_mashup_country_code'];
-				$post_location['admin_code'] = $_POST['geo_mashup_admin_code'];
-				$post_location['sub_admin_code'] = $_POST['geo_mashup_sub_admin_code'];
-				$post_location['locality_name'] = $_POST['geo_mashup_locality_name'];
+
+				if ( ! empty( $_POST['geo_mashup_select'] ) ) {
+					$selected_items = explode( '|', $_POST['geo_mashup_select'] );
+					$post_location = intval( $selected_items[0] );
+				} else { 
+					$post_location['id'] = $_POST['geo_mashup_location_id'];
+					list( $lat, $lng ) = split( ',', $_POST['geo_mashup_location'] );
+					$post_location['lat'] = trim( $lat );
+					$post_location['lng'] = trim( $lng );
+					$post_location['geoname'] = $_POST['geo_mashup_geoname'];
+					$post_location['address'] = $_POST['geo_mashup_address'];
+					$post_location['postal_code'] = $_POST['geo_mashup_postal_code'];
+					$post_location['country_code'] = $_POST['geo_mashup_country_code'];
+					$post_location['admin_code'] = $_POST['geo_mashup_admin_code'];
+					$post_location['sub_admin_code'] = $_POST['geo_mashup_sub_admin_code'];
+					$post_location['locality_name'] = $_POST['geo_mashup_locality_name'];
+				}
+			}
+			
+			if ( ! empty( $post_location ) ) {
 				GeoMashupDB::set_object_location( $object_name, $object_id, $post_location, true, $geo_date );
 			}
-		}
+
+		} else if ( 'delete' == $action ) {
+
+			GeoMashupDB::delete_object_location( $object_name, $object_id );
+
+		} 
+
 		return $object_id;
 	}
 }
@@ -69,6 +154,15 @@ class GeoMashupUIManager {
  * @since 1.3beta1
  */
 class GeoMashupUserUIManager extends GeoMashupUIManager {
+	/**
+	 * Static method to get the single instance of this class.
+	 * 
+	 * @return GeoMashupPostUIManager The instance.
+	 */
+	function get_instance() {
+		return parent::get_instance( 'GeoMashupUserUIManager' );
+	}
+
 	/**
 	 * PHP4 Constructor
 	 */
@@ -98,6 +192,7 @@ class GeoMashupUserUIManager extends GeoMashupUIManager {
 			add_action( 'personal_options_update', array( &$this, 'save_user'));
 			add_action( 'edit_user_profile_update', array( &$this, 'save_user'));
 
+			$this->enqueue_jquery_styles();
 			$this->enqueue_form_client_items();
 		}
 	}
@@ -113,7 +208,11 @@ class GeoMashupUserUIManager extends GeoMashupUIManager {
 			$object_id = $user_id;
 		}
 		echo '<h3>' . __( 'Location', 'GeoMashup' ) . '</h3>';
-		geo_mashup_edit_form( 'user', $object_id );
+		geo_mashup_edit_form( 'user', $object_id, get_class( $this ) );
+	}
+
+	function save_posted_object_location( $user_id ) {
+		return parent::save_posted_object_location( 'user', $user_id );
 	}
 
 	function save_user() {
@@ -131,12 +230,12 @@ class GeoMashupUserUIManager extends GeoMashupUIManager {
 			return $user_id;
 		}
 
-		return $this->save_posted_object_location( 'user', $user_id );
+		return $this->save_posted_object_location( $user_id );
 	}
 }
 
 // Instantiate
-new GeoMashupUserUIManager();
+GeoMashupUserUIManager::get_instance();
 
 /**
  * A manager for post/page location user interfaces.
@@ -148,6 +247,15 @@ new GeoMashupUserUIManager();
  */
 class GeoMashupPostUIManager extends GeoMashupUIManager {
 	var $inline_location;
+
+	/**
+	 * Static method to get the single instance of this class.
+	 * 
+	 * @return GeoMashupPostUIManager The instance.
+	 */
+	function get_instance() {
+		return parent::get_instance( 'GeoMashupPostUIManager' );
+	}
 
 	/**
 	 * PHP4 Constructor
@@ -168,7 +276,9 @@ class GeoMashupPostUIManager extends GeoMashupUIManager {
 		$enabled = $geo_mashup_options->get( 'overall', 'located_object_name', 'post' ) == 'true';
 
 		if ( $enabled ) { 
+
 			// Queue inline location handlers
+			$this->enqueue_jquery_styles();
 
 			// Pre-save filter checks saved content for inline location tags
 			add_filter( 'content_save_pre', array( &$this, 'content_save_pre') );
@@ -189,20 +299,15 @@ class GeoMashupPostUIManager extends GeoMashupUIManager {
 
 				// Add the appropriate datepicker for the WP version
 				$datepicker_js_path = trailingslashit( GEO_MASHUP_URL_PATH ); 
-				$datepicker_css_path = trailingslashit( GEO_MASHUP_URL_PATH ); 
 				if ( get_bloginfo( 'version' ) < '2.8' ) {
 					$datepicker_js_path .= 'jquery-ui.1.6.datepicker.min.js';
-					$datepicker_css_path .= 'jquery-ui.1.6.smoothness.css'; 
 					$datepicker_js_version = '1.6';
 				} else {
 					$datepicker_js_path .= 'jquery-ui.1.7.datepicker.min.js';
-					$datepicker_css_path .= 'jquery-ui.1.7.smoothness.css'; 
 					$datepicker_js_version = '1.7';
 				}
 
 				wp_enqueue_script( 'jquery-ui-datepicker', $datepicker_js_path, array( 'jquery', 'jquery-ui-core'), $datepicker_js_version );
-
-				wp_enqueue_style( 'geo-mashup-datepicker', $datepicker_css_path, false, $datepicker_js_version, 'screen' );
 
 			} else if ( strpos( $_SERVER['REQUEST_URI'], 'async-upload.php' ) > 0 ) {
 
@@ -228,7 +333,11 @@ class GeoMashupPostUIManager extends GeoMashupUIManager {
 		global $post_ID;
 
 		include_once( GEO_MASHUP_DIR_PATH . '/edit-form.php');
-		geo_mashup_edit_form( 'post', $post_ID );
+		geo_mashup_edit_form( 'post', $post_ID, get_class( $this ) );
+	}
+
+	function save_posted_object_location( $post_id ) {
+		return parent::save_posted_object_location( 'post', $post_id );
 	}
 
 	function save_post($post_id, $post) {
@@ -245,7 +354,7 @@ class GeoMashupPostUIManager extends GeoMashupUIManager {
 
 		update_option('geo_mashup_temp_kml_url','');
 
-		return $this->save_posted_object_location( 'post', $post_id );
+		return $this->save_posted_object_location( $post_id );
 	}
 
 	function content_save_pre( $content ) {
@@ -312,8 +421,8 @@ class GeoMashupPostUIManager extends GeoMashupUIManager {
 	}
 }
 
-// Single instance
-new GeoMashupPostUIManager();
+// Instantiate
+GeoMashupPostUIManager::get_instance();
 
 /**
  * A manager for comment location user interfaces.
@@ -324,6 +433,19 @@ new GeoMashupPostUIManager();
  * @since 1.3beta1
  */
 class GeoMashupCommentUIManager {
+	/**
+	 * Static method to get the single instance of this class.
+	 * 
+	 * @return GeoMashupPostUIManager The instance.
+	 */
+	function get_instance() {
+		static $instance = null;
+		if ( is_null( $instance ) ) {
+			$instance = new GeoMashupCommentUIManager();
+		}
+		return $instance;
+	}
+
 	/**
 	 * PHP4 Constructor
 	 */
@@ -385,6 +507,6 @@ class GeoMashupCommentUIManager {
 }
 
 // Instantiate
-new GeoMashupCommentUIManager();
+GeoMashupCommentUIManager::get_instance();
 
 ?>

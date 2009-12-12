@@ -344,26 +344,27 @@ class GeoMashupDB {
 		return $result;
 	}
 
-	function reverse_geocode_location( &$location, $language = '' ) {
+	function geocode( $query, &$location, $language = '' ) {
 		global $geo_mashup_options;
 
-		// Don't bother unless there are missing geocodable fields
-		$have_missing_field = false;
-		foreach( array( 'country_code', 'admin_code', 'address', 'locality_name', 'postal_code' ) as $field ) {
-			if ( empty( $location[$field] ) ) {
-				$have_missing_field = true;
-			}
-		}
-		if ( !$have_missing_field ) {
-			return '0';
+		if ( empty( $location ) ) {
+			$location = GeoMashupDB::blank_location( ARRAY_A );
+		} else if ( ! is_array( $location ) ) {
+			return 500;
 		}
 
 		$language = GeoMashupDB::primary_language_code( $language );
 
+
+		// Remove whitespace from lat/lng queries
+		if ( preg_match( '/^[\s\d\.,-]*$/', $query ) ) {
+			$query = preg_replace( '/\s*/', '', $query );
+		}
+
 		$google_geocode_url = 'http://maps.google.com/maps/geo?key=' .
 			$geo_mashup_options->get( 'overall', 'google_key' ) .
-			'&q=' . $location['lat']  . ',' . $location['lng'] .
-			'&output=xml&oe=utf8&sensor=true&gl=' . $language;
+			'&q=' . urlencode( $query ) .
+			'&output=xml&oe=utf8&sensor=false&gl=' . $language;
 
 		$http = new WP_Http();
 		$response = $http->get( $google_geocode_url, array( 'timeout' => 3.0 ) );
@@ -376,6 +377,14 @@ class GeoMashupDB {
 			return $status;
 		}
 
+		if ( empty( $location['lat'] ) or empty( $location['lng'] ) ) {
+			$coords = GeoMashupDB::get_simple_tag_content( 'coordinates', $response['body'] );
+			$coords = explode( ',', $coords );
+			if ( count( $coords ) > 1 ) {
+				$location['lat'] = $coords[1];
+				$location['lng'] = $coords[0];
+			}
+		}
 		if ( empty( $location['country_code'] ) ) {
 			$location['country_code'] = GeoMashupDB::get_simple_tag_content( 'CountryNameCode', $response['body'] );
 		}
@@ -399,7 +408,27 @@ class GeoMashupDB {
 		if ( empty( $location['locality_name'] ) ) {
 			$location['locality_name'] = GeoMashupDB::get_simple_tag_content( 'AddressLine', $response['body'] );
 		}
+
 		return $status;
+	}
+
+	function reverse_geocode_location( &$location, $language = '' ) {
+		global $geo_mashup_options;
+
+		// Don't bother unless there are missing geocodable fields
+		$have_missing_field = false;
+		foreach( array( 'country_code', 'admin_code', 'address', 'locality_name', 'postal_code' ) as $field ) {
+			if ( empty( $location[$field] ) ) {
+				$have_missing_field = true;
+			}
+		}
+		if ( !$have_missing_field or empty( $location['lat'] ) or empty( $location['lng'] ) ) {
+			return '0';
+		}
+
+		$query = $location['lat']  . ',' . $location['lng'];
+
+		return GeoMashupDB::geocode( $query, $location, $language );
 	}
 
 	function bulk_reverse_geocode( ) {
@@ -855,28 +884,38 @@ class GeoMashupDB {
 			$location = (array) $location;
 		}
 
-		if ( is_numeric( $location['lat'] ) && is_numeric( $location['lng'] ) ) {
+		// Check for existing location ID
+		$location_table = $wpdb->prefix . 'geo_mashup_locations';
+		$select_string = "SELECT id, saved_name FROM $location_table ";
+
+		if ( isset( $location['id'] ) && is_numeric( $location['id'] ) ) {
+
+			$select_string .= $wpdb->prepare( 'WHERE id = %d', $location['id'] );
+
+		} else if ( isset( $location['lat'] ) and is_numeric( $location['lat'] ) and isset( $location['lng'] ) and is_numeric( $location['lng'] ) ) {
+
+			// The database might round these, but let's be explicit
 			$location['lat'] = round( $location['lat'], 7 );
 			$location['lng'] = round( $location['lng'], 7 );
-		} else {
-			return false;
-		}
 
-		// Check for existing location
-		$location_table = $wpdb->prefix . 'geo_mashup_locations';
-		$select_string = "SELECT id FROM $location_table ";
-		if ( isset( $location['id'] ) && is_numeric( $location['id'] ) ) {
-			$select_string .= $wpdb->prepare( 'WHERE id = %d', $location['id'] );
-		} else {
 			// MySql appears to only distinguish 5 decimal places, ~8 feet, in the index
 			$delta = 0.00001;
 			$select_string .= $wpdb->prepare( 'WHERE lat BETWEEN %f AND %f AND lng BETWEEN %f AND %f', 
 				$location['lat'] - $delta, $location['lat'] + $delta, $location['lng'] - $delta, $location['lng'] + $delta );
-		} 
+
+		} else {
+
+			// Must have id or coordinates to set location
+			return false;
+		}
+
 		$db_location = $wpdb->get_row( $select_string, ARRAY_A );
 
-		if ( !empty( $db_location ) ) {
-			$location = array_merge( $location, $db_location );
+		$found_saved_name = '';
+		if ( ! empty( $db_location ) ) {
+			// Use the existing ID
+			$location['id'] = $db_location['id']; 
+			$found_saved_name = $db_location['saved_name'];
 		}
 
 		// Reverse geocode
@@ -895,13 +934,23 @@ class GeoMashupDB {
 			}
 		}
 
+		// Replace any existing saved name
+		if ( ! empty( $location['saved_name'] ) and $found_saved_name != $location['saved_name'] ) {
+			$wpdb->query( $wpdb->prepare( "UPDATE $location_table SET saved_name = NULL WHERE saved_name = %s", $location['saved_name'] ) );
+		}
+
 		$set_id = null;
+
 		if ( empty( $location['id'] ) ) {
+
+			// Create a new location
 			if ( $wpdb->insert( $location_table, $location ) ) {
 				$set_id = $wpdb->insert_id;
 			}
+
 		} else {
-			// Don't update coordinates
+
+			// Update existing location, except for coordinates
 			$tmp_lat = $location['lat']; 
 			$tmp_lng = $location['lng']; 
 			unset( $location['lat'] );
@@ -912,6 +961,7 @@ class GeoMashupDB {
 			$set_id = $db_location['id'];
 			$location['lat'] = $tmp_lat;
 			$location['lng'] = $tmp_lng;
+
 		}
 		return $set_id;
 	}
@@ -931,11 +981,11 @@ class GeoMashupDB {
 		return $wpdb->query( $delete_string );
 	}
 
-	function get_saved_locations( ) {
+	function get_saved_locations() {
 		global $wpdb;
 
 		$location_table = $wpdb->prefix . 'geo_mashup_locations';
-		$wpdb->query( "SELECT * FROM $location_table WHERE saved_name IS NOT NULL" );
+		$wpdb->query( "SELECT * FROM $location_table WHERE saved_name IS NOT NULL ORDER BY saved_name ASC" );
 		return $wpdb->last_result;
 	}
 
