@@ -44,7 +44,7 @@ function geo_mashup_render_map ( ) {
 					 
 	$map_properties = array ( 
 		'siteurl' => get_option( 'siteurl' ),
-		'nonce' => wp_create_nonce( 'geo-mashup-content' ),
+		'nonce' => wp_create_nonce( 'geo-mashup-geo-query' ),
 		'url_path' => GEO_MASHUP_URL_PATH,
  		'template_url_path' => get_template_directory_uri() );
 	if ( isset( $geo_mashup_custom ) ) {

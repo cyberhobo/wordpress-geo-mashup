@@ -1,6 +1,11 @@
-#geo_mashup_map div { margin:0; }
-#geo_mashup_status_icon { float:right; }
-#geo-mashup-inline-help { background-color:#ccc; }
+.geo-mashup-js { display: none; }
+#geo_mashup_ajax_message { padding:5px; }
+#geo_mashup_map { margin:0; width:100%; height:300px; }
+#geo_mashup_location_name { width: 95%; }
+#geo_mashup_date_ui input { font-size: 12px; padding: 1px; }
+#geo_mashup_date { width: 10em; }
+#geo_mashup_hour, #geo_mashup_minute { width: 2em; }
 #geo-mashup-inline-help ul { list-style: disc outside; font-size:100%; margin-left:0; padding-left:2.5em; }
-#geo-mashup-inline-help-link-wrap { float:right; padding:4px; margin-right:1em; background-color:#ccc; }
-#geo-mashup-inline-help-link-wrap a { text-decoration:none; }
+#geo-mashup-inline-help-link-wrap { padding: 4px 0 2px 4px; margin-right:1em; }
+#geo-mashup-inline-help-link-wrap .ui-icon { float: left; }
+#geo-mashup-location-table th { padding:4px; }

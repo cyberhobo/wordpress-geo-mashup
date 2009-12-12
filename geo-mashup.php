@@ -54,7 +54,16 @@ class GeoMashup {
 
 	function load_hooks() {
 		global $geo_mashup_options;
-		if (is_admin()) {
+
+		if ( defined( 'DOING_AJAX' ) and DOING_AJAX === true ) {
+
+			// Perform ajax edits from the front end or admin
+			// Before WP 2.8, an ajax request would have to be handled differently,
+			// maybe in template_redirect
+			add_action( 'wp_ajax_geo_mashup_edit', array( 'GeoMashup', 'ajax_edit' ) );
+			add_action( 'wp_ajax_nopriv_geo_mashup_edit', array( 'GeoMashup', 'ajax_edit' ) );
+			
+		} else if (is_admin()) {
 
 			// To upgrade tables
 			register_activation_hook( __FILE__, array( 'GeoMashupDB', 'install' ) );
@@ -153,24 +162,69 @@ class GeoMashup {
 	 */
 	function template_redirect() {
 		$geo_mashup_content = get_query_var( 'geo_mashup_content' );
-		if ( $geo_mashup_content ) {
+		if ( ! empty( $geo_mashup_content ) ) {
+
 			// The parameter's purpose is to get us here, we can remove it now
 			unset( $_GET['geo_mashup_content'] );
 
-			check_ajax_referer( 'geo-mashup-content', '_wpnonce' );
+			check_ajax_referer( 'geo-mashup-' . $geo_mashup_content, '_wpnonce' );
 			unset( $_GET['_wpnonce'] );
 
-			switch( $geo_mashup_content ) {
-			case 'render-map':
-				require_once( 'render-map.php' );
-				exit;
-
-			case 'geo-query':
-				unset( $_GET['geo_mashup_content'] );
-				require_once( 'geo-query.php' );
-				exit;
-			}
+			// Call the function corresponding to the content request
+			// This provides some security, as only implemented methods will be executed
+			$method = str_replace( '-', '_', $geo_mashup_content );
+			call_user_func( array( 'GeoMashup', $method ) );
+			exit();
 		}
+	}
+
+	/**
+	 * Process an AJAX geo query.
+	 *
+	 * Called by template redirect, parameters are in the request URL.
+	 */
+	function geo_query() {
+		require_once( 'geo-query.php' );
+	}
+
+	/**
+	 * Process an iframe map request.
+	 *
+	 * Called by template redirect, parameters are in the request URL.
+	 */
+	function render_map() {
+		require_once( 'render-map.php' );
+	}
+
+	/**
+	 * Perform an ajax edit operation and echo results.
+	 */
+	function ajax_edit() {
+		$status = array( 'request' => 'ajax-edit' );
+		$object_id = '';
+
+		if ( ! empty( $_POST['geo_mashup_ui_manager'] ) ) {
+			$ui_manager = GeoMashupUIManager::get_instance( $_POST['geo_mashup_ui_manager'] );
+			$object_id = $ui_manager->save_posted_object_location( $_POST['geo_mashup_object_id'] );
+		}
+		$status['object_id'] = $object_id;
+		if ( ! empty( $object_id ) ) {
+			$status['code'] = 200;
+			if ( ! empty( $_REQUEST['geo_mashup_update_location'] ) ) {
+				$status['message'] = __( 'Location updated.', 'GeoMashup' );
+			} else if ( ! empty( $_REQUEST['geo_mashup_delete_location'] ) ) {
+				$status['message'] = __( 'Location deleted.', 'GeoMashup' );
+			} else if ( ! empty( $_REQUEST['geo_mashup_add_location'] ) ) {
+				$status['message'] = __( 'Location added.', 'GeoMashup' );
+			}
+		} else { 
+			// No object id returned
+			$status['code'] = 500;
+			$status['message'] = __( 'Location operation failed, sorry!', 'GeoMashup' );
+		}
+
+		echo GeoMashup::json_encode( array( 'status' => $status ) );
+		exit();
 	}
 
 	/**
@@ -310,6 +364,7 @@ class GeoMashup {
 			foreach ($objects as $object) {
 				$category_ids = array();
 				$author_name = '';
+				$attachments = array();
 				if ( 'post' == $query_args['object_name'] ) {
 
 					// Only know about post categories now, but could abstract to objects
@@ -508,7 +563,7 @@ class GeoMashup {
 		}
 					
 		$iframe_src = get_option( 'siteurl' ) . '?geo_mashup_content=render-map&amp;_wpnonce=' . 
-			wp_create_nonce( 'geo-mashup-content' ) . '&amp;' .
+			wp_create_nonce( 'geo-mashup-render-map' ) . '&amp;' .
 			GeoMashup::implode_assoc('=', '&amp;', $url_params, false, true);
 		$content = "";
 
