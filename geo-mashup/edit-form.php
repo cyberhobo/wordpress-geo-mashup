@@ -161,13 +161,11 @@ function geo_mashup_edit_form( $object_name, $object_id, $ui_manager = '' ) {
 	<input	id="geo_mashup_search" name="geo_mashup_search" type="text" size="35" />
 	</label>
 
-	<?php if ( ! empty( $saved_location_options ) ) : ?>
 	<?php _e( 'or select from' ); ?> 
 	<select id="geo_mashup_select" name="geo_mashup_select"> 
 		<option value=""><?php _e('[Saved Locations]','GeoMashup'); ?></option>
 		<?php echo $saved_location_options; ?>
 	</select>
-	<?php endif; ?>
 
 	<input id="geo_mashup_url_path" name="geo_mashup_url_path" type="hidden" value="<?php echo GEO_MASHUP_URL_PATH; ?>" />
 	<input id="geo_mashup_ajax_url" name="geo_mashup_ajax_url" type="hidden" value="<?php echo $ajax_url; ?>" />

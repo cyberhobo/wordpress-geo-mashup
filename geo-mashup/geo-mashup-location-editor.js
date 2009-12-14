@@ -60,7 +60,7 @@ jQuery( function( $ ) {
 		$coordinate_display = $display.find( '.geo-mashup-coordinates' ),
 		$saved_name_ui = $( '#geo_mashup_saved_name_ui' ),
 		$date_ui = $( '#geo_mashup_date_ui' ),
-		$ajax_message = $( '#geo_mashup_ajax_message' ).hide(),
+		$ajax_message = $( '#geo_mashup_ajax_message' ),
 
 		/**
 		 * An object prototype for managing data associated with a location.
@@ -558,7 +558,8 @@ jQuery( function( $ ) {
 		setHaveUnsavedChanges: function() {
 			have_unsaved_changes = true;
 			$changed_input.val( 'true' );
-			if ( object_id > 0 && $location_id_input.val() > 0 ) {
+			if ( object_id > 0 ) {
+				// If there's no object id yet, the AJAX method won't work
 				$update_button.show();
 			}
 			$ajax_message.hide();
@@ -585,6 +586,7 @@ jQuery( function( $ ) {
 
 	// Show js stuff (hidden in the stylesheet) 
 	$( '.geo-mashup-js' ).removeClass( 'geo-mashup-js' );
+	$ajax_message.hide();
 	$( '#geo_mashup_no_js' ).val( '' );
 
 	// Help interface
