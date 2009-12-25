@@ -55,15 +55,7 @@ class GeoMashup {
 	function load_hooks() {
 		global $geo_mashup_options;
 
-		if ( defined( 'DOING_AJAX' ) and DOING_AJAX === true ) {
-
-			// Perform ajax edits from the front end or admin
-			// Before WP 2.8, an ajax request would have to be handled differently,
-			// maybe in template_redirect
-			add_action( 'wp_ajax_geo_mashup_edit', array( 'GeoMashup', 'ajax_edit' ) );
-			add_action( 'wp_ajax_nopriv_geo_mashup_edit', array( 'GeoMashup', 'ajax_edit' ) );
-			
-		} else if (is_admin()) {
+		if (is_admin()) {
 
 			// To upgrade tables
 			register_activation_hook( __FILE__, array( 'GeoMashupDB', 'install' ) );
@@ -154,9 +146,7 @@ class GeoMashup {
 	}
 
 	/**
-	 * Deliver templated Geo Mashup content.
-	 *
-	 * This used to be done by direct calls to PHP files that would load WP.
+	 * Deliver templated Geo Mashup content and AJAX responses.
 	 *
 	 * @see template_redirect filter
 	 */
@@ -202,6 +192,8 @@ class GeoMashup {
 	function ajax_edit() {
 		$status = array( 'request' => 'ajax-edit' );
 		$object_id = '';
+
+		// TODO: add an option for a user capability check here?
 
 		if ( ! empty( $_POST['geo_mashup_ui_manager'] ) ) {
 			$ui_manager = GeoMashupUIManager::get_instance( $_POST['geo_mashup_ui_manager'] );
