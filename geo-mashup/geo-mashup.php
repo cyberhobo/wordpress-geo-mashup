@@ -65,6 +65,8 @@ class GeoMashup {
 
 		} else {
 
+			// This is a non-admin request
+
 			if ($geo_mashup_options->get('overall','add_category_links') == 'true') {
 				// To add map links to a category list - flaky, requires non-empty category description
 				add_filter('list_cats', array('GeoMashup', 'list_cats'), 10, 2);
@@ -72,6 +74,11 @@ class GeoMashup {
 
 			// To output location meta tags in the page head
 			add_action('wp_head', array('GeoMashup', 'wp_head'));
+
+			// To allow shortcodes in the text widget
+			if ( ! has_filter( 'widget_text', 'do_shortcode' ) ) {
+				add_filter( 'widget_text', 'do_shortcode' );
+			}
 
 			// To add the GeoRSS namespace to RSS feeds
 			add_action('rss_ns', array('GeoMashup', 'rss_ns'));
