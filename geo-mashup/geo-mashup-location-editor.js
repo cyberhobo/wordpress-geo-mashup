@@ -655,7 +655,7 @@ jQuery( function( $ ) {
 
 	// Ajax error messages
 	$ajax_message.ajaxError( function( event, request, settings ) {
-		$ajax_message.text( request.statusText + ': ' + reqest.responseText ).show();
+		$ajax_message.text( request.statusText + ': ' + request.responseText ).show();
 	} );
 
 	// Update buttons
