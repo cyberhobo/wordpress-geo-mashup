@@ -5,7 +5,7 @@ Description: Tools for adding maps to your blog, and plotting posts on a master 
 Version: 1.3alpha2
 Author: Dylan Kuhn
 Author URI: http://www.cyberhobo.net/
-Minimum WordPress Version Required: 2.6
+Minimum WordPress Version Required: 2.7
 */
 
 /*
