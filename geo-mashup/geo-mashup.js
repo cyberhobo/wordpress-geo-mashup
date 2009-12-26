@@ -1334,6 +1334,10 @@ GeoMashup = {
 			this.map.enableGoogleBar();
 		}
 
+		if ( opts.enable_scroll_wheel_zoom ) {
+			this.map.enableScrollWheelZoom();
+		}
+
 		google.maps.Event.addListener( this.map, 'click', function( overlay ) {
 			if ( overlay !== GeoMashup.selected_marker && overlay !== GeoMashup.map.getInfoWindow() ) {
 				GeoMashup.deselectMarker();
