@@ -542,16 +542,14 @@ class GeoMashup {
 
 			$locations = GeoMashupDB::get_object_locations( $url_params );
 			if (!empty($locations)) {
-				$map_image = '<img src="http://maps.google.com/staticmap?size='.$url_params['width'].'x'.$url_params['height'];
+				$map_image = '<img src="http://maps.google.com/maps/api/staticmap?size='.$url_params['width'].'x'.$url_params['height'];
 				if (count($locations) == 1) {
 					$map_image .= '&amp;center='.$locations[0]->lat . ',' . $locations[0]->lng;
 				}
-				$map_image .= '&amp;zoom=' . $url_params['zoom'] . '&amp;markers=';
-				$separator = '';
+				$map_image .= '&amp;sensor=false&amp;zoom=' . $url_params['zoom'] . '&amp;markers=size:small|color:red';
 				foreach ($locations as $location) {
 					// TODO: Try to use the correct color for the category? Draw category lines?
-					$map_image .= $separator . $location->lat . ',' . $location->lng . ',smallred';
-					$separator = '|';
+					$map_image .= '|' . $location->lat . ',' . $location->lng;
 				}
 				$map_image .= '&amp;key='.$geo_mashup_options->get('overall', 'google_key').'" alt="geo_mashup_map"';
 				if ($click_to_load == 'true') {
