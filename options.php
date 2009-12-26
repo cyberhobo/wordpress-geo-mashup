@@ -382,6 +382,14 @@ function geo_mashup_options_page() {
 						?> /></td>
 					</tr>
 					<tr>
+						<th scope="row"><?php _e('Enable Scroll Wheel Zoom', 'GeoMashup'); ?></th>
+						<td><input id="in_post_enable_scroll_wheel_zoom" name="single_map[enable_scroll_wheel_zoom]" type="checkbox" value="true"<?php 
+							if ( $geo_mashup_options->get ( 'single_map', 'enable_scroll_wheel_zoom' ) == 'true' ) {
+								echo ' checked="checked"';
+							}
+						?> /></td>
+					</tr>
+					<tr>
 						<th scope="row"><?php _e('Default Zoom Level', 'GeoMashup'); ?></th>
 						<td>
 							<select id="in_post_zoom" name="single_map[zoom]">
@@ -509,6 +517,14 @@ function geo_mashup_options_page() {
 								}
 							?> />
 						</td>
+					</tr>
+					<tr>
+						<th scope="row"><?php _e('Enable Scroll Wheel Zoom', 'GeoMashup'); ?></th>
+						<td><input id="enable_scroll_wheel_zoom" name="global_map[enable_scroll_wheel_zoom]" type="checkbox" value="true"<?php 
+							if ( $geo_mashup_options->get ( 'global_map', 'enable_scroll_wheel_zoom' ) == 'true' ) {
+								echo ' checked="checked"';
+							}
+						?> /></td>
 					</tr>
 					<tr>
 						<th scope="row"><?php _e('Default Zoom Level', 'GeoMashup'); ?></th>
@@ -736,6 +752,14 @@ function geo_mashup_options_page() {
 							}
 						?> />
 					</td>
+				</tr>
+				<tr>
+					<th scope="row"><?php _e('Enable Scroll Wheel Zoom', 'GeoMashup'); ?></th>
+					<td><input id="context_enable_scroll_wheel_zoom" name="context_map[enable_scroll_wheel_zoom]" type="checkbox" value="true"<?php 
+						if ( $geo_mashup_options->get ( 'context_map', 'enable_scroll_wheel_zoom' ) == 'true' ) {
+							echo ' checked="checked"';
+						}
+					?> /></td>
 				</tr>
 				<tr>
 					<th scope="row"><?php _e('Default Zoom Level', 'GeoMashup'); ?></th>

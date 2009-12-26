@@ -65,7 +65,8 @@ function geo_mashup_render_map ( ) {
 		unset( $_GET['lng'] );
 	}
 
-	$option_keys = array ( 'width', 'height', 'map_control', 'map_type', 'add_map_type_control', 'add_overview_control', 'add_google_bar' );
+	$option_keys = array ( 'width', 'height', 'map_control', 'map_type', 'add_map_type_control', 'add_overview_control', 
+		'add_google_bar', 'enable_scroll_wheel_zoom' );
 	if ( $map_content == 'single') {
 		$object_id = 0;
 		if ( isset( $_GET['object_id'] ) ) {
