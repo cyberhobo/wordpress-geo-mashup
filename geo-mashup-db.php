@@ -71,18 +71,40 @@ class GeoMashupDB {
 		static $active = null;
 
 		if ( is_bool( $new_value ) ) {
-			if ( is_null( $active ) && $new_value ) {
+			if ( $new_value ) {
 
-				// Register hooks to add fields and options to WP query_posts
+				add_filter( 'query_vars', array( 'GeoMashupDB', 'query_vars' ) );
+				add_filter( 'posts_fields', array( 'GeoMashupDB', 'posts_fields' ) );
 				add_filter( 'posts_join', array( 'GeoMashupDB', 'posts_join' ) );
+				add_filter( 'posts_where', array( 'GeoMashupDB', 'posts_where' ) );
 				add_filter( 'posts_orderby', array( 'GeoMashupDB', 'posts_orderby' ) );
 				add_action( 'parse_query', array( 'GeoMashupDB', 'parse_query' ) );
+
+			} else if ( ! is_null( $active ) ) {
+
+				remove_filter( 'query_vars', array( 'GeoMashupDB', 'query_vars' ) );
+				remove_filter( 'posts_fields', array( 'GeoMashupDB', 'posts_fields' ) );
+				remove_filter( 'posts_join', array( 'GeoMashupDB', 'posts_join' ) );
+				remove_filter( 'posts_where', array( 'GeoMashupDB', 'posts_where' ) );
+				remove_filter( 'posts_orderby', array( 'GeoMashupDB', 'posts_orderby' ) );
+				remove_action( 'parse_query', array( 'GeoMashupDB', 'parse_query' ) );
 			}
  
 			$active = $new_value;
 		}
 		return $active;
 	}
+
+	function query_vars( $public_query_vars ) {
+		$public_query_vars[] = 'geo_mashup_date';
+		$public_query_vars[] = 'geo_mashup_saved_name';
+		$public_query_vars[] = 'geo_mashup_country_code';
+		$public_query_vars[] = 'geo_mashup_postal_code';
+		$public_query_vars[] = 'geo_mashup_admin_code';
+		$public_query_vars[] = 'geo_mashup_locality';
+		return $public_query_vars;
+	}
+
 
 	function query_orderby( $new_value = null ) {
 		static $orderby = null;
@@ -96,6 +118,9 @@ class GeoMashupDB {
 	function parse_query( $query ) {
 		global $wpdb;
 
+		if ( empty( $query->query_vars['orderby'] ) ) 
+			return;
+
 		// Check for geo mashup fields in the orderby before they are removed as invalid
 		switch ( $query->query_vars['orderby'] ) {
 			case 'geo_mashup_date':
@@ -105,22 +130,75 @@ class GeoMashupDB {
 			case 'geo_mashup_locality':
 				GeoMashupDB::query_orderby( $wpdb->prefix . 'geo_mashup_locations.locality_name' );
 				break;
+
+			case 'geo_mashup_saved_name':
+				GeoMashupDB::query_orderby( $wpdb->prefix . 'geo_mashup_locations.saved_name' );
+				break;
+
+			case 'geo_mashup_country_code':
+				GeoMashupDB::query_orderby( $wpdb->prefix . 'geo_mashup_locations.country_code' );
+				break;
+
+			case 'geo_mashup_admin_code':
+				GeoMashupDB::query_orderby( $wpdb->prefix . 'geo_mashup_locations.admin_code' );
+				break;
+
+			case 'geo_mashup_postal_code':
+				GeoMashupDB::query_orderby( $wpdb->prefix . 'geo_mashup_locations.postal_code' );
+				break;
 		}
+	}
+
+	function posts_fields( $fields ) {
+		global $wpdb;
+
+		$fields .= ',' . $wpdb->prefix . 'geo_mashup_location_relationships.geo_date' .
+			',' . $wpdb->prefix . 'geo_mashup_locations.*';
+
+		return $fields;
 	}
 
 	function posts_join( $join ) {
 		global $wpdb;
 
-		if ( GeoMashupDB::join_post_queries() ) {
-			$gmlr = $wpdb->prefix . 'geo_mashup_location_relationships';
-			$gml = $wpdb->prefix . 'geo_mashup_locations';
-			$join .= " INNER JOIN $gmlr ON ($gmlr.object_name = 'post' AND $gmlr.object_id = $wpdb->posts.ID)" .
-				" INNER JOIN $gml ON ($gml.id = $gmlr.location_id) ";
-		}
+		$gmlr = $wpdb->prefix . 'geo_mashup_location_relationships';
+		$gml = $wpdb->prefix . 'geo_mashup_locations';
+		$join .= " INNER JOIN $gmlr ON ($gmlr.object_name = 'post' AND $gmlr.object_id = $wpdb->posts.ID)" .
+			" INNER JOIN $gml ON ($gml.id = $gmlr.location_id) ";
+
 		return $join;
 	}
 
 	function posts_where( $where ) {
+		global $wpdb;
+
+		$gmlr = $wpdb->prefix . 'geo_mashup_location_relationships';
+		$gml = $wpdb->prefix . 'geo_mashup_locations';
+		$geo_date = get_query_var( 'geo_mashup_date' );
+		if ( $geo_date ) {
+			$where .= $wpdb->prepare( " AND $gmlr.geo_date = %s ", $geo_date );
+		}
+		$saved_name = get_query_var( 'geo_mashup_saved_name' );
+		if ( $saved_name ) {
+			$where .= $wpdb->prepare( " AND $gml.saved_name = %s ", $saved_name );
+		}
+		$locality = get_query_var( 'geo_mashup_locality' );
+		if ( $locality ) {
+			$where .= $wpdb->prepare( " AND $gml.locality = %s ", $locality );
+		}
+		$country_code = get_query_var( 'geo_mashup_country_code' );
+		if ( $country_code ) {
+			$where .= $wpdb->prepare( " AND $gml.country_code = %s ", $country_code );
+		}
+		$admin_code = get_query_var( 'geo_mashup_admin_code' );
+		if ( $admin_code ) {
+			$where .= $wpdb->prepare( " AND $gml.admin_code = %s ", $admin_code );
+		}
+		$postal_code = get_query_var( 'geo_mashup_postal_code' );
+		if ( $postal_code ) {
+			$where .= $wpdb->prepare( " AND $gml.postal_code = %s ", $postal_code );
+		}
+
 		return $where;
 	}
 
@@ -128,6 +206,8 @@ class GeoMashupDB {
 		global $wpdb;
 
 		if ( GeoMashupDB::query_orderby() ) {
+
+			// Now our "invalid" value has been replaced by post_date, we change it back
 			$orderby = str_replace( "$wpdb->posts.post_date", GeoMashupDB::query_orderby(), $orderby );
 
 			// Reset for subsequent queries
