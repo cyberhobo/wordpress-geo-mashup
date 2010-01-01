@@ -271,7 +271,8 @@ class GeoMashup {
 		$json = '';
 		if ( is_scalar( $item ) ) {
 
-			$json =  '"' . addslashes( trim( (string) $item, '"' ) ) . '"';
+			//DEPRECATED: WP 2.8.0 js_escape -> esc_js
+			$json =  '"' . js_escape( trim( (string) $item, '"' ) ) . '"';
 
 		} else if ( is_array( $item ) ) {
 
@@ -332,9 +333,9 @@ class GeoMashup {
 			$loc = GeoMashupDB::get_object_location( 'post', $wp_query->post->ID );
 			if (!empty($loc)) {
 				$title = htmlspecialchars(convert_chars(strip_tags(get_bloginfo('name'))." - ".$wp_query->post->post_title));
-				echo "<meta name=\"ICBM\" content=\"{$loc->lat}, {$loc->lng}\" />\n";
-				echo "<meta name=\"DC.title\" content=\"{$title}\" />\n";
-				echo "<meta name=\"geo.position\" content=\"{$loc->lat};{$loc->lng}\" />\n";
+				echo '<meta name="ICBM" content="' . attribute_escape( $loc->lat . ', ' . $loc->lng ) . '" />' . "\n";
+				echo '<meta name="DC.title" content="' . attribute_escape( $title ) . '" />' . "\n";
+				echo '<meta name="geo.position" content="' .  attribute_escape( $loc->lat . ';' . $loc->lng ) . '" />' . "\n";
 			}
 		}
 		else
@@ -345,9 +346,9 @@ class GeoMashup {
 				foreach ( $saved_locations as $saved_location ) {
 					if ( $saved_location->saved_name == 'default' ) {
 						$title = htmlspecialchars(convert_chars(strip_tags(get_bloginfo('name'))));
-						echo "<meta name=\"ICBM\" content=\"{$saved_location->lat}, {$saved_location->lon}\" />\n";
-						echo "<meta name=\"DC.title\" content=\"{$title}\" />\n";
-						echo "<meta name=\"geo.position\" content=\"{$saved_location->lat};{$saved_location->lon}\" />\n";
+						echo '<meta name="ICBM" content="' . attribute_escape( $saved_location->lat . ', ' . $saved_location->lon ) . '\" />'. "\n";
+						echo '<meta name="DC.title" content="' . attribute_escape( $title ) . '" />' . "\n";
+						echo '<meta name="geo.position" content="' . attribute_escape( $saved_location->lat . ';' . $saved_location->lon ) . '\" />' . "\n";
 					}
 				}
 			}
@@ -792,7 +793,7 @@ class GeoMashup {
 			}
 			$zoom = '';
 			if ( !empty( $args['zoom'] ) ) {
-				$zoom = '&zoom=' . $args['zoom'];
+				$zoom = '&zoom=' . urlencode( $args['zoom'] );
 			}
 			$url .= htmlentities("center_lat={$location->lat}&center_lng={$location->lng}$open$zoom");
 		}
@@ -953,7 +954,7 @@ class GeoMashup {
 		// Using Simple GeoRSS for now
 		$location = GeoMashupDB::get_object_location( 'post', $wp_query->post->ID );
 		if ( !empty( $location ) ) {
-			echo '<georss:point>' . $location->lat . ' ' . $location->lng . '</georss:point>';
+			echo '<georss:point>' . wp_specialchars( $location->lat . ' ' . $location->lng ) . '</georss:point>';
 		}
 	}
 

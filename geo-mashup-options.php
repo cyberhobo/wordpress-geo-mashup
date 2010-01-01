@@ -254,7 +254,7 @@ class GeoMashupOptions {
 				}
 				return true;
 
-			// strings
+			// strings without HTML
 			case 'adsense_code':
 				if ( empty( $value ) ) $value = 'partner-pub-5088093001880917';
 			case 'category_link_separator':
@@ -266,6 +266,12 @@ class GeoMashupOptions {
 				if ( !is_string ( $value ) ) {
 					array_push ( $this->validation_errors, '"'. $value . '" ' . __('is invalid for', 'GeoMashup') . ' ' . $key .
 						__(', which must be a string', 'GeoMashup') );
+					return false;
+				}
+				if ( preg_match( "/<.*>/", $value ) ) {
+					// DEPRECATED: WP 2.8.0 wp_specialchars -> esc_html
+					array_push ( $this->validation_errors, '"'. wp_specialchars( $value ) . '" ' . __('is invalid for', 'GeoMashup') . ' ' . $key .
+						__(', which must not contain XML tags.', 'GeoMashup') );
 					return false;
 				}
 				return true;
