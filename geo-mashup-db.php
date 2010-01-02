@@ -538,8 +538,12 @@ class GeoMashupDB {
 		$log .= __( 'Time limit: ', 'GeoMashup' ) . $time_limit . '<br />';
 		$start_time = time();
 		foreach ( $locations as $location ) {
-			GeoMashupDB::set_location( $location, true );
-			$log .= 'id: ' . $location['id'] . ' '; 
+			$set_id = GeoMashupDB::set_location( $location, true );
+			if ( is_wp_error( $set_id ) ) {
+				$log .= 'error: ' . $set_id->get_error_message() . ' ';
+			} else {
+				$log .= 'id: ' . $location['id'] . ' '; 
+			}
 			if ( GeoMashupDB::lookup_status() == 604 ) {
 				$delay += 100000;
 				$log .= __( 'Too many requests, increasing delay to', 'GeoMashup' ) . ' ' . ( $delay / 1000000 ) .
@@ -645,7 +649,7 @@ class GeoMashupDB {
 				$location = array( 'lat' => trim( $lat ), 'lng' => trim( $lng ), 'saved_name' => $saved_name );
 				$do_lookups = ( ( time() - $start_time ) < 15 ) ? true : false;
 				$set_id = GeoMashupDB::set_location( $location, $do_lookups );
-				if ( $set_id ) {
+				if ( ! is_wp_error( $set_id ) ) {
 					$geo_locations[$saved_name] .= ',' . $wpdb->prefix . 'geo_mashup_locations.id=' . $set_id;
 					$msg = __( 'OK: ', 'GeoMashup' ) . $saved_name . '<br/>';
 					$log .= $msg;
@@ -656,6 +660,7 @@ class GeoMashupDB {
 							"You'll have to save it again, sorry.", 'GeoMashup' ),
 						$coordinates );
 					$msg .= '<br/>';
+					$log .= $set_id->get_error_message() . '<br/>';
 					$log .= $msg;
 					echo $msg;
 				}
@@ -924,11 +929,14 @@ class GeoMashupDB {
 
 		if ( !isset( $location_id ) ) {
 			$location_id = GeoMashupDB::set_location( $location, $do_lookups );
+			if ( is_wp_error( $location_id ) ) {
+				return $location_id;
+			}
 		}
 
 		if ( !is_numeric( $location_id ) ) {
 			GeoMashupDB::delete_object_location( $object_name, $object_id );
-			return false;
+			return 0;
 		}
 
 		if ( empty( $geo_date ) ) {
@@ -945,9 +953,13 @@ class GeoMashupDB {
 		if ( empty( $db_location ) ) {
 			if ( $wpdb->insert( $relationship_table, compact( 'object_name', 'object_id', 'location_id', 'geo_date' ) ) ) {
 				$set_id = $location_id;
+			} else { 
+				return new WP_Error( 'db_insert_error', $wpdb->last_error );
 			}
 		} else {
-			$wpdb->update( $relationship_table, compact( 'location_id', 'geo_date' ), compact( 'object_name', 'object_id' ) ); 
+			$wpdb->update( $relationship_table, compact( 'location_id', 'geo_date' ), compact( 'object_name', 'object_id' ) );
+			if ( $wpdb->last_error ) 
+				return new WP_Error( 'db_update_error', $wpdb->last_error );
 			$set_id = $location_id;
 		}
 		return $set_id;
@@ -974,7 +986,7 @@ class GeoMashupDB {
 
 		} else if ( isset( $location['lat'] ) and is_numeric( $location['lat'] ) and isset( $location['lng'] ) and is_numeric( $location['lng'] ) ) {
 
-			// The database might round these, but let's be explicit
+			// The database might round these, but let's be explicit and stymy evildoers too
 			$location['lat'] = round( $location['lat'], 7 );
 			$location['lng'] = round( $location['lng'], 7 );
 
@@ -984,9 +996,7 @@ class GeoMashupDB {
 				$location['lat'] - $delta, $location['lat'] + $delta, $location['lng'] - $delta, $location['lng'] + $delta );
 
 		} else {
-
-			// Must have id or coordinates to set location
-			return false;
+			return new WP_Error( 'invalid_location', __( 'A location must have an ID or coordinates to be saved.', 'GeoMashup' ) );
 		}
 
 		$db_location = $wpdb->get_row( $select_string, ARRAY_A );
@@ -1026,6 +1036,8 @@ class GeoMashupDB {
 			// Create a new location
 			if ( $wpdb->insert( $location_table, $location ) ) {
 				$set_id = $wpdb->insert_id;
+			} else {
+				return new WP_Error( 'db_insert_error', $wpdb->last_error );
 			}
 
 		} else {
@@ -1037,6 +1049,8 @@ class GeoMashupDB {
 			unset( $location['lng'] );
 			if ( !empty ( $location ) ) {
 				$wpdb->update( $location_table, $location, array( 'id' => $db_location['id'] ) );
+				if ( $wpdb->last_error ) 
+					return new WP_Error( 'db_update_error', $wpdb->last_error );
 			}
 			$set_id = $db_location['id'];
 			$location['lat'] = $tmp_lat;
@@ -1051,14 +1065,22 @@ class GeoMashupDB {
 
 		$delete_string = "DELETE FROM {$wpdb->prefix}geo_mashup_location_relationships " .
 			$wpdb->prepare( 'WHERE object_name = %s AND object_id = %d', $object_name, $object_id );
-		return $wpdb->query( $delete_string );
+		$rows_affected = $wpdb->query( $delete_string );
+		if ( $wpdb->last_error ) 
+			return new WP_Error( 'delete_object_location_error', $wpdb->last_error );
+
+		return $rows_affected;
 	}
 
 	function delete_location( $id ) {
 		global $wpdb;
 
 		$delete_string = $wpdb->prepare( "DELETE FROM {$wpdb->prefix}geo_mashup_locations WHERE id = %d", $id );
-		return $wpdb->query( $delete_string );
+		$rows_affected = $wpdb->query( $delete_string );
+		if ( $wpdb->last_error ) 
+			return new WP_Error( 'delete_location_error', $wpdb->last_error );
+
+		return $rows_affected;
 	}
 
 	function get_saved_locations() {
@@ -1066,6 +1088,9 @@ class GeoMashupDB {
 
 		$location_table = $wpdb->prefix . 'geo_mashup_locations';
 		$wpdb->query( "SELECT * FROM $location_table WHERE saved_name IS NOT NULL ORDER BY saved_name ASC" );
+		if ( $wpdb->last_error ) 
+			return new WP_Error( 'delete_location_error', $wpdb->last_error );
+
 		return $wpdb->last_result;
 	}
 
