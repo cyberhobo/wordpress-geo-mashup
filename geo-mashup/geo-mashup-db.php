@@ -1148,15 +1148,15 @@ class GeoMashupDB {
 	}
 
 	function delete_post( $id ) {
-		GeoMashupDB::delete_object_location( 'post', $id );
+		return GeoMashupDB::delete_object_location( 'post', $id );
 	}
 
 	function delete_comment( $id ) {
-		GeoMashupDB::delete_object_location( 'comment', $id );
+		return GeoMashupDB::delete_object_location( 'comment', $id );
 	}
 
 	function delete_user( $id ) {
-		GeoMashupDB::delete_object_location( 'user', $id );
+		return GeoMashupDB::delete_object_location( 'user', $id );
 	}
 }
 
