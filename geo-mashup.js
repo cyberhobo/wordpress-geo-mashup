@@ -580,6 +580,28 @@ GeoMashup = {
 		}
 	},
 
+	openMarkerInfoWindow : function( marker, opts ) {
+		this.doAction( 'markerInfoWindowOptions', GeoMashup.opts, GeoMashup.locations[point], max_options );
+		this.locations[point].info_window_options = opts;
+		this.locations[point].loaded = true;
+		marker.openInfoWindow( node, opts );
+	},
+
+	loadMaxContent : function( marker, info_window_max_url ) {
+		var info_window_max_request = new google.maps.XmlHttp.create();
+		info_window_max_request.open( 'GET', info_window_max_url, true );
+		info_window_max_request.onreadystatechange = function() {
+			var max_node, max_options;
+			if (info_window_max_request.readyState === 4 && info_window_max_request.status === 200 ) {
+				max_node = document.createElement( 'div' );
+				max_node.innerHTML = info_window_max_request.responseText;
+				GeoMashup.parentizeLinks( max_node );
+				GeoMashup.openMarkerInfoWindow( marker,  { maxContent : max_node } );
+			} // end max readState === 4
+		}; // end max onreadystatechange function
+		info_window_max_request.send( null );
+	},
+
 	openInfoWindow : function( marker, point ) {
 		var object_ids, i, url, info_window_request, object_element;
 
@@ -610,23 +632,11 @@ GeoMashup = {
 					node.innerHTML = info_window_request.responseText;
 					GeoMashup.parentizeLinks( node );
 					GeoMashup.locations[point].info_node = node;
-					info_window_max_url = url + '&template=info-window-max';
-					info_window_max_request = new google.maps.XmlHttp.create();
-					info_window_max_request.open( 'GET', info_window_max_url, true );
-					info_window_max_request.onreadystatechange = function() {
-						var max_node, max_options;
-						if (info_window_max_request.readyState === 4 && info_window_max_request.status === 200 ) {
-							max_node = document.createElement( 'div' );
-							max_node.innerHTML = info_window_max_request.responseText;
-							GeoMashup.parentizeLinks( max_node );
-							max_options = { maxContent : max_node };
-							GeoMashup.doAction( 'markerInfoWindowOptions', GeoMashup.opts, GeoMashup.locations[point], max_options );
-							GeoMashup.locations[point].info_window_options = max_options;
-							GeoMashup.locations[point].loaded = true;
-							marker.openInfoWindow( node, max_options );
-						} // end max readState === 4
-					}; // end max onreadystatechange function
-					info_window_max_request.send( null );
+					if ( 'post' == GeoMashup.opts.object_name ) {
+						GeoMashup.loadMaxContent( marker, url + '&template=info-window-max' );
+					} else {
+						GeoMashup.openMarkerInfoWindow( marker, {} );
+					}
 				} // end readystate === 4
 			}; // end onreadystatechange function
 			info_window_request.send(null);
