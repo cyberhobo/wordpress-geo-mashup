@@ -1060,25 +1060,32 @@ class GeoMashupDB {
 		return $set_id;
 	}
 
-	function delete_object_location( $object_name, $object_id ) {
+	function delete_object_location( $object_name, $object_ids ) {
 		global $wpdb;
 
-		$delete_string = "DELETE FROM {$wpdb->prefix}geo_mashup_location_relationships " .
-			$wpdb->prepare( 'WHERE object_name = %s AND object_id = %d', $object_name, $object_id );
-		$rows_affected = $wpdb->query( $delete_string );
-		if ( $wpdb->last_error ) 
-			return new WP_Error( 'delete_object_location_error', $wpdb->last_error );
+		$object_ids = ( is_array( $object_ids ) ? $object_ids : array( $object_ids ) );
+		$rows_affected = 0;
+		foreach( $object_ids as $object_id ) {
+			$delete_string = "DELETE FROM {$wpdb->prefix}geo_mashup_location_relationships " .
+				$wpdb->prepare( 'WHERE object_name = %s AND object_id = %d', $object_name, $object_id );
+			$rows_affected += $wpdb->query( $delete_string );
+			if ( $wpdb->last_error ) 
+				return new WP_Error( 'delete_object_location_error', $wpdb->last_error );
+		}
 
 		return $rows_affected;
 	}
 
-	function delete_location( $id ) {
+	function delete_location( $ids ) {
 		global $wpdb;
-
-		$delete_string = $wpdb->prepare( "DELETE FROM {$wpdb->prefix}geo_mashup_locations WHERE id = %d", $id );
-		$rows_affected = $wpdb->query( $delete_string );
-		if ( $wpdb->last_error ) 
-			return new WP_Error( 'delete_location_error', $wpdb->last_error );
+		$ids = ( is_array( $ids ) ? $ids : array( $ids ) );
+		$rows_affected = 0;
+		foreach( $ids as $id ) {
+			$delete_string = $wpdb->prepare( "DELETE FROM {$wpdb->prefix}geo_mashup_locations WHERE id = %d", $id );
+			$rows_affected += $wpdb->query( $delete_string );
+			if ( $wpdb->last_error ) 
+				return new WP_Error( 'delete_location_error', $wpdb->last_error );
+		}
 
 		return $rows_affected;
 	}
