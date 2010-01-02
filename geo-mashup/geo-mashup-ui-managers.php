@@ -90,7 +90,7 @@ class GeoMashupUIManager {
 
 		// Check the nonce
 		if ( empty( $_POST['geo_mashup_nonce'] ) || !wp_verify_nonce( $_POST['geo_mashup_nonce'], 'geo-mashup-edit' ) ) {
-			return $object_id;
+			return new WP_Error( 'invalid_request', __( 'Object location not saved - invalid request.', 'GeoMashup' ) );
 		}
 		
 		$action = $this->get_submit_action();
@@ -132,16 +132,20 @@ class GeoMashupUIManager {
 			}
 			
 			if ( ! empty( $post_location ) ) {
-				GeoMashupDB::set_object_location( $object_name, $object_id, $post_location, true, $geo_date );
+				$error = GeoMashupDB::set_object_location( $object_name, $object_id, $post_location, true, $geo_date );
+				if ( is_wp_error( $error ) ) 
+					return $error;
 			}
 
 		} else if ( 'delete' == $action ) {
 
-			GeoMashupDB::delete_object_location( $object_name, $object_id );
+			$error = GeoMashupDB::delete_object_location( $object_name, $object_id );
+			if ( is_wp_error( $error ) ) 
+				return $error;
 
 		} 
 
-		return $object_id;
+		return true;
 	}
 }
 

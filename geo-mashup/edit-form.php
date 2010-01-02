@@ -128,7 +128,7 @@ function geo_mashup_edit_form( $object_name, $object_id, $ui_manager = '' ) {
 		<tbody class="ui-widget-content">
 		<tr id="geo_mashup_display" class="geo-mashup-display-row">
 			<td class="geo-mashup-info">
-				<div class="geo-mashup-address"><?php wp_specialchars( $location->address ); ?></div>
+				<div class="geo-mashup-address"><?php echo wp_specialchars( $location->address ); ?></div>
 				<div class="geo-mashup-coordinates"><?php echo attribute_escape( $coordinate_string ); ?></div>
 			</td>
 			<td id="geo_mashup_saved_name_ui">
@@ -170,7 +170,7 @@ function geo_mashup_edit_form( $object_name, $object_id, $ui_manager = '' ) {
 
 	<input id="geo_mashup_url_path" name="geo_mashup_url_path" type="hidden" value="<?php echo GEO_MASHUP_URL_PATH; ?>" />
 	<input id="geo_mashup_ajax_url" name="geo_mashup_ajax_url" type="hidden" value="<?php echo $ajax_url; ?>" />
-	<input id="geo_mashup_object_name" name="geo_mashup_ui_manager" type="hidden" value="<?php echo $ui_manager; ?>" />
+	<input id="geo_mashup_ui_manager" name="geo_mashup_ui_manager" type="hidden" value="<?php echo $ui_manager; ?>" />
 	<input id="geo_mashup_object_id" name="geo_mashup_object_id" type="hidden" value="<?php echo $object_id; ?>" />
 	<input id="geo_mashup_no_js" name="geo_mashup_no_js" type="hidden" value="true" />
 	<input id="geo_mashup_location_id" name="geo_mashup_location_id" type="hidden" value="<?php echo attribute_escape( $location->id ); ?>" />
