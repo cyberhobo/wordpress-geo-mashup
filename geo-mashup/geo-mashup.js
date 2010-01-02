@@ -580,14 +580,15 @@ GeoMashup = {
 		}
 	},
 
-	openMarkerInfoWindow : function( marker, opts ) {
-		this.doAction( 'markerInfoWindowOptions', GeoMashup.opts, GeoMashup.locations[point], max_options );
-		this.locations[point].info_window_options = opts;
-		this.locations[point].loaded = true;
-		marker.openInfoWindow( node, opts );
+	openMarkerInfoWindow : function( marker, content_node, window_opts ) {
+		var latlng = marker.getLatLng();
+		this.doAction( 'markerInfoWindowOptions', this.opts, this.locations[latlng], window_opts );
+		this.locations[latlng].info_window_options = window_opts;
+		this.locations[latlng].loaded = true;
+		marker.openInfoWindow( content_node, window_opts );
 	},
 
-	loadMaxContent : function( marker, info_window_max_url ) {
+	loadMaxContent : function( marker, regular_node, info_window_max_url ) {
 		var info_window_max_request = new google.maps.XmlHttp.create();
 		info_window_max_request.open( 'GET', info_window_max_url, true );
 		info_window_max_request.onreadystatechange = function() {
@@ -596,7 +597,7 @@ GeoMashup = {
 				max_node = document.createElement( 'div' );
 				max_node.innerHTML = info_window_max_request.responseText;
 				GeoMashup.parentizeLinks( max_node );
-				GeoMashup.openMarkerInfoWindow( marker,  { maxContent : max_node } );
+				GeoMashup.openMarkerInfoWindow( marker, regular_node, { maxContent : max_node } );
 			} // end max readState === 4
 		}; // end max onreadystatechange function
 		info_window_max_request.send( null );
@@ -633,9 +634,9 @@ GeoMashup = {
 					GeoMashup.parentizeLinks( node );
 					GeoMashup.locations[point].info_node = node;
 					if ( 'post' == GeoMashup.opts.object_name ) {
-						GeoMashup.loadMaxContent( marker, url + '&template=info-window-max' );
+						GeoMashup.loadMaxContent( marker, node, url + '&template=info-window-max' );
 					} else {
-						GeoMashup.openMarkerInfoWindow( marker, {} );
+						GeoMashup.openMarkerInfoWindow( marker, node, {} );
 					}
 				} // end readystate === 4
 			}; // end onreadystatechange function
