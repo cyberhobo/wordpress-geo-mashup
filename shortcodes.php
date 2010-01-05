@@ -1,11 +1,8 @@
 <?php
 /** 
- * Functions to implement Geo Mashup shortcodes.
+ * Geo Mashup shortcodes
  *
- * Originally factored out because shortcodes didn't seem to work
- * with class functions. That may have been my mistake, they definitely
- * do in WP 2.7, so now most of the code is back in the GeoMashup static 
- * class.
+ * @package GeoMashup
  */
 
 add_shortcode('geo_mashup_map', array( 'GeoMashup', 'map' ) );
@@ -21,9 +18,19 @@ add_shortcode('geo_mashup_visible_posts_list', array( 'GeoMashup', 'visible_post
 add_shortcode('geo_mashup_location_info', array( 'GeoMashup', 'location_info' ) );
 
 /**
+ * Map template tag alias.
+ *
  * Leave one old shortcode function in the global namespace, since Bruce used
- * it with function_exists() in the implementation guide.
+ * it with function_exists() in his implementation guide.
+ *
+ * @since 1.0
+ * @access public
+ * @deprecated 1.2 Use GeoMashup::map()
+ *
+ * @param array $atts Shortcode arguments.
  */
 function geo_mashup_map( $atts ) {
 	GeoMashup::map( $atts );
 }
+
+?>

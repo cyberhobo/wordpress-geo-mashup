@@ -1,6 +1,25 @@
 <?php
+/**
+ * Management of Geo Mashup saved options.
+ *
+ * @package GeoMashup
+ */
 
+/**
+ * A singleton to manage Geo Mashup saved options.
+ * 
+ * @since 1.2
+ * @access public
+ * @package GeoMashup
+ */
 class GeoMashupOptions {
+	/**
+	 * Valid options with default values.
+	 * 
+	 * @since 1.2
+	 * @access public
+	 * @var array
+	 */
 	var $default_options = array (
 		'overall' => array (
 			'google_key' => '',
@@ -70,6 +89,14 @@ class GeoMashupOptions {
 			'marker_select_attachments' => 'false',
 			'click_to_load' => 'false',
 	 		'click_to_load_text' => '' ) );
+
+	/**
+	 * Map of old option names to new ones.
+	 * 
+	 * @since 1.2
+	 * @access private
+	 * @var array
+	 */
 	var $conversions = array (
 		'google_key' => array ( 'overall', 'google_key' ),
 		'mashup_page' => array ( 'overall', 'mashup_page' ),
@@ -103,12 +130,63 @@ class GeoMashupOptions {
 		'in_post_add_map_type_control' => array ( 'single_map', 'add_map_type_control' ),
 		'in_post_click_to_load' => array ( 'single_map', 'click_to_load' ),
 		'in_post_click_to_load_text' => array ( 'single_map', 'click_to_load_text' ) );
+
+	/**
+	 * Options keys whose values aren't predictable.
+	 * 
+	 * @since 1.2
+	 * @access private
+	 * @var array
+	 */
 	var $freeform_option_keys = array ( 'category_color', 'category_line_zoom', 'add_map_type_control' );
+
+	/**
+	 * Valid map types.
+	 * 
+	 * @since 1.2
+	 * @access public
+	 * @var array
+	 */
 	var $valid_map_types = array ( 'G_NORMAL_MAP', 'G_SATELLITE_MAP', 'G_HYBRID_MAP', 'G_PHYSICAL_MAP', 'G_SATELLITE_3D_MAP' );
+
+	/**
+	 * Saved option values.
+	 *
+	 * Use the GeoMashupOptions::get() method for access.
+	 * 
+	 * @since 1.2
+	 * @access private
+	 * @var array
+	 */
 	var $options;
+
+	/**
+	 * Old option values that can't be converted.
+	 * 
+	 * @since 1.2
+	 * @access private
+	 * @var array
+	 */
 	var $corrupt_options = '';
+
+	/**
+	 * Validation messages.
+	 * 
+	 * @since 1.2
+	 * @access private
+	 * @var array
+	 */
 	var $validation_errors = array();
 
+	/**
+	 * PHP4 constructor
+	 *
+	 * Should be used only in this file.
+	 * 
+	 * @since 1.2
+	 * @access private
+	 * @return void
+	 */
 	function GeoMashupOptions ( ) {
 		$shared_google_api_key = get_option ( 'google_api_key' );
 		if ( $shared_google_api_key ) {
@@ -127,6 +205,15 @@ class GeoMashupOptions {
 		}
 	}
 
+	/**
+	 * Change old option names.
+	 * 
+	 * @since 1.2
+	 * @access private
+	 *
+	 * @param array $settings Existing settings.
+	 * @return array Converted settings.
+	 */
 	function convert_old_settings ( $settings ) {
 		foreach ( $this->conversions as $old_key => $new_keys ) {
 			if ( isset ( $settings[$old_key] ) ) {
@@ -137,6 +224,14 @@ class GeoMashupOptions {
 		return $settings;
 	}
 
+	/**
+	 * Write current values to the database.
+	 * 
+	 * @since 1.2
+	 * @access public
+	 *
+	 * @return bool Success or failure.
+	 */
 	function save ( ) {
 		$saved = false;
 		if ($this->options == $this->valid_options ( $this->options ) ) {
@@ -151,6 +246,23 @@ class GeoMashupOptions {
 		return $saved;
 	}
 
+	/**
+	 * Get a saved option value.
+	 * 
+	 * <code>
+	 * $single_map_options_array = $geo_mashup_options->get( 'single_map' );
+	 * $google_key = $geo_mashup_options->get( 'overall', 'google_key' );
+	 * $add_global_satellite_map = $geo_mashup_options->get( 'global_map', 'add_map_type_control', 'G_SATELLITE_MAP' );
+	 * </code>
+	 *
+	 * @since 1.2
+	 * @access public
+	 *
+	 * @param string $key1 Highest level key.
+	 * @param string $key2 Second level key.
+	 * @param string $key3 Third level key.
+	 * @return string|array The option value or values.
+	 */
 	function get ( $key1, $key2 = null, $key3 = null ) {
 		$subset = array();
 		if ( is_null ( $key2 ) ) {
@@ -180,16 +292,28 @@ class GeoMashupOptions {
 		}
 	}
 
+	/**
+	 * Import valid options from an array.
+	 * 
+	 * @since 1.2
+	 * @access public
+	 *
+	 * @param array $option_array Associative array of option names and values.
+	 */
 	function set_valid_options ( $option_array ) {
 		$this->validation_errors = array ( );
 		$this->options = $this->valid_options ( $option_array );
 	}
 
 	/**
-	 * valid_options
+	 * Remove invalid option keys from an array, and replace invalid values with defaults.
+	 *
+	 * @since 1.2
+	 * @access private
+	 *
 	 * @param option_array An array of options to validate.
 	 * @param defaults Opional array of valid default values.
-	 * @return An array of all option values, with invalid keys eliminated and invalid values replaced by defaults.
+	 * @return array Valid options.
 	 */
 	function valid_options ( $option_array, $defaults = null ) {
 		$valid_options = array ( );
@@ -220,6 +344,16 @@ class GeoMashupOptions {
 		return $valid_options;
 	}
 
+	/**
+	 * Check an option key and value for validity.
+	 * 
+	 * @since 1.2
+	 * @access public
+	 *
+	 * @param string $key Option key.
+	 * @param mixed $value Option value, modified in some cases.
+	 * @return bool True if valid.
+	 */
 	function is_valid ( $key, &$value ) {
 		switch ( $key ) {
 			case 'map_type':
@@ -351,6 +485,9 @@ class GeoMashupOptions {
 	}
 }
 
+/**
+ * @global GeoMashupOptions The singleton instance of the GeoMashupOptions class.
+ */
 global $geo_mashup_options;
 $geo_mashup_options = new GeoMashupOptions ( );
 

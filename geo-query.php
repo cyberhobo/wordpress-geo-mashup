@@ -1,29 +1,10 @@
 <?php
 /**
- * Establish locate_template for WP 2.6.
+ * Respond to Geo Mashup AJAX requests for object locations.
+ *
+ * @since 1.0
+ * @package GeoMashup
  */
-if ( !function_exists( 'locate_template' ) ) {
-	function locate_template($template_names, $load = false) {
-		if (!is_array($template_names))
-			return '';
-
-		$located = '';
-		foreach($template_names as $template_name) {
-			if ( file_exists(STYLESHEETPATH . '/' . $template_name)) {
-				$located = STYLESHEETPATH . '/' . $template_name;
-				break;
-			} else if ( file_exists(TEMPLATEPATH . '/' . $template_name) ) {
-				$located = TEMPLATEPATH . '/' . $template_name;
-				break;
-			}
-		}
-
-		if ($load && '' != $located)
-			load_template($located);
-
-		return $located;
-	}
-}
 
 if ( empty( $_GET['object_ids'] ) ) {
 	GeoMashupQuery::generate_location_json( );
@@ -32,7 +13,12 @@ if ( empty( $_GET['object_ids'] ) ) {
 }
 
 /**
- * GeoMashupQuery - static class provides namespace 
+ * Class for query handling namespace
+ *
+ * @since 1.2
+ * @package GeoMashup
+ * @access public
+ * @static
  */
 class GeoMashupQuery {
 
@@ -41,15 +27,39 @@ class GeoMashupQuery {
 	 *
 	 * Shortcodes are not registered in the bare-bones query environments, 
 	 * but we can strip all bracketed content.
+	 *
+	 * @since 1.3
+	 * @access public
+	 * @static
+	 *
+	 * @param string $content Content to strip square brackets from
+	 * @return string Content minus square brackets
 	 */
 	function strip_brackets( $content ) {
 		return preg_replace( '/\[.*?\]/', '', $content );
 	}
 
+	/**
+	 * Strip map shortcodes.
+	 * 
+	 * @since 1.3
+	 * @access public
+	 * @static
+	 *
+	 * @param string $content 
+	 * @return string Content without map shortcodes.
+	 */
 	function strip_map_shortcodes( $content ) {
 		return preg_replace( '/\[geo_mashup_map.*?\]/', '', $content );
 	}
 
+	/**
+	 * Use templates to output content for objects.
+	 * 
+	 * @since 1.3
+	 * @access public
+	 * @static
+	 */
 	function generate_object_html( ) {
 		global $geo_mashup_options, $geo_mashup_custom, $comments, $users;
 
@@ -107,10 +117,13 @@ class GeoMashupQuery {
 	}
 
 	/** 
-	 * Set the comment global. Not sure why WP 2.7 comment templating
-	 * requires this for callbacks, but it does.
+	 * Set the comment global. 
+	 *
+	 * Not sure why WP 2.7 comment templating requires this for callbacks, but it does.
 	 *
 	 * @since 1.3
+	 * @access public
+	 * @static
 	 *
 	 * @param object $comment The comment object to make global.
 	 */
@@ -122,8 +135,10 @@ class GeoMashupQuery {
 	 * Wrap access to comments global.
 	 *
 	 * @since 1.3
+	 * @access public
+	 * @static
 	 *
-	 * @returns bool Whether there are any comments to be listed.
+	 * @return bool Whether there are any comments to be listed.
 	 */
 	function have_comments( ) {
 		global $comments;
@@ -136,6 +151,8 @@ class GeoMashupQuery {
 	 * otherwise a simple comment loop.
 	 *
 	 * @since 1.3
+	 * @access public
+	 * @static
 	 * @see wp_list_comments()
 	 *
 	 * @param string|array $args Formatting options
@@ -163,10 +180,13 @@ class GeoMashupQuery {
 	}
 
 	/** 
-	 * Set the user global. Probably only Geo Mashup using it here
-	 * for a templated list of users.
+	 * Set the user global. 
+	 *
+	 * Probably only Geo Mashup using it here for a templated list of users.
 	 *
 	 * @since 1.3
+	 * @access public
+	 * @static
 	 *
 	 * @param object $user The user object to make global.
 	 */
@@ -175,10 +195,13 @@ class GeoMashupQuery {
 	}
 
 	/** 
-	 * Wrap access to users global. Probably only Geo Mashup using it here
-	 * for a templated list of users.
+	 * Wrap access to users global. 
+	 *
+	 * Probably only Geo Mashup using it here for a templated list of users.
 	 *
 	 * @since 1.3
+	 * @access public
+	 * @static
 	 *
 	 * @returns bool Whether there are any users to be listed.
 	 */
@@ -192,6 +215,8 @@ class GeoMashupQuery {
 	 * A simple user loop that takes a callback option for formatting.
 	 *
 	 * @since 1.3
+	 * @access public
+	 * @static
 	 *
 	 * @param string|array $args Formatting options
 	 */
@@ -216,8 +241,15 @@ class GeoMashupQuery {
 	}
 
 
+	/**
+	 * Run a query for object locations from GET parameters and print JSON results.
+	 * 
+	 * @since 1.2
+	 * @access public
+	 * @static
+	 */
 	function generate_location_json( ) {
-		/*
+		/* TODO: Try to track modification?
 		if ( !empty( $_SERVER['HTTP_IF_MODIFIED_SINCE'] ) ) {
 			$http_time = strtotime( $_SERVER['HTTP_IF_MODIFIED_SINCE'] );
 			$mod_time = strtotime( $post->post_modified_gmt . ' GMT' );

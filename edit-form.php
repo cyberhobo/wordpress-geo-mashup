@@ -1,13 +1,21 @@
 <?php
 /**
+ * A function wrapper for the location editor HTML.
+ *
+ * @package GeoMashup
+ */
+
+/**
  * Print the Geo Mashup location editor HTML for an object.
  *
  * Goals for this interface are to make it usable for any kind of locatable
  * object, to be usable without javascript, functional on the front end or admin, 
  * and eventually adaptable to editing multiple locations for an object.
  *
- * It's assumed this will go inside an existing form for editing the object. 
+ * It's assumed this will go inside an existing form for editing the object, 
+ * such as the WordPress admin post edit form.
  *
+ * @since 1.2
  * @see geo-mashup-ui-managers.php
  * @see geo-mashup-location-editor.js
  * @uses edit-form.css
@@ -16,7 +24,6 @@
  * @param string $object_name The type of object, e.g. 'post', 'user', etc.
  * @param string $object_id The ID of the object being edited.
  * @param string $ui_manager Optionally the name of UI Manager class to use for AJAX operations.
- * @return void
  */
 function geo_mashup_edit_form( $object_name, $object_id, $ui_manager = '' ) {
 	global $geo_mashup_options;

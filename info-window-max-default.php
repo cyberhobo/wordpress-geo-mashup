@@ -9,6 +9,7 @@
  * or "geo-mashup-full-post.php" in your theme directory. Those files will
  * take precedence over this one.
  *
+ * @package GeoMashup
  */
 
 // Avoid nested maps

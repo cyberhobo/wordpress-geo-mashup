@@ -9,6 +9,12 @@
 if( ! defined( 'ABSPATH') or ! defined('WP_UNINSTALL_PLUGIN') or ! current_user_can( 'delete_plugins' ) )
 	exit();
 
+/**
+ * Drop Geo Mashup database tables.
+ * 
+ * @since 1.3
+ * @access public
+ */
 function geo_mashup_uninstall_db() {
 	global $wpdb;
 	$tables = array( 'geo_mashup_administrative_names', 'geo_mashup_location_relationships', 'geo_mashup_locations' );
@@ -17,6 +23,12 @@ function geo_mashup_uninstall_db() {
 	}
 }
 
+/**
+ * Delete Geo Mashup saved options.
+ * 
+ * @since 1.3
+ * @access public
+ */
 function geo_mashup_uninstall_options() {
 	delete_option( 'geo_mashup_temp_kml_url' );
 	delete_option( 'geo_mashup_db_version' );

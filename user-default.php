@@ -9,6 +9,8 @@
  * installed. Those files take precedence over this one.
  *
  * For styling of the info window, see map-style-default.css.
+ *
+ * @package GeoMashup
  */
 ?>
 <div class="locationinfo user-location-info">
@@ -24,6 +26,12 @@
 <?php endif; ?>
 </div>
 <?php 
+/**
+ * Template callback for GeoMashupQuery::list_users()
+ *
+ * @since 1.3
+ * @param object $user The user to display.
+ */
 function geo_mashup_user_default_template( $user ) { 
 	GeoMashupQuery::set_the_user( $user );
 ?>
