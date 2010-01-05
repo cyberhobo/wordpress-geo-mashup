@@ -1,6 +1,8 @@
 <?php 
 /**
  * Geo Mashup Data Access
+ *
+ * @package GeoMashup
  */
 
 // Actions to maintain data integrity with WordPress
@@ -9,12 +11,25 @@ add_action( 'delete_comment', array( 'GeoMashupDB', 'delete_comment' ) );
 add_action( 'delete_user', array( 'GeoMashupDB', 'delete_user' ) );
 
 /**
- * Static class used as a namespace for Geo Mashup data functions.
+ * Static class to provide a namespace for Geo Mashup data functions.
  *
  * @since 1.2
+ * @package GeoMashup
+ * @access public
+ * @static
  */
 class GeoMashupDB {
 
+	/**
+	 * Get or set the installed database version.
+	 *
+	 * @since 1.2
+	 * @access private
+	 * @static
+	 * 
+	 * @param string $new_version If provided, overwrites any currently installed version.
+	 * @return string The installed database version.
+	 */
 	function installed_version( $new_version = null ) {
 		static $version = null;
 
@@ -28,6 +43,28 @@ class GeoMashupDB {
 		return $version;
 	}
 
+	/**
+	 * Get or set storage information for an object name.
+	 *
+	 * Potentially you could add storage information for a new kind of object:
+	 * <code>
+	 * GeoMashupDB::object_storage( 'foo', array(
+	 * 	'table' => $wpdb->prefix . 'foos',
+	 * 	'id_column' => 'foo_id',
+	 * 	'label_column' => 'foo_display_name',
+	 * 	'sort' => 'foo_order ASC' )
+	 * ); 
+	 * </code>
+	 * Would add the necessary information for a custom table of foo objects.
+	 *
+	 * @since 1.3
+	 * @access public
+	 * @static
+	 * 
+	 * @param string $object_name A type of object to be stored, default is 'post', 'user', and 'comment'.
+	 * @param array $new_storage If provided, adds or replaces the storage information for the object name.
+	 * @return array|bool The storage information array, or false if not found.
+	 */
 	function object_storage( $object_name, $new_storage = null ) {
 		global $wpdb;
 		static $objects = null;
@@ -58,6 +95,18 @@ class GeoMashupDB {
 		return ( isset( $objects[$object_name] ) ) ? $objects[$object_name] : false;
 	}
 
+	/**
+	 * Get or set the current lookup status.
+	 * 
+	 * Tracks the status of the most recent web service lookup.
+	 *
+	 * @since 1.3
+	 * @access private
+	 * @static
+	 *
+	 * @param string $new_status If provided, overwrites any current status.
+	 * @return string The current lookup status.
+	 */
 	function lookup_status( $new_status = null ) {
 		static $status = '0';
 
@@ -67,6 +116,18 @@ class GeoMashupDB {
 		return $status;
 	}
 
+	/**
+	 * Toggle joining of WordPress queries with Geo Mashup tables.
+	 * 
+	 * Use the public wrapper GeoMashup::join_post_queries()
+	 * 
+	 * @since 1.3
+	 * @access private
+	 * @static
+	 *
+	 * @param bool $new_value If provided, replaces the current active state.
+	 * @return bool The current state.
+	 */
 	function join_post_queries( $new_value = null) {
 		static $active = null;
 
@@ -95,6 +156,16 @@ class GeoMashupDB {
 		return $active;
 	}
 
+	/**
+	 * Add Geo Mashup public query variables.
+	 *
+	 * query_vars {@link http://codex.wordpress.org/Plugin_API/Filter_Reference filter}
+	 * called by Wordpress.
+	 *
+	 * @since 1.3
+	 * @access private
+	 * @static
+	 */
 	function query_vars( $public_query_vars ) {
 		$public_query_vars[] = 'geo_mashup_date';
 		$public_query_vars[] = 'geo_mashup_saved_name';
@@ -105,7 +176,16 @@ class GeoMashupDB {
 		return $public_query_vars;
 	}
 
-
+	/**
+	 * Set or get custom orderby field.
+	 *
+	 * @since 1.3
+	 * @access private
+	 * @static
+	 * 
+	 * @param string $new_value Replace any current value.
+	 * @return string Current orderby field.
+	 */
 	function query_orderby( $new_value = null ) {
 		static $orderby = null;
 
@@ -115,6 +195,16 @@ class GeoMashupDB {
 		return $orderby;
 	}
 
+	/**
+	 * Capture custom orderby field before it is removed.
+	 *
+	 * parse_query {@link http://codex.wordpress.org/Plugin_API/Action_Reference action}
+	 * called by WordPress.
+	 * 
+	 * @since 1.3
+	 * @access private
+	 * @static
+	 */
 	function parse_query( $query ) {
 		global $wpdb;
 
@@ -149,6 +239,16 @@ class GeoMashupDB {
 		}
 	}
 
+	/**
+	 * Add Geo Mashup fields to WordPress post queries.
+	 *
+	 * posts_fields {@link http://codex.wordpress.org/Plugin_API/Filter_Reference filter}
+	 * called by WordPress.
+	 * 
+	 * @since 1.3
+	 * @access private
+	 * @static
+	 */
 	function posts_fields( $fields ) {
 		global $wpdb;
 
@@ -158,6 +258,16 @@ class GeoMashupDB {
 		return $fields;
 	}
 
+	/**
+	 * Join Geo Mashup tables to WordPress post queries.
+	 * 
+	 * posts_join {@link http://codex.wordpress.org/Plugin_API/Filter_Reference filter}
+	 * called by WordPress.
+	 * 
+	 * @since 1.3
+	 * @access private
+	 * @static
+	 */
 	function posts_join( $join ) {
 		global $wpdb;
 
@@ -169,6 +279,16 @@ class GeoMashupDB {
 		return $join;
 	}
 
+	/**
+	 * Incorporate geo mashup query vars in WordPress post queries.
+	 *
+	 * posts_where {@link http://codex.wordpress.org/Plugin_API/Filter_Reference filter}
+	 * called by WordPress.
+	 * 
+	 * @since 1.3
+	 * @access private
+	 * @static
+	 */
 	function posts_where( $where ) {
 		global $wpdb;
 
@@ -202,6 +322,16 @@ class GeoMashupDB {
 		return $where;
 	}
 
+	/**
+	 * Replace a WordPress post query orderby with a requested Geo Mashup field.
+	 *
+	 * posts_orderby {@link http://codex.wordpress.org/Plugin_API/Filter_Reference filter}
+	 * called by WordPress.
+	 * 
+	 * @since 1.3
+	 * @access private
+	 * @static
+	 */
 	function posts_orderby( $orderby ) {
 		global $wpdb;
 
@@ -216,6 +346,13 @@ class GeoMashupDB {
 		return $orderby;
 	}
 
+	/**
+	 * Install or update Geo Mashup tables.
+	 * 
+	 * @since 1.2
+	 * @access private
+	 * @static
+	 */
 	function install( ) {
 		global $wpdb;
 
@@ -284,6 +421,17 @@ class GeoMashupDB {
 		return ( GeoMashupDB::installed_version( ) == GEO_MASHUP_DB_VERSION );
 	}
 
+	/**
+	 * Parse a value from small, flat XML data.
+	 * 
+	 * @since 1.2
+	 * @access private
+	 * @static
+	 *
+	 * @param string $tag_name The tag containing the desired value.
+	 * @param string $document The XML.
+	 * @return string|null The contents of first tag found, or null.
+	 */
 	function get_simple_tag_content( $tag_name, $document ) {
 		$content = null;
 		$pattern = '/<' . $tag_name . '>(.*?)<\/' . $tag_name . '>/is';
@@ -294,15 +442,20 @@ class GeoMashupDB {
 	}
 
 	/**
-	 * Try to get a language-sensitive place administrative name. First look in the 
-	 * names cached in the database, then query geonames.org for it. If a name can't be 
-	 * found for the requested language, a default name is returned, usually in the 
-	 * local language. If nothing can be found, returns NULL.
+	 * Try to get a language-sensitive place administrative name. 
+	 *
+	 * First look in the names cached in the database, then query geonames.org for it. 
+	 * If a name can't be found for the requested language, a default name is returned, 
+	 * usually in the local language. If nothing can be found, returns NULL.
 	 * 
+	 * @since 1.2
+	 * @access public
+	 * @static
+	 *
 	 * @param string $country_code Two-character ISO country code.
 	 * @param string $admin_code Code for the administrative area within the country, or NULL to get the country name.
 	 * @param string $language Language code, defaults to the WordPress locale language.
-	 * @return string Place name in the appropriate language, or if not available in the default language.
+	 * @return string|null Place name in the appropriate language, or if not available in the default language, or null.
 	 */
 	function get_administrative_name( $country_code, $admin_code = null, $language = null ) {
 		$name = GeoMashupDB::get_cached_administrative_name( $country_code, $admin_code, $language );
@@ -314,12 +467,16 @@ class GeoMashupDB {
 
 
 	/** 
-	 * Look in the database for a cached administrative name. Return NULL if not found.
+	 * Look in the database for a cached administrative name. 
+	 *
+	 * @since 1.2
+	 * @access private
+	 * @static
 	 *
 	 * @param string $country_code Two-character ISO country code.
 	 * @param string $admin_code Code for the administrative area within the country, or NULL to get the country name.
 	 * @param string $language Language code, defaults to the WordPress locale language.
-	 * @return string Place name or NULL.
+	 * @return string|null Place name or NULL.
 	 */
 	function get_cached_administrative_name( $country_code, $admin_code = '', $language = '' ) {
 		global $wpdb;
@@ -336,6 +493,10 @@ class GeoMashupDB {
 	/** 
 	 * Trim a locale or browser accepted languages string down to the 2 or 3 character
 	 * primary language code.
+	 *
+	 * @since 1.2
+	 * @access private 
+	 * @static
 	 *
 	 * @param string $language Local or language code string, NULL for blog locale.
 	 * @return string Two (rarely three?) character language code.
@@ -354,6 +515,18 @@ class GeoMashupDB {
 		return $language;
 	}
 
+	/**
+	 * Use the Geonames web service to look up and administrative name.
+	 *
+	 * @since 1.2
+	 * @access private
+	 * @static
+	 * 
+	 * @param string $country_code 
+	 * @param string $admin_code 
+	 * @param string $language 
+	 * @return string|null Name or null.
+	 */
 	function get_geonames_administrative_name( $country_code, $admin_code = '', $language = '' ) {
 		$language = GeoMashupDB::primary_language_code( $language );
 
@@ -408,6 +581,17 @@ class GeoMashupDB {
 		return $requested_name;
 	}
 
+	/**
+	 * Use the Geonames web service to look up country and admin codes for coordinates.
+	 *
+	 * @since 1.2
+	 * @access private
+	 * @static
+	 * 
+	 * @param float $lat 
+	 * @param float $lng 
+	 * @return array Requested codes if found, or empty.
+	 */
 	function get_geonames_subdivision( $lat, $lng ) {
 		$result = array( );
 
@@ -416,14 +600,25 @@ class GeoMashupDB {
 		if ( !is_wp_error( $response ) ) {
 			GeoMashupDB::lookup_status( $response['response']['code'] );
 			$result['country_code'] = GeoMashupDB::get_simple_tag_content( 'countryCode', $response['body'] );
-			$result['admin_code'] = GeoMashupDB::get_simple_tag_content( 'adminCode1', $response['body'] );
-			// TODO: Save administrative names?
+			$result['admin_code'] = GeoMashupDB::get_simple_tag_content( 'adminCode1', $response['body'] ); // TODO: Save administrative names?
 		} else {
 			GeoMashupDB::lookup_status( $response->get_error_code() );
 		}
 		return $result;
 	}
 
+	/**
+	 * Use the Google HTTP geocoding service to complete a location.
+	 * 
+	 * @since 1.3
+	 * @access private
+	 * @static
+	 *
+	 * @param mixed $query The search string.
+	 * @param array $location The location to geocode, modified.
+	 * @param string $language 
+	 * @return string The status code of the request.
+	 */
 	function geocode( $query, &$location, $language = '' ) {
 		global $geo_mashup_options;
 
@@ -492,6 +687,19 @@ class GeoMashupDB {
 		return $status;
 	}
 
+	/**
+	 * Use the Google HTTP geocoding service to find an address from coordinates only.
+	 * 
+	 * Does not replace existing data.
+	 *
+	 * @since 1.3
+	 * @access private
+	 * @static
+	 *
+	 * @param array $location The location to geocode, modified.
+	 * @param string $language Optional ISO language code.
+	 * @return string The final status.
+	 */
 	function reverse_geocode_location( &$location, $language = '' ) {
 		global $geo_mashup_options;
 
@@ -511,7 +719,18 @@ class GeoMashupDB {
 		return GeoMashupDB::geocode( $query, $location, $language );
 	}
 
-	function bulk_reverse_geocode( ) {
+	/**
+	 * Try to reverse-geocode all locations with relevant missing data.
+	 *
+	 * Used by the options page. Tries to comply with the PHP maximum execution 
+	 * time, and delay requests if Google sends a 604.
+	 * 
+	 * @since 1.3
+	 * @access private
+	 * @static
+	 * @return string An HTML log of the actions performed.
+	 */
+	function bulk_reverse_geocode() {
 		global $wpdb;
 
 		$log = date( 'r' ) . '<br/>';
@@ -570,6 +789,20 @@ class GeoMashupDB {
 		return $log;
 	}
 			
+	/**
+	 * Store an administrative name in the database to prevent future web service lookups.
+	 * 
+	 * @since 1.2
+	 * @access private
+	 * @static
+	 *
+	 * @param string $country_code 
+	 * @param string $admin_code 
+	 * @param string $isolanguage 
+	 * @param string $name 
+	 * @param string $geoname_id 
+	 * @return int Rows affected.
+	 */
 	function cache_administrative_name( $country_code, $admin_code, $isolanguage, $name, $geoname_id = null ) {
 		global $wpdb;
 
@@ -584,6 +817,14 @@ class GeoMashupDB {
 		return $rows;
 	}
 
+	/**
+	 * Convert Geo plugin locations to Geo Mashup format.
+	 *
+	 * @since 1.2
+	 * @access private
+	 * @static
+	 * @return bool True if no more unconverted locations can be found.
+	 */
 	function convert_prior_locations( ) {
 		global $wpdb;
 
@@ -696,6 +937,18 @@ class GeoMashupDB {
 		return ( empty( $wpdb->last_result ) );
 	}
 
+	/**
+	 * Get a blank object location.
+	 * 
+	 * Ambiguous - treated like both a location and object location. 
+	 * @todo Clean up.
+	 * @since 1.2
+	 * @access private
+	 * @static
+	 * 
+	 * @param constant $format 
+	 * @return array|object Empty object location.
+	 */
 	function blank_location( $format = OBJECT ) {
 		$blank_location = array(
 			'id' => null,
@@ -719,6 +972,19 @@ class GeoMashupDB {
 		}
 	}
 
+	/**
+	 * Get distinct values of one or more object location fields.
+	 *
+	 * Can be used to get a list of countries with locations, for example.
+	 *
+	 * @since 1.2
+	 * @access public
+	 * @static
+	 * 
+	 * @param string $names Comma separated table field names.
+	 * @param array $where Associtive array of conditional field names and values.
+	 * @return object WP_DB query results.
+	 */
 	function get_distinct_located_values( $names, $where = null ) {
 		global $wpdb;
 
@@ -750,10 +1016,32 @@ class GeoMashupDB {
 		return $wpdb->get_results( $select_string );
 	}
 
+	/**
+	 * Get the location of a post.
+	 *
+	 * @since 1.2
+	 * @access public
+	 * @static
+	 * @uses GeoMashupDB::get_object_location()
+	 * 
+	 * @param id $post_id 
+	 * @return object Post location.
+	 */
 	function get_post_location( $post_id ) {
 		return GeoMashupDB::get_object_location( 'post', $post_id );
 	}
 
+	/**
+	 * Format a query result as an object or array.
+	 * 
+	 * @since 1.3
+	 * @access private
+	 * @static
+	 *
+	 * @param object $obj To be formatted.
+	 * @param constant $output Format.
+	 * @return object|array Result.
+	 */
 	function translate_object( $obj, $output = OBJECT ) {
 		if ( !is_object( $obj ) ) {
 			return $obj;
@@ -768,6 +1056,19 @@ class GeoMashupDB {
 		return $obj;
 	}
 
+	/**
+	 * Get the location of an object.
+	 * 
+	 * @since 1.3
+	 * @access public
+	 * @static
+	 *
+	 * @param string $object_name 'post', 'user', a GeoMashupDB::object_storage() index.
+	 * @param id $object_id Object 
+	 * @param string $output (optional) one of ARRAY_A | ARRAY_N | OBJECT constants.  Return an associative array (column => value, ...), a numerically indexed array (0 => value, ...) or an object ( ->column = value ), respectively.
+id.
+	 * @return object|array Result.
+	 */
 	function get_object_location( $object_name, $object_id, $output = OBJECT ) {
 		global $wpdb;
 
@@ -786,10 +1087,42 @@ class GeoMashupDB {
 		return GeoMashupDB::translate_object( $location, $output );
 	}
 	
+	/**
+	 * Get locations of posts.
+	 * 
+	 * @since 1.2
+	 * @access public
+	 * @static
+	 * @uses GeoMashupDB::get_object_locations()
+	 * 
+	 * @param string $query_args Same as GeoMashupDB::get_object_locations()
+	 * @return array Array of matching rows.
+	 */
 	function get_post_locations( $query_args = '' ) {
 		return GeoMashupDB::get_object_locations( $query_args );
 	}
 
+	/**
+	 * Get locations of objects.
+	 *
+	 * <code>
+	 * $results = GeoMashupDB::get_object_locations( array( 
+	 * 	'object_name' => 'user', 
+	 * 	'map_cat' => '3,4,8', 
+	 * 	'minlat' => 30, 
+	 * 	'maxlat' => 40, 
+	 * 	'minlon' => -106, 
+	 * 	'maxlat' => -103 ) 
+	 * );
+	 * </code>
+	 * 
+	 * @since 1.3
+	 * @access public
+	 * @static
+	 *
+	 * @param string $query_args Override default args.
+	 * @return array Array of matching rows.
+	 */
 	function get_object_locations( $query_args = '' ) {
 		global $wpdb;
 
@@ -920,6 +1253,23 @@ class GeoMashupDB {
 		return $wpdb->last_result;
 	}
 
+	/**
+	 * Save an object location in the database.
+	 *
+	 * Object data is saved in the geo_mashup_location_relationships table, and 
+	 * location data is saved in geo_mashup_locations.
+	 * 
+	 * @since 1.3
+	 * @access public
+	 * @static
+	 *
+	 * @param string $object_name 'post', 'user', a GeoMashupDB::object_storage() index.
+	 * @param id $object_id ID of the object to save the location for.
+	 * @param id|array $location If an ID, the location is not modified. If an array of valid location fields, the location is added or updated. If empty, the object location is deleted.
+	 * @param bool $do_lookups Whether to try looking up missing location information, which can take extra time, default is true.
+	 * @param string $geo_date Optional geo date to associate with the object.
+	 * @return id|WP_Error The location ID now assiociated with the object.
+	 */
 	function set_object_location( $object_name, $object_id, $location, $do_lookups = true, $geo_date = '' ) {
 		global $wpdb;
 
@@ -965,6 +1315,22 @@ class GeoMashupDB {
 		return $set_id;
 	}
 
+	/**
+	 * Save a location.
+	 *
+	 * This can create a new location or update an existing one. If a location exists within 5 decimal
+	 * places of the passed in coordinates, it will be updated. If the saved_name of a different location
+	 * is given, it will be removed from the other location and saved with this one. Blank fields will not
+	 * replace existing data.
+	 * 
+	 * @since 1.2
+	 * @access public
+	 * @static
+	 *
+	 * @param array $location Location to save, may be modified to match actual saved data.
+	 * @param bool $do_lookups Whether to try to look up address information before saving, defaults to no.
+	 * @return id|WP_Error The location ID saved, or a WordPress error.
+	 */
 	function set_location( &$location, $do_lookups = null ) {
 		global $wpdb, $geo_mashup_options;
 
@@ -1060,6 +1426,20 @@ class GeoMashupDB {
 		return $set_id;
 	}
 
+	/**
+	 * Delete an object location or locations.
+	 * 
+	 * This removes the association of an object with a location, but does NOT
+	 * delete the location.
+	 * 
+	 * @since 1.3
+	 * @access public
+	 * @static
+	 *
+	 * @param string $object_name 'post', 'user', a GeoMashupDB::object_storage() index.
+	 * @param id|array $object_ids Object ID or array of IDs to remove the locations of.
+	 * @return int|WP_Error Rows affected or WordPress error.
+	 */
 	function delete_object_location( $object_name, $object_ids ) {
 		global $wpdb;
 
@@ -1076,6 +1456,16 @@ class GeoMashupDB {
 		return $rows_affected;
 	}
 
+	/**
+	 * Delete a location or locations.
+	 *
+	 * @since 1.2
+	 * @access public
+	 * @static
+	 * 
+	 * @param id|array $ids Location ID or array of IDs to delete.
+	 * @return int|WP_Error Rows affected or Wordpress error.
+	 */
 	function delete_location( $ids ) {
 		global $wpdb;
 		$ids = ( is_array( $ids ) ? $ids : array( $ids ) );
@@ -1090,17 +1480,36 @@ class GeoMashupDB {
 		return $rows_affected;
 	}
 
+	/**
+	 * Get locations with saved names.
+	 *
+	 * @since 1.2
+	 * @access public
+	 * @static
+	 *
+	 * @return array|WP_Error Array of location rows or WP_Error.
+	 */
 	function get_saved_locations() {
 		global $wpdb;
 
 		$location_table = $wpdb->prefix . 'geo_mashup_locations';
 		$wpdb->query( "SELECT * FROM $location_table WHERE saved_name IS NOT NULL ORDER BY saved_name ASC" );
 		if ( $wpdb->last_error ) 
-			return new WP_Error( 'delete_location_error', $wpdb->last_error );
+			return new WP_Error( 'saved_locations_error', $wpdb->last_error );
 
 		return $wpdb->last_result;
 	}
 
+	/**
+	 * Get the number of located posts in a category.
+	 * 
+	 * @since 1.2
+	 * @access public
+	 * @static
+	 *
+	 * @param id $category_id 
+	 * @return int
+	 */
 	function category_located_post_count( $category_id ) {
 		global $wpdb;
 
@@ -1113,6 +1522,14 @@ class GeoMashupDB {
 		return $wpdb->get_var( $select_string );
 	}
 
+	/**
+	 * Get categories that contain located objects.
+	 *
+	 * Not sufficient - probably want parent categories.
+	 *
+	 * @access private
+	 * @static
+	 */
 	function get_located_categories( ) {
 		global $wpdb;
 
@@ -1126,6 +1543,15 @@ class GeoMashupDB {
 		return $wpdb->get_results( $select_string );
 	}
 
+	/**
+	 * Get multiple comments.
+	 *
+	 * What is the WordPress way? Expect deprecation.
+	 * 
+	 * @access private
+	 * @static
+	 * @return array Comments.
+	 */
 	function get_comment_in( $args ) {
 		global $wpdb;
 
@@ -1140,6 +1566,15 @@ class GeoMashupDB {
 		return $wpdb->get_results( $select_string );
 	}
 
+	/**
+	 * Get multiple users.
+	 *
+	 * What is the WordPress way? Expect deprecation.
+	 * 
+	 * @access private
+	 * @static
+	 * @return array Users.
+	 */
 	function get_user_in( $args ) {
 		global $wpdb;
 
@@ -1154,17 +1589,46 @@ class GeoMashupDB {
 		return $wpdb->get_results( $select_string );
 	}
 
+	/**
+	 * When a post is deleted, remove location relationships for it.
+	 *
+	 * delete_post {@link http://codex.wordpress.org/Plugin_API/Action_Reference action}
+	 * called by WordPress.
+	 *
+	 * @since 1.2
+	 * @access private
+	 * @static
+	 */
 	function delete_post( $id ) {
 		return GeoMashupDB::delete_object_location( 'post', $id );
 	}
 
+	/**
+	 * When a comment is deleted, remove location relationships for it.
+	 *
+	 * delete_comment {@link http://codex.wordpress.org/Plugin_API/Action_Reference action}
+	 * called by WordPress.
+	 *
+	 * @since 1.2
+	 * @access private
+	 * @static
+	 */
 	function delete_comment( $id ) {
 		return GeoMashupDB::delete_object_location( 'comment', $id );
 	}
 
+	/**
+	 * When a user is deleted, remove location relationships for it.
+	 *
+	 * delete_user {@link http://codex.wordpress.org/Plugin_API/Action_Reference action}
+	 * called by WordPress.
+	 *
+	 * @since 1.2
+	 * @access private
+	 * @static
+	 */
 	function delete_user( $id ) {
 		return GeoMashupDB::delete_object_location( 'user', $id );
 	}
 }
-
 ?>

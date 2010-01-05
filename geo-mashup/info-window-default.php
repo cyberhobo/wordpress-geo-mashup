@@ -9,6 +9,8 @@
  * installed. Those files take precedence over this one.
  *
  * For styling of the info window, see map-style-default.css.
+ *
+ * @package GeoMashup
  */
 
 // A potentially heavy-handed way to remove shortcode-like content

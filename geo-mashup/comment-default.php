@@ -9,6 +9,8 @@
  * installed. Those files take precedence over this one.
  *
  * For styling of the info window, see map-style-default.css.
+ *
+ * @package GeoMashup
  */
 ?>
 <div class="locationinfo comment-location-info">
@@ -25,8 +27,19 @@
 
 </div>
 <?php 
-// Use the newer form of template, where the individual comment template goes in 
-// a function that matches the callback argument to list_comments
+/**
+ * Template callback for GeoMashupQuery::list_comments()
+ *
+ * Use the newer form of template, where the individual comment template goes in 
+ * a function that matches the callback argument to list_comments
+ *
+ * @since 1.3
+ * @access public
+ *
+ * @param object $comment The comment to display
+ * @param array $args Arguments from wp_list_comments
+ * @param mixed $depth Nested depth
+ */
 function geo_mashup_comment_default( $comment, $args, $depth ) {
 	// Enable the WordPress comment functions
 	GeoMashupQuery::set_the_comment( $comment );

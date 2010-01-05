@@ -1,8 +1,22 @@
 <?php
+/**
+ * Respond to a requests for Geo Mashup maps.
+ *
+ * @package GeoMashup
+ */
 
 status_header ( 200 );
 geo_mashup_render_map ( );
 
+/**
+ * Make sure a non-javascript item is double-quoted.
+ * 
+ * @since 1.3
+ * @access private
+ *
+ * @param mixed $item The value in question, may be modified.
+ * @param string $key The JSON key.
+ */
 function add_double_quotes(&$item,$key) {
 	$quoted_keys = array ( 'background_color', 'show_future', 'map_control', 'map_content', 'map_type', 'legend_format', 'template' );
 	if ( $key == 'post_data' ) {
@@ -16,6 +30,14 @@ function add_double_quotes(&$item,$key) {
 	}
 }
 
+/**
+ * Print the requested map HTML.
+ * 
+ * Used in this file only.
+ *
+ * @since 1.3
+ * @access private
+ */
 function geo_mashup_render_map ( ) {
 	global $wp_scripts, $geo_mashup_options, $geo_mashup_custom;
 

@@ -1,5 +1,16 @@
 <?php
+/**
+ * Geo Mashup Options Page HTML Management
+ *
+ * @package GeoMashup
+ */
 
+/**
+ * Print Geo Mashup Options HTML
+ * 
+ * @since 1.2
+ * @access public
+ */
 function geo_mashup_options_page() {
 	global $geo_mashup_options;
 

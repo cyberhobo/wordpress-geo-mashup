@@ -12,11 +12,17 @@
  *
  * This could be extended to make the existing editor work for new objects in a separate plugin.
  *
- * @since 1.3beta1
+ * @package GeoMashup
+ * @since 1.3
+ * @access public
  */
 class GeoMashupUIManager {
 	/**
-	 * Retrieve a single instaniated manager by name.
+	 * Retrieve a single instaniated subclass by name.
+	 *
+	 * @since 1.3
+	 * @access public
+	 * @static
 	 *
 	 * @param string $name The class name of the manager.
 	 * @return GeoMashupUIManager The singleton object.
@@ -30,6 +36,12 @@ class GeoMashupUIManager {
 		return $instances[$name];
 	}
 
+	/**
+	 * Queue UI styles to match the jQuery version.
+	 * 
+	 * @since 1.3
+	 * @access public
+	 */
 	function enqueue_jquery_styles() {
 		if ( get_bloginfo( 'version' ) < '2.8' ) {
 			$smoothness_css = 'jquery-ui.1.6.smoothness.css'; 
@@ -40,6 +52,12 @@ class GeoMashupUIManager {
 		wp_enqueue_style( 'jquery-smoothness', trailingslashit( GEO_MASHUP_URL_PATH ) . $smoothness_css, false, get_bloginfo( 'version' ), 'screen' );
 	}
 
+	/**
+	 * Queue styles and scripts for the location editor form.
+	 *
+	 * @since 1.3
+	 * @access public
+	 */
 	function enqueue_form_client_items() {	
 
 		wp_enqueue_style( 'geo-mashup-edit-form', trailingslashit( GEO_MASHUP_URL_PATH ) . 'edit-form.css', false, '1.0.0', 'screen' );
@@ -51,6 +69,12 @@ class GeoMashupUIManager {
 			GEO_MASHUP_VERSION );
 	}
 
+	/**
+	 * Determine the appropriate action from posted data.
+	 * 
+	 * @since 1.3
+	 * @access private
+	 */
 	function get_submit_action() {
 
 		$action = null;
@@ -86,6 +110,18 @@ class GeoMashupUIManager {
 		return $action;
 	}
 
+	/**
+	 * Save an object location from data posted by the location editor.
+	 * 
+	 * @since 1.3
+	 * @access public
+	 * @uses GeoMashupDB::set_object_location()
+	 * @uses GeoMashupDB::delete_location()
+	 *
+	 * @param string $object_name The name of the object being edited.
+	 * @param string $object_id The ID of the object being edited.
+	 * @return bool|WP_Error True or a WordPress error.
+	 */
 	function save_posted_object_location( $object_name, $object_id ) {
 
 		// Check the nonce
@@ -155,12 +191,18 @@ class GeoMashupUIManager {
  * Singleton instantiated immediately.
  *
  * @package GeoMashup
- * @since 1.3beta1
+ * @since 1.3
+ * @access public
  */
 class GeoMashupUserUIManager extends GeoMashupUIManager {
 	/**
-	 * Static method to get the single instance of this class.
+	 * Get the single instance of this class.
 	 * 
+	 * @since 1.3
+	 * @access public
+	 * @static
+	 * @uses parent::get_instance()
+	 *
 	 * @return GeoMashupPostUIManager The instance.
 	 */
 	function get_instance() {
@@ -169,6 +211,9 @@ class GeoMashupUserUIManager extends GeoMashupUIManager {
 
 	/**
 	 * PHP4 Constructor
+	 *
+	 * @since 1.3
+	 * @access private
 	 */
 	function GeoMashupUserUIManager() {
 		// Global $geo_mashup_options is available, but a better pattern might
@@ -176,6 +221,15 @@ class GeoMashupUserUIManager extends GeoMashupUIManager {
 		add_action( 'init', array( &$this, 'init' ) );
 	}
 
+	/**
+	 * Initialize for use in relevant requests.
+	 *
+	 * init {@link http://codex.wordpress.org/Plugin_API/Action_Reference action}
+	 * called by WordPress.
+	 * 
+	 * @since 1.3
+	 * @access private
+	 */
 	function init() {
 		global $geo_mashup_options;
 
@@ -201,8 +255,14 @@ class GeoMashupUserUIManager extends GeoMashupUIManager {
 		}
 	}
 
-	function print_form()
-	{
+	/**
+	 * Print the user location editor form.
+	 * 
+	 * @since 1.3
+	 * @access public
+	 * @uses edit-form.php
+	 */
+	function print_form() {
 		global $user_id;
 
 		include_once( GEO_MASHUP_DIR_PATH . '/edit-form.php');
@@ -215,10 +275,30 @@ class GeoMashupUserUIManager extends GeoMashupUIManager {
 		geo_mashup_edit_form( 'user', $object_id, get_class( $this ) );
 	}
 
+	/**
+	 * Save a posted user location.
+	 * 
+	 * @since 1.3
+	 * @access public
+	 * @uses parent::save_posted_object_location()
+	 *
+	 * @param id $user_id 
+	 * @return bool|WP_Error
+	 */
 	function save_posted_object_location( $user_id ) {
 		return parent::save_posted_object_location( 'user', $user_id );
 	}
 
+	/**
+	 * When a user is saved, also save any posted location.
+	 *
+	 * save_user {@link http://codex.wordpress.org/Plugin_API/Action_Reference action}
+	 * called by WordPress.
+	 * 
+	 * @since 1.3
+	 * @access private
+	 * @return bool|WP_Error 
+	 */
 	function save_user() {
 		if ( empty( $_POST['user_id'] ) ) {
 			return false;
@@ -247,14 +327,27 @@ GeoMashupUserUIManager::get_instance();
  * Singleton instantiated immediately.
  *
  * @package GeoMashup
- * @since 1.3beta1
+ * @since 1.3
+ * @access public
  */
 class GeoMashupPostUIManager extends GeoMashupUIManager {
+	/**
+	 * Location found in geo_mashup_save_location shortcode.
+	 * 
+	 * @since 1.3
+	 * @var array
+	 * @access private
+	 */
 	var $inline_location;
 
 	/**
-	 * Static method to get the single instance of this class.
+	 * Get the single instance of this class.
 	 * 
+	 * @since 1.3
+	 * @access public
+	 * @static
+	 * @uses parent::get_instance()
+	 *
 	 * @return GeoMashupPostUIManager The instance.
 	 */
 	function get_instance() {
@@ -263,6 +356,9 @@ class GeoMashupPostUIManager extends GeoMashupUIManager {
 
 	/**
 	 * PHP4 Constructor
+	 *
+	 * @since 1.3
+	 * @access private
 	 */
 	function GeoMashupPostUIManager() {
 		// Global $geo_mashup_options is available, but a better pattern might
@@ -270,6 +366,15 @@ class GeoMashupPostUIManager extends GeoMashupUIManager {
 		add_action( 'init', array( &$this, 'init' ) );
 	}
 
+	/**
+	 * Initialize for use in relevant requests.
+	 *
+	 * init {@link http://codex.wordpress.org/Plugin_API/Action_Reference action}
+	 * called by WordPress.
+	 * 
+	 * @since 1.3
+	 * @access private
+	 */
 	function init() {
 		global $geo_mashup_options;
 
@@ -327,12 +432,28 @@ class GeoMashupPostUIManager extends GeoMashupUIManager {
 		} // end if enabled
 	}
 
+	/**
+	 * Add a location meta box to the post and page editors.
+	 * 
+	 * admin_menu {@link http://codex.wordpress.org/Plugin_API/Action_Reference action}
+	 * called by Wordpress.
+	 *
+	 * @since 1.3
+	 * @access private
+	 */
 	function admin_menu() {
 		// Not adding a menu, but at this stage add_meta_box is defined, so we can add the location form
 		add_meta_box( 'geo_mashup_post_edit', __( 'Location', 'GeoMashup' ), array( &$this, 'print_form' ), 'post', 'advanced' );
 		add_meta_box( 'geo_mashup_post_edit', __( 'Location', 'GeoMashup' ), array( &$this, 'print_form' ), 'page', 'advanced' );
 	}
 
+	/**
+	 * Print the post editor form.
+	 * 
+	 * @since 1.3
+	 * @access public
+	 * @uses edit-form.php
+	 */
 	function print_form() {
 		global $post_ID;
 
@@ -340,10 +461,34 @@ class GeoMashupPostUIManager extends GeoMashupUIManager {
 		geo_mashup_edit_form( 'post', $post_ID, get_class( $this ) );
 	}
 
+	/**
+	 * Save a posted post or page location.
+	 * 
+	 * @since 1.3
+	 * @access public
+	 * @uses parent::save_posted_object_location()
+	 *
+	 * @param id $post_id 
+	 * @return bool|WP_Error
+	 */
 	function save_posted_object_location( $post_id ) {
 		return parent::save_posted_object_location( 'post', $post_id );
 	}
 
+	/**
+	 * When a post is saved, save any posted location for it.
+	 * 
+	 * save_post {@link http://codex.wordpress.org/Plugin_API/Action_Reference action}
+	 * called by WordPress.
+	 *
+	 * @since 1.3
+	 * @access private
+	 * @uses GeoMashupDB::set_object_location()
+	 *
+	 * @param id $post_id 
+	 * @param object $post 
+	 * @return bool|WP_Error
+	 */
 	function save_post($post_id, $post) {
 		if ( 'revision' == $post->post_type ) {
 			return;
@@ -361,6 +506,15 @@ class GeoMashupPostUIManager extends GeoMashupUIManager {
 		return $this->save_posted_object_location( $post_id );
 	}
 
+	/**
+	 * Extract inline save location shortcodes from post content before it is saved.
+	 *
+	 * content_save_pre {@link http://codex.wordpress.org/Plugin_API/Filter_Reference filter}
+	 * called by Wordpress.
+	 * 
+	 * @since 1.3
+	 * @access private
+	 */
 	function content_save_pre( $content ) {
 		// Piggyback on the shortcode interface to find inline tags [geo_mashup_save_location ...] 
 		add_shortcode( 'geo_mashup_save_location', 'is_null' );
@@ -368,6 +522,15 @@ class GeoMashupPostUIManager extends GeoMashupUIManager {
 		return preg_replace_callback('/'.$pattern.'/s', array( &$this, 'replace_save_pre_shortcode' ), $content);
 	}
 
+	/**
+	 * Store the inline location from a save location shortcode before it is removed.
+	 * 
+	 * @since 1.3
+	 * @access private
+	 *
+	 * @param array $shortcode_match 
+	 * @return The matched content, or an empty string if it was a save location shortcode.
+	 */
 	function replace_save_pre_shortcode( $shortcode_match ) {
 		$tag_index = array_search( 'geo_mashup_save_location',  $shortcode_match ); 
 		if ( $tag_index !== false ) {
@@ -382,16 +545,34 @@ class GeoMashupPostUIManager extends GeoMashupUIManager {
 		return $content;
 	}
 
+	/**
+	 * Add Flash-uploaded KML to the location editor map.
+	 *
+	 * media_meta {@link http://codex.wordpress.org/Plugin_API/Filter_Reference filter}
+	 * called by WordPress.
+	 * 
+	 * @since 1.3
+	 * @access private
+	 */
 	function media_meta( $content, $post ) {
 		// Only chance to run some javascript after a flash upload?
 		if (strlen($post->guid) > 0) {
 			$content .= '<script type="text/javascript"> ' .
-				'if (parent.GeoMashupAdmin) parent.GeoMashupAdmin.loadKml(\''.$post->guid.'\');' .
+				'if (parent.GeoMashupLocationEditor) parent.GeoMashupLocationEditor.loadKml(\''.$post->guid.'\');' .
 				'</script>';
 		}
 		return $content;
 	}
 
+	/**
+	 * Add Browser-uploaded KML to the location editor map.
+	 *
+	 * admin_print_scripts {@link http://codex.wordpress.org/Plugin_API/Action_Reference action}
+	 * called by WordPress.
+	 * 
+	 * @since 1.3
+	 * @access private
+	 */
 	function admin_print_scripts( $not_used ) {
 		// Load any uploaded KML into the search map - only works with browser uploader
 		
@@ -401,20 +582,38 @@ class GeoMashupPostUIManager extends GeoMashupUIManager {
 			// Load the KML in the location editor
 			echo '
 				<script type="text/javascript"> 
-					if (parent.GeoMashupAdmin) parent.GeoMashupAdmin.loadKml(\'' . $kml_url . '\');
+					if (parent.GeoMashupLocationEditor) parent.GeoMashupLocationEditor.loadKml(\'' . $kml_url . '\');
 				</script>';
 			update_option( 'geo_mashup_temp_kml_url', '' );
 		}
 	}
 
+	/**
+	 * Add geo mime types to allowable uploads.
+	 * 
+	 * upload_mimes {@link http://codex.wordpress.org/Plugin_API/Filter_Reference filter}
+	 * called by WordPress.
+	 *
+	 * @since 1.3
+	 * @access private
+	 */
 	function upload_mimes( $mimes ) {
 		$mimes['kml'] = 'application/vnd.google-earth.kml+xml';
 		$mimes['gpx'] = 'application/octet-stream';
 		return $mimes;
 	}
 
+	/**
+	 * If an upload is KML, put the URL in an option to be loaded in the response 
+	 * 
+	 * wp_handle_upload {@link http://codex.wordpress.org/Plugin_API/Filter_Reference filter}
+	 * called by WordPress.
+	 *
+	 * @since 1.3
+	 * @access private
+	 */
 	function wp_handle_upload( $args ) {
-		// If an upload is KML, put the URL in an option to be loaded in the response
+		// TODO: use transient API instead of option
 		update_option( 'geo_mashup_temp_kml_url', '' );
 		if ( is_array( $args ) && isset( $args['file'] ) ) {
 			if ( stripos( $args['file'], '.kml' ) == strlen( $args['file'] ) - 4 ) {
@@ -434,12 +633,17 @@ GeoMashupPostUIManager::get_instance();
  * Singleton instantiated immediately.
  *
  * @package GeoMashup
- * @since 1.3beta1
+ * @since 1.3
+ * @access public
  */
 class GeoMashupCommentUIManager {
 	/**
-	 * Static method to get the single instance of this class.
+	 * Get the single instance of this class.
 	 * 
+	 * @since 1.3
+	 * @access public
+	 * @static
+	 *
 	 * @return GeoMashupPostUIManager The instance.
 	 */
 	function get_instance() {
@@ -452,6 +656,9 @@ class GeoMashupCommentUIManager {
 
 	/**
 	 * PHP4 Constructor
+	 *
+	 * @since 1.3
+	 * @access private
 	 */
 	function GeoMashupCommentUIManager() {
 		// Global $geo_mashup_options is available, but a better pattern might
@@ -459,6 +666,15 @@ class GeoMashupCommentUIManager {
 		add_action( 'init', array( &$this, 'init' ) );
 	}
 
+	/**
+	 * Initialize for use in relevant requests.
+	 *
+	 * init {@link http://codex.wordpress.org/Plugin_API/Action_Reference action}
+	 * called by WordPress.
+	 * 
+	 * @since 1.3
+	 * @access private
+	 */
 	function init() {
 		global $geo_mashup_options;
 
@@ -478,6 +694,12 @@ class GeoMashupCommentUIManager {
 		}
 	}
 
+	/**
+	 * Print the comment location editor form.
+	 *
+	 * @since 1.3
+	 * @access public
+	 */
 	function print_form()
 	{
 		// If there's a logged in user with a location, use that as a default.
@@ -501,6 +723,16 @@ class GeoMashupCommentUIManager {
 		printf( $input_format, 'address', 'address', '' );
 	}
 
+	/**
+	 * When a comment is saved, save any posted location with it.
+	 *
+	 * save_comment {@link http://codex.wordpress.org/Plugin_API/Filter_Reference filter}
+	 * called by WordPress.
+	 *
+	 * @since 1.3
+	 * @access private
+	 * @uses GeoMashupDB::set_object_location()
+	 */
 	function save_comment( $comment_id = 0, $approval = '' ) {
 		if ( !$comment_id || 'spam' === $approval || empty( $_POST['comment_location'] ) || !is_array( $_POST['comment_location'] ) ) {
 			return false;
