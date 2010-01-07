@@ -1312,7 +1312,14 @@ GeoMashup = {
 			this.map.addControl(new google.maps.LargeMapControl3D());
 		}
 
-		if (opts.add_map_type_control && opts.add_map_type_control.length ) {
+		if (opts.add_map_type_control ) {
+			if ( typeof opts.add_map_type_control === 'string' ) {
+				opts.add_map_type_control = opts.add_map_type_control.split(/\s*,\s*/);
+				if ( typeof map_types[opts.add_map_type_control[0]] == 'undefined' ) {
+					// Convert the old boolean value to a default array
+					opts.add_map_type_control = [ 'G_NORMAL_MAP', 'G_SATELLITE_MAP', 'G_PHYSICAL_MAP' ];
+				}
+			}
 			for ( i = 0; i < opts.add_map_type_control.length; i += 1 ) {
 				this.map.addMapType( map_types[opts.add_map_type_control[i]] );
 			}
