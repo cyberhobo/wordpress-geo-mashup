@@ -852,7 +852,7 @@ GeoMashup = {
 			this.doAction( 'categoryIcon', this.opts, icon, category_id );
 			this.doAction( 'colorIcon', this.opts, icon, color_name );
 
-			max_line_zoom = 0;
+			max_line_zoom = -1;
 			if (this.opts.category_opts[category_id].max_line_zoom) {
 				max_line_zoom = this.opts.category_opts[category_id].max_line_zoom;
 			}
