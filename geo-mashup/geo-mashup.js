@@ -872,7 +872,7 @@ GeoMashup = {
 	},
 
 	hideCategory : function(category_id) {
-		var i, point;
+		var i, j, k, loc, obj, check_cat_id, has_visible_cats;
 
 		if (!this.categories[category_id]) {
 			return false;
@@ -881,11 +881,25 @@ GeoMashup = {
 		if (this.categories[category_id].line) {
 			this.categories[category_id].line.hide();
 		}
-		for (i=0; i<this.categories[category_id].points.length; i+=1) {
-			point = this.categories[category_id].points[i];
-			this.locations[point].marker.hide();
-		}
+		// A somewhat involved check for other visible categories at this location
 		this.categories[category_id].visible = false;
+		for (i=0; i<this.categories[category_id].points.length; i+=1) {
+			loc = this.locations[ this.categories[category_id].points[i] ];
+			has_visible_cats = false;
+			for ( j=0; j<loc.objects.length; j+=1 ) {
+				obj = loc.objects[j];
+				for ( k=0; k<obj.categories.length; k+=1 ) {
+					check_cat_id = obj.categories[k];
+					if ( this.categories[check_cat_id].visible ) {
+						has_visible_cats = true;
+					}
+				}
+			}
+
+			if ( ! has_visible_cats ) {
+				loc.marker.hide();
+			}
+		}
 		if (this.clusterer) { 
 			this.clusterer.refresh();
 		}
