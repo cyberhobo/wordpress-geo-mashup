@@ -109,6 +109,7 @@ function geo_mashup_options_page() {
 	}
 
 	$selected_tab = ( empty( $_POST['geo_mashup_selected_tab'] ) ) ? 0 : $_POST['geo_mashup_selected_tab']; 
+	$google_key = $geo_mashup_options->get( 'overall', 'google_key' );
 	// Now for the HTML
 ?>
 	<script type="text/javascript"> 
@@ -149,14 +150,19 @@ function geo_mashup_options_page() {
 				<p><?php _e('Overall Geo Mashup Settings', 'GeoMashup'); ?></p>
 				<table width="100%" cellspacing="2" cellpadding="5" class="editform">
 					<tr>
-						<th width="33%" scope="row"><?php _e('Google Maps Key', 'GeoMashup'); ?></th>
-						<td>
+						<th width="33%" scope="row"><?php _e('Google API Key', 'GeoMashup'); ?></th>
+						<td<?php if ( empty( $google_key ) ) echo ' class="error"'; ?>>
 							<input id="google_key" 
 								name="overall[google_key]" 
 								type="text" 
 								size="40" 
 								value="<?php echo attribute_escape( $geo_mashup_options->get ( 'overall', 'google_key' ) ); ?>" />
 							<a href="http://maps.google.com/apis/maps/signup.html"><?php _e('Get yours here', 'GeoMashup'); ?></a>
+							<?php if ( empty( $google_key ) ) : ?>
+							<p class="setting-description">
+							<?php _e( 'This setting is required for Geo Mashup to work.', 'GeoMashup' ); ?>
+							</p>
+							<?php endif; ?>
 						</td>
 					</tr>
 					<tr>
@@ -178,6 +184,9 @@ function geo_mashup_options_page() {
 								<option value=""><?php _e( 'No pages available.', 'GeoMashup' ); ?></option>
 							<?php endif; ?>
 							</select>
+							<span class="setting-description"><?php
+								_e( 'Geo Mashup will use this page for generated location links', 'GeoMashup' );
+							?></span>
 						</td>
 					</tr>
 					<tr>

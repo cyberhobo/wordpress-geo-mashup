@@ -2,8 +2,8 @@
 /*
 Plugin Name: Geo Mashup
 Plugin URI: http://code.google.com/p/wordpress-geo-mashup/ 
-Description: Tools for adding maps to your blog, and plotting posts on a master map. Configure in <a href="options-general.php?page=geo-mashup/geo-mashup.php">Settings->Geo Mashup</a> after the plugin is activated. Documentation is <a href="http://code.google.com/p/wordpress-geo-mashup/wiki/Documentation">on the project site</a>.
-Version: 1.3alpha2
+Description: Save location for posts and pages, or even users and comments. Display these locations on Google maps. Make WordPress into your GeoCMS.
+Version: 1.3beta1
 Author: Dylan Kuhn
 Author URI: http://www.cyberhobo.net/
 Minimum WordPress Version Required: 2.8
@@ -109,6 +109,13 @@ class GeoMashup {
 			// To add Geo Mashup settings page
 			add_action('admin_menu', array('GeoMashup', 'admin_menu'));
 
+			// To make important announcements
+			add_action( 'admin_notices', array( 'GeoMashup', 'admin_notices' ) );
+
+			// To add plugin listing links
+			add_filter( 'plugin_action_links', array( 'GeoMashup', 'plugin_action_links' ), 10, 2 );
+			add_filter( 'plugin_row_meta', array( 'GeoMashup', 'plugin_row_meta' ), 10, 2 );
+
 		} else {
 
 			// This is a non-admin request
@@ -163,7 +170,7 @@ class GeoMashup {
 		}
 		define('GEO_MASHUP_MAX_ZOOM', 20);
 		// Make numeric versions: -.02 for alpha, -.01 for beta
-		define('GEO_MASHUP_VERSION', '1.2.98.2');
+		define('GEO_MASHUP_VERSION', '1.2.99.1');
 		define('GEO_MASHUP_DB_VERSION', '1.3');
 	}
 
@@ -901,6 +908,73 @@ class GeoMashup {
 		if (function_exists('add_options_page')) {
 			add_options_page(__('Geo Mashup Options','GeoMashup'), __('Geo Mashup','GeoMashup'), 8, __FILE__, array('GeoMashup', 'options_page'));
 		}
+	}
+
+	/**
+	 * Display important messages in the admin.
+	 * 
+	 * admin_notices {@link http://codex.wordpress.org/Plugin_API/Action_Reference#Advanced_Actions action}
+	 * called by WordPress.
+	 *
+	 * @since 1.3
+	 * @access private
+	 * @static
+	 */
+	function admin_notices() {
+		global $geo_mashup_options;
+
+		$message = '';
+		$google_key = $geo_mashup_options->get( 'overall', 'google_key' );
+		if ( empty( $google_key ) ) {
+			if ( ! isset( $_GET['page'] ) or GEO_MASHUP_PLUGIN_NAME != $_GET['page'] ) {
+				// We're not looking at the settings, but it's important to do so
+				$message = __( 'Geo Mashup requires a Google API key in the <a href="%s">settings</a> before it will work.', 'GeoMashup' );
+				$message = sprintf( $message, admin_url( 'options-general.php?page=' . GEO_MASHUP_PLUGIN_NAME ) );
+			}
+		}
+
+		if ( ! empty( $message ) ) {
+			echo '<div class="error fade"><p>' . $message . '</p></div>';
+		}
+	}
+
+	/**
+	 * Add custom action links to the plugin listing.
+	 * 
+	 * plugin_action_links {@link http://codex.wordpress.org/Plugin_API/Filter_Reference#Advanced_WordPress_Filters filter},
+	 * called by WordPress.
+	 *
+	 * @since 1.3
+	 * @access private
+	 * @static
+	 */
+	function plugin_action_links( $links, $file ) {
+		if ( GEO_MASHUP_PLUGIN_NAME == $file ) {
+			$settings_link = '<a href="' . admin_url( 'options-general.php?page=' . GEO_MASHUP_PLUGIN_NAME ) .'">' .
+				__( 'Settings' ) . '</a>';
+			array_unshift( $links, $settings_link );
+		}
+		return $links;
+	}
+
+	/**
+	 * Add custom meta links to the plugin listing.
+	 * 
+	 * plugin_row_meta {@link http://codex.wordpress.org/Plugin_API/Filter_Reference#Advanced_WordPress_Filters filter},
+	 * called by WordPress.
+	 *
+	 * @since 1.3
+	 * @access private
+	 * @static
+	 */
+	function plugin_row_meta( $links, $file ) {
+		if ( GEO_MASHUP_PLUGIN_NAME == $file ) {
+			$links[] = '<a href="http://code.google.com/p/wordpress-geo-mashup/wiki/Documentation">' .
+				__( 'Documentation', 'GeoMashup' ) . '</a>';
+			$links[] = '<a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=11045324">' .
+				__( 'Donate', 'GeoMashup' ) . '</a>';
+		}
+		return $links;
 	}
 
 	/**
