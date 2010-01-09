@@ -124,7 +124,7 @@ function geo_mashup_options_page() {
  	} ); 
 	</script>
 	<div class="wrap">
-		<h2><?php _e('Geo Mashup Plugin Options', 'GeoMashup'); ?></h2>
+		<h2><?php _e('Geo Mashup Options', 'GeoMashup'); ?></h2>
 		<?php if ( GeoMashupDB::installed_version( ) != GEO_MASHUP_DB_VERSION ) : ?>
 			<div class="updated">
 				<form method="post" id="geo-mashup-upgrade-form" action="<?php echo $_SERVER['REQUEST_URI']; ?>">
