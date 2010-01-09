@@ -381,7 +381,6 @@ class GeoMashupPostUIManager extends GeoMashupUIManager {
 		if ( $enabled ) { 
 
 			// Queue inline location handlers
-			$this->enqueue_jquery_styles();
 
 			// Pre-save filter checks saved content for inline location tags
 			add_filter( 'content_save_pre', array( &$this, 'content_save_pre') );
@@ -398,9 +397,10 @@ class GeoMashupPostUIManager extends GeoMashupUIManager {
 				// Form generation
 				add_action( 'admin_menu', array( &$this, 'admin_menu' ) );
 
+				$this->enqueue_jquery_styles();
 				$this->enqueue_form_client_items();
 
-				wp_enqueue_script( 'jquery-ui-datepicker', 'jquery-ui.1.7.datepicker.min.js', array( 'jquery', 'jquery-ui-core'), '1.7' );
+				wp_enqueue_script( 'jquery-ui-datepicker', trailingslashit( GEO_MASHUP_URL_PATH ) . 'jquery-ui.1.7.datepicker.min.js', array( 'jquery', 'jquery-ui-core'), '1.7' );
 
 			} else if ( strpos( $_SERVER['REQUEST_URI'], 'async-upload.php' ) > 0 ) {
 
