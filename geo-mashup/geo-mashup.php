@@ -6,7 +6,7 @@ Description: Tools for adding maps to your blog, and plotting posts on a master 
 Version: 1.3alpha2
 Author: Dylan Kuhn
 Author URI: http://www.cyberhobo.net/
-Minimum WordPress Version Required: 2.7
+Minimum WordPress Version Required: 2.8
 */
 
 /*
@@ -198,12 +198,7 @@ class GeoMashup {
 	function load_styles() {
 		if (is_admin()) {
 			if ( isset($_GET['page']) && GEO_MASHUP_PLUGIN_NAME === $_GET['page'] ) {
-				$tabs_css = trailingslashit( GEO_MASHUP_URL_PATH );
-				if ( get_bloginfo( 'version' ) < '2.8' ) {
-					$tabs_css .= 'jquery-ui.1.6.smoothness.css';
-				} else {
-					$tabs_css .= 'jquery.smoothness.css';
-				}
+				$tabs_css = trailingslashit( GEO_MASHUP_URL_PATH ) . 'jquery.smoothness.css';
 				wp_enqueue_style( 'geo-mashup-tabs', $tabs_css, false, '2.5.0', 'screen' );
 			}
 		}
@@ -407,8 +402,7 @@ class GeoMashup {
 		$json = '';
 		if ( is_scalar( $item ) ) {
 
-			//DEPRECATED: WP 2.8.0 js_escape -> esc_js
-			$json =  '"' . js_escape( trim( (string) $item, '"' ) ) . '"';
+			$json =  '"' . esc_js( trim( (string) $item, '"' ) ) . '"';
 
 		} else if ( is_array( $item ) ) {
 
@@ -486,7 +480,7 @@ class GeoMashup {
 		{
 			$loc = GeoMashupDB::get_object_location( 'post', $wp_query->post->ID );
 			if (!empty($loc)) {
-				$title = htmlspecialchars(convert_chars(strip_tags(get_bloginfo('name'))." - ".$wp_query->post->post_title));
+				$title = esc_html(convert_chars(strip_tags(get_bloginfo('name'))." - ".$wp_query->post->post_title));
 				echo '<meta name="ICBM" content="' . attribute_escape( $loc->lat . ', ' . $loc->lng ) . '" />' . "\n";
 				echo '<meta name="DC.title" content="' . attribute_escape( $title ) . '" />' . "\n";
 				echo '<meta name="geo.position" content="' .  attribute_escape( $loc->lat . ';' . $loc->lng ) . '" />' . "\n";
@@ -499,7 +493,7 @@ class GeoMashup {
 			{
 				foreach ( $saved_locations as $saved_location ) {
 					if ( $saved_location->saved_name == 'default' ) {
-						$title = htmlspecialchars(convert_chars(strip_tags(get_bloginfo('name'))));
+						$title = esc_html(convert_chars(strip_tags(get_bloginfo('name'))));
 						echo '<meta name="ICBM" content="' . attribute_escape( $saved_location->lat . ', ' . $saved_location->lon ) . '\" />'. "\n";
 						echo '<meta name="DC.title" content="' . attribute_escape( $title ) . '" />' . "\n";
 						echo '<meta name="geo.position" content="' . attribute_escape( $saved_location->lat . ';' . $saved_location->lon ) . '\" />' . "\n";
@@ -1289,7 +1283,7 @@ class GeoMashup {
 		// Using Simple GeoRSS for now
 		$location = GeoMashupDB::get_object_location( 'post', $wp_query->post->ID );
 		if ( !empty( $location ) ) {
-			echo '<georss:point>' . wp_specialchars( $location->lat . ' ' . $location->lng ) . '</georss:point>';
+			echo '<georss:point>' . esc_html( $location->lat . ' ' . $location->lng ) . '</georss:point>';
 		}
 	}
 

@@ -43,13 +43,7 @@ class GeoMashupUIManager {
 	 * @access public
 	 */
 	function enqueue_jquery_styles() {
-		if ( get_bloginfo( 'version' ) < '2.8' ) {
-			$smoothness_css = 'jquery-ui.1.6.smoothness.css'; 
-		} else {
-			$smoothness_css = 'jquery-ui.1.7.smoothness.css'; 
-		}
-
-		wp_enqueue_style( 'jquery-smoothness', trailingslashit( GEO_MASHUP_URL_PATH ) . $smoothness_css, false, get_bloginfo( 'version' ), 'screen' );
+		wp_enqueue_style( 'jquery-smoothness', trailingslashit( GEO_MASHUP_URL_PATH ) . 'jquery-ui.1.7.smoothness.css', false, get_bloginfo( 'version' ), 'screen' );
 	}
 
 	/**
@@ -406,17 +400,7 @@ class GeoMashupPostUIManager extends GeoMashupUIManager {
 
 				$this->enqueue_form_client_items();
 
-				// Add the appropriate datepicker for the WP version
-				$datepicker_js_path = trailingslashit( GEO_MASHUP_URL_PATH ); 
-				if ( get_bloginfo( 'version' ) < '2.8' ) {
-					$datepicker_js_path .= 'jquery-ui.1.6.datepicker.min.js';
-					$datepicker_js_version = '1.6';
-				} else {
-					$datepicker_js_path .= 'jquery-ui.1.7.datepicker.min.js';
-					$datepicker_js_version = '1.7';
-				}
-
-				wp_enqueue_script( 'jquery-ui-datepicker', $datepicker_js_path, array( 'jquery', 'jquery-ui-core'), $datepicker_js_version );
+				wp_enqueue_script( 'jquery-ui-datepicker', 'jquery-ui.1.7.datepicker.min.js', array( 'jquery', 'jquery-ui-core'), '1.7' );
 
 			} else if ( strpos( $_SERVER['REQUEST_URI'], 'async-upload.php' ) > 0 ) {
 

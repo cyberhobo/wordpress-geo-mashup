@@ -154,8 +154,7 @@ function geo_mashup_render_map ( ) {
 		$category_color = $geo_mashup_options->get('global_map', 'category_color');
 		$category_line_zoom = $geo_mashup_options->get('global_map', 'category_line_zoom');
 		foreach($categories as $category) {
-			//DEPRECATED: WP 2.8.0 js_escape -> esc_js
-			$category_opts .= $cat_comma.'"'.$category->term_id.'":{"name":"' . js_escape( $category->name ) . '"';
+			$category_opts .= $cat_comma.'"'.$category->term_id.'":{"name":"' . esc_js( $category->name ) . '"';
 			$parent_id = '';
 			if ( !empty( $category->parent ) ) {
 				$parent_id = $category->parent;
