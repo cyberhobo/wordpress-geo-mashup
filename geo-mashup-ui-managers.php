@@ -43,7 +43,7 @@ class GeoMashupUIManager {
 	 * @access public
 	 */
 	function enqueue_jquery_styles() {
-		wp_enqueue_style( 'jquery-smoothness', trailingslashit( GEO_MASHUP_URL_PATH ) . 'jquery-ui.1.7.smoothness.css', false, get_bloginfo( 'version' ), 'screen' );
+		wp_enqueue_style( 'jquery-smoothness', trailingslashit( GEO_MASHUP_URL_PATH ) . 'jquery-ui.1.7.smoothness.css', false, GEO_MASHUP_VERSION, 'screen' );
 	}
 
 	/**
@@ -54,7 +54,7 @@ class GeoMashupUIManager {
 	 */
 	function enqueue_form_client_items() {	
 
-		wp_enqueue_style( 'geo-mashup-edit-form', trailingslashit( GEO_MASHUP_URL_PATH ) . 'edit-form.css', false, '1.0.0', 'screen' );
+		wp_enqueue_style( 'geo-mashup-edit-form', trailingslashit( GEO_MASHUP_URL_PATH ) . 'edit-form.css', false, GEO_MASHUP_VERSION, 'screen' );
 
 		wp_enqueue_script( 'google-jsapi' );
 		wp_enqueue_script( 'geo-mashup-location-editor', 
