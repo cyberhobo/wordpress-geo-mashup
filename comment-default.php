@@ -50,7 +50,7 @@ function geo_mashup_comment_default( $comment, $args, $depth ) {
 		<?php printf(__('<cite class="fn">%s</cite> <span class="says">says:</span>'), get_comment_author_link()) ?>
 		</div>
 		<div class="comment-meta commentmetadata">
-			<a href="<?php echo wp_specialchars( get_comment_link( $comment->comment_ID ) ) ?>"><?php printf(__('%1$s at %2$s'), get_comment_date(),  get_comment_time()) ?></a>
+			<a href="<?php echo esc_html( get_comment_link( $comment->comment_ID ) ) ?>"><?php printf(__('%1$s at %2$s'), get_comment_date(),  get_comment_time()) ?></a>
 		</div>
 		<?php comment_text() ?>
 

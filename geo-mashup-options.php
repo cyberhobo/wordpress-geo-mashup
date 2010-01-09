@@ -403,8 +403,7 @@ class GeoMashupOptions {
 					return false;
 				}
 				if ( preg_match( "/<.*>/", $value ) ) {
-					// DEPRECATED: WP 2.8.0 wp_specialchars -> esc_html
-					array_push ( $this->validation_errors, '"'. wp_specialchars( $value ) . '" ' . __('is invalid for', 'GeoMashup') . ' ' . $key .
+					array_push ( $this->validation_errors, '"'. esc_html( $value ) . '" ' . __('is invalid for', 'GeoMashup') . ' ' . $key .
 						__(', which must not contain XML tags.', 'GeoMashup') );
 					return false;
 				}

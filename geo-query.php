@@ -172,7 +172,7 @@ class GeoMashupQuery {
 				if ( !empty( $args['callback'] ) ) {
 					call_user_func( $args['callback'], $comment, $args, 1 );
 				} else {
-					echo '<p>' . wp_specialchars( $comment->comment_author ) . ':<br/>' . wp_specialchars( $comment->comment_content ) . '</p>';
+					echo '<p>' . esc_html( $comment->comment_author ) . ':<br/>' . esc_html( $comment->comment_content ) . '</p>';
 				}
 			}
 			$in_comment_loop = false;
@@ -233,7 +233,7 @@ class GeoMashupQuery {
 			if ( !empty( $args['callback'] ) ) {
 				call_user_func( $args['callback'], $user, $args );
 			} else {
-				echo '<p>' . wp_specialchars( $user->display_name ) .
+				echo '<p>' . esc_html( $user->display_name ) .
 					( empty( $user->user_url ) ? '' : ' - ' . $user->url ) . '</p>';
 			}
 		}

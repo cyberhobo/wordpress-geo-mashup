@@ -135,7 +135,7 @@ function geo_mashup_edit_form( $object_name, $object_id, $ui_manager = '' ) {
 		<tbody class="ui-widget-content">
 		<tr id="geo_mashup_display" class="geo-mashup-display-row">
 			<td class="geo-mashup-info">
-				<div class="geo-mashup-address"><?php echo wp_specialchars( $location->address ); ?></div>
+				<div class="geo-mashup-address"><?php echo esc_html( $location->address ); ?></div>
 				<div class="geo-mashup-coordinates"><?php echo attribute_escape( $coordinate_string ); ?></div>
 			</td>
 			<td id="geo_mashup_saved_name_ui">

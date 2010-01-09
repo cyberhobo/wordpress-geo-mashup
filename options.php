@@ -114,10 +114,6 @@ function geo_mashup_options_page() {
 	<script type="text/javascript"> 
 	jQuery(function( $ ) { 
 		var selector = '#geo-mashup-settings-form';
-		if ( typeof $.ui.version === 'undefined' || $.ui.version < '1.7' ) {
-			// Older jQuery tabs work better on UL
-			selector += ' > ul';
-		}
 		$( selector ).tabs( {
 			selected: <?php echo $selected_tab ?>,
 			select: function ( event, ui ) {
@@ -176,7 +172,7 @@ function geo_mashup_options_page() {
 										if ( $geo_mashup_options->get( 'overall', 'mashup_page' ) == $page->ID ) { 
 											echo ' selected="selected"';
 										}
-									?>><?php echo wp_specialchars( $page->post_name ); ?></option>
+									?>><?php echo esc_html( $page->post_name ); ?></option>
 								<?php endforeach; ?>
 							<?php else : ?>
 								<option value=""><?php _e( 'No pages available.', 'GeoMashup' ); ?></option>
@@ -342,7 +338,7 @@ function geo_mashup_options_page() {
 									if ( $type == $geo_mashup_options->get( 'single_map', 'map_control' ) ) {
 										echo ' selected="selected"';
 									}
-								?>><?php echo wp_specialchars( $label ); ?></option>
+								?>><?php echo esc_html( $label ); ?></option>
 							<?php endforeach; ?>
 							</select>
 						</td>
@@ -356,7 +352,7 @@ function geo_mashup_options_page() {
 									if ( $type == $geo_mashup_options->get ( 'single_map', 'map_type' ) ) {
 										echo ' selected="selected"';
 									}
-								?>><?php echo wp_specialchars( $label ); ?></option>
+								?>><?php echo esc_html( $label ); ?></option>
 							<?php endforeach; ?>
 							</select>
 						</td>
@@ -372,7 +368,7 @@ function geo_mashup_options_page() {
 								if ( in_array( $type, $geo_mashup_options->get ( 'single_map', 'add_map_type_control' ) ) ) {
 									echo ' checked="checked"';
 								}
-								?> /> <?php echo wp_specialchars( $label ); ?>
+								?> /> <?php echo esc_html( $label ); ?>
 							<?php endforeach; ?>
 						</td>
 					</tr>
@@ -409,7 +405,7 @@ function geo_mashup_options_page() {
 									if ( strcmp( $value, $geo_mashup_options->get( 'single_map', 'zoom' ) ) == 0 ) {
 										echo ' selected="selected"';
 									}
-								?>><?php echo wp_specialchars( $label ); ?></option>
+								?>><?php echo esc_html( $label ); ?></option>
 								<?php endforeach; ?>
 							</select>
 							<span class="setting-description"><?php 
@@ -475,7 +471,7 @@ function geo_mashup_options_page() {
 									if ( $type == $geo_mashup_options->get( 'global_map', 'map_control' ) ) {
 										echo ' selected="selected"';
 									}
-								?>><?php echo wp_specialchars( $label ); ?></option>
+								?>><?php echo esc_html( $label ); ?></option>
 							<?php	endforeach; ?>
 							</select>
 						</td>
@@ -489,7 +485,7 @@ function geo_mashup_options_page() {
 									if ($type == $geo_mashup_options->get ( 'global_map', 'map_type' )) {
 										echo ' selected="selected"';
 									}
-								?>><?php echo wp_specialchars( $label ); ?></option>
+								?>><?php echo esc_html( $label ); ?></option>
 							<?php endforeach; ?>
 							</select>
 						</td>
@@ -505,7 +501,7 @@ function geo_mashup_options_page() {
 								if ( in_array( $type, $geo_mashup_options->get ( 'global_map', 'add_map_type_control' ) ) ) {
 									echo ' checked="checked"';
 								}
-								?> /> <?php echo wp_specialchars( $label ); ?>
+								?> /> <?php echo esc_html( $label ); ?>
 							<?php endforeach; ?>
 						</td>
 					</tr>
@@ -546,7 +542,7 @@ function geo_mashup_options_page() {
 									if ( strcmp( $value, $geo_mashup_options->get( 'global_map', 'zoom' ) ) == 0 ) {
 										echo ' selected="selected"';
 									}
-								?>><?php echo wp_specialchars( $label ); ?></option>
+								?>><?php echo esc_html( $label ); ?></option>
 								<?php endforeach; ?>
 							</select>
 							<span class="setting-description"><?php 
@@ -620,7 +616,7 @@ function geo_mashup_options_page() {
 								if ($value == $geo_mashup_options->get ( 'global_map', 'show_future' )) {
 									echo ' selected="selected"';
 								}
-							?>><?php echo wp_specialchars( $label ); ?></option>
+							?>><?php echo esc_html( $label ); ?></option>
 							<?php endforeach; ?>
 						</select></td>
 					</tr>
@@ -651,7 +647,7 @@ function geo_mashup_options_page() {
 							<?php $categories = get_categories( array( 'hide_empty' => false ) ); ?>
 							<?php if (is_array($categories)) : ?>
 								<?php foreach($categories as $category) : ?>
-								<tr><td><?php echo wp_specialchars( $category->name ); ?></td>
+								<tr><td><?php echo esc_html( $category->name ); ?></td>
 									<td>
 										<select id="category_color_<?php echo attribute_escape( $category->slug ); ?>" 
 											name="global_map[category_color][<?php echo attribute_escape( $category->slug ); ?>]">
@@ -660,7 +656,7 @@ function geo_mashup_options_page() {
 												if ($name == $geo_mashup_options->get ( 'global_map', 'category_color', $category->slug ) ) {
 													echo ' selected="selected"';
 												}
-											?> style="background-color:<?php echo attribute_escape( $rgb ); ?>'"><?php echo wp_specialchars( $name ); ?></option>
+											?> style="background-color:<?php echo attribute_escape( $rgb ); ?>'"><?php echo esc_html( $name ); ?></option>
 										<?php endforeach; ?>	
 										</select>
 									</td><td>
@@ -710,7 +706,7 @@ function geo_mashup_options_page() {
 									if ($type == $geo_mashup_options->get ( 'context_map', 'map_control' )) {
 										echo ' selected="selected"';
 									}
-								?>><?php echo wp_specialchars( $label ); ?></option>
+								?>><?php echo esc_html( $label ); ?></option>
 							<?php endforeach; ?>	
 							</select>
 						</td>
@@ -724,7 +720,7 @@ function geo_mashup_options_page() {
 									if ($type == $geo_mashup_options->get ( 'context_map', 'map_type' )) {
 										echo ' selected="selected"';
 									}
-								?>><?php echo wp_specialchars( $label ); ?></option>
+								?>><?php echo esc_html( $label ); ?></option>
 							<?php endforeach; ?>
 							</select>
 						</td>
@@ -740,7 +736,7 @@ function geo_mashup_options_page() {
 								if ( in_array( $type, $geo_mashup_options->get ( 'context_map', 'add_map_type_control' ) ) ) {
 									echo ' checked="checked"';
 								}
-								?> /> <?php echo wp_specialchars( $label ); ?>
+								?> /> <?php echo esc_html( $label ); ?>
 							<?php endforeach; ?>
 						</td>
 					</tr>
@@ -781,7 +777,7 @@ function geo_mashup_options_page() {
 									if ( strcmp( $value, $geo_mashup_options->get( 'context_map', 'zoom' ) ) == 0 ) {
 										echo ' selected="selected"';
 									}
-								?>><?php echo wp_specialchars( $label ); ?></option>
+								?>><?php echo esc_html( $label ); ?></option>
 								<?php endforeach; ?>
 							</select>
 							<span class="setting-description"><?php 
