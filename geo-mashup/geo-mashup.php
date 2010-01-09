@@ -206,7 +206,7 @@ class GeoMashup {
 		if (is_admin()) {
 			if ( isset($_GET['page']) && GEO_MASHUP_PLUGIN_NAME === $_GET['page'] ) {
 				$tabs_css = trailingslashit( GEO_MASHUP_URL_PATH ) . 'jquery-ui.1.7.smoothness.css';
-				wp_enqueue_style( 'jquery-smoothness', $tabs_css, false, '2.5.0', 'screen' );
+				wp_enqueue_style( 'jquery-smoothness', $tabs_css, false, GEO_MASHUP_VERSION, 'screen' );
 			}
 		}
 	}
