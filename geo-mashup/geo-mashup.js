@@ -839,6 +839,15 @@ var GeoMashup = {
 		{
 			this.loadSettings(opts, this.getCookie('back_settings'));
 		}
+
+		// Falsify options to make tests simpler
+		for ( opt in opts ) {
+			if ( opts.hasOwnProperty( opt ) && typeof opt !== 'function' ) {
+				if ( 'false' === opts[opt] || 'FALSE' === opts[opt] ) {
+					opts[opt] = false;
+				}
+			}
+		}
 		this.opts = opts;
 
 		if (typeof(opts.zoom) == 'string') {
