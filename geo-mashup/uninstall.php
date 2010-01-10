@@ -39,6 +39,7 @@ function geo_mashup_uninstall_options() {
 	// Still belongs to this site, and may be used by other plugins
 }
 
-geo_mashup_uninstall_db();
+// I'm afraid to do this - started a trac ticket http://core.trac.wordpress.org/ticket/11850
+// geo_mashup_uninstall_db();
 geo_mashup_uninstall_options();
 ?>
