@@ -383,6 +383,8 @@ jQuery( function( $ ) {
 				setInputs(latlng, loc);
 
 				google.maps.Event.addListener(marker,'dragend',function () { 
+					// Dragging will create a new location under the hood
+					loc.id = '';
 					setInputs(marker.getPoint(), loc);
 					map.setCenter(marker.getPoint());
 				});
