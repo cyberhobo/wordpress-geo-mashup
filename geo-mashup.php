@@ -527,7 +527,7 @@ class GeoMashup {
 	function get_locations_json( $query_args ) {
 		$default_args = array( 'object_name' => 'post' );
 		$query_args = wp_parse_args( $query_args, $default_args );
-		$json_ojbects = array();
+		$json_objects = array();
 		$objects = GeoMashupDB::get_object_locations( $query_args );
 		if ( $objects ) {
 			foreach ($objects as $object) {
