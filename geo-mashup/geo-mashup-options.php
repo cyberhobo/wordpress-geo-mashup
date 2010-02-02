@@ -422,6 +422,11 @@ class GeoMashupOptions {
 				}
 				return true;
 
+			// show_future: boolean or 'only'
+			case 'show_future':
+				if ( 'only' == $value ) 
+					return true;
+
 			// booleans
 			case 'auto_info_open':
 			case 'add_category_links':
@@ -435,7 +440,6 @@ class GeoMashupOptions {
 			case 'theme_stylesheet_with_maps':
 			case 'show_post':
 			case 'click_to_load':
-			case 'show_future':
 			case 'post':
 			case 'user':
 			case 'comment':
