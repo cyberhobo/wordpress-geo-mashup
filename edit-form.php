@@ -124,6 +124,7 @@ function geo_mashup_edit_form( $object_name, $object_id, $ui_manager = '' ) {
 	<input id="geo_mashup_nonce" name="geo_mashup_nonce" type="hidden" value="<?php echo $nonce; ?>" />
 	<input id="geo_mashup_ajax_edit_nonce" name="geo_mashup_ajax_edit_nonce" type="hidden" value="<?php echo $ajax_nonce; ?>" />
 	<input id="geo_mashup_changed" name="geo_mashup_changed" type="hidden" value="" />
+	<?php ob_start(); ?>
 	<table id="geo-mashup-location-table">
 		<thead class="ui-widget-header">
 		<tr>
@@ -154,6 +155,8 @@ function geo_mashup_edit_form( $object_name, $object_id, $ui_manager = '' ) {
 		</tr>
 		</tbody>
 	</table>
+	<?php $location_table_html = ob_get_clean(); ?>
+	<?php ob_start(); ?>
 	<div id="geo_mashup_map" class="geo-mashup-js">
 		<?php _e('Loading Google map. Check Geo Mashup options if the map fails to load.', 'GeoMashup'); ?>
 	</div>
@@ -165,6 +168,8 @@ function geo_mashup_edit_form( $object_name, $object_id, $ui_manager = '' ) {
 		</div>
 	</noscript>
 	<?php endif; ?>
+	<?php $map_html = ob_get_clean(); ?>
+	<?php ob_start(); ?>
 	<label for="geo_mashup_search"><?php _e('Find a new location:', 'GeoMashup'); ?>
 	<input	id="geo_mashup_search" name="geo_mashup_search" type="text" size="35" />
 	</label>
@@ -174,6 +179,9 @@ function geo_mashup_edit_form( $object_name, $object_id, $ui_manager = '' ) {
 		<option value=""><?php _e('[Saved Locations]','GeoMashup'); ?></option>
 		<?php echo $saved_location_options; ?>
 	</select>
+	<?php $search_html = ob_get_clean(); ?>
+
+	<?php echo empty( $location->id ) ? $search_html . $map_html . $location_table_html : $location_table_html . $map_html . $search_html; ?>
 
 	<input id="geo_mashup_url_path" name="geo_mashup_url_path" type="hidden" value="<?php echo GEO_MASHUP_URL_PATH; ?>" />
 	<input id="geo_mashup_ajax_url" name="geo_mashup_ajax_url" type="hidden" value="<?php echo $ajax_url; ?>" />
