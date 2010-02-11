@@ -981,10 +981,12 @@ GeoMashup = {
 					if (!plus_image) {
 						plus_image = this.opts.url_path + '/images/mm_20_plus.png';
 					}
-					// marker.setImage doesn't survive clustering
+					marker.setImage( plus_image );
+					// marker.setImage doesn't survive clustering - still true?
 					marker.getIcon().image = plus_image;
-					this.doAction( 'multipleIcon', this.opts, marker.getIcon() );
-					this.objects[object_id].marker = this.locations[point].marker;
+					this.doAction( 'multiObjectMarker', this.opts, marker );
+					this.doAction( 'multiObjectIcon', this.opts, marker.getIcon() );
+					this.objects[object_id].marker = marker;
 					this.addObjectIcon( this.objects[object_id] );
 				}
 			}
