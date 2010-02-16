@@ -925,7 +925,7 @@ class GeoMashup {
 
 		$message = '';
 		$google_key = $geo_mashup_options->get( 'overall', 'google_key' );
-		if ( empty( $google_key ) ) {
+		if ( empty( $google_key ) and current_user_can( 'manage_options' ) ) {
 			if ( ! isset( $_GET['page'] ) or GEO_MASHUP_PLUGIN_NAME != $_GET['page'] ) {
 				// We're not looking at the settings, but it's important to do so
 				$message = __( 'Geo Mashup requires a Google API key in the <a href="%s">settings</a> before it will work.', 'GeoMashup' );
