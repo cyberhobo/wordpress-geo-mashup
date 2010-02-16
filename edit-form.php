@@ -100,13 +100,13 @@ function geo_mashup_edit_form( $object_name, $object_id, $ui_manager = '' ) {
 	$saved_location_options = array();
 	if ( ! empty( $saved_locations ) ) {
 		foreach ( $saved_locations as $saved_location ) {
-			$escaped_name = addslashes( str_replace( array( "\r\n", "\r", "\n" ), '', $saved_location->saved_name ) );
+			$escaped_name = str_replace( array( "\r\n", "\r", "\n" ), '', $saved_location->saved_name );
 			if ( $saved_location->id != $location->id ) 
 				$selected = '';
 			else
 				$selected = ' selected="selected"';
-			$saved_location_options[] = '<option value="' . attribute_escape( $saved_location->id . '|' . $saved_location->lat . '|' .
-				$saved_location->lng . '|' . $saved_location->address ) . '"' . $selected . '>' . $escaped_name . '</option>';
+			$saved_location_options[] = '<option value="' . esc_attr( $saved_location->id . '|' . $saved_location->lat . '|' .
+				$saved_location->lng . '|' . $saved_location->address ) . '"' . $selected . '>' . esc_html( $escaped_name ) . '</option>';
 		}
 	}
 	$saved_location_options = implode( '', $saved_location_options );

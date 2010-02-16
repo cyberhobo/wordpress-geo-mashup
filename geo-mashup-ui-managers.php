@@ -132,7 +132,8 @@ class GeoMashupUIManager {
 			$geo_date = date( 'Y-m-d H:i:s', strtotime( $date_string ) );
 
 			$post_location = array();
-			$post_location['saved_name'] = $_POST['geo_mashup_location_name'];
+			// If PHP has added slashes, WP will do it again before saving
+			$post_location['saved_name'] = stripslashes( $_POST['geo_mashup_location_name'] );
 
 			if ( 'geocode' == $action ) {
 
@@ -152,7 +153,7 @@ class GeoMashupUIManager {
 					$post_location['lat'] = trim( $lat );
 					$post_location['lng'] = trim( $lng );
 					$post_location['geoname'] = $_POST['geo_mashup_geoname'];
-					$post_location['address'] = $_POST['geo_mashup_address'];
+					$post_location['address'] = stripslashes( $_POST['geo_mashup_address'] );
 					$post_location['postal_code'] = $_POST['geo_mashup_postal_code'];
 					$post_location['country_code'] = $_POST['geo_mashup_country_code'];
 					$post_location['admin_code'] = $_POST['geo_mashup_admin_code'];
