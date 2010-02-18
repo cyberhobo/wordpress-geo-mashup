@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-01-11 12:07-0700\n"
+"POT-Creation-Date: 2010-02-18 08:44-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -26,133 +26,133 @@ msgstr ""
 msgid "%1$s at %2$s"
 msgstr ""
 
-#: edit-form.php:130
+#: edit-form.php:131
 msgid "Address"
 msgstr ""
 
-#: edit-form.php:131
+#: edit-form.php:132
 msgid "Saved Name"
 msgstr ""
 
-#: edit-form.php:132
+#: edit-form.php:133
 msgid "Geo Date"
 msgstr ""
 
-#: edit-form.php:158
+#: edit-form.php:161
 msgid "Loading Google map. Check Geo Mashup options if the map fails to load."
 msgstr ""
 
-#: edit-form.php:164
+#: edit-form.php:167
 msgid "Location Map Image"
 msgstr ""
 
-#: edit-form.php:168
+#: edit-form.php:173
 msgid "Find a new location:"
 msgstr ""
 
-#: edit-form.php:172
+#: edit-form.php:177
 msgid "or select from"
 msgstr ""
 
-#: edit-form.php:174
+#: edit-form.php:179
 msgid "[Saved Locations]"
 msgstr ""
 
-#: edit-form.php:196
+#: edit-form.php:204
 msgid "Add Location"
 msgstr ""
 
-#: edit-form.php:197
+#: edit-form.php:205
 msgid "Delete"
 msgstr ""
 
-#: edit-form.php:198
+#: edit-form.php:206
 msgid "Save"
 msgstr ""
 
-#: edit-form.php:201
+#: edit-form.php:209
 msgid "help"
 msgstr ""
 
-#: edit-form.php:204
+#: edit-form.php:212
 msgid ""
 "<em>Saved Name</em> is an optional name you may use to add entries to the "
 "Saved Locations menu."
 msgstr ""
 
-#: edit-form.php:205
+#: edit-form.php:213
 msgid ""
 "<em>Geo Date</em> associates a date (most formats work) and time with a "
 "location. Leave the default value if uncertain."
 msgstr ""
 
-#: edit-form.php:207
+#: edit-form.php:215
 msgid "Put a green pin at a new location. There are many ways to do it:"
 msgstr ""
 
-#: edit-form.php:209
+#: edit-form.php:217
 msgid "Search for a location name."
 msgstr ""
 
-#: edit-form.php:210
+#: edit-form.php:218
 msgid ""
 "For multiple search results, mouse over pins to see location names, and "
 "click a result pin to select that location."
 msgstr ""
 
-#: edit-form.php:211
+#: edit-form.php:219
 msgid ""
 "Search for a decimal latitude and longitude, like <em>40.123,-105.456</em>."
 msgstr ""
 
-#: edit-form.php:212
+#: edit-form.php:220
 msgid "Search for a street address, like <em>123 main st, anytown, acity</em>."
 msgstr ""
 
-#: edit-form.php:213
+#: edit-form.php:221
 msgid ""
 "Click on the location. Zoom in if necessary so you can refine the location "
 "by dragging it or clicking a new location."
 msgstr ""
 
-#: edit-form.php:215
+#: edit-form.php:223
 msgid ""
 "To execute a search, type search text into the Find Location box and hit the "
 "enter key. If you type a name next to \"Save As\", the location will be "
 "saved under that name and added to the Saved Locations dropdown list."
 msgstr ""
 
-#: edit-form.php:216
+#: edit-form.php:224
 msgid ""
 "To remove the location (green pin), clear the search box and hit the enter "
 "key."
 msgstr ""
 
-#: edit-form.php:217
+#: edit-form.php:225
 msgid "When you are satisfied with the location, save or update."
 msgstr ""
 
-#: edit-form.php:221
+#: edit-form.php:229
 msgid ""
 "To add or update location choose a saved location, or find a new location "
 "using one of these formats:"
 msgstr ""
 
-#: edit-form.php:223
+#: edit-form.php:231
 msgid "A place name like <em>Yellowstone National Park</em>"
 msgstr ""
 
-#: edit-form.php:224
+#: edit-form.php:232
 msgid "A decimal latitude and longitude, like <em>40.123,-105.456</em>."
 msgstr ""
 
-#: edit-form.php:225
+#: edit-form.php:233
 msgid ""
 "A full or partial street address, like <em>123 main st, anytown, acity 12345 "
 "USA</em>."
 msgstr ""
 
-#: edit-form.php:227
+#: edit-form.php:235
 msgid ""
 "When you save or update, the closest match available will be saved as the "
 "location."
@@ -229,15 +229,15 @@ msgstr ""
 msgid "Initialized %d geo dates from corresponding post dates."
 msgstr ""
 
-#: geo-mashup-db.php:1365
+#: geo-mashup-db.php:1386
 msgid "A location must have an ID or coordinates to be saved."
 msgstr ""
 
 #: geo-mashup-options.php:361 geo-mashup-options.php:369
 #: geo-mashup-options.php:375 geo-mashup-options.php:385
 #: geo-mashup-options.php:401 geo-mashup-options.php:406
-#: geo-mashup-options.php:419 geo-mashup-options.php:447
-#: geo-mashup-options.php:462 geo-mashup-options.php:475
+#: geo-mashup-options.php:419 geo-mashup-options.php:451
+#: geo-mashup-options.php:466 geo-mashup-options.php:479
 msgid "is invalid for"
 msgstr ""
 
@@ -265,15 +265,15 @@ msgstr ""
 msgid ", which must be a number"
 msgstr ""
 
-#: geo-mashup-options.php:448
+#: geo-mashup-options.php:452
 msgid ", which must be \"true\" or \"false\""
 msgstr ""
 
-#: geo-mashup-options.php:463
+#: geo-mashup-options.php:467
 msgid ", which must be an array"
 msgstr ""
 
-#: geo-mashup-options.php:476
+#: geo-mashup-options.php:480
 msgid ", which must be a number from 0 to "
 msgstr ""
 
@@ -281,8 +281,8 @@ msgstr ""
 msgid "Object location not saved - invalid request."
 msgstr ""
 
-#: geo-mashup-ui-managers.php:268 geo-mashup-ui-managers.php:430
-#: geo-mashup-ui-managers.php:431
+#: geo-mashup-ui-managers.php:269 geo-mashup-ui-managers.php:431
+#: geo-mashup-ui-managers.php:432
 msgid "Location"
 msgstr ""
 
