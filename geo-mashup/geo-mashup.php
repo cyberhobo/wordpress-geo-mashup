@@ -247,9 +247,6 @@ class GeoMashup {
 			// The parameter's purpose is to get us here, we can remove it now
 			unset( $_GET['geo_mashup_content'] );
 
-			check_ajax_referer( 'geo-mashup-' . $geo_mashup_content, '_wpnonce' );
-			unset( $_GET['_wpnonce'] );
-
 			// Call the function corresponding to the content request
 			// This provides some security, as only implemented methods will be executed
 			$method = str_replace( '-', '_', $geo_mashup_content );
@@ -290,6 +287,9 @@ class GeoMashup {
 	 * @static
 	 */
 	function ajax_edit() {
+		check_ajax_referer( 'geo-mashup-ajax-edit', '_wpnonce' );
+		unset( $_GET['_wpnonce'] );
+
 		$status = array( 'request' => 'ajax-edit', 'code' => 200 );
 		if ( isset( $_POST['geo_mashup_object_id'] ) ) {
 			$status['object_id'] = $_POST['geo_mashup_object_id'];
@@ -751,8 +751,7 @@ class GeoMashup {
 			}
 		}
 					
-		$iframe_src = get_option( 'siteurl' ) . '?geo_mashup_content=render-map&amp;_wpnonce=' . 
-			wp_create_nonce( 'geo-mashup-render-map' ) . '&amp;' .
+		$iframe_src = get_option( 'siteurl' ) . '?geo_mashup_content=render-map&amp;' . 
 			GeoMashup::implode_assoc('=', '&amp;', $url_params, false, true);
 		$content = "";
 
