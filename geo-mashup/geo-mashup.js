@@ -1357,14 +1357,16 @@ GeoMashup = {
 			}
 		}
 
-		credit_div = document.createElement( 'div' );
-		credit_div.innerHTML = [
-			'<div class="gmnoprint" style="-moz-user-select: none; z-index: 0; position: absolute; left: 2px; bottom: 38px;">',
-			'<a title="Geo Mashup" href="http://code.google.com/p/wordpress-geo-mashup" target="_blank">',
-			'<img style="border: 0px none ; margin: 0px; padding: 0px; width: 60px; height: 39px; -moz-user-select: none; cursor: pointer;" src="',
-			this.opts.url_path,
-			'/images/gm-credit.png"/></a></div>'].join( '' );
-		this.container.appendChild( credit_div );
+		if ( ! opts.remove_geo_mashup_logo && this.map.getSize().width > 300 && this.map.getSize().height > 300 ) {
+			credit_div = document.createElement( 'div' );
+			credit_div.innerHTML = [
+				'<div class="gmnoprint" style="-moz-user-select: none; z-index: 0; position: absolute; left: 2px; bottom: 38px;">',
+				'<a title="Geo Mashup" href="http://code.google.com/p/wordpress-geo-mashup" target="_blank">',
+				'<img style="border: 0px none ; margin: 0px; padding: 0px; width: 60px; height: 39px; -moz-user-select: none; cursor: pointer;" src="',
+				this.opts.url_path,
+				'/images/gm-credit.png"/></a></div>'].join( '' );
+			this.container.appendChild( credit_div );
+		}
 		
 		// Google bar must be added after the credit div so it layers on top
 		if ( opts.add_google_bar ) {
