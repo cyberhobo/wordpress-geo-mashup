@@ -10,15 +10,15 @@ These are notes for the software author, to help ensure you don't get a broken r
 If any step fails, fix before continuing, repeating any necessary prior steps.
 
 	1. Bump versions in source.
-	1. Make a new POT file.
+	  1. Make a new POT file.
 	1. Commit.
 	1. Make a release candidate ZIP, install and test on testbed.
 	1. Install and test on cyberhobo.net.
-	1. Make an archive copy of current wiki docs.
-	1. Generate PHP docs and post on code.cyberhobo.net.
-	1. Update PHP docs link in wiki.
-	1. Merge current and beta wiki docs.
-	1. Empty beta wiki docs.
+	  1. Make an archive copy of current wiki docs.
+	  1. Generate PHP docs and post on code.cyberhobo.net.
+	  1. Update PHP docs link in wiki.
+	  1. Merge current and beta wiki docs.
+	  1. Empty beta wiki docs.
 	1. Tag the new release in the Google code repository.
 	1. Upload ZIP to Google code.
 	1. Check current WordPress tag.
