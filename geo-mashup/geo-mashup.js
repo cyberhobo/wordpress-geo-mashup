@@ -1378,7 +1378,7 @@ GeoMashup = {
 		}
 
 		google.maps.Event.addListener( this.map, 'click', function( overlay ) {
-			if ( overlay !== GeoMashup.selected_marker && overlay !== GeoMashup.map.getInfoWindow() ) {
+			if ( GeoMashup.selected_marker && overlay !== GeoMashup.selected_marker && overlay !== GeoMashup.map.getInfoWindow() ) {
 				GeoMashup.deselectMarker();
 			}
 		} );
