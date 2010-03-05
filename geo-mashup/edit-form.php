@@ -113,7 +113,7 @@ function geo_mashup_edit_form( $object_name, $object_id, $ui_manager = '' ) {
 
 	$nonce = wp_create_nonce('geo-mashup-edit');
 	$ajax_nonce = wp_create_nonce('geo-mashup-ajax-edit');
-	$ajax_url = trailingslashit( get_bloginfo( 'siteurl' ) ) . '?geo_mashup_content=ajax-edit&_wpnonce=' .
+	$ajax_url = trailingslashit( get_bloginfo( 'url' ) ) . '?geo_mashup_content=ajax-edit&_wpnonce=' .
 		$ajax_nonce;
 
 	$static_maps_base_url = 'http://maps.google.com/maps/api/staticmap?sensor=false&amp;key=' .

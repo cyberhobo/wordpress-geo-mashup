@@ -65,7 +65,7 @@ function geo_mashup_render_map ( ) {
 	}
 					 
 	$map_properties = array ( 
-		'siteurl' => get_option( 'siteurl' ),
+		'siteurl' => get_option( 'url' ),
 		'url_path' => GEO_MASHUP_URL_PATH,
  		'template_url_path' => get_template_directory_uri() );
 	if ( isset( $geo_mashup_custom ) ) {
