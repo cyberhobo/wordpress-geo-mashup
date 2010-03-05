@@ -763,7 +763,7 @@ class GeoMashup {
 					"background-image:url(".GEO_MASHUP_URL_PATH."/images/wp-gm-pale.png);".
 					"background-repeat:no-repeat;background-position:center;cursor:pointer;";
 				$content = "<div class=\"gm-map\" style=\"$style\" " .
-					"onclick=\"GeoMashupLoader.addMapFrame(this,'$iframe_src',{$url_params['height']},{$url_params['width']},'$name')\">";
+					"onclick=\"GeoMashupLoader.addMapFrame(this,'$iframe_src','{$url_params['height']}','{$url_params['width']}','$name')\">";
 				if ( isset($url_params['static']) &&  'true' === $url_params['static'] ) {
 					// TODO: test whether click to load really works with a static map
 					$content .= $map_image . '</div>';
