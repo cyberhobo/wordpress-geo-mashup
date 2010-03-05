@@ -146,6 +146,11 @@ jQuery( function( $ ) {
 							this.locality_name = this.subValue(data, ['AddressDetails','Country','AdministrativeArea','Locality','LocalityName']);
 							this.postal_code = this.subValue(data, ['AddressDetails','Country','AdministrativeArea','Locality','PostalCode','PostalCodeNumber']);
 						}
+						// Difficult to distinguish admin code from a name - but try
+						if ( this.admin_code.length > 20 || this.admin_code.indexOf(' ') >= 0 ) {
+							this.admin_name = this.admin_code;
+							this.admin_code = '';
+						}
 					}
 				}
 			};
