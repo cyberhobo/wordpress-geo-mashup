@@ -457,11 +457,13 @@ mxn.register('openlayers', {
 		},
 
 		hide: function() {
-			this.proprietary_marker.setOptions({visible:false});
+			//this.proprietary_marker.setOptions({visible:false});
+			this.proprietary_marker.display( false );
 		},
 
 		show: function() {
-			this.proprietary_marker.setOptions({visible:true});
+			//this.proprietary_marker.setOptions({visible:true});
+			this.proprietary_marker.display( true );
 		},
 
 		update: function() {

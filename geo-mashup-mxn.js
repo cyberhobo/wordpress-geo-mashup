@@ -821,9 +821,13 @@ GeoMashup = {
 		if (!this.categories[category_id]) {
 			return false;
 		}
-		this.map.closeInfoWindow();
 		if (this.categories[category_id].line) {
-			this.categories[category_id].line.hide();
+			try {
+				this.categories[category_id].line.hide();
+			} catch( e ) {
+				// Not implemented?
+				this.map.removePolyline( this.categories[category_id].line );
+			}
 		}
 		// A somewhat involved check for other visible categories at this location
 		this.categories[category_id].visible = false;
@@ -857,7 +861,12 @@ GeoMashup = {
 			return false;
 		}
 		if (this.categories[category_id].line && this.map.getZoom() <= this.categories[category_id].max_line_zoom) {
-			this.categories[category_id].line.show();
+			try {
+				this.categories[category_id].line.show();
+			} catch( e ) {
+				// not implemented
+				this.map.addPolyline( this.categories[category_id].line );
+			}
 		}
 		for (i=0; i<this.categories[category_id].points.length; i+=1) {
 			point = this.categories[category_id].points[i];
@@ -1071,7 +1080,7 @@ GeoMashup = {
 			this.forEach( this.objects, function (object_id, obj) {
 				map_bounds = this.map.getBounds();
 				marker = obj.marker;
-				if (!marker.isHidden() && map_bounds.containsLatLng(marker.getLatLng())) {
+				if ( !marker.isHidden() && map_bounds.containsPoint( marker.location ) ) {
 					list_html.push('<li><img src="');
 					list_html.push(obj.icon.image);
 					list_html.push('" alt="');
