@@ -34,7 +34,8 @@ class GeoMashupOptions {
 				'user' => 'false',
 				'comment' => 'false' ),
 			'enable_reverse_geocoding' => 'true',
-			'adsense_code' => 'partner-pub-5088093001880917' ),
+			'adsense_code' => 'partner-pub-5088093001880917',
+	 		'map_api' => 'google'	),
 		'global_map' => array (
 			'width' => '400',
 			'height' => '400',
@@ -385,6 +386,15 @@ class GeoMashupOptions {
 				if ( !in_array ( $value, $valid_map_controls ) ) {
 					array_push ( $this->validation_errors, '"'. $value . '" ' . __('is invalid for', 'GeoMashup') . ' ' . $key .
 						__(', which must be a valid map control (see documentation)', 'GeoMashup') );
+					return false;
+				}
+				return true;
+
+			case 'map_api':
+				$valid_apis = array( 'google', 'openlayers' );
+				if ( !in_array ( $value, $valid_apis ) ) {
+					array_push ( $this->validation_errors, '"'. $value . '" ' . __('is invalid for', 'GeoMashup') . ' ' . $key .
+						__(', which must be a valid map provider.', 'GeoMashup') );
 					return false;
 				}
 				return true;

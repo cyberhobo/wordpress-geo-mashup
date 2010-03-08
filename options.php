@@ -103,6 +103,11 @@ function geo_mashup_options_page() {
 		'false' => __('No', 'GeoMashup'),
 		'only' => __('Only', 'GeoMashup'));
 
+	$mapApis = Array(
+		'google' => __( 'Google', 'GeoMashup' ),
+		'openlayers' => __( 'OpenLayers', 'GeoMashup' )
+	);
+
 	$zoomOptions = Array( 'auto' => __( 'auto', 'GeoMashup' ) );
 	for ( $i = 0; $i < GEO_MASHUP_MAX_ZOOM; $i++ ) {
 		$zoomOptions[$i] = $i;
@@ -307,6 +312,25 @@ function geo_mashup_options_page() {
 								value="<?php echo attribute_escape( $geo_mashup_options->get ( 'overall', 'adsense_code' ) ); ?>" /><br/>
 							<span class="setting-description"><?php 
 								_e('Your client ID, used with the Google Bar. Leave the default value to use Geo Mashup\'s :).', 'GeoMashup'); 
+							?></span>
+						</td>
+					</tr>
+					<tr>
+						<th scope="row">
+							<?php _e('Map Provider', 'GeoMashup'); ?>
+						</th>
+						<td>
+							<select id="map_api" name="overall[map_api]"><?php 
+								foreach ( $mapApis as $value => $label ) : ?>
+									<option value="<?php echo $value; ?>"<?php
+										if ( $geo_mashup_options->get( 'overall', 'map_api' ) == $value ) { 
+											echo ' selected="selected"';
+										}
+									?>><?php echo esc_html( $label ); ?></option>
+								<?php endforeach; ?>
+							</select>
+							<span class="setting-description"><?php
+								_e( 'Many features are supported only by Google.', 'GeoMashup' );
 							?></span>
 						</td>
 					</tr>

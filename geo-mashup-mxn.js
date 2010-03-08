@@ -755,6 +755,10 @@ GeoMashup = {
 	},
 
 	clickMarker : function(object_id, try_count) {
+		if ( ! google ) {
+			return;
+		}
+		// TODO: not sure if events can be triggered via mapstraction?
 		if (typeof try_count === 'undefined') {
 			try_count = 1;
 		}
@@ -969,6 +973,10 @@ GeoMashup = {
 	requestObjects : function(use_bounds) {
 		var request, url, map_bounds, map_span;
 		if (this.opts.max_posts && this.object_count >= this.opts.max_posts) {
+			return;
+		}
+		if (! google ) {
+			// TODO: change google xmlhttp to jquery
 			return;
 		}
 		request = google.maps.XmlHttp.create();
@@ -1217,8 +1225,8 @@ GeoMashup = {
 		} else if (opts.object_data && opts.object_data.objects[0]) {
 			center_latlng = new mxn.LatLonPoint( parseFloat( opts.object_data.objects[0].lat ), parseFloat( opts.object_data.objects[0].lng ) );
 			this.map.setCenterAndZoom( center_latlng, initial_zoom );
-		} /* 
-				 else {
+		} else if (google) {
+			// TODO: change to jquery xmlhttp
 			// Center on the most recent located object
 			request = google.maps.XmlHttp.create();
 			url = this.geo_query_url + '&limit=1';
@@ -1235,7 +1243,6 @@ GeoMashup = {
 				this.map.setCenter(new google.maps.LatLng(0,0),initial_zoom,opts.map_type);
 			}
 		}
-		*/
 
 		this.location_bounds = new mxn.BoundingBox( new mxn.LatLonPoint( 0, 0 ), new mxn.LatLonPoint( 0, 0 ) );
 

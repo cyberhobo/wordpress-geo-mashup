@@ -41,7 +41,12 @@ function add_double_quotes(&$item,$key) {
 function geo_mashup_render_map ( ) {
 	global $wp_scripts, $geo_mashup_options, $geo_mashup_custom;
 
-	wp_enqueue_script( 'jquery' );
+	$map_api = $geo_mashup_options->get( 'overall', 'map_api' );
+	if ( 'google' == $map_api ) {
+		wp_enqueue_script( 'google-jsapi' );
+	} else {
+		wp_enqueue_script( 'jquery' );
+	}
 
 	// Resolve map style
 	$style_file_path = trailingslashit( get_template_directory() ) . 'map-style.css';
@@ -186,10 +191,13 @@ function geo_mashup_render_map ( ) {
 		<title>Geo Mashup Map</title>
 			<?php wp_head(); ?>
 
+			<?php if ( 'google' == $map_api ) : ?>
+			<script src="<?php echo trailingslashit( GEO_MASHUP_URL_PATH ); ?>geo-mashup.js?v=<?php echo GEO_MASHUP_VERSION; ?>" type="text/javascript"></script>
+			<?php elseif ( 'openlayers' == $map_api ) : ?>
 			<script src="http://openlayers.org/api/OpenLayers.js"></script>     
 			<script src="<?php echo trailingslashit( GEO_MASHUP_URL_PATH ); ?>/mxn/mxn.js?(openlayers)" type="text/javascript"></script>
-
 			<script src="<?php echo trailingslashit( GEO_MASHUP_URL_PATH ); ?>geo-mashup-mxn.js?v=<?php echo GEO_MASHUP_VERSION; ?>" type="text/javascript"></script>
+			<?php endif; ?>
 
 			<?php if ( $custom_js_url_path ): ?>
 			<script src="<?php echo $custom_js_url_path; ?>" type="text/javascript"></script>
