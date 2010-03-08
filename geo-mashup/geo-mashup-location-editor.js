@@ -455,7 +455,6 @@ jQuery( function( $ ) {
 				selectMarker(overlay);
 			} else if (latlng) {
 				searchForLocations( latlng.toUrlValue() );
-				addSelectedMarker( latlng );
 			}
 		},
 
@@ -511,7 +510,7 @@ jQuery( function( $ ) {
 		 * @param string search_text Name, address, coordinates, etc.
 		 */
 		searchForLocations = function( search_text ) {
-			var geocoder, geonames_request_url;
+			var geocoder, geonames_request_url, latlng_array;
 
 			// Clear current locations
 			map.clearOverlays();
@@ -530,6 +529,12 @@ jQuery( function( $ ) {
 				GeoMashupLocationEditor.showBusyIcon();
 				geocoder.getLocations( search_text, function (response) { showAddresses( response ); } );
 
+				if (search_text.match(/^[-\d\.\s]*,[-\d\.\s]*$/)) {
+					// For coorinates, add the selected marker at the exact location
+					latlng_array = search_text.split(',');
+					latlng = new GLatLng(latlng_array[0],latlng_array[1]);
+					addSelectedMarker(latlng);
+				}
 			} 
 
 		},

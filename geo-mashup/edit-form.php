@@ -216,7 +216,7 @@ function geo_mashup_edit_form( $object_name, $object_id, $ui_manager = '' ) {
 			<ul>
 				<li><?php _e('Search for a location name.', 'GeoMashup'); ?></li>
 				<li><?php _e('For multiple search results, mouse over pins to see location names, and click a result pin to select that location.', 'GeoMashup'); ?></li>
-				<li><?php _e('Search for a decimal latitude and longitude, like <em>40.123,-105.456</em>.', 'GeoMashup'); ?></li> 
+				<li><?php _e('Search for a decimal latitude and longitude separated by a comma, like <em>40.123,-105.456</em>. Seven decimal places are stored. Negative latitude is used for the southern hemisphere, and negative longitude for the western hemisphere.', 'GeoMashup'); ?></li> 
 				<li><?php _e('Search for a street address, like <em>123 main st, anytown, acity</em>.', 'GeoMashup'); ?></li>
 				<li><?php _e('Click on the location. Zoom in if necessary so you can refine the location by dragging it or clicking a new location.', 'GeoMashup'); ?></li>
 			</ul>
