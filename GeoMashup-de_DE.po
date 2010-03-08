@@ -14,12 +14,12 @@ msgstr ""
 #: comment-default.php:37
 #, php-format
 msgid "<cite class=\"fn\">%s</cite> <span class=\"says\">says:</span>"
-msgstr "<cite class=\"fn\">%s</cite> <span class=\"says\">says:</span>"
+msgstr "<cite class=\"fn\">%s</cite> <span class=\"says\">sagt:</span>"
 
 #: comment-default.php:40
 #, php-format
 msgid "%1$s at %2$s"
-msgstr "%1$s at %2$s"
+msgstr "%1$s um %2$s"
 
 #: edit-form.php:59
 msgid "Put a green pin at the location. There are many ways to do it:"
@@ -124,7 +124,7 @@ msgstr "Alte Positionsmarker werden übernommen"
 #: geo-mashup-db.php:513
 #, php-format
 msgid "Failed to convert location (%s). You can %sedit the post%s "
-msgstr "Failed to convert location (%s). You can %sedit the post%s "
+msgstr "Die gespeicherte Position konnte nicht konvertiert werden (%s). Du kannst %sedit the post%s "
 
 #: geo-mashup-db.php:514
 msgid "to update the location, and try again."
