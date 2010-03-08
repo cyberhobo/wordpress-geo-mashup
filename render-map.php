@@ -70,6 +70,7 @@ function geo_mashup_render_map ( ) {
 	}
 					 
 	$map_properties = array ( 
+		'map_api' => $map_api,
 		'siteurl' => get_option( 'url' ),
 		'nonce' => wp_create_nonce( 'geo-mashup-geo-query' ),
 		'url_path' => GEO_MASHUP_URL_PATH,

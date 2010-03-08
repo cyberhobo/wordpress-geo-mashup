@@ -1088,7 +1088,7 @@ GeoMashup = {
 			this.forEach( this.objects, function (object_id, obj) {
 				map_bounds = this.map.getBounds();
 				marker = obj.marker;
-				if ( !marker.isHidden() && map_bounds.containsPoint( marker.location ) ) {
+				if ( marker.getAttribute( 'visible' ) && map_bounds.containsPoint( marker.location ) ) {
 					list_html.push('<li><img src="');
 					list_html.push(obj.icon.image);
 					list_html.push('" alt="');
