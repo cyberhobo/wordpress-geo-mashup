@@ -407,6 +407,10 @@ mxn.register('openlayers', {
 			}
 			var marker = new OpenLayers.Marker(this.location.toProprietary("openlayers"), icon);
 
+			marker.events.register("click", marker, function(event) {
+				this.mapstraction_marker.click.fire( event );
+			});
+
 			if(this.infoBubble) {
 				var popup = new OpenLayers.Popup(null,
 					this.location.toProprietary("openlayers"),
@@ -440,6 +444,7 @@ mxn.register('openlayers', {
 						}
 					});
 				}
+				this.popup = popup;
 			}
 
 			if(this.hoverIconUrl) {
@@ -453,7 +458,10 @@ mxn.register('openlayers', {
 		},
 
 		openBubble: function() {		
-			// TODO: Add provider code
+			if ( this.popup ) {
+				this.map.addPopup( this.popup );
+				this.popup.show();
+			}
 		},
 
 		hide: function() {

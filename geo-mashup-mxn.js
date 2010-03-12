@@ -568,9 +568,15 @@ GeoMashup = {
 		*/
 	},
 
-	openInfoWindow : function( marker, point ) {
-		var object_ids, i, url, info_window_request, object_element;
+	openInfoWindow : function( marker ) {
+		var object_ids, i, url, info_window_request, object_element, point = marker.location;
 
+		marker.openBubble();
+
+		// TODO: load info window without google
+		if ( ! google.maps ) {
+			return;
+		}
 		this.map.closeInfoWindow();
 			
 		if (this.locations[point].loaded) {
@@ -609,18 +615,23 @@ GeoMashup = {
 		} // end object not loaded yet 
 	},
 
-	addGlowMarker : function( marker, point ) {
+	addGlowMarker : function( marker ) {
+		var point = marker.location, 
+			glow_options = {
+				clickable : false,
+				icon : this.opts.url_path + '/images/mm_20_glow.png',
+				iconSize : [ 22, 30 ],
+				iconAnchor : [ -11, -27 ] 
+			};
+
 		if ( this.glow_marker ) {
+			this.glow_marker.hide();
 			this.map.removeMarker( this.glow_marker );
+			this.glow_marker = null;
 		} 
-		this.doAction( 'glowMarkerIcon', this.opts, glow_icon );
+		this.doAction( 'glowMarkerIcon', this.opts, glow_options );
 		this.glow_marker = new mxn.Marker( point );
-		this.glow_marker.addData( {
-			clickable : false,
-			icon : this.opts.url_path + '/images/mm_20_glow.png',
-			iconSize : [ 22, 30 ],
-			iconAnchor : [ -11, -27 ] 
-		} );
+		this.glow_marker.addData( glow_options );
 		this.map.addMarker( this.glow_marker );
 	},
 
@@ -628,13 +639,14 @@ GeoMashup = {
 		var i, j, obj;
 
 		for ( i = 0; i < this.open_attachments.length; i += 1 ) {
-			this.map.removeOverlay( this.open_attachments[i] );
+			// TODO: doable with mapstraction?
+			//this.map.removeOverlay( this.open_attachments[i] );
 		} 
 		this.open_attachments = [];
 	},
 
-	showMarkerAttachments : function( marker, point ) {
-		var i, j, obj;
+	showMarkerAttachments : function( marker ) {
+		var i, j, obj, point = marker.location;
 
 		this.hideAttachments();
 		for ( i = 0; i < this.locations[point].objects.length; i += 1 ) {
@@ -655,21 +667,26 @@ GeoMashup = {
 		}
 	},
 
-	selectMarker : function( marker, point ) {
-		var url, post_request, object_ids;
+	selectMarker : function( marker ) {
+		var url, post_request, object_ids, point = marker.location;
 
+		if ( marker == this.selected_marker ) {
+			// Already selected
+			return;
+		}
+		this.deselectMarker();
 		this.selected_marker = marker;
 		if ( this.opts.marker_select_info_window ) {
-			this.openInfoWindow( marker, point );
+			this.openInfoWindow( marker );
 		}
 		if ( this.opts.marker_select_attachments ) {
-			this.showMarkerAttachments( marker, point );
+			this.showMarkerAttachments( marker );
 		}
 		if ( this.opts.marker_select_highlight ) {
-			this.addGlowMarker( marker, point );
+			this.addGlowMarker( marker );
 		}
 		if ( this.opts.marker_select_center ) {
-			this.map.panTo( marker.getLatLng() );
+			this.map.setCenter( point, {}, true );
 		}
 		if ('full-post' !== this.opts.template && this.getShowPostElement()) {
 			if ( this.locations[point].post_html ) {
@@ -683,15 +700,18 @@ GeoMashup = {
 				}
 				url = this.geo_query_url + '&object_name=' + this.opts.object_name +
 					'&object_ids=' + object_ids.join( ',' ) + '&template=full-post';
-				post_request = new google.maps.XmlHttp.create();
-				post_request.open('GET', url, true);
-				post_request.onreadystatechange = function() {
-					if (post_request.readyState === 4 && post_request.status === 200) {
-						GeoMashup.getShowPostElement().innerHTML = post_request.responseText;
-						GeoMashup.locations[point].post_html = post_request.responseText;
-					} // end readystate === 4
-				}; // end onreadystatechange function
-				post_request.send(null);
+				// TODO: use jQuery for AJAX?
+				if ( google.maps ) {
+					post_request = new google.maps.XmlHttp.create();
+					post_request.open('GET', url, true);
+					post_request.onreadystatechange = function() {
+						if (post_request.readyState === 4 && post_request.status === 200) {
+							GeoMashup.getShowPostElement().innerHTML = post_request.responseText;
+							GeoMashup.locations[point].post_html = post_request.responseText;
+						} // end readystate === 4
+					}; // end onreadystatechange function
+					post_request.send(null);
+				}
 			}
 		}
 		this.doAction( 'selectedMarker', this.opts, this.selected_marker, this.map );
@@ -703,7 +723,9 @@ GeoMashup = {
 			post_element.innerHTML = '';
 		}
 		if ( this.glow_marker ) {
-			this.map.removeOverlay( this.glow_marker );
+			this.glow_marker.hide();
+			this.map.removeMarker( this.glow_marker );
+			this.glow_marker = null;
 		}
 		this.hideAttachments();
 		this.selected_marker = null;
@@ -738,16 +760,17 @@ GeoMashup = {
 			iconSize: obj.icon.iconSize,
 			iconShadow: obj.icon.iconShadow,
 			iconAnchor: obj.icon.iconAnchor,
-			iconShadowSize: obj.icon.shadowSize
+			iconShadowSize: obj.icon.shadowSize,
+			visible: true
 		};
 		this.doAction( 'objectMarkerOptions', this.opts, marker_opts, obj );
 		marker = new mxn.Marker( point );
 		marker.addData( marker_opts );
 
 		// Not sure how mxn marker events work 
-		//marker.click.addHandler( function() {
-		//	GeoMashup.selectMarker( marker, point );
-		//} ); 
+		marker.click.addHandler( function() {
+			GeoMashup.selectMarker( marker );
+		} ); 
 
 		this.doAction( 'marker', this.opts, marker );
 
@@ -755,19 +778,15 @@ GeoMashup = {
 	},
 
 	clickMarker : function(object_id, try_count) {
-		if ( ! google ) {
-			return;
-		}
-		// TODO: not sure if events can be triggered via mapstraction?
 		if (typeof try_count === 'undefined') {
 			try_count = 1;
 		}
 		if (this.objects[object_id] && try_count < 4) {
-			if (GeoMashup.objects[object_id].marker.isHidden()) {
+			if ( ! GeoMashup.objects[object_id].marker.getAttribute( 'visible' ) ) {
 				try_count += 1;
 				setTimeout(function () { GeoMashup.clickMarker(object_id, try_count); }, 300);
 			} else {
-				google.maps.Event.trigger(GeoMashup.objects[object_id].marker,"click"); 
+				GeoMashup.objects[object_id].marker.click.fire();
 			}
 		}
 	},
@@ -849,6 +868,9 @@ GeoMashup = {
 			}
 
 			if ( ! has_visible_cats ) {
+				if ( loc.marker == this.selected_marker ) {
+					this.deselectMarker();
+				}
 				loc.marker.hide();
 			}
 		}
@@ -1012,6 +1034,9 @@ GeoMashup = {
 
 		for (point in this.locations) {
 			if ( this.locations[point].marker ) {
+				if ( this.locations[point].marker == this.selected_marker ) {
+					this.deselectMarker();
+				}
 				this.locations[point].marker.hide();
 			}
 		}
@@ -1088,7 +1113,7 @@ GeoMashup = {
 			this.forEach( this.objects, function (object_id, obj) {
 				map_bounds = this.map.getBounds();
 				marker = obj.marker;
-				if ( marker.getAttribute( 'visible' ) && map_bounds.containsPoint( marker.location ) ) {
+				if ( marker.getAttribute( 'visible' ) && map_bounds.contains( marker.location ) ) {
 					list_html.push('<li><img src="');
 					list_html.push(obj.icon.image);
 					list_html.push('" alt="');
