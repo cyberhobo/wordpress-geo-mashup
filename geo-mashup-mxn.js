@@ -782,7 +782,7 @@ GeoMashup = {
 			try_count = 1;
 		}
 		if (this.objects[object_id] && try_count < 4) {
-			if ( ! GeoMashup.objects[object_id].marker.getAttribute( 'visible' ) ) {
+			if ( try_count == 1 ) {
 				try_count += 1;
 				setTimeout(function () { GeoMashup.clickMarker(object_id, try_count); }, 300);
 			} else {
@@ -1212,8 +1212,10 @@ GeoMashup = {
 		this.opts = opts;
 		this.geo_query_url = opts.siteurl + '?geo_mashup_content=geo-query&_wpnonce=' + opts.nonce;
 
-		this.map.addEventListener( 'changeZoom', function( old_zoom, new_zoom ) { GeoMashup.adjustZoom( old_zoom, new_zoom ); } );
-		this.map.addEventListener( 'endPan', function() { GeoMashup.adjustViewport(); } );
+
+		// TODO: Try to deleselect markers with clicks? Need to make sure we don't get other object's clicks.
+		this.map.changeZoom.addHandler( function( old_zoom, new_zoom ) { GeoMashup.adjustZoom( old_zoom, new_zoom ); } );
+		this.map.endPan.addHandler( function() { GeoMashup.adjustViewport(); } );
 
 		// No clustering available
 
