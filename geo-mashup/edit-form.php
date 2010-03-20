@@ -197,9 +197,9 @@ function geo_mashup_edit_form( $object_name, $object_id, $ui_manager = '' ) {
 	<input id="geo_mashup_admin_code" name="geo_mashup_admin_code" type="hidden" value="<?php echo attribute_escape( $location->admin_code ); ?>" />
 	<input id="geo_mashup_admin_name" name="geo_mashup_admin_name" type="hidden" value="" />
 	<input id="geo_mashup_kml_url" name="geo_mashup_kml_url" type="hidden" value="<?php echo $kml_url; ?>" />
-	<input id="geo_mashup_sub_admin_code" name="geo_mashup_sub_admin_code" type="hidden" value="<? echo attribute_escape( $location->sub_admin_code ); ?>" />
+	<input id="geo_mashup_sub_admin_code" name="geo_mashup_sub_admin_code" type="hidden" value="<?php echo attribute_escape( $location->sub_admin_code ); ?>" />
 	<input id="geo_mashup_sub_admin_name" name="geo_mashup_sub_admin_name" type="hidden" value="" />
-	<input id="geo_mashup_locality_name" name="geo_mashup_locality_name" type="hidden" value="<? echo attribute_escape( $location->locality_name ); ?>" />
+	<input id="geo_mashup_locality_name" name="geo_mashup_locality_name" type="hidden" value="<?php echo attribute_escape( $location->locality_name ); ?>" />
 	<div id="geo_mashup_submit" class="submit">
 		<input id="geo_mashup_add_location" name="geo_mashup_add_location" type="submit" <?php echo $add_input_style; ?> value="<?php _e( 'Add Location', 'GeoMashup' ); ?>" />
 		<input id="geo_mashup_delete_location" name="geo_mashup_delete_location" type="submit" <?php echo $delete_input_style; ?> value="<?php _e( 'Delete', 'GeoMashup' ); ?>" />
