@@ -174,7 +174,7 @@ function geo_mashup_edit_form( $object_name, $object_id, $ui_manager = '' ) {
 	<input	id="geo_mashup_search" name="geo_mashup_search" type="text" size="35" />
 	</label>
 
-	<?php _e( 'or select from' ); ?> 
+	<?php _e( 'or select from', 'GeoMashup' ); ?> 
 	<select id="geo_mashup_select" name="geo_mashup_select"> 
 		<option value=""><?php _e('[Saved Locations]','GeoMashup'); ?></option>
 		<?php echo $saved_location_options; ?>
@@ -202,7 +202,7 @@ function geo_mashup_edit_form( $object_name, $object_id, $ui_manager = '' ) {
 	<input id="geo_mashup_locality_name" name="geo_mashup_locality_name" type="hidden" value="<? echo attribute_escape( $location->locality_name ); ?>" />
 	<div id="geo_mashup_submit" class="submit">
 		<input id="geo_mashup_add_location" name="geo_mashup_add_location" type="submit" <?php echo $add_input_style; ?> value="<?php _e( 'Add Location', 'GeoMashup' ); ?>" />
-		<input id="geo_mashup_delete_location" name="geo_mashup_delete_location" type="submit" <?php echo $delete_input_style; ?> value="<?php _e( 'Delete' ); ?>" />
+		<input id="geo_mashup_delete_location" name="geo_mashup_delete_location" type="submit" <?php echo $delete_input_style; ?> value="<?php _e( 'Delete', 'GeoMashup' ); ?>" />
 		<input id="geo_mashup_update_location" name="geo_mashup_update_location" type="submit" <?php echo $update_input_style; ?> value="<?php _e( 'Save', 'GeoMashup' ); ?>" />
 	</div>
 	<div id="geo-mashup-inline-help-link-wrap" class="geo-mashup-js">
