@@ -191,10 +191,12 @@ function geo_mashup_render_map ( ) {
 		<title>Geo Mashup Map</title>
 			<?php wp_head(); ?>
 
-			<?php if ( 'google' == $map_api ) : ?>
 			<script src="<?php echo trailingslashit( GEO_MASHUP_URL_PATH ); ?>geo-mashup.js?v=<?php echo GEO_MASHUP_VERSION; ?>" type="text/javascript"></script>
+			<?php if ( 'google' == $map_api ) : ?>
+			<script src="<?php echo trailingslashit( GEO_MASHUP_URL_PATH ); ?>geo-mashup-google.js?v=<?php echo GEO_MASHUP_VERSION; ?>" type="text/javascript"></script>
 			<?php elseif ( 'openlayers' == $map_api ) : ?>
 			<script src="http://openlayers.org/api/OpenLayers.js"></script>     
+			<script src="http://www.openstreetmap.org/openlayers/OpenStreetMap.js" type="text/javascript"></script>
 			<script src="<?php echo trailingslashit( GEO_MASHUP_URL_PATH ); ?>/mxn/mxn.js?(openlayers)" type="text/javascript"></script>
 			<script src="<?php echo trailingslashit( GEO_MASHUP_URL_PATH ); ?>geo-mashup-mxn.js?v=<?php echo GEO_MASHUP_VERSION; ?>" type="text/javascript"></script>
 			<?php endif; ?>
