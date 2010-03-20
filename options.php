@@ -238,7 +238,7 @@ function geo_mashup_options_page() {
 								name="overall[category_link_text]" 
 								type="text" 
 								size="5" 
-								value="<? echo attribute_escape( $geo_mashup_options->get( 'overall', 'category_link_text' ) ); ?>" />
+								value="<?php echo attribute_escape( $geo_mashup_options->get( 'overall', 'category_link_text' ) ); ?>" />
 						</td>
 					</tr>
 					<tr>
