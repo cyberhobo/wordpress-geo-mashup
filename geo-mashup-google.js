@@ -226,14 +226,14 @@ GeoMashup.checkDependencies = function () {
 	}
 };
 
-GeoMashup.clickMarker = function(object_id, try_count) {
+GeoMashup.clickObjectMarker = function(object_id, try_count) {
 	if (typeof try_count === 'undefined') {
 		try_count = 1;
 	}
 	if (this.objects[object_id] && try_count < 4) {
 		if (GeoMashup.objects[object_id].marker.isHidden()) {
 			try_count += 1;
-			setTimeout(function () { GeoMashup.clickMarker(object_id, try_count); }, 300);
+			setTimeout(function () { GeoMashup.clickObjectMarker(object_id, try_count); }, 300);
 		} else {
 			google.maps.Event.trigger(GeoMashup.objects[object_id].marker,"click"); 
 		}
@@ -297,6 +297,9 @@ GeoMashup.autoZoom = function() {
 	);
 };
 
+GeoMashup.centerMarker = function( marker ) {
+	this.map.panTo( marker.getLatLng() );
+};
 
 GeoMashup.requestObjects = function( use_bounds ) {
 	var request, url, map_bounds, map_span;

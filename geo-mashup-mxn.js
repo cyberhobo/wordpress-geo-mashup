@@ -128,16 +128,18 @@ GeoMashup.createMarker = function(point,obj) {
 	return marker;
 };
 
-GeoMashup.clickMarker = function( object_id, try_count ) {
+GeoMashup.clickObjectMarker = function( object_id, try_count ) {
+	var obj = this.objects[object_id];
 	if (typeof try_count === 'undefined') {
 		try_count = 1;
 	}
-	if (this.objects[object_id] && try_count < 4) {
-		if ( try_count == 1 ) {
+	if ( obj && obj.marker && try_count < 4 ) {
+		// openlayers/mxn seems to have trouble display an infobubble right away
+		if ( try_count < 2 ) {
 			try_count += 1;
-			setTimeout(function () { GeoMashup.clickMarker(object_id, try_count); }, 300);
+			setTimeout(function () { GeoMashup.clickObjectMarker(object_id, try_count); }, 1000);
 		} else {
-			GeoMashup.objects[object_id].marker.click.fire();
+			obj.marker.click.fire();
 		}
 	}
 };
@@ -206,6 +208,9 @@ GeoMashup.isMarkerVisible = function( marker ) {
 	return ( marker.getAttribute( 'visible' ) && map_bounds.contains( marker.location ) ); 
 };
 
+GeoMashup.centerMarker = function( marker ) {
+	this.map.setCenter( marker.location, {}, true );
+};
 
 GeoMashup.createMap = function(container, opts) {
 	var i, type_num, center_latlng, map_opts, map_types, request, url, objects, point, marker_opts, 

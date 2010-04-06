@@ -624,7 +624,7 @@ GeoMashup = {
 			this.addGlowMarker( marker, point );
 		}
 		if ( this.opts.marker_select_center ) {
-			this.map.panTo( marker.getLatLng() );
+			this.centerMarker( marker );
 		}
 		if ('full-post' !== this.opts.template && this.getShowPostElement()) {
 			if ( ! this.locations[point].post_html ) {
@@ -635,6 +635,10 @@ GeoMashup = {
 			}
 		}
 		this.doAction( 'selectedMarker', this.opts, this.selected_marker, this.map );
+	},
+
+	centerMarker : function ( marker ) {
+		// provider override
 	},
 
 	deselectMarker : function() {
@@ -653,7 +657,7 @@ GeoMashup = {
 		// provider override
 	},
 
-	createMarker : function(point,obj) {
+	createMarker : function( point, obj ) {
 		var marker;
 		// provider override
 		return marker;
@@ -663,8 +667,12 @@ GeoMashup = {
 		// provider override
 	},
 
-	clickMarker : function(object_id, try_count) {
+	clickObjectMarker : function(object_id, try_count) {
 		// provider override
+	},
+
+	clickMarker : function( object_id, try_count ) {
+		this.clickObjectMarker( object_id, try_count );
 	},
 
 	getCategoryName : function (category_id) {
@@ -709,7 +717,6 @@ GeoMashup = {
 		// Provider override
 	},
 
-
 	extendCategory : function(point, category_id, post_id) {
 		var icon, color, color_name, max_line_zoom;
 
@@ -752,13 +759,38 @@ GeoMashup = {
 		}
 	},
 
+	updateMarkerVisibility : function( marker, point ) {
+		var i, j, loc, obj, check_cat_id, options = { visible: false };
+
+		loc = this.locations[ point ];
+		for ( i=0; i<loc.objects.length; i+=1 ) {
+			obj = loc.objects[i];
+			for ( j=0; j<obj.categories.length; j+=1 ) {
+				check_cat_id = obj.categories[j];
+				if ( this.categories[check_cat_id].visible ) {
+					options.visible = true;
+				}
+			}
+			this.doAction( 'objectVisibilityOptions', this.opts, options, obj, this.map );
+		}
+		this.doAction( 'markerVisibilityOptions', this.opts, options, loc.marker, this.map );
+
+		if ( options.visible ) {
+			this.showMarker( marker );
+		} else {
+			this.hideMarker( marker );
+		}
+	},
+
 	hideCategory : function(category_id) {
-		var i, j, k, loc, obj, check_cat_id, has_visible_cats;
+		var i, loc;
 
 		if (!this.categories[category_id]) {
 			return false;
 		}
-		this.map.closeInfoWindow();
+		if ( this.map.closeInfoWindow ) {
+			this.map.closeInfoWindow();
+		}
 		if (this.categories[category_id].line) {
 			this.hideLine( this.categories[category_id].line );
 		}
@@ -766,20 +798,7 @@ GeoMashup = {
 		this.categories[category_id].visible = false;
 		for (i=0; i<this.categories[category_id].points.length; i+=1) {
 			loc = this.locations[ this.categories[category_id].points[i] ];
-			has_visible_cats = false;
-			for ( j=0; j<loc.objects.length; j+=1 ) {
-				obj = loc.objects[j];
-				for ( k=0; k<obj.categories.length; k+=1 ) {
-					check_cat_id = obj.categories[k];
-					if ( this.categories[check_cat_id].visible ) {
-						has_visible_cats = true;
-					}
-				}
-			}
-
-			if ( ! has_visible_cats ) {
-				this.hideMarker( loc.marker );
-			}
+			this.updateMarkerVisibility( loc.marker, this.categories[category_id].points[i] );
 		}
 		if (this.clusterer) { 
 			this.clusterer.refresh();
@@ -796,11 +815,11 @@ GeoMashup = {
 		if (this.categories[category_id].line && this.map.getZoom() <= this.categories[category_id].max_line_zoom) {
 			this.showLine( this.categories[category_id].line );
 		}
+		this.categories[category_id].visible = true;
 		for (i=0; i<this.categories[category_id].points.length; i+=1) {
 			point = this.categories[category_id].points[i];
-			this.showMarker( this.locations[point].marker );
+			this.updateMarkerVisibility( this.locations[point].marker, point );
 		}
-		this.categories[category_id].visible = true;
 		if (this.clusterer) { 
 			this.clusterer.refresh();
 		}
@@ -877,7 +896,7 @@ GeoMashup = {
 		if (this.firstLoad) {
 			this.firstLoad = false;
 			if ( this.opts.auto_info_open && this.object_count > 0 ) {
-				this.clickMarker(this.opts.open_object_id);
+				this.clickObjectMarker(this.opts.open_object_id);
 			}
 			if ( this.opts.zoom === 'auto' ) {
 				this.setCenterUpToMaxZoom( 
@@ -953,7 +972,7 @@ GeoMashup = {
 			window.name,
 			'" onclick="frames[\'',
 			window.name,
-			'\'].GeoMashup.clickMarker(',
+			'\'].GeoMashup.clickObjectMarker(',
 			object_id,
 			');">',
 			this.objects[object_id].title,
