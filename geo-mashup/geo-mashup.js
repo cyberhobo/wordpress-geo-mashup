@@ -1232,7 +1232,7 @@ GeoMashup = {
 			opts.object_name = 'post';
 		}
 		this.opts = opts;
-		this.geo_query_url = opts.siteurl + '?geo_mashup_content=geo-query';
+		this.geo_query_url = opts.home_url + '?geo_mashup_content=geo-query';
 
 		google.maps.Event.bind(this.map, "zoomend", this, this.adjustZoom);
 		google.maps.Event.bind(this.map, "moveend", this, this.adjustViewport);
