@@ -517,16 +517,30 @@ class GeoMashupPostUIManager extends GeoMashupUIManager {
 	 * @return The matched content, or an empty string if it was a save location shortcode.
 	 */
 	function replace_save_pre_shortcode( $shortcode_match ) {
+		$content = $shortcode_match[0];
 		$tag_index = array_search( 'geo_mashup_save_location',  $shortcode_match ); 
 		if ( $tag_index !== false ) {
 			// There is an inline location - save the attributes
 			$this->inline_location = shortcode_parse_atts( stripslashes( $shortcode_match[$tag_index+1] ) );
-			// Remove the tag
-			$content = '';
-		} else {
-			// Whatever was matched, leave it be
-			$content = $shortcode_match[0];
-		}
+
+			// If lat and lng are missing, try to geocode based on address
+			$status = 200;
+			if ( ( empty( $this->inline_location['lat'] ) or empty( $this->inline_location['lng'] ) ) and !empty( $this->inline_location['address'] ) ) {
+				$query = $this->inline_location['address'];
+				$status = GeoMashupDB::geocode( $query, $this->inline_location );
+				// Check for the "too many queries" statuses
+				if ( $status == 604 or $status == 620 ) {
+					// Delay and try again
+					sleep( 1 );
+					$status = GeoMashupDB::geocode( $query, $this->inline_location );
+				}
+			}
+
+			if ( 200 == $status ) {
+				// Remove the tag
+				$content = '';
+			}
+		} 
 		return $content;
 	}
 
