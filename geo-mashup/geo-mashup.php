@@ -553,7 +553,9 @@ class GeoMashup {
 				$json_object = array(
 					'object_name' => $query_args['object_name'],
 					'object_id' => $object->object_id,
-					'title' => $object->label,
+					// We should be able to use real UTF-8 characters in titles
+					// Helps with the spelling-out of entities in tooltips
+					'title' => html_entity_decode( $object->label, ENT_COMPAT, 'UTF-8' ),
 					'lat' => $object->lat,
 					'lng' => $object->lng,
 					'author_name' => $author_name,
