@@ -1380,7 +1380,7 @@ GeoMashup = {
 		}
 
 		google.maps.Event.addListener( this.map, 'click', function( overlay ) {
-			if ( GeoMashup.selected_marker && ! overlay ) ) {
+			if ( GeoMashup.selected_marker && ( ! overlay ) ) {
 				GeoMashup.deselectMarker();
 			}
 		} );
