@@ -1257,11 +1257,16 @@ class GeoMashup {
 		$country_count = count( $countries );
 		foreach ( $countries as $country ) {
 			if ( $country_count > 1 ) {
-				$list_html .= '<h3>' . GeoMashupDB::get_administrative_name( $country->country_code ) . '</h3>';
+				$country_name = GeoMashupDB::get_administrative_name( $country->country_code ); 
+				$country_name = $country_name ? $country_name : $country->country_code;
+				$list_html .= '<h3>' . $country_name . '</h3>';
 			}
 			$states = GeoMashupDB::get_distinct_located_values( 'admin_code', 
 				array( 'country_code' => $country->country_code, 'object_name' => 'post' ) );
-			foreach ($states  as $state ) { 
+			if ( empty( $states ) ) {
+				$states = array( (object) array( 'admin_code' => null ) );
+			}
+			foreach ($states as $state ) { 
 				$location_query = array( 
 					'object_name' => 'post',
 					'country_code' => $country->country_code,
@@ -1270,9 +1275,12 @@ class GeoMashup {
 				);
 				$post_locations = GeoMashupDB::get_object_locations( $location_query );
 				if ( count( $post_locations ) > 0 ) {
-					$list_html .= '<h4>' . 
-						GeoMashupDB::get_administrative_name( $country->country_code, $state->admin_code ) . 
-						'</h4><ul class="gm-index-posts">';
+					if ( null != $states[0]->admin_code ) {
+						$state_name = GeoMashupDB::get_administrative_name( $country->country_code, $state->admin_code );
+						$state_name = $state_name ? $state_name : $state->admin_code;
+						$list_html .= '<h4>' . $state_name . '</h4>';
+					}
+					$list_html .= '<ul class="gm-index-posts">';
 					foreach ( $post_locations as $post_location ) { 
 						$list_html .= '<li><a href="' . 
 							get_permalink( $post_location->object_id ) .
