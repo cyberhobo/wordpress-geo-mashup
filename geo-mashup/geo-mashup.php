@@ -1255,11 +1255,12 @@ class GeoMashup {
 		$list_html = '<div class="gm-area-list">';
 		$countries = GeoMashupDB::get_distinct_located_values( 'country_code', array( 'object_name' => 'post' ) );
 		$country_count = count( $countries );
+		$country_heading = '';
 		foreach ( $countries as $country ) {
 			if ( $country_count > 1 ) {
 				$country_name = GeoMashupDB::get_administrative_name( $country->country_code ); 
 				$country_name = $country_name ? $country_name : $country->country_code;
-				$list_html .= '<h3>' . $country_name . '</h3>';
+				$country_heading = '<h3>' . $country_name . '</h3>';
 			}
 			$states = GeoMashupDB::get_distinct_located_values( 'admin_code', 
 				array( 'country_code' => $country->country_code, 'object_name' => 'post' ) );
@@ -1275,6 +1276,10 @@ class GeoMashup {
 				);
 				$post_locations = GeoMashupDB::get_object_locations( $location_query );
 				if ( count( $post_locations ) > 0 ) {
+					if ( ! empty( $country_heading ) ) {
+						$list_html .= $country_heading;
+						$country_heading = '';
+					}
 					if ( null != $states[0]->admin_code ) {
 						$state_name = GeoMashupDB::get_administrative_name( $country->country_code, $state->admin_code );
 						$state_name = $state_name ? $state_name : $state->admin_code;
