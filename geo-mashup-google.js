@@ -185,8 +185,10 @@ GeoMashup.addObjectIcon = function( obj ) {
 	}
 };
 
-GeoMashup.createMarker = function(point,obj) {
-	var marker, marker_opts = {title:obj.title};
+GeoMashup.createMarker = function( point, obj ) {
+	var marker, 
+		// Apersand entities have been added for validity, but look bad in titles
+		marker_opts = {title: obj.title.replace( '&amp;', '&' )};
 
 	if ( !obj.icon ) {
 		this.addObjectIcon( obj );

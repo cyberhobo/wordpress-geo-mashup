@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-02-18 08:44-0700\n"
+"POT-Creation-Date: 2010-04-22 07:25-0600\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -102,7 +102,10 @@ msgstr ""
 
 #: edit-form.php:219
 msgid ""
-"Search for a decimal latitude and longitude, like <em>40.123,-105.456</em>."
+"Search for a decimal latitude and longitude separated by a comma, like "
+"<em>40.123,-105.456</em>. Seven decimal places are stored. Negative latitude "
+"is used for the southern hemisphere, and negative longitude for the western "
+"hemisphere."
 msgstr ""
 
 #: edit-form.php:220
@@ -158,122 +161,122 @@ msgid ""
 "location."
 msgstr ""
 
-#: geo-mashup-db.php:746
+#: geo-mashup-db.php:752
 msgid "No locations found with missing address fields."
 msgstr ""
 
-#: geo-mashup-db.php:749
+#: geo-mashup-db.php:755
 msgid "Locations to geocode: "
 msgstr ""
 
-#: geo-mashup-db.php:757
+#: geo-mashup-db.php:763
 msgid "Time limit: "
 msgstr ""
 
-#: geo-mashup-db.php:768
+#: geo-mashup-db.php:774
 msgid "Too many requests, increasing delay to"
 msgstr ""
 
-#: geo-mashup-db.php:771
+#: geo-mashup-db.php:777
 msgid "address"
 msgstr ""
 
-#: geo-mashup-db.php:772
+#: geo-mashup-db.php:778
 msgid "postal code"
 msgstr ""
 
-#: geo-mashup-db.php:775
+#: geo-mashup-db.php:781
 msgid "No address info found, status"
 msgstr ""
 
-#: geo-mashup-db.php:779
+#: geo-mashup-db.php:785
 msgid "Time limit exceeded, retry to continue."
 msgstr ""
 
-#: geo-mashup-db.php:854
+#: geo-mashup-db.php:860
 msgid "Converting old locations"
 msgstr ""
 
-#: geo-mashup-db.php:871
+#: geo-mashup-db.php:877
 #, php-format
 msgid "Failed to convert location (%s). You can %sedit the post%s "
 msgstr ""
 
-#: geo-mashup-db.php:872
+#: geo-mashup-db.php:878
 msgid "to update the location, and try again."
 msgstr ""
 
-#: geo-mashup-db.php:885
+#: geo-mashup-db.php:891
 msgid "Converting saved locations"
 msgstr ""
 
-#: geo-mashup-db.php:895
+#: geo-mashup-db.php:901
 msgid "OK: "
 msgstr ""
 
-#: geo-mashup-db.php:900
+#: geo-mashup-db.php:906
 #, php-format
 msgid "Failed to convert saved location (%s). "
 msgstr ""
 
-#: geo-mashup-db.php:901
+#: geo-mashup-db.php:907
 msgid "You'll have to save it again, sorry."
 msgstr ""
 
-#: geo-mashup-db.php:925
+#: geo-mashup-db.php:931
 msgid "Failed to initialize geo dates from post dates: "
 msgstr ""
 
-#: geo-mashup-db.php:928
+#: geo-mashup-db.php:934
 #, php-format
 msgid "Initialized %d geo dates from corresponding post dates."
 msgstr ""
 
-#: geo-mashup-db.php:1386
+#: geo-mashup-db.php:1392
 msgid "A location must have an ID or coordinates to be saved."
 msgstr ""
 
-#: geo-mashup-options.php:361 geo-mashup-options.php:369
-#: geo-mashup-options.php:375 geo-mashup-options.php:385
-#: geo-mashup-options.php:401 geo-mashup-options.php:406
-#: geo-mashup-options.php:419 geo-mashup-options.php:451
-#: geo-mashup-options.php:466 geo-mashup-options.php:479
+#: geo-mashup-options.php:362 geo-mashup-options.php:370
+#: geo-mashup-options.php:376 geo-mashup-options.php:386
+#: geo-mashup-options.php:402 geo-mashup-options.php:407
+#: geo-mashup-options.php:420 geo-mashup-options.php:452
+#: geo-mashup-options.php:467 geo-mashup-options.php:480
 msgid "is invalid for"
 msgstr ""
 
-#: geo-mashup-options.php:362 geo-mashup-options.php:376
+#: geo-mashup-options.php:363 geo-mashup-options.php:377
 msgid ", which must be a valid map type (see documentation)"
 msgstr ""
 
-#: geo-mashup-options.php:370
+#: geo-mashup-options.php:371
 msgid ", which must be an array of valid map types (see documentation)"
 msgstr ""
 
-#: geo-mashup-options.php:386
+#: geo-mashup-options.php:387
 msgid ", which must be a valid map control (see documentation)"
 msgstr ""
 
-#: geo-mashup-options.php:402
+#: geo-mashup-options.php:403
 msgid ", which must be a string"
 msgstr ""
 
-#: geo-mashup-options.php:407
+#: geo-mashup-options.php:408
 msgid ", which must not contain XML tags."
 msgstr ""
 
-#: geo-mashup-options.php:420
+#: geo-mashup-options.php:421
 msgid ", which must be a number"
 msgstr ""
 
-#: geo-mashup-options.php:452
+#: geo-mashup-options.php:453
 msgid ", which must be \"true\" or \"false\""
 msgstr ""
 
-#: geo-mashup-options.php:467
+#: geo-mashup-options.php:468
 msgid ", which must be an array"
 msgstr ""
 
-#: geo-mashup-options.php:480
+#: geo-mashup-options.php:481
 msgid ", which must be a number from 0 to "
 msgstr ""
 
@@ -302,55 +305,55 @@ msgstr ""
 msgid "Location added."
 msgstr ""
 
-#: geo-mashup.php:664
+#: geo-mashup.php:666
 msgid "Geo Mashup found no objects to map in this context"
 msgstr ""
 
-#: geo-mashup.php:688
+#: geo-mashup.php:690
 msgid "Geo Mashup found no current object to map"
 msgstr ""
 
-#: geo-mashup.php:692
+#: geo-mashup.php:694
 msgid "Geo Mashup ommitted a map for an object with no location"
 msgstr ""
 
-#: geo-mashup.php:879
+#: geo-mashup.php:880
 msgid ""
 "You must add a description to this category to use this Geo Mashup feature."
 msgstr ""
 
-#: geo-mashup.php:909 options.php:127
+#: geo-mashup.php:910 options.php:127
 msgid "Geo Mashup Options"
 msgstr ""
 
-#: geo-mashup.php:909
+#: geo-mashup.php:910
 msgid "Geo Mashup"
 msgstr ""
 
-#: geo-mashup.php:931
+#: geo-mashup.php:932
 #, php-format
 msgid ""
 "Geo Mashup requires a Google API key in the <a href=\"%s\">settings</a> "
 "before it will work."
 msgstr ""
 
-#: geo-mashup.php:954
+#: geo-mashup.php:955
 msgid "Settings"
 msgstr ""
 
-#: geo-mashup.php:973
+#: geo-mashup.php:974
 msgid "Documentation"
 msgstr ""
 
-#: geo-mashup.php:975
+#: geo-mashup.php:976
 msgid "Donate"
 msgstr ""
 
-#: geo-mashup.php:1153
+#: geo-mashup.php:1154
 msgid "Show on map"
 msgstr ""
 
-#: geo-mashup.php:1164
+#: geo-mashup.php:1165
 msgid "Geotag Icon"
 msgstr ""
 

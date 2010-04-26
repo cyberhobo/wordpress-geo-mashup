@@ -533,6 +533,8 @@ class GeoMashupDB {
 		// Country name - the easy case
 		$country_info_url = 'http://ws.geonames.org/countryInfo?country=' . urlencode( $country_code ) .
 			'&lang=' . urlencode( $language );
+		if( !class_exists( 'WP_Http' ) )
+			include_once( ABSPATH . WPINC. '/class-http.php' );
 		$http = new WP_Http();
 		$country_info_response = $http->get( $country_info_url, array( 'timeout' => 3.0 ) );
 		if ( is_wp_error( $country_info_response ) ) {
@@ -595,6 +597,8 @@ class GeoMashupDB {
 	function get_geonames_subdivision( $lat, $lng ) {
 		$result = array( );
 
+		if( !class_exists( 'WP_Http' ) )
+			include_once( ABSPATH . WPINC. '/class-http.php' );
 		$http = new WP_Http();
 		$response = $http->get( "http://ws.geonames.org/countrySubdivision?lat=$lat&lng=$lng", array( 'timeout' => 3.0 ) );
 		if ( !is_wp_error( $response ) ) {
@@ -641,6 +645,8 @@ class GeoMashupDB {
 			'&q=' . urlencode( $query ) .
 			'&output=xml&oe=utf8&sensor=false&gl=' . $language;
 
+		if( !class_exists( 'WP_Http' ) )
+			include_once( ABSPATH . WPINC. '/class-http.php' );
 		$http = new WP_Http();
 		$response = $http->get( $google_geocode_url, array( 'timeout' => 3.0 ) );
 		if ( is_wp_error( $response ) ) {

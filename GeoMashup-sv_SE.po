@@ -1,0 +1,255 @@
+# Geo Mashup French translation.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Geo Mashup\n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: 2010-03-25 23:17+0100\n"
+"Last-Translator: \n"
+"Language-Team: Geo Mashup - French <obagot@gmail.com>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-SourceCharset: utf-8\n"
+"X-Poedit-Basepath: ..\n"
+"X-Poedit-KeywordsList: gettext;__;_e\n"
+"X-Poedit-Country: FRANCE\n"
+"X-Poedit-Language: French\n"
+"X-Poedit-SearchPath-0: c:\\devel\\geo-mashup\n"
+
+# c:\devel\geo-mashup/geo-mashup.php:138
+msgid "Location"
+msgstr "Plats"
+
+# c:\devel\geo-mashup/geo-mashup.php:138
+msgid "Find location:"
+msgstr "Hitta plats:"
+
+# c:\devel\geo-mashup/geo-mashup.php:146
+msgid "help"
+msgstr "hjälp"
+
+# c:\devel\geo-mashup/geo-mashup.php:148
+msgid "Put a green pin at the location for this post."
+msgstr "Placera en grön markör på platsen för detta inlägg."
+
+# c:\devel\geo-mashup/geo-mashup.php:148
+msgid "There are many ways to do it:"
+msgstr "Det finns många sätt att göra det på:"
+
+# c:\devel\geo-mashup/geo-mashup.php:150
+msgid "Search for a location name."
+msgstr "Sök efter en plats."
+
+# c:\devel\geo-mashup/geo-mashup.php:151
+msgid "For multiple search results, mouse over pins to see location names, and click a result pin to select that location."
+msgstr "När det är flera sökresultat, för musen över markörerna för att se platsens namn och klicka sedan för att välja en plats."
+
+# c:\devel\geo-mashup/geo-mashup.php:152
+msgid "Search for a decimal latitude and longitude, like <em>40.123,-105.456</em>."
+msgstr "Sök efter en latitud och longitud, t ex <em>40.123,-105.456</em>."
+
+# c:\devel\geo-mashup/geo-mashup.php:153
+msgid "Search for a street address, like <em>123 main st, anytown, acity</em>."
+msgstr "Sök efter en gatuadress, t ex <em>Kunsgatan 25, Stocholm, Sweden</em>."
+
+# c:\devel\geo-mashup/geo-mashup.php:154
+msgid "Click on the location. Zoom in if necessary so you can refine the location by dragging it or clicking a new location."
+msgstr "Sök efter en plats. Om det är nödvändigt kan du zooma in för att lättare kunna avgöra dess position. Flytta markören genom att dra eller klicka på en ny plats."
+
+# c:\devel\geo-mashup/geo-mashup.php:158
+msgid "To execute a search, type search text into the Find Location box and hit the enter key. If you type a name next to \"Save As\", the location will be saved under that name so you can find it again with a quick search. Saved names are searched before doing a GeoNames search for location names."
+msgstr "För att påbörja en sökning, ange sökord i sökrutan och tryck enter. Om du skriver ett namn intill \"Spara som\" kommer platsen att sparas för att i framtiden vara tillgängligt via snabbsök. Sparade sökningar söks igenom före det sökningar efter geografiska platser påbörjas."
+
+# c:\devel\geo-mashup/geo-mashup.php:159
+msgid "To remove the location (green pin) for a post, clear the search box and hit the enter key."
+msgstr "För at ta bort en plats (markören) för ett inlägg, rensa sökrutan och tryck enter."
+
+# c:\devel\geo-mashup/geo-mashup.php:160
+msgid "close"
+msgstr "stäng"
+
+# c:\devel\geo-mashup/geo-mashup.php:163
+msgid "Loading Google map. Check Geo Mashup options if the map fails to load."
+msgstr "Laddar in karta från Google. Kontrollera inställningarna för Geo Mashup om kartan inte laddas in."
+
+# c:\devel\geo-mashup/geo-mashup.php:175
+msgid "Save As:"
+msgstr "Spara som:"
+
+# c:\devel\geo-mashup/geo-mashup.php:292
+msgid "Options updated."
+msgstr "Inställningarna uppdaterades."
+
+# c:\devel\geo-mashup/geo-mashup.php:319
+msgid "Defaults set."
+msgstr "Ursprungliga inställningar."
+
+# c:\devel\geo-mashup/geo-mashup.php:340
+msgid "Roadmap"
+msgstr "Vägkarta"
+
+# c:\devel\geo-mashup/geo-mashup.php:341
+msgid "Satellite"
+msgstr "Sattelit"
+
+# c:\devel\geo-mashup/geo-mashup.php:342
+msgid "Hybrid"
+msgstr "Hybrid"
+
+# c:\devel\geo-mashup/geo-mashup.php:352
+msgid "Small Zoom"
+msgstr "Liten zoom"
+
+# c:\devel\geo-mashup/geo-mashup.php:353
+msgid "Small Pan/Zoom"
+msgstr "Liten navigering/zoom"
+
+# c:\devel\geo-mashup/geo-mashup.php:354
+msgid "Large Pan/Zoom"
+msgstr "Stor navigering/zoom"
+
+# c:\devel\geo-mashup/geo-mashup.php:421
+msgid "Geo Mashup Options"
+msgstr "Inställningar för Geo Mashup"
+
+# c:\devel\geo-mashup/geo-mashup.php:423
+msgid "Behavior"
+msgstr "Uppträdande"
+
+# c:\devel\geo-mashup/geo-mashup.php:426
+msgid "Google Maps Key"
+msgstr "API-nyckel till Google Maps"
+
+# c:\devel\geo-mashup/geo-mashup.php:428
+msgid "Get yours here"
+msgstr "Skaffa din här"
+
+# c:\devel\geo-mashup/geo-mashup.php:431
+msgid "Mashup Page"
+msgstr "sidan för mashup"
+
+# c:\devel\geo-mashup/geo-mashup.php:437
+msgid "Map Control"
+msgstr "Kontroller för kartan"
+
+# c:\devel\geo-mashup/geo-mashup.php:443
+msgid "Add Map Type Control"
+msgstr "Lägg till kontroll för kartan"
+
+# c:\devel\geo-mashup/geo-mashup.php:447
+msgid "Add Overview Control"
+msgstr "Lägg till översiktskontroll"
+
+# c:\devel\geo-mashup/geo-mashup.php:451
+msgid "Default Map Type"
+msgstr "Förinställd karta"
+
+# c:\devel\geo-mashup/geo-mashup.php:457
+msgid "Default Zoom Level"
+msgstr "Förinställd zoom"
+
+# c:\devel\geo-mashup/geo-mashup.php:459
+# c:\devel\geo-mashup/geo-mashup.php:497
+msgid "0-17"
+msgstr "0-17"
+
+# c:\devel\geo-mashup/geo-mashup.php:462
+msgid "Show Future Posts"
+msgstr "Vida framtida inlägg"
+
+# c:\devel\geo-mashup/geo-mashup.php:466
+msgid "Automatically Open the Center Info Window"
+msgstr "Öppna automatiskt informationsfönstret"
+
+# c:\devel\geo-mashup/geo-mashup.php:470
+msgid "Enable Full Post Display"
+msgstr "Aktivera visning av hela inlägg"
+
+# c:\devel\geo-mashup/geo-mashup.php:474
+msgid "Use Compressed Javascript"
+msgstr "Använd komprimerad Javascript"
+
+# c:\devel\geo-mashup/geo-mashup.php:480
+msgid "Categories"
+msgstr "Kategorier"
+
+# c:\devel\geo-mashup/geo-mashup.php:483
+msgid "Add Category Links"
+msgstr "Lägg till länk till kategorierna"
+
+# c:\devel\geo-mashup/geo-mashup.php:487
+msgid "Category Link Separator"
+msgstr "Separering av kategorier"
+
+# c:\devel\geo-mashup/geo-mashup.php:491
+msgid "Category Link Text"
+msgstr "Länktext för kategorier"
+
+# c:\devel\geo-mashup/geo-mashup.php:495
+msgid "Category Zoom Level"
+msgstr "Nivå för zoom på kategorier"
+
+# c:\devel\geo-mashup/geo-mashup.php:502
+msgid "Presentation"
+msgstr "Visning"
+
+# c:\devel\geo-mashup/geo-mashup.php:505
+msgid "Post Excerpt Format"
+msgstr "Format för utdrag"
+
+# c:\devel\geo-mashup/geo-mashup.php:507
+msgid "Text"
+msgstr "Text"
+
+# c:\devel\geo-mashup/geo-mashup.php:508
+msgid "HTML"
+msgstr "HTML"
+
+# c:\devel\geo-mashup/geo-mashup.php:511
+msgid "Post Excerpt Length"
+msgstr "Utdragets längd"
+
+# c:\devel\geo-mashup/geo-mashup.php:515
+msgid "Include style settings"
+msgstr "Inkludera stilmallar"
+
+# c:\devel\geo-mashup/geo-mashup.php:517
+msgid " (Uncheck to use styles from your theme stylesheet instead of these)"
+msgstr " (Kryssa ur för att använda stilmallar från ditt tema istället för dessa)"
+
+# c:\devel\geo-mashup/geo-mashup.php:520
+msgid "Map Width"
+msgstr "Bredd karta"
+
+# c:\devel\geo-mashup/geo-mashup.php:521
+# c:\devel\geo-mashup/geo-mashup.php:525
+# c:\devel\geo-mashup/geo-mashup.php:529
+# c:\devel\geo-mashup/geo-mashup.php:533
+msgid "px"
+msgstr "pixlar"
+
+# c:\devel\geo-mashup/geo-mashup.php:524
+msgid "Map Height"
+msgstr "Höjd karta"
+
+# c:\devel\geo-mashup/geo-mashup.php:528
+msgid "Info Window Width"
+msgstr "Bredd informationsruta"
+
+# c:\devel\geo-mashup/geo-mashup.php:532
+msgid "Info Window Height"
+msgstr "Höjd informationsruta"
+
+# c:\devel\geo-mashup/geo-mashup.php:536
+msgid "Info Window Font Size"
+msgstr "Textstorlek informationsruta"
+
+# c:\devel\geo-mashup/geo-mashup.php:541
+msgid "Update Options"
+msgstr "Uppdateringsalternativ"
+
+# c:\devel\geo-mashup/geo-mashup.php:421
+msgid "Geo Mashup Documentation"
+msgstr "Dokumentation för Geo Mashup"
+

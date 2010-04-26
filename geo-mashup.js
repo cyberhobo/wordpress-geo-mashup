@@ -627,8 +627,7 @@ GeoMashup = {
 			this.centerMarker( marker );
 		}
 		if ('full-post' !== this.opts.template && this.getShowPostElement()) {
-			if ( ! this.locations[point].post_html ) {
-				this.locations[point].post_html = this.getFullPostHtml();
+			if ( this.locations[point].post_html ) {
 				this.getShowPostElement().innerHTML = this.locations[point].post_html;
 			} else {
 				this.loadFullPost( point );

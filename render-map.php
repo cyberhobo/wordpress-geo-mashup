@@ -70,8 +70,8 @@ function geo_mashup_render_map ( ) {
 	}
 					 
 	$map_properties = array ( 
-		'map_api' => $map_api,
-		'siteurl' => get_bloginfo( 'url' ),
+		'siteurl' => get_option( 'siteurl' ),
+		'home_url' => get_option( 'home' ),
 		'url_path' => GEO_MASHUP_URL_PATH,
  		'template_url_path' => get_template_directory_uri() );
 	if ( isset( $geo_mashup_custom ) ) {
