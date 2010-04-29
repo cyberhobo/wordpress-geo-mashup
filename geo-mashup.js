@@ -758,6 +758,19 @@ GeoMashup = {
 		}
 	},
 
+	recluster : function( ) {
+		if (this.clusterer) { 
+			this.clusterer.refresh();
+		}
+	},
+
+	updateMarkerVisibilities : function( ) {
+		this.forEach( this.locations, function( point, loc ) {
+			GeoMashup.updateMarkerVisibility( loc.marker, point );
+		} );
+		this.updateVisibleList();
+	},
+
 	updateMarkerVisibility : function( marker, point ) {
 		var i, j, loc, obj, check_cat_id, options = { visible: false };
 
@@ -799,9 +812,7 @@ GeoMashup = {
 			loc = this.locations[ this.categories[category_id].points[i] ];
 			this.updateMarkerVisibility( loc.marker, this.categories[category_id].points[i] );
 		}
-		if (this.clusterer) { 
-			this.clusterer.refresh();
-		}
+		this.recluster();
 		this.updateVisibleList();
 	},
 
@@ -819,9 +830,7 @@ GeoMashup = {
 			point = this.categories[category_id].points[i];
 			this.updateMarkerVisibility( this.locations[point].marker, point );
 		}
-		if (this.clusterer) { 
-			this.clusterer.refresh();
-		}
+		this.recluster();
 		this.updateVisibleList();
 	},
 
@@ -920,9 +929,7 @@ GeoMashup = {
 				this.hideMarker( this.locations[point].marker );
 			}
 		}
-		if (this.clusterer) { 
-			this.clusterer.refresh();
-		}
+		this.recluster();
 		this.updateVisibleList();
 	},
 
