@@ -18,70 +18,10 @@ mxn.register('openlayers', {
 			this.maps[api].events.register( 'moveend', this, function( e ) {
 				me.endPan.fire();
 			} );
-			this.layers['osmmapnik'] = new OpenLayers.Layer.TMS(
-				'OSM Mapnik',
-				[
-					"http://a.tile.openstreetmap.org/",
-					"http://b.tile.openstreetmap.org/",
-					"http://c.tile.openstreetmap.org/"
-				],
-				{
-					type:'png',
-					getURL: function (bounds) {
-						var res = this.map.getResolution();
-						var x = Math.round ((bounds.left - this.maxExtent.left) / (res * this.tileSize.w));
-						var y = Math.round ((this.maxExtent.top - bounds.top) / (res * this.tileSize.h));
-						var z = this.map.getZoom();
-						var limit = Math.pow(2, z);
-						if (y < 0 || y >= limit) {
-							return null;
-						} else {
-							x = ((x % limit) + limit) % limit;
-							var path = z + "/" + x + "/" + y + "." + this.type;
-							var url = this.url;
-							if (url instanceof Array) {
-								url = this.selectUrl(path, url);
-							}
-							return url + path;
-						}
-					},
-					displayOutsideMaxExtent: true
-				}
-			);
 
-			this.layers['osm'] = new OpenLayers.Layer.TMS(
-				'OSM',
-				[
-					"http://a.tah.openstreetmap.org/Tiles/tile.php/",
-					"http://b.tah.openstreetmap.org/Tiles/tile.php/",
-					"http://c.tah.openstreetmap.org/Tiles/tile.php/"
-				],
-				{
-					type:'png',
-					getURL: function (bounds) {
-						var res = this.map.getResolution();
-						var x = Math.round ((bounds.left - this.maxExtent.left) / (res * this.tileSize.w));
-						var y = Math.round ((this.maxExtent.top - bounds.top) / (res * this.tileSize.h));
-						var z = this.map.getZoom();
-						var limit = Math.pow(2, z);
-						if (y < 0 || y >= limit) {
-							return null;
-						} else {
-							x = ((x % limit) + limit) % limit;
-							var path = z + "/" + x + "/" + y + "." + this.type;
-							var url = this.url;
-							if (url instanceof Array) {
-								url = this.selectUrl(path, url);
-							}
-							return url + path;
-						}
-					},
-					displayOutsideMaxExtent: true
-				}
-			);
-
+			this.layers['osmmapnik'] = new OpenLayers.Layer.OSM.Mapnik( 'OSM Mapnik' );
 			this.maps[api].addLayer(this.layers['osmmapnik']);
-			this.maps[api].addLayer(this.layers['osm']);
+			
 			this.loaded[api] = true;
 		},
 
