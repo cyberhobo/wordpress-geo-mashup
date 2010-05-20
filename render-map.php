@@ -42,10 +42,10 @@ function geo_mashup_render_map ( ) {
 	global $wp_scripts, $geo_mashup_options, $geo_mashup_custom;
 
 	$map_api = $geo_mashup_options->get( 'overall', 'map_api' );
-	if ( 'google' == $map_api ) {
-		wp_enqueue_script( 'google-jsapi' );
+	if ( 'openlayers' == $map_api ) {
+		wp_enqueue_script( 'mxn-openlayers' );
 	} else {
-		wp_enqueue_script( 'jquery' );
+		wp_enqueue_script( 'google-jsapi' );
 	}
 
 	// Resolve map style
@@ -195,9 +195,6 @@ function geo_mashup_render_map ( ) {
 			<?php if ( 'google' == $map_api ) : ?>
 			<script src="<?php echo trailingslashit( GEO_MASHUP_URL_PATH ); ?>geo-mashup-google.js?v=<?php echo GEO_MASHUP_VERSION; ?>" type="text/javascript"></script>
 			<?php elseif ( 'openlayers' == $map_api ) : ?>
-			<script src="http://openlayers.org/api/OpenLayers.js"></script>     
-			<script src="http://www.openstreetmap.org/openlayers/OpenStreetMap.js" type="text/javascript"></script>
-			<script src="<?php echo trailingslashit( GEO_MASHUP_URL_PATH ); ?>/mxn/mxn.js?(openlayers)" type="text/javascript"></script>
 			<script src="<?php echo trailingslashit( GEO_MASHUP_URL_PATH ); ?>geo-mashup-mxn.js?v=<?php echo GEO_MASHUP_VERSION; ?>" type="text/javascript"></script>
 			<?php endif; ?>
 

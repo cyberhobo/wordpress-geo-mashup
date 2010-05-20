@@ -54,13 +54,22 @@ class GeoMashupUIManager {
 	 */
 	function enqueue_form_client_items() {	
 
-		wp_enqueue_style( 'geo-mashup-edit-form', trailingslashit( GEO_MASHUP_URL_PATH ) . 'edit-form.css', false, GEO_MASHUP_VERSION, 'screen' );
+		wp_enqueue_style( 
+			'geo-mashup-edit-form', 
+			path_join( GEO_MASHUP_URL_PATH, 'edit-form.css' ), 
+			false, 
+			GEO_MASHUP_VERSION, 
+			'screen' 
+		);
 
-		wp_enqueue_script( 'google-jsapi' );
-		wp_enqueue_script( 'geo-mashup-location-editor', 
-			GEO_MASHUP_URL_PATH . '/geo-mashup-location-editor.js', 
-			array( 'jquery', 'google-jsapi' ), 
-			GEO_MASHUP_VERSION );
+		$required_scripts = array( 'jquery', 'google-jsapi' );
+
+		wp_enqueue_script( 
+			'geo-mashup-location-editor', 
+			path_join( GEO_MASHUP_URL_PATH, 'geo-mashup-location-editor.js' ), 
+			$required_scripts, 
+			GEO_MASHUP_VERSION 
+		);
 	}
 
 	/**

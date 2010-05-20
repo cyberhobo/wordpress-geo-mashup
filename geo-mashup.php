@@ -184,13 +184,22 @@ class GeoMashup {
 	function load_scripts() {
 		global $geo_mashup_options;
 
-		// Other plugins could want the google-jsapi script
-		wp_register_script( 'google-jsapi', 'http://www.google.com/jsapi?key='.$geo_mashup_options->get('overall', 'google_key') );
+		// Register scripts that other plugins might use
+			wp_register_script( 'google-jsapi', 'http://www.google.com/jsapi?key='.$geo_mashup_options->get('overall', 'google_key') );
+		if ( 'openlayers' == $geo_mashup_options->get( 'overall', 'map_api' ) ) {
+			wp_register_script( 'mxn', path_join( GEO_MASHUP_URL_PATH, 'mxn/mxn.js' ), null, GEO_MASHUP_VERSION );
+			wp_register_script( 'mxn-core', path_join( GEO_MASHUP_URL_PATH, 'mxn/mxn.core.js' ), array( 'mxn' ), GEO_MASHUP_VERSION );
+			wp_register_script( 'openlayers', 'http://openlayers.org/api/OpenLayers.js', null, 'latest' );
+			wp_register_script( 'openstreetmap', 'http://www.openstreetmap.org/openlayers/OpenStreetMap.js', array( 'openlayers' ), 'latest' );
+			wp_register_script( 'mxn-openlayers', path_join( GEO_MASHUP_URL_PATH, 'mxn/mxn.openlayers.core.js' ), array( 'mxn-core', 'openstreetmap' ), GEO_MASHUP_VERSION );
+		}
+
 		if (is_admin()) {
 			if ( isset($_GET['page']) &&  GEO_MASHUP_PLUGIN_NAME === $_GET['page'] ) {
 				wp_enqueue_script( 'jquery-ui-tabs' );
 			}
 		} else {
+			// The loader script is tiny and handles click-to-load maps that could be on any front end page
 			wp_enqueue_script( 'geo-mashup-loader', GEO_MASHUP_URL_PATH.'/geo-mashup-loader.js', array( 'google-jsapi' ), GEO_MASHUP_VERSION);
 		}
 	}
