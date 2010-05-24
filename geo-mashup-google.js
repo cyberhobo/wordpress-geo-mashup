@@ -47,8 +47,8 @@ GeoMashup.loadMaxContent = function( marker, regular_node, info_window_max_url )
 	info_window_max_request.send( null );
 };
 
-GeoMashup.openInfoWindow = function( marker, point ) {
-	var object_ids, i, url, info_window_request, object_element;
+GeoMashup.openInfoWindow = function( marker ) {
+	var object_ids, i, url, info_window_request, object_element, point = marker.getPoint();
 
 	this.map.closeInfoWindow();
 		
