@@ -28,11 +28,28 @@ GeoMashup.createCategoryLine = function ( category ) {
 };
 
 GeoMashup.openInfoWindow = function( marker ) {
-	var object_ids, i, url, info_window_request, object_element, point = marker.location;
+	var object_ids = [], i, object_element, point = marker.location;
 
-	marker.openBubble();
-
-	// TODO: load info window without google
+	if ( this.locations[point].loaded ) {
+		marker.openBubble();
+	} else {
+		marker.setInfoBubble( '<div align="center"><img src="' + this.opts.url_path + 
+			'/images/busy_icon.gif" alt="Loading..." /></div>' );
+		marker.openBubble();
+		// Collect object ids
+		for( i = 0; i < this.locations[point].objects.length; i += 1 ) {
+			object_ids.push( this.locations[point].objects[i].object_id );
+		}
+		// Do an AJAX query to get content for these objects
+		jQuery.get( 
+			this.geo_query_url, 
+			{ object_name: this.opts.object_name, object_ids: object_ids.join(',') },
+			function( content ) {
+				marker.setInfoBubble( content );
+				marker.openBubble();
+			}
+		); 
+	}
 };
 
 GeoMashup.addGlowMarker = function( marker ) {
@@ -134,7 +151,7 @@ GeoMashup.clickObjectMarker = function( object_id, try_count ) {
 		try_count = 1;
 	}
 	if ( obj && obj.marker && try_count < 4 ) {
-		// openlayers/mxn seems to have trouble display an infobubble right away
+		// openlayers/mxn seems to have trouble displaying an infobubble right away
 		if ( try_count < 2 ) {
 			try_count += 1;
 			setTimeout(function () { GeoMashup.clickObjectMarker(object_id, try_count); }, 1000);
