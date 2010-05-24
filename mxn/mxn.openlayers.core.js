@@ -107,11 +107,11 @@ mxn.register('openlayers', {
 		addMarker: function(marker, old) {
 			var map = this.maps[this.api];
 			var pin = marker.toProprietary(this.api);
-			if (!this.layers['markers']) {
-				this.layers['markers'] = new OpenLayers.Layer.Markers('markers');
-				map.addLayer(this.layers['markers']);
+			if (!this.layers.markers) {
+				this.layers.markers = new OpenLayers.Layer.Markers('markers');
+				map.addLayer(this.layers.markers);
 			}
-			this.layers['markers'].addMarker(pin);
+			this.layers.markers.addMarker(pin);
 
 			return pin;
 		},
@@ -119,7 +119,7 @@ mxn.register('openlayers', {
 		removeMarker: function(marker) {
 			var map = this.maps[this.api];
 			var pin = marker.toProprietary(this.api);
-			this.layers['markers'].removeMarker(pin);
+			this.layers.markers.removeMarker(pin);
 			pin.destroy();
 
 		},
@@ -140,26 +140,28 @@ mxn.register('openlayers', {
 			var map = this.maps[this.api];
 			var pl = polyline.toProprietary(this.api);
 
-			if (!this.layers['polylines']) {
-				this.layers['polylines'] = new OpenLayers.Layer.Vector('polylines');
-				map.addLayer(this.layers['polylines']);
+			if (!this.layers.polylines) {
+				this.layers.polylines = new OpenLayers.Layer.Vector('polylines');
+				map.addLayer(this.layers.polylines);
 			}
 			polyline.setChild(pl);
-			this.layers['polylines'].addFeatures([pl]);
+			this.layers.polylines.addFeatures([pl]);
 			return pl;
 		},
 
 		removePolyline: function(polyline) {
 			var map = this.maps[this.api];
 			var pl = polyline.toProprietary(this.api);
-			this.layers['polylines'].removeFeatures([pl]);
+			this.layers.polylines.removeFeatures([pl]);
 		},
 		removeAllPolylines: function() {
 			var olpolylines = [];
 			for(var i = 0, length = this.polylines.length; i < length; i++){
 				olpolylines.push(this.polylines[i].toProprietary(this.api));
 			}
-			if (this.layers['polylines']) this.layers['polylines'].removeFeatures(olpolylines);			
+			if (this.layers.polylines) {
+				this.layers.polylines.removeFeatures(olpolylines);
+			}
 		},
 
 		getCenter: function() {
@@ -349,25 +351,27 @@ mxn.register('openlayers', {
 			}
 
 			if(this.iconUrl) {
-				icon = new OpenLayers.Icon(this.iconUrl, size, anchor);
+				this.icon = new OpenLayers.Icon(this.iconUrl, size, anchor);
 			}
 			else {
-				icon = new OpenLayers.Icon('http://openlayers.org/dev/img/marker-gold.png', size, anchor);
+				this.icon = new OpenLayers.Icon('http://openlayers.org/dev/img/marker-gold.png', size, anchor);
 			}
-			var marker = new OpenLayers.Marker(this.location.toProprietary("openlayers"), icon);
+			var marker = new OpenLayers.Marker(this.location.toProprietary("openlayers"), this.icon);
 
 			marker.events.register("click", marker, function(event) {
 				this.mapstraction_marker.click.fire( event );
 			});
 
 			if(this.infoBubble) {
-				var popup = new OpenLayers.Popup(null,
+				var popup = new OpenLayers.Popup.AnchoredBubble(null,
 					this.location.toProprietary("openlayers"),
 					new OpenLayers.Size(100,100),
 					this.infoBubble,
+					this.icon,
 					true
 				);
 				popup.autoSize = true;
+				popup.panMapIfOutOfView = true;
 				var theMap = this.map;
 				if(this.hover) {
 					marker.events.register("mouseover", marker, function(event) {
@@ -407,9 +411,21 @@ mxn.register('openlayers', {
 		},
 
 		openBubble: function() {		
+			if ( this.infoBubble ) {
+				// Need to create a new popup in case setInfoBubble has been called
+				this.popup = new OpenLayers.Popup.AnchoredBubble(null,
+					this.location.toProprietary("openlayers"),
+					new OpenLayers.Size(100,100),
+					this.infoBubble,
+					this.icon,
+					true
+				);
+				this.popup.autoSize = true;
+				this.popup.panMapIfOutOfView = true;
+			}
+
 			if ( this.popup ) {
-				this.map.addPopup( this.popup );
-				this.popup.show();
+				this.map.addPopup( this.popup, true );
 			}
 		},
 
