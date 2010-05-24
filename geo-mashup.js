@@ -588,7 +588,13 @@ GeoMashup = {
 		}
 	},
 
-	openInfoWindow : function( marker ) {
+	getObjectsAtLocation : function( point ) {
+		return this.locations[point].objects;
+	},
+
+	addGlowMarker : function( marker, point ) {
+		// Provider override
+	},	openInfoWindow : function( marker ) {
 		// Provider override
 	},
 
@@ -615,7 +621,7 @@ GeoMashup = {
 	selectMarker : function( marker, point ) {
 		this.selected_marker = marker;
 		if ( this.opts.marker_select_info_window ) {
-			this.openInfoWindow( marker, point );
+			this.openInfoWindow( marker );
 		}
 		if ( this.opts.marker_select_attachments ) {
 			this.showMarkerAttachments( marker, point );
