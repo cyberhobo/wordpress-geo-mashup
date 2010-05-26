@@ -565,6 +565,13 @@ GeoMashup = {
 		return this.show_post_element;
 	},
 
+	parentizeLinksMarkup : function( markup ) {
+		var container = document.createElement( 'div' );
+		container.innerHTML = markup;
+		this.parentizeLinks( container );
+		return container.innerHTML;
+	},
+
 	parentizeLinks : function( node ) {
 		var i, links = node.getElementsByTagName('a');
 		if ( parent ) {
