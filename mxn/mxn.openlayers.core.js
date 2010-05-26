@@ -363,15 +363,13 @@ mxn.register('openlayers', {
 			});
 
 			if(this.infoBubble) {
-				var popup = new OpenLayers.Popup.AnchoredBubble(null,
+				var popup = new OpenLayers.Popup.FramedCloud(null,
 					this.location.toProprietary("openlayers"),
 					new OpenLayers.Size(100,100),
 					this.infoBubble,
 					this.icon,
 					true
 				);
-				popup.autoSize = true;
-				popup.panMapIfOutOfView = true;
 				var theMap = this.map;
 				if(this.hover) {
 					marker.events.register("mouseover", marker, function(event) {
@@ -413,15 +411,13 @@ mxn.register('openlayers', {
 		openBubble: function() {		
 			if ( this.infoBubble ) {
 				// Need to create a new popup in case setInfoBubble has been called
-				this.popup = new OpenLayers.Popup.AnchoredBubble(null,
+				this.popup = new OpenLayers.Popup.FramedCloud(null,
 					this.location.toProprietary("openlayers"),
 					new OpenLayers.Size(100,100),
 					this.infoBubble,
 					this.icon,
 					true
 				);
-				this.popup.autoSize = true;
-				this.popup.panMapIfOutOfView = true;
 			}
 
 			if ( this.popup ) {
