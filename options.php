@@ -104,7 +104,8 @@ function geo_mashup_options_page() {
 		'only' => __('Only', 'GeoMashup'));
 
 	$mapApis = Array(
-		'google' => __( 'Google', 'GeoMashup' ),
+		'google' => __( 'Google v2', 'GeoMashup' ),
+		'googlev3' => __( 'Google v3', 'GeoMashup' ),
 		'openlayers' => __( 'OpenLayers', 'GeoMashup' )
 	);
 

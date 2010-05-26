@@ -12,7 +12,8 @@ Mapstraction: {
 				mapTypeControl: false,
 				mapTypeControlOptions: null,
 				navigationControl: false,
-				navigationControlOptions: null
+			        navigationControlOptions: null,
+				scrollwheel: false
 			};
 
 		    // find controls
@@ -99,6 +100,9 @@ Mapstraction: {
 			map.setOptions(myOptions);
 			this.addControlsArgs.scale = true;
 		}
+		if (args.map_type){
+		    this.addMapTypeControls();
+		}
 	},
 
 	addSmallControls: function() {
@@ -149,11 +153,6 @@ Mapstraction: {
 	removeMarker: function(marker) {
 		// doesn't really remove them, just hides them
 		marker.hide();
-	},
-
-	removeAllMarkers: function() {
-		var map = this.maps[this.api];		
-		// TODO: Add provider code
 	},
 	
 	declutterMarkers: function(opts) {
@@ -219,6 +218,9 @@ Mapstraction: {
 			case mxn.Mapstraction.HYBRID:
 				map.setMapTypeId(google.maps.MapTypeId.HYBRID);
 				break;
+			case mxn.Mapstraction.PHYSICAL:
+				map.setMapTypeId(google.maps.MapTypeId.TERRAIN);
+				break;
 			default:
 				map.setMapTypeId(google.maps.MapTypeId.ROADMAP);
 		}	 
@@ -234,8 +236,8 @@ Mapstraction: {
 				return mxn.Mapstraction.SATELLITE;
 			case google.maps.MapTypeId.HYBRID:
 				return mxn.Mapstraction.HYBRID;
-			//case google.maps.MapTypeId.TERRAIN:
-			//		return something;
+			case google.maps.MapTypeId.TERRAIN:
+				return mxn.Mapstraction.PHYSICAL;
 			default:
 				return null;
 		}
@@ -244,6 +246,9 @@ Mapstraction: {
 	getBounds: function () {
 		var map = this.maps[this.api];
 		var gLatLngBounds = map.getBounds();
+		if ( typeof gLatLngBounds !== 'object' ) {
+			return null;
+		}
 		var sw = gLatLngBounds.getSouthWest();
 		var ne = gLatLngBounds.getNorthEast();
 		return new mxn.BoundingBox(sw.lat(), sw.lng(), ne.lat(), ne.lng());

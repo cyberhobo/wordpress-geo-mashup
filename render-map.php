@@ -44,6 +44,8 @@ function geo_mashup_render_map ( ) {
 	$map_api = $geo_mashup_options->get( 'overall', 'map_api' );
 	if ( 'openlayers' == $map_api ) {
 		wp_enqueue_script( 'mxn-openlayers' );
+	} else if ( 'googlev3' == $map_api ) {
+		wp_enqueue_script( 'mxn-googlev3' );
 	} else {
 		wp_enqueue_script( 'google-jsapi' );
 	}
@@ -194,7 +196,7 @@ function geo_mashup_render_map ( ) {
 			<script src="<?php echo trailingslashit( GEO_MASHUP_URL_PATH ); ?>geo-mashup.js?v=<?php echo GEO_MASHUP_VERSION; ?>" type="text/javascript"></script>
 			<?php if ( 'google' == $map_api ) : ?>
 			<script src="<?php echo trailingslashit( GEO_MASHUP_URL_PATH ); ?>geo-mashup-google.js?v=<?php echo GEO_MASHUP_VERSION; ?>" type="text/javascript"></script>
-			<?php elseif ( 'openlayers' == $map_api ) : ?>
+			<?php else : ?>
 			<script src="<?php echo trailingslashit( GEO_MASHUP_URL_PATH ); ?>geo-mashup-mxn.js?v=<?php echo GEO_MASHUP_VERSION; ?>" type="text/javascript"></script>
 			<?php endif; ?>
 

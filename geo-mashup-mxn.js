@@ -45,7 +45,7 @@ GeoMashup.openInfoWindow = function( marker ) {
 			this.geo_query_url, 
 			{ object_name: this.opts.object_name, object_ids: object_ids.join(',') },
 			function( content ) {
-				marker.setInfoBubble( content );
+				marker.setInfoBubble( GeoMashup.parentizeLinksMarkup( content ) );
 				marker.openBubble();
 			}
 		); 
@@ -222,7 +222,7 @@ GeoMashup.autoZoom = function() {
 
 GeoMashup.isMarkerVisible = function( marker ) {
 	var map_bounds = this.map.getBounds();
-	return ( marker.getAttribute( 'visible' ) && map_bounds.contains( marker.location ) ); 
+	return ( marker.getAttribute( 'visible' ) && map_bounds && map_bounds.contains( marker.location ) ); 
 };
 
 GeoMashup.centerMarker = function( marker ) {
@@ -231,7 +231,7 @@ GeoMashup.centerMarker = function( marker ) {
 
 GeoMashup.createMap = function(container, opts) {
 	var i, type_num, center_latlng, map_opts, map_types, request, url, objects, point, marker_opts, 
-		clusterer_opts, google_bar_opts, single_marker, ov, credit_div, initial_zoom = 1, controls = {};
+		clusterer_opts, single_marker, ov, credit_div, initial_zoom = 1, controls = {};
 
 	this.container = container;
 	this.base_color_icon = {};
@@ -284,7 +284,7 @@ GeoMashup.createMap = function(container, opts) {
 	};
 	this.doAction( 'mapOptions', opts, map_opts );
 	*/
-	this.map = new mxn.Mapstraction( this.container, 'openlayers' );
+	this.map = new mxn.Mapstraction( this.container, opts.map_api );
 	this.map.setCenterAndZoom(new mxn.LatLonPoint(0,0), 0);
 
 	this.doAction( 'newMap', opts, this.map );
@@ -349,9 +349,10 @@ GeoMashup.createMap = function(container, opts) {
 	} else if (opts.object_data && opts.object_data.objects[0]) {
 		center_latlng = new mxn.LatLonPoint( parseFloat( opts.object_data.objects[0].lat ), parseFloat( opts.object_data.objects[0].lng ) );
 		this.map.setCenterAndZoom( center_latlng, initial_zoom );
-	} else if (google) {
+	} else {
 		// TODO: change to jquery xmlhttp
 		// Center on the most recent located object
+		/*
 		request = google.maps.XmlHttp.create();
 		url = this.geo_query_url + '&limit=1';
 		if (opts.map_cat) {
@@ -366,6 +367,7 @@ GeoMashup.createMap = function(container, opts) {
 		} else {
 			this.map.setCenter(new google.maps.LatLng(0,0),initial_zoom,opts.map_type);
 		}
+		*/
 	}
 
 	this.location_bounds = new mxn.BoundingBox( new mxn.LatLonPoint( 0, 0 ), new mxn.LatLonPoint( 0, 0 ) );
