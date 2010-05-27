@@ -39,16 +39,7 @@ function add_double_quotes(&$item,$key) {
  * @access private
  */
 function geo_mashup_render_map ( ) {
-	global $wp_scripts, $geo_mashup_options, $geo_mashup_custom;
-
-	$map_api = $geo_mashup_options->get( 'overall', 'map_api' );
-	if ( 'openlayers' == $map_api ) {
-		wp_enqueue_script( 'mxn-openlayers' );
-	} else if ( 'googlev3' == $map_api ) {
-		wp_enqueue_script( 'mxn-googlev3' );
-	} else {
-		wp_enqueue_script( 'google-jsapi' );
-	}
+	global $geo_mashup_options, $geo_mashup_custom;
 
 	// Resolve map style
 	$style_file_path = trailingslashit( get_template_directory() ) . 'map-style.css';
@@ -63,14 +54,6 @@ function geo_mashup_render_map ( ) {
 		$style_url_path = trailingslashit( GEO_MASHUP_URL_PATH ) . 'map-style-default.css';
 	} 
 
-	// Resolve custom javascript
-	$custom_js_url_path = '';
-	if ( isset( $geo_mashup_custom ) ) {
-		$custom_js_url_path = $geo_mashup_custom->file_url( 'custom.js' );
-	} else if ( is_readable( 'custom.js' ) ) {
-		$custom_js_url_path = trailingslashit( GEO_MASHUP_URL_PATH ) . 'custom.js';
-	}
-					 
 	$map_properties = array ( 
 		'siteurl' => get_option( 'siteurl' ),
 		'home_url' => get_option( 'home' ),
@@ -136,6 +119,55 @@ function geo_mashup_render_map ( ) {
 		$map_properties = array_merge ( $options, $map_properties );
 	}
 
+	// Queue scripts
+	$map_api = $geo_mashup_options->get( 'overall', 'map_api' );
+	$mashup_dependencies = array( 'jquery' );
+
+	if ( 'google' == $map_api ) {
+		// Google v2 base
+		$mashup_dependencies[] = 'google-jsapi';
+		$mashup_script = 'geo-mashup-google';
+
+		if ( !empty( $map_properties['cluster_max_zoom'] ) ) {
+			// Queue clustering scripts 
+			wp_register_script( 'mapiconmaker', path_join( GEO_MASHUP_URL_PATH, 'mapiconmaker.js' ), array( 'google-jsapi' ), '1.1' );
+			wp_register_script( 'clustermarker', path_join( GEO_MASHUP_URL_PATH, 'ClusterMarker.js' ), array( 'mapiconmaker' ), '1.3.2' );
+			$mashup_dependencies[] = 'clustermarker';
+		}
+	} else {
+		// Mapstraction base
+		$mashup_script = 'geo-mashup-mxn';
+		wp_register_script( 'mxn', path_join( GEO_MASHUP_URL_PATH, 'mxn/mxn.js' ), null, GEO_MASHUP_VERSION );
+		wp_register_script( 'mxn-core', path_join( GEO_MASHUP_URL_PATH, 'mxn/mxn.core.js' ), array( 'mxn' ), GEO_MASHUP_VERSION );
+	}
+
+	// Mapstraction providers
+	if ( 'openlayers' == $map_api ) { 
+		wp_register_script( 'openlayers', 'http://openlayers.org/api/OpenLayers.js', null, 'latest' );
+		wp_register_script( 'openstreetmap', 'http://www.openstreetmap.org/openlayers/OpenStreetMap.js', array( 'openlayers' ), 'latest' );
+		wp_register_script( 'mxn-openlayers', path_join( GEO_MASHUP_URL_PATH, 'mxn/mxn.openlayers.core.js' ), array( 'mxn-core', 'openstreetmap' ), GEO_MASHUP_VERSION );
+		$mashup_dependencies[] = 'mxn-openlayers';
+	} else if ( 'googlev3' == $map_api ) {
+		wp_register_script( 'google-maps-3', 'http://maps.google.com/maps/api/js?sensor=false' );
+		wp_register_script( 'mxn-googlev3', path_join( GEO_MASHUP_URL_PATH, 'mxn/mxn.googlev3.core.js' ), array( 'mxn-core', 'google-maps-3' ), GEO_MASHUP_VERSION );
+		$mashup_dependencies[] = 'mxn-googlev3';
+	}
+
+	// Geo Mashup scripts
+	wp_register_script( 'geo-mashup', path_join( GEO_MASHUP_URL_PATH, 'geo-mashup.js' ), $mashup_dependencies, GEO_MASHUP_VERSION );
+	wp_enqueue_script( $mashup_script, path_join( GEO_MASHUP_URL_PATH, $mashup_script . '.js' ), array( 'geo-mashup' ), GEO_MASHUP_VERSION );
+
+	// Custom javascript
+	$custom_js_url_path = '';
+	if ( isset( $geo_mashup_custom ) ) {
+		$custom_js_url_path = $geo_mashup_custom->file_url( 'custom.js' );
+	} else if ( is_readable( 'custom.js' ) ) {
+		$custom_js_url_path = path_join( GEO_MASHUP_URL_PATH, 'custom.js' );
+	}
+	if ( ! empty( $custom_js_url_path ) ) {
+		wp_enqueue_script( 'geo-mashup-custom', $custom_js_url_path, array( $mashup_script ) );
+	}
+
 	if ( 'true' == $map_properties['add_google_bar'] ) {
 		$map_properties['adsense_code'] = $geo_mashup_options->get( 'overall', 'adsense_code' );
 	}
@@ -191,23 +223,7 @@ function geo_mashup_render_map ( ) {
 		<head>
 			<meta http-equiv="content-type" content="text/html; charset=utf-8"/>
 		<title>Geo Mashup Map</title>
-			<?php wp_head(); ?>
-
-			<script src="<?php echo trailingslashit( GEO_MASHUP_URL_PATH ); ?>geo-mashup.js?v=<?php echo GEO_MASHUP_VERSION; ?>" type="text/javascript"></script>
-			<?php if ( 'google' == $map_api ) : ?>
-			<script src="<?php echo trailingslashit( GEO_MASHUP_URL_PATH ); ?>geo-mashup-google.js?v=<?php echo GEO_MASHUP_VERSION; ?>" type="text/javascript"></script>
-			<?php else : ?>
-			<script src="<?php echo trailingslashit( GEO_MASHUP_URL_PATH ); ?>geo-mashup-mxn.js?v=<?php echo GEO_MASHUP_VERSION; ?>" type="text/javascript"></script>
-			<?php endif; ?>
-
-			<?php if ( $custom_js_url_path ): ?>
-			<script src="<?php echo $custom_js_url_path; ?>" type="text/javascript"></script>
-			<?php endif; ?>
-
-			<?php if ( !empty( $map_properties['cluster_max_zoom'] ) ) : ?>
-			<script src="<?php echo trailingslashit( GEO_MASHUP_URL_PATH ); ?>mapiconmaker.js?v=1.1" type="text/javascript"></script>
-			<script src="<?php echo trailingslashit( GEO_MASHUP_URL_PATH ); ?>ClusterMarker.js?v=1.3.2" type="text/javascript"></script>
-			<?php endif; ?>
+			<?php wp_print_scripts(); ?>
 
 			<?php if ( $geo_mashup_options->get('overall', 'theme_stylesheet_with_maps' ) == 'true' ) : ?>
 			<link rel="stylesheet" href="<?php echo get_stylesheet_uri(); ?>" type="text/css" media="screen" />
