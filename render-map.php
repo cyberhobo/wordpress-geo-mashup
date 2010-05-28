@@ -54,11 +54,14 @@ function geo_mashup_render_map ( ) {
 		$style_url_path = trailingslashit( GEO_MASHUP_URL_PATH ) . 'map-style-default.css';
 	} 
 
-	$map_properties = array ( 
+	$map_api = $geo_mashup_options->get( 'overall', 'map_api' );
+	$map_properties = array( 
 		'siteurl' => get_option( 'siteurl' ),
 		'home_url' => get_option( 'home' ),
 		'url_path' => GEO_MASHUP_URL_PATH,
- 		'template_url_path' => get_template_directory_uri() );
+		'template_url_path' => get_template_directory_uri(),
+		'map_api' => $map_api 
+	);
 	if ( isset( $geo_mashup_custom ) ) {
 		$map_properties['custom_url_path'] = $geo_mashup_custom->url_path;
 	}
@@ -120,7 +123,6 @@ function geo_mashup_render_map ( ) {
 	}
 
 	// Queue scripts
-	$map_api = $geo_mashup_options->get( 'overall', 'map_api' );
 	$mashup_dependencies = array( 'jquery' );
 
 	if ( 'google' == $map_api ) {
