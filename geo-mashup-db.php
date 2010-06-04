@@ -516,103 +516,423 @@ class GeoMashupDB {
 	}
 
 	/**
-	 * Use the Geonames web service to look up and administrative name.
+	 * Use the Geonames web service to look up an administrative name.
 	 *
 	 * @since 1.2
 	 * @access private
 	 * @static
 	 * 
 	 * @param string $country_code 
-	 * @param string $admin_code 
+	 * @param string $admin_code Admin area name to look up. If empty, look up the country name.
 	 * @param string $language 
 	 * @return string|null Name or null.
 	 */
 	function get_geonames_administrative_name( $country_code, $admin_code = '', $language = '' ) {
 		$language = GeoMashupDB::primary_language_code( $language );
 
-		// Country name - the easy case
-		$country_info_url = 'http://ws.geonames.org/countryInfo?country=' . urlencode( $country_code ) .
-			'&lang=' . urlencode( $language );
 		if( !class_exists( 'WP_Http' ) )
 			include_once( ABSPATH . WPINC. '/class-http.php' );
-		$http = new WP_Http();
-		$country_info_response = $http->get( $country_info_url, array( 'timeout' => 3.0 ) );
-		if ( is_wp_error( $country_info_response ) ) {
-			GeoMashupDB::lookup_status( $country_info_response->get_error_code() );
-			return null;
-		}
-		GeoMashupDB::lookup_status( $country_info_response['response']['code'] );
-		$country_name = GeoMashupDB::get_simple_tag_content( 'countryName', $country_info_response['body'] );
-		$country_id = GeoMashupDB::get_simple_tag_content( 'geonameId', $country_info_response['body'] );
-		if ( !empty( $country_name ) ) {
-			GeoMashupDB::cache_administrative_name( $country_code, '', $language, $country_name, $country_id );
-			if ( empty( $admin_code ) ) {
-				return $country_name;
-			}
-		}
 
-		// Administrative area (child of country)
-		if ( empty( $country_id ) ) return null;
-
-		$children_url = 'http://ws.geonames.org/children?style=short&geonameId=' . $country_id;
-		$children_response = $http->get( $children_url, array( 'timeout' => 3.0 ) );
-		if ( is_wp_error( $children_response ) ) {
-			GeoMashupDB::lookup_status( $children_response->get_error_code() );
-			return null;
-		}
-		preg_match_all( '/<geonameId>(\d*)<\/geonameId>/is', $children_response['body'], $matches );
-		if ( empty( $matches ) ) return null;
-		$requested_name = null;
-		foreach ( $matches[1] as $child_id ) {
-			// We have to query each child to get the admin code, so just cache them all
-			$child_url = 'http://ws.geonames.org/get?geonameId=' . $child_id . '&lang=' . urlencode( $language );
-			$child_response = $http->get( $child_url,  array( 'timeout' => 3.0 ) );
-			if ( is_wp_error( $child_response ) ) {
-				GeoMashupDB::lookup_status( $child_response->get_error_code() );
+		if ( empty( $admin_code ) ) {
+			// Look up a country name
+			$country_info_url = 'http://ws.geonames.org/countryInfoJSON?country=' . urlencode( $country_code ) .
+				'&lang=' . urlencode( $language );
+			$http = new WP_Http();
+			$country_info_response = $http->get( $country_info_url, array( 'timeout' => 3.0 ) );
+			if ( is_wp_error( $country_info_response ) ) {
+				GeoMashupDB::lookup_status( $country_info_response->get_error_code() );
 				return null;
 			}
-			$child_name = GeoMashupDB::get_simple_tag_content( 'name', $child_response['body'] );
-			if ( !empty( $child_name ) ) {
-				$child_admin_code = GeoMashupDB::get_simple_tag_content( 'adminCode1', $child_response['body'] );
-				GeoMashupDB::cache_administrative_name( $country_code, $child_admin_code, $language, $child_name, $child_id );
-				if ( $child_admin_code == $admin_code ) {
-					$requested_name = $child_name;
+			$status = GeoMashupDB::lookup_status( $country_info_response['response']['code'] );
+			if ( '200' != $status ) 
+				return null;
+			$data = json_decode( $country_info_response['body'] );
+			$country_name = $data->geonames[0]->countryName;
+			$country_id = $data->geonames[0]->geonameId;
+			if ( !empty( $country_name ) ) {
+				GeoMashupDB::cache_administrative_name( $country_code, '', $language, $country_name, $country_id );
+			}
+			return $country_name;
+		} else {
+			// Look up an admin name
+			$admin_search_url = 'http://ws.geonames.org/searchJSON?maxRows=1&style=SHORT&featureCode=ADM1&country=' .
+				urlencode( $country_code ) . '&adminCode1=' . urlencode( $admin_code );
+			$http = new WP_Http();
+			$admin_search_response = $http->get( $admin_search_url, array( 'timeout' => 3.0 ) );
+			if ( is_wp_error( $admin_search_response ) ) {
+				GeoMashupDB::lookup_status( $admin_search_response->get_error_code() );
+				return null;
+			}
+			$status = GeoMashupDB::lookup_status( $admin_search_response['response']['code'] );
+			if ( '200' != $status ) 
+				return null;
+			$data = json_decode( $admin_search_response['body'] );
+			if ( empty( $data ) or 0 == $data->totalResultsCount ) 
+				return null;
+			$admin_name = $data->geonames[0]->name;
+			$admin_id = $data->geonames[0]->geonameId;
+			if ( !empty( $admin_name ) ) {
+				GeoMashupDB::cache_administrative_name( $country_code, $admin_code, $language, $admin_name, $admin_id );
+			}
+			return $admin_name;
+		}
+		return null;
+	}
+
+	/**
+	 * Use the Google geocoding service to complete a location.
+	 * 
+	 * @since 1.4
+	 * @access private
+	 * @static
+	 *
+	 * @param mixed $query The search string.
+	 * @param array $location The location to geocode, modified.
+	 * @param string $language 
+	 * @return string The status code of the request.
+	 */
+	function google_geocode( $query, &$location, $language = '' ) {
+
+		if( !class_exists( 'WP_Http' ) )
+			include_once( ABSPATH . WPINC. '/class-http.php' );
+
+		$language = GeoMashupDB::primary_language_code( $language );
+
+		$google_geocode_url = 'http://maps.google.com/maps/api/geocode/json?sensor=false&address=' .
+			urlencode( utf8_encode( $query ) ) . '&language=' . $language;
+
+		// Remove whitespace from lat/lng queries - (or restrict to reverse geocoding?)
+		if ( preg_match( '/^[\s\d\.,-]*$/', $query ) ) {
+			$query = preg_replace( '/\s*/', '', $query );
+		}
+
+		$http = new WP_Http();
+		$response = $http->get( $google_geocode_url, array( 'timeout' => 3.0 ) );
+		if ( is_wp_error( $response ) ) {
+			return GeoMashupDB::lookup_status( $response->get_error_code() );
+		}
+
+		$status = GeoMashupDB::lookup_status( $response['response']['code'] );
+		if ( '200' != $status ) {
+			return $status;
+		}
+		
+		$data = json_decode( $response['body'] );
+		if ( 'OK' != $data->status ) {
+			// status of ZERO_RESULTS, OVER_QUERY_LIMIT, REQUEST_DENIED, INVALID_REQUEST, etc.
+			return GeoMashupDB::lookup_status( $data->status );
+		}
+
+		$first_result = $data->results[0];
+		if ( empty( $location['lat'] ) or empty( $location['lng'] ) ) {
+			$location['lat'] = $first_result->geometry->location->lat;
+			$location['lng'] = $first_result->geometry->location->lng;
+		}
+		if ( empty( $location['address'] ) ) {
+			$location['address'] = $first_result->formatted_address;
+		}
+		if ( ! empty( $first_result->address_components ) ) {
+			foreach( $first_result->address_components as $component ) {
+				if ( empty( $location['country_code'] ) and in_array( 'country', $component->types ) ) {
+					$location['country_code'] = $component->short_name;
+				}
+				if ( empty( $location['admin_code'] ) and in_array( 'administrative_area_level_1', $component->types ) ) {
+					$location['admin_code'] = $component->short_name;
+				}
+				if ( empty( $location['sub_admin_code'] ) and in_array( 'administrative_area_level_2', $component->types ) ) {
+					$location['sub_admin_code'] = $component->short_name;
+				}
+				if ( empty( $location['postal_code'] ) and in_array( 'postal_code', $component->types ) ) {
+					$location['postal_code'] = $component->short_name;
+				}
+				if ( empty( $location['locality_name'] ) and in_array( 'locality', $component->types ) ) {
+					$location['locality_name'] = $component->short_name;
 				}
 			}
 		}
-		return $requested_name;
+
+		return $status;
 	}
 
 	/**
-	 * Use the Geonames web service to look up country and admin codes for coordinates.
-	 *
-	 * @since 1.2
+	 * Use the Geonames search service to complete a location.
+	 * 
+	 * @since 1.4
 	 * @access private
 	 * @static
-	 * 
-	 * @param float $lat 
-	 * @param float $lng 
-	 * @return array Requested codes if found, or empty.
+	 *
+	 * @param mixed $query The search string.
+	 * @param array $location The location to geocode, modified.
+	 * @param string $language 
+	 * @return string The status code of the request.
 	 */
-	function get_geonames_subdivision( $lat, $lng ) {
-		$result = array( );
+	function geonames_geocode( $query, &$location, $language = '' ) {
 
 		if( !class_exists( 'WP_Http' ) )
 			include_once( ABSPATH . WPINC. '/class-http.php' );
+
+		$language = GeoMashupDB::primary_language_code( $language );
+
+		$url = 'http://ws.geonames.org/searchJSON?username=cyberhobo&maxRows=1&q=' .
+			urlencode( utf8_encode( $query ) ) . '&lang=' . $language;
+
 		$http = new WP_Http();
-		$response = $http->get( "http://ws.geonames.org/countrySubdivision?lat=$lat&lng=$lng", array( 'timeout' => 3.0 ) );
-		if ( !is_wp_error( $response ) ) {
-			GeoMashupDB::lookup_status( $response['response']['code'] );
-			$result['country_code'] = GeoMashupDB::get_simple_tag_content( 'countryCode', $response['body'] );
-			$result['admin_code'] = GeoMashupDB::get_simple_tag_content( 'adminCode1', $response['body'] ); // TODO: Save administrative names?
-		} else {
-			GeoMashupDB::lookup_status( $response->get_error_code() );
+		$response = $http->get( $url, array( 'timeout' => 3.0 ) );
+		if ( is_wp_error( $response ) ) {
+			return GeoMashupDB::lookup_status( $response->get_error_code() );
 		}
-		return $result;
+
+		$status = GeoMashupDB::lookup_status( $response['response']['code'] );
+		if ( '200' != $status ) {
+			return $status;
+		}
+		
+		$data = json_decode( $response['body'] );
+		if ( empty( $data ) or 0 == $data->totalResultsCount ) {
+			return GeoMashupDB::lookup_status( '404' );
+		}
+
+		$first_result = $data->geonames[0];
+		if ( empty( $location['lat'] ) or empty( $location['lng'] ) ) {
+			$location['lat'] = $first_result->lat;
+			$location['lng'] = $first_result->lng;
+		}
+		if ( empty( $location['country_code'] ) ) {
+			$location['country_code'] = $first_result->countryCode;
+		}
+		if ( empty( $location['admin_code'] ) ) {
+			$location['admin_code'] = $first_result->countryCode;
+		}
+
+		return $status;
+	}
+
+
+	/**
+	 * Use the nominatum geocoding service to complete a location.
+	 * 
+	 * @since 1.4
+	 * @access private
+	 * @static
+	 *
+	 * @param mixed $query The search string.
+	 * @param array $location The location to geocode, modified.
+	 * @param string $language 
+	 * @return string The status code of the request.
+	 */
+	function nominatim_geocode( $query, &$location, $language = '' ) {
+
+		if( !class_exists( 'WP_Http' ) )
+			include_once( ABSPATH . WPINC. '/class-http.php' );
+
+		$language = GeoMashupDB::primary_language_code( $language );
+
+		$geocode_url = 'http://nominatim.openstreetmap.org/search?format=json&polygon=0&addressdetails=1&q=' .
+			urlencode( utf8_encode( $query ) ) . '&accept-language=' . $language . 
+			'&email=' . urlencode( get_option( 'admin_email' ) );
+
+		$http = new WP_Http();
+		$response = $http->get( $geocode_url, array( 'timeout' => 3.0 ) );
+		if ( is_wp_error( $response ) ) {
+			return GeoMashupDB::lookup_status( $response->get_error_code() );
+		}
+
+		$status = GeoMashupDB::lookup_status( $response['response']['code'] );
+		if ( '200' != $status ) {
+			return $status;
+		}
+		
+		$data = json_decode( $response['body'] );
+		if ( empty( $data ) ) {
+			return GeoMashupDB::lookup_status( '404' );
+		}
+
+		$first_result = $data[0];
+		if ( empty( $location['lat'] ) or empty( $location['lng'] ) ) {
+			$location['lat'] = $first_result->lat;
+			$location['lng'] = $first_result->lon;
+		}
+		if ( empty( $location['address'] ) ) {
+			$location['address'] = $first_result->display_name;
+		}
+		if ( ! empty( $first_result->address ) ) {
+			if ( empty( $location['country_code'] ) and ! empty( $first_result->address->country_code ) ) {
+				$location['country_code'] = strtoupper( $first_result->address->country_code );
+			}
+			// Returns admin name in address->state, but no code
+			if ( empty( $location['sub_admin_code'] ) and ! empty( $first_result->address->county ) ) {
+				$location['sub_admin_code'] = $first_result->address->county;
+			}
+			if ( empty( $location['postal_code'] ) and ! empty( $first_result->address->postcode ) ) {
+				$location['postal_code'] = $first_result->address->postcode;
+			}
+			if ( empty( $location['locality_name'] ) and ! empty( $first_result->address->city ) ) {
+				$location['locality_name'] = $first_result->address->city;
+			}
+		}
+
+		return $status;
 	}
 
 	/**
-	 * Use the Google HTTP geocoding service to complete a location.
+	 * Use the Geonames web service to look up missing location fields from coordinates.
+	 *
+	 * @since 1.4
+	 * @access private
+	 * @static
+	 * 
+	 * @param array $location The location to geocode, modified.
+	 * @param string $language 
+	 * @return string The status code of the request.
+	 */
+	function geonames_reverse_geocode_location( &$location, $language = '' ) {
+
+		if ( empty( $location['lat'] ) or empty( $location['lng'] ) ) {
+			// Bad Request
+			return GeoMashupDB::lookup_status( '400' );
+		}
+
+		$language = GeoMashupDB::primary_language_code( $language );
+
+		if( !class_exists( 'WP_Http' ) )
+			include_once( ABSPATH . WPINC. '/class-http.php' );
+
+		$status = null;
+		if ( GeoMashupDB::are_any_location_fields_empty( $location, array( 'country_code', 'admin_code' ) ) ) {
+			$url = 'http://ws.geonames.org/countrySubdivisionJSON?style=FULL&lat=' . urlencode( $location['lat'] ) .
+				'&lng=' . urlencode( $location['lng'] );
+			$http = new WP_Http();
+			$response = $http->get( $url, array( 'timeout' => 3.0 ) );
+			if ( is_wp_error( $response ) ) {
+				return GeoMashupDB::lookup_status( $response->get_error_code() );
+			}
+			$status = GeoMashupDB::lookup_status( $response['response']['code'] );
+			$data = json_decode( $response['body'] );
+			if ( empty( $data ) ) {
+				return GeoMashupDB::lookup_status( '404' );
+			}
+			$location['country_code'] = $data->countryCode;
+			$location['admin_code'] = $data->adminCode1;
+		}
+		// Look up more things, postal code, locality or address in US
+		if ( 'US' == $location['country_code'] and GeoMashupDB::are_any_location_fields_empty( $location, array( 'address', 'locality_name', 'postal_code' ) ) ) {
+			$url = 'http://ws.geonames.org/findNearestAddressJSON?style=FULL&lat=' . urlencode( $location['lat'] ) .
+				'&lng=' . urlencode( $location['lng'] );
+			$http = new WP_Http();
+			$response = $http->get( $url, array( 'timeout' => 3.0 ) );
+			if ( is_wp_error( $response ) ) {
+				return GeoMashupDB::lookup_status( $response->get_error_code() );
+			}
+			$status = GeoMashupDB::lookup_status( $response['response']['code'] );
+			$data = json_decode( $response['body'] );
+			if ( ! empty( $data->address ) ) {
+				$address_parts = array();
+				if ( ! empty( $data->address->street ) ) {
+					$address_parts[] = ( empty( $data->address->streetNumber ) ? '' : $data->address->streetNumber . ' ' ) . 
+						$data->address->street;
+				}
+				if ( ! empty( $data->address->adminName1 ) ) {
+					$address_parts[] = $data->address->adminName1; 
+				}
+				if ( ! empty( $data->address->postalcode ) ) {
+					$address_parts[] = $data->address->postalcode; 
+				}
+				$address_parts[] = $data->address->countryCode;
+				$location['address'] = implode( ', ', $address_parts );
+				$location['locality_name'] = $data->address->placename;
+				$location['postal_code'] = $data->address->postalcode;
+			}
+		} 
+		if (  GeoMashupDB::are_any_location_fields_empty( $location, array( 'address', 'locality_name', 'postal_code' ) ) ) {
+			// Just look for a postal code
+			$url = 'http://ws.geonames.org/findNearbyPostalCodesJSON?maxRows=1&lat=' . urlencode( $location['lat'] ) .
+				'&lng=' . urlencode( $location['lng'] );
+			$http = new WP_Http();
+			$response = $http->get( $url, array( 'timeout' => 3.0 ) );
+			if ( is_wp_error( $response ) ) {
+				return GeoMashupDB::lookup_status( $response->get_error_code() );
+			}
+			$status = GeoMashupDB::lookup_status( $response['response']['code'] );
+			$data = json_decode( $response['body'] );
+			if ( ! empty( $data->postalCodes ) ) {
+				$postal_code = $data->postalCodes[0];
+				$location['address'] = $postal_code->placeName . ', ' . 
+					$postal_code->adminName1 . ', ' . $postal_code->postalCode . ', ' .
+					$postal_code->countryCode;
+				$location['locality_name'] = $postal_code->placeName;
+				$location['postal_code'] = $postal_code->postalCode;
+			}
+		}
+		return $status;
+	}
+
+	/**
+	 * Use the nominatum geocoding to complete a location based on existing coordinates.
+	 * 
+	 * @since 1.4
+	 * @access private
+	 * @static
+	 *
+	 * @param array $location The location to geocode, modified.
+	 * @param string $language 
+	 * @return string The status code of the request.
+	 */
+	function nominatim_reverse_geocode_location( &$location, $language = '' ) {
+
+		if ( empty( $location['lat'] ) or empty( $location['lng'] ) ) {
+			// Bad Request
+			return GeoMashupDB::lookup_status( '400' );
+		}
+
+		$language = GeoMashupDB::primary_language_code( $language );
+
+		if( !class_exists( 'WP_Http' ) )
+			include_once( ABSPATH . WPINC. '/class-http.php' );
+
+		$geocode_url = 'http://nominatim.openstreetmap.org/reverse?format=json&zoom=18&address_details=1&lat=' . 
+			$location['lat'] . '&lon=' . $location['lng'] . 
+			'&email=' . urlencode( get_option( 'admin_email' ) );
+
+		$http = new WP_Http();
+		$response = $http->get( $geocode_url, array( 'timeout' => 3.0 ) );
+		if ( is_wp_error( $response ) ) {
+			return GeoMashupDB::lookup_status( $response->get_error_code() );
+		}
+
+		$status = GeoMashupDB::lookup_status( $response['response']['code'] );
+		if ( '200' != $status ) {
+			return $status;
+		}
+		
+		$data = json_decode( $response['body'] );
+		if ( empty( $data ) ) {
+			return GeoMashupDB::lookup_status( '404' );
+		}
+
+		if ( empty( $location['address'] ) ) {
+			$location['address'] = $data->display_name;
+		}
+		if ( ! empty( $data->address ) ) {
+			if ( empty( $location['country_code'] ) and ! empty( $data->address->country_code ) ) {
+				$location['country_code'] = strtoupper( $data->address->country_code );
+			}
+			// Returns admin name in address->state, but no code
+			if ( empty( $location['sub_admin_code'] ) and ! empty( $data->address->county ) ) {
+				$location['sub_admin_code'] = $data->address->county;
+			}
+			if ( empty( $location['postal_code'] ) and ! empty( $data->address->postcode ) ) {
+				$location['postal_code'] = $data->address->postcode;
+			}
+			if ( empty( $location['locality_name'] ) and ! empty( $data->address->city ) ) {
+				$location['locality_name'] = $data->address->city;
+			}
+		}
+
+		return $status;
+	}
+
+	/**
+	 * Use a geocoding service to find coordinates and possibly other fields for a location.
 	 * 
 	 * @since 1.3
 	 * @access private
@@ -629,74 +949,54 @@ class GeoMashupDB {
 		if ( empty( $location ) ) {
 			$location = GeoMashupDB::blank_location( ARRAY_A );
 		} else if ( ! is_array( $location ) ) {
-			return 500;
+			return GeoMashupDB::lookup_status( '500' );
 		}
 
-		$language = GeoMashupDB::primary_language_code( $language );
-
-
-		// Remove whitespace from lat/lng queries
-		if ( preg_match( '/^[\s\d\.,-]*$/', $query ) ) {
-			$query = preg_replace( '/\s*/', '', $query );
+		$status = null;
+		// Try GeoCoding services (google, nominatim, geonames) until one gives an answer
+		if ( 'google' == substr( $geo_mashup_options->get( 'overall', 'map_api' ), 0, 6 ) ) {
+			// Only try the google service if a google API is selected as the default
+			$status = GeoMashupDB::google_geocode( $query, $location, $language );
 		}
-
-		$google_geocode_url = 'http://maps.google.com/maps/geo?key=' .
-			$geo_mashup_options->get( 'overall', 'google_key' ) .
-			'&q=' . urlencode( $query ) .
-			'&output=xml&oe=utf8&sensor=false&gl=' . $language;
-
-		if( !class_exists( 'WP_Http' ) )
-			include_once( ABSPATH . WPINC. '/class-http.php' );
-		$http = new WP_Http();
-		$response = $http->get( $google_geocode_url, array( 'timeout' => 3.0 ) );
-		if ( is_wp_error( $response ) ) {
-			return GeoMashupDB::lookup_status( $response->get_error_code() );
+		if ( '200' != $status ) {
+			$status = GeoMashupDB::nominatim_geocode( $query, $location, $language );
 		}
-
-		$status = GeoMashupDB::lookup_status( $response['response']['code'] );
-		if ( 200 != $status ) {
-			return $status;
+		if ( '200' != $status ) {
+			$status = GeoMashupDB::geonames_geocode( $query, $location, $language );
 		}
-
-		if ( empty( $location['lat'] ) or empty( $location['lng'] ) ) {
-			$coords = GeoMashupDB::get_simple_tag_content( 'coordinates', $response['body'] );
-			$coords = explode( ',', $coords );
-			if ( count( $coords ) > 1 ) {
-				$location['lat'] = $coords[1];
-				$location['lng'] = $coords[0];
-			}
-		}
-		if ( empty( $location['country_code'] ) ) {
-			$location['country_code'] = GeoMashupDB::get_simple_tag_content( 'CountryNameCode', $response['body'] );
-		}
-		if ( empty( $location['admin_code'] ) ) {
-			$admin_name = GeoMashupDB::get_simple_tag_content( 'AdministrativeAreaName', $response['body'] );
-			// For US (and others?) Google returns uppercase admin code instead of name
-			if ( !empty( $admin_name ) && strtoupper( $admin_name ) == $admin_name ) {
-				$location['admin_code'] = $admin_name;
-			}
-		}
-		if ( empty( $location['address'] ) ) {
-			$location['address'] = GeoMashupDB::get_simple_tag_content( 'address', $response['body'] );
-		}
-		if ( empty( $location['postal_code'] ) ) {
-			$location['postal_code'] = GeoMashupDB::get_simple_tag_content( 'PostalCodeNumber', $response['body'] );
-		}
-		if ( empty( $location['locality_name'] ) ) {
-			$location['locality_name'] = GeoMashupDB::get_simple_tag_content( 'LocalityName', $response['body'] );
-		}
-		// Less accurate locality may exist in first address line
-		if ( empty( $location['locality_name'] ) ) {
-			$location['locality_name'] = GeoMashupDB::get_simple_tag_content( 'AddressLine', $response['body'] );
-		}
-
 		return $status;
 	}
 
 	/**
-	 * Use the Google HTTP geocoding service to find an address from coordinates only.
+	 * Check a location for empty fields.
+	 *
+	 * @since 1.4
+	 * @access private
+	 * @static
+	 *
+	 * @param array $location The location to check.
+	 * @param array $fields The fields to check.
+	 * @return bool Whether any of the specified fields are empty.
+	 */
+	function are_any_location_fields_empty( $location, $fields = null ) {
+		if ( ! is_array( $location ) ) {
+			$location = (array)$location;
+		}
+		if ( is_null( $fields ) ) {
+			$fields = array_keys( $location );
+		}
+		foreach( $fields as $field ) {
+			if ( empty( $location[$field] ) ) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Use an HTTP geocoding service to find an address from coordinates only.
 	 * 
-	 * Does not replace existing data.
+	 * Adds missing location fields, but does not replace existing data.
 	 *
 	 * @since 1.3
 	 * @access private
@@ -709,20 +1009,33 @@ class GeoMashupDB {
 	function reverse_geocode_location( &$location, $language = '' ) {
 		global $geo_mashup_options;
 
-		// Don't bother unless there are missing geocodable fields
-		$have_missing_field = false;
-		foreach( array( 'country_code', 'admin_code', 'address', 'locality_name', 'postal_code' ) as $field ) {
-			if ( empty( $location[$field] ) ) {
-				$have_missing_field = true;
-			}
-		}
-		if ( !$have_missing_field or empty( $location['lat'] ) or empty( $location['lng'] ) ) {
+		// Coordinates are required
+		if ( GeoMashupDB::are_any_location_fields_empty( $location, array( 'lat', 'lng' ) ) ) {
 			return '0';
 		}
 
-		$query = $location['lat']  . ',' . $location['lng'];
+		// Don't bother unless there are missing geocodable fields
+		$geocodable_fields = array( 'country_code', 'admin_code', 'address', 'locality_name', 'postal_code' );
+		if ( ! GeoMashupDB::are_any_location_fields_empty( $location, $geocodable_fields ) ) {
+			return '0';
+		}
 
-		return GeoMashupDB::geocode( $query, $location, $language );
+		$status = null;
+
+		// Use the google geocoder only if a google API is in use
+		if ( 'google' == substr( $geo_mashup_options->get( 'overall', 'map_api' ), 0, 6 ) ) {
+			$query = $location['lat']  . ',' . $location['lng'];
+			$status = GeoMashupDB::google_geocode( $query, $location, $language );
+		}
+		// Try other services if there are still missing fields
+		if ( GeoMashupDB::are_any_location_fields_empty( $location, $geocodable_fields ) ) {
+			GeoMashupDB::geonames_reverse_geocode_location( $location, $language );
+		}
+		if ( GeoMashupDB::are_any_location_fields_empty( $location, array( 'country_code', 'address', 'locality_name', 'postal_code' ) ) ) {
+			$status = GeoMashupDB::nominatim_reverse_geocode_location( $location, $language );
+		}
+
+		return $status;
 	}
 
 	/**
@@ -1404,10 +1717,6 @@ id.
 		// Reverse geocode
 		if ( $do_lookups ) {
 			GeoMashupDB::reverse_geocode_location( $location );
-		}
-		$have_missing_area_code = empty( $location['country_code'] ) || empty( $location['admin_code'] );
-		if ( $do_lookups && $have_missing_area_code ) {
-			$location = array_merge( $location, GeoMashupDB::get_geonames_subdivision( $location['lat'], $location['lng'] ) );
 		}
 
 		// Don't set blank entries
