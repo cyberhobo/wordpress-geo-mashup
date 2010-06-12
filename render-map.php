@@ -56,8 +56,8 @@ function geo_mashup_render_map ( ) {
 
 	$map_api = $geo_mashup_options->get( 'overall', 'map_api' );
 	$map_properties = array( 
-		'siteurl' => get_option( 'siteurl' ),
-		'home_url' => get_option( 'home' ),
+		'siteurl' => get_bloginfo( 'wpurl' ),
+		'home_url' => get_bloginfo( 'url' ),
 		'url_path' => GEO_MASHUP_URL_PATH,
 		'template_url_path' => get_template_directory_uri(),
 		'map_api' => $map_api 
