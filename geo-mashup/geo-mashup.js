@@ -1179,6 +1179,9 @@ GeoMashup = {
 		// For now, the map name is always the iframe name
 		opts.name = window.name;
 
+		// home_url and siteurl may sometime be different, but for now just one
+		opts.home_url = opts.siteurl;
+
 		map_types = {
 			'G_NORMAL_MAP' : google.maps.NORMAL_MAP,
 			'G_SATELLITE_MAP' : google.maps.SATELLITE_MAP,

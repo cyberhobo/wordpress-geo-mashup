@@ -753,7 +753,7 @@ class GeoMashup {
 			}
 		}
 					
-		$iframe_src = get_option( 'home' ) . '?geo_mashup_content=render-map&amp;' . 
+		$iframe_src = get_bloginfo( 'url' ) . '?geo_mashup_content=render-map&amp;' . 
 			GeoMashup::implode_assoc('=', '&amp;', $url_params, false, true);
 		$content = "";
 
