@@ -488,9 +488,9 @@ class GeoMashup {
 			$loc = GeoMashupDB::get_object_location( 'post', $wp_query->post->ID );
 			if (!empty($loc)) {
 				$title = esc_html(convert_chars(strip_tags(get_bloginfo('name'))." - ".$wp_query->post->post_title));
-				echo '<meta name="ICBM" content="' . attribute_escape( $loc->lat . ', ' . $loc->lng ) . '" />' . "\n";
-				echo '<meta name="DC.title" content="' . attribute_escape( $title ) . '" />' . "\n";
-				echo '<meta name="geo.position" content="' .  attribute_escape( $loc->lat . ';' . $loc->lng ) . '" />' . "\n";
+				echo '<meta name="ICBM" content="' . esc_attr( $loc->lat . ', ' . $loc->lng ) . '" />' . "\n";
+				echo '<meta name="DC.title" content="' . esc_attr( $title ) . '" />' . "\n";
+				echo '<meta name="geo.position" content="' .  esc_attr( $loc->lat . ';' . $loc->lng ) . '" />' . "\n";
 			}
 		}
 		else
@@ -501,9 +501,9 @@ class GeoMashup {
 				foreach ( $saved_locations as $saved_location ) {
 					if ( $saved_location->saved_name == 'default' ) {
 						$title = esc_html(convert_chars(strip_tags(get_bloginfo('name'))));
-						echo '<meta name="ICBM" content="' . attribute_escape( $saved_location->lat . ', ' . $saved_location->lon ) . '\" />'. "\n";
-						echo '<meta name="DC.title" content="' . attribute_escape( $title ) . '" />' . "\n";
-						echo '<meta name="geo.position" content="' . attribute_escape( $saved_location->lat . ';' . $saved_location->lon ) . '\" />' . "\n";
+						echo '<meta name="ICBM" content="' . esc_attr( $saved_location->lat . ', ' . $saved_location->lon ) . '\" />'. "\n";
+						echo '<meta name="DC.title" content="' . esc_attr( $title ) . '" />' . "\n";
+						echo '<meta name="geo.position" content="' . esc_attr( $saved_location->lat . ';' . $saved_location->lon ) . '\" />' . "\n";
 					}
 				}
 			}
