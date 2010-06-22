@@ -53,6 +53,7 @@ class GeoMashupUIManager {
 	 * @access public
 	 */
 	function enqueue_form_client_items() {	
+		global $geo_mashup_options;
 
 		wp_enqueue_style( 
 			'geo-mashup-edit-form', 
@@ -62,7 +63,31 @@ class GeoMashupUIManager {
 			'screen' 
 		);
 
-		$required_scripts = array( 'jquery', 'google-jsapi' );
+		wp_register_script( 'mxn', path_join( GEO_MASHUP_URL_PATH, 'mxn/mxn.js' ), null, GEO_MASHUP_VERSION );
+		wp_register_script( 'mxn-core', path_join( GEO_MASHUP_URL_PATH, 'mxn/mxn.core.js' ), array( 'mxn' ), GEO_MASHUP_VERSION );
+
+		$map_api = $geo_mashup_options->get( 'overall', 'map_api' );
+		$ajax_nonce = wp_create_nonce('geo-mashup-ajax-edit');
+		$ajax_url = trailingslashit( get_bloginfo( 'url' ) ) . '?geo_mashup_content=ajax-edit&_wpnonce=' .
+			$ajax_nonce;
+		$geo_mashup_url_path = GEO_MASHUP_URL_PATH;
+		wp_localize_script( 'mxn-core', 'geo_mashup_location_editor_settings', compact( 'map_api', 'ajax_url', 'geo_mashup_url_path' ) );
+		$required_scripts = array( 'jquery');
+		if ( 'google' == $map_api ) {
+			wp_register_script( 'google-maps-2', 'http://maps.google.com/maps?file=api&amp;v=2&amp;sensor=false&amp;key=' . 
+				$geo_mashup_options->get( 'overall', 'google_key' ) );
+			wp_register_script( 'mxn-google-2', path_join( GEO_MASHUP_URL_PATH, 'mxn/mxn.google.core.js' ), array( 'mxn-core', 'google-maps-2' ), GEO_MASHUP_VERSION );
+			$required_scripts[] = 'mxn-google-2';
+		} else if ( 'googlev3' == $map_api ) {
+			wp_register_script( 'google-maps-3', 'http://maps.google.com/maps/api/js?sensor=false' );
+			wp_register_script( 'mxn-google-3', path_join( GEO_MASHUP_URL_PATH, 'mxn/mxn.googlev3.core.js' ), array( 'mxn-core', 'google-maps-3' ), GEO_MASHUP_VERSION );
+			$required_scripts[] = 'mxn-google-3';
+		} else if ( 'openlayers' == $map_api ) {
+			wp_register_script( 'openlayers', 'http://openlayers.org/api/OpenLayers.js', null, 'latest' );
+			wp_register_script( 'openstreetmap', 'http://www.openstreetmap.org/openlayers/OpenStreetMap.js', array( 'openlayers' ), 'latest' );
+			wp_register_script( 'mxn-openlayers', path_join( GEO_MASHUP_URL_PATH, 'mxn/mxn.openlayers.core.js' ), array( 'mxn-core', 'openstreetmap' ), GEO_MASHUP_VERSION );
+			$required_scripts[] = 'mxn-openlayers';
+		}
 
 		wp_enqueue_script( 
 			'geo-mashup-location-editor', 

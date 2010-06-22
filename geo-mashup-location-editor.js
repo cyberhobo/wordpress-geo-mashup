@@ -6,7 +6,7 @@
  */ 
 
 /*global jQuery */
-/*global google */
+/*global mxn */
 
 /*global GeoMashupLocationEditor */
 var GeoMashupLocationEditor;
@@ -24,8 +24,8 @@ var GeoMashupLocationEditor;
 jQuery( function( $ ) {
 	var 
 		// Private variables 
-		geo_mashup_url_path = $( '#geo_mashup_url_path' ).val(),
-		ajax_url = $( '#geo_mashup_ajax_url' ).val(),
+		geo_mashup_url_path = geo_mashup_location_editor_settings.geo_mashup_url_path,
+		ajax_url = geo_mashup_location_editor_settings.ajax_url,
 		object_id = $( '#geo_mashup_object_id' ).val(),
 		have_unsaved_changes = false,
 		red_icon,
@@ -290,32 +290,38 @@ jQuery( function( $ ) {
 		 * are ready.
 		 */
 		init = function() {
-			var latlng_array, latlng, container;
+			var latlng_array, latlng, $container;
 
-			red_icon = new google.maps.Icon();
-			red_icon.image = geo_mashup_url_path + '/images/mm_20_red.png';
-			red_icon.shadow = geo_mashup_url_path + '/images/mm_20_shadow.png';
-			red_icon.iconSize = new google.maps.Size(12, 20);
-			red_icon.shadowSize = new google.maps.Size(22, 20);
-			red_icon.iconAnchor = new google.maps.Point(6, 20);
-			red_icon.infoWindowAnchor = new google.maps.Point(5, 1);
+			red_icon = {
+				image: geo_mashup_url_path + '/images/mm_20_red.png',
+				shadow: geo_mashup_url_path + '/images/mm_20_shadow.png',
+				iconSize: [12, 20],
+				shadowSize: [22, 20],
+				iconAnchor: [-6, -20],
+				infoWindowAnchor: [-5, -1]
+			};
 
-			green_icon = new google.maps.Icon(red_icon);
-			green_icon.image = geo_mashup_url_path + '/images/mm_20_green.png';
+			green_icon = {
+				image: geo_mashup_url_path + '/images/mm_20_green.png',
+				shadow: geo_mashup_url_path + '/images/mm_20_shadow.png',
+				iconSize: [12, 20],
+				shadowSize: [22, 20],
+				iconAnchor: [-6, -20],
+				infoWindowAnchor: [-5, -1]
+			};
 
-			container = $( '#geo_mashup_map' ).get( 0 );
-			map = new google.maps.Map2( container, {draggableCursor:'pointer'} );
-			map.setCenter(new google.maps.LatLng(0,0),1);
-			map.setUIToDefault();
+			$container = $( '#geo_mashup_map' ).empty();
+			map = new mxn.Mapstraction( $container.get( 0 ), geo_mashup_location_editor_settings.map_api );
+			map.setCenterAndZoom( new mxn.LatLonPoint( 0, 0 ), 2 );
 
 			// Create the loading spinner icon and show it
 			$busy_icon = $( '<div id="gm-loading-icon" style="-moz-user-select: none; z-index: 100; position: absolute; left: ' +
-				( map.getSize().width / 2 ) + 'px; top: ' + ( map.getSize().height / 2 ) + 'px;">' +
+				( $container.width() / 2 ) + 'px; top: ' + ( $container.height() / 2 ) + 'px;">' +
 				'<img style="border: 0px none ; margin: 0px; padding: 0px; width: 16px; height: 16px; -moz-user-select: none;" src="' +
 				geo_mashup_url_path + '/images/busy_icon.gif"/></a></div>' );
-			container.appendChild( $busy_icon.get( 0 ) );
+			$container.append( $busy_icon );
 			GeoMashupLocationEditor.showBusyIcon();
-			google.maps.Event.bind( map, 'tilesloaded', GeoMashupLocationEditor, GeoMashupLocationEditor.hideBusyIcon );
+			map.load.addHandler( function() { GeoMashupLocationEditor.hideBusyIcon(); } );
 
 			if ( $kml_url_input.val().length > 0 ) {
 				GeoMashupLocationEditor.loadKml( $kml_url_input.val() );
@@ -324,14 +330,12 @@ jQuery( function( $ ) {
 				// There are coordinates in the location input
 				latlng_array = $location_input.val().split( ',' );
 				if ( latlng_array.length > 1 ) {
-					latlng = new google.maps.LatLng( latlng_array[0], latlng_array[1] );
+					latlng = new mxn.LatLonPoint( parseFloat( latlng_array[0] ), parseFloat( latlng_array[1] ) );
 					addSelectedMarker( latlng, { location_id: $location_id_input.val(), name: $location_name_input.val() } );
 				}
 			}
 
-			google.maps.Event.addListener( map, 'click', function( overlay, latlng ) { 
-				handleClick( overlay, latlng ); 
-			} );
+			map.click.addHandler( handleClick );
 		},
 
 		/**
@@ -341,7 +345,7 @@ jQuery( function( $ ) {
 		 * @param GeoMashupLocation loc The related Geo Mashup location info.
 		 */
 		setInputs = function (latlng, loc) {
-			var latlng_string = latlng.lat() + ',' + latlng.lng();
+			var latlng_string = latlng.toString().replace( ' ', '' );
 			if (($location_id_input.val() !== loc.id) || ($location_input.val() !== latlng_string)) {
 				if ( saved_selector.getSelectedID()!== loc.id ) {
 					saved_selector.selectByID( loc.id );
@@ -360,7 +364,7 @@ jQuery( function( $ ) {
 
 				// Update the display
 				$address_display.text( loc.address )
-				$coordinate_display.text( latlng.toUrlValue() )
+				$coordinate_display.text( latlng.toString() )
 				$info_display.addClass( 'ui-state-highlight' );
 				GeoMashupLocationEditor.setHaveUnsavedChanges();
 			}
@@ -369,30 +373,39 @@ jQuery( function( $ ) {
 		/**
 		 * Create a new marker and select it if there is no selected marker.
 		 *
-		 * @param GLatLng latlng The coordinates of the marker.
+		 * @param LatLonPoint latlng The coordinates of the marker.
 		 * @param GeoMashupAddress loc The related Geo Mashup location info.
 		 */
 		createMarker = function(latlng, loc) {
-			var marker, marker_opts = {title:loc.title};
+			var marker, 
+				marker_opts = { 
+					label: loc.title,
+					icon: red_icon.image,
+					iconSize: green_icon.iconSize,
+					iconShadow: green_icon.iconShadow,
+					iconAnchor: green_icon.iconAnchor,
+					iconShadowSize: green_icon.shadowSize
+				};
 			if ( !selected_marker ) {
-				marker_opts.icon = green_icon;
+				marker_opts.icon = green_icon.image;
 				marker_opts.draggable = true;
-			} else {
-				marker_opts.icon = red_icon;
 			}
-			marker = new google.maps.Marker(latlng,marker_opts);
+			marker = new mxn.Marker( latlng );
+			marker.addData( marker_opts );
 			marker.geo_mashup_location = loc;
 			if ( !selected_marker ) {
 				selected_marker = marker;
-				map.setCenter(latlng);
-				setInputs(latlng, loc);
+				map.setCenter( latlng );
+				setInputs( latlng, loc );
 
+				/* Maybe not yet with mapstraction
 				google.maps.Event.addListener(marker,'dragend',function () { 
 					// Dragging will create a new location under the hood
 					loc.id = '';
-					setInputs(marker.getPoint(), loc);
-					map.setCenter(marker.getPoint());
+					setInputs( marker.location, loc);
+					map.setCenter( marker.location );
 				});
+				*/
 			}
 			return marker;
 		},
@@ -405,18 +418,18 @@ jQuery( function( $ ) {
 		selectMarker = function(marker) {
 			var new_marker, deselected_marker;
 			if (marker !== selected_marker) {
-				deselected_marker = createMarker( selected_marker.getPoint(), selected_marker.geo_mashup_location );
-				map.removeOverlay( selected_marker );
-				map.addOverlay(deselected_marker);
+				deselected_marker = createMarker( selected_marker.location, selected_marker.geo_mashup_location );
+				map.removeMarker( selected_marker );
+				map.addMarker( deselected_marker );
 				selected_marker = null;
 
 				// The new marker will be selected on creation
-				new_marker = createMarker( marker.getPoint(), marker.geo_mashup_location );
-				map.removeOverlay(marker);
-				map.addOverlay( new_marker );
-				map.setCenter( new_marker.getPoint() );
+				new_marker = createMarker( marker.location, marker.geo_mashup_location );
+				map.removeMarker( marker );
+				map.addMarker( new_marker );
+				map.setCenter( new_marker.location );
 			} else {
-				map.setCenter(marker.getPoint());
+				map.setCenter( marker.location );
 			}
 		},
 		
@@ -428,8 +441,8 @@ jQuery( function( $ ) {
 		 */
 		addSelectedMarker = function(latlng, selection) {
 			var marker = createMarker(latlng, new GeoAddress(selection));
-			map.addOverlay(marker);
-			selectMarker(marker);
+			map.addMarker( marker );
+			selectMarker( marker );
 		},
 
 		/**
@@ -532,7 +545,7 @@ jQuery( function( $ ) {
 				if (search_text.match(/^[-\d\.\s]*,[-\d\.\s]*$/)) {
 					// For coorinates, add the selected marker at the exact location
 					latlng_array = search_text.split(',');
-					latlng = new GLatLng(latlng_array[0],latlng_array[1]);
+					latlng = new mxn.LatLon( parseFloat( latlng_array[0] ), parseFloat( latlng_array[1] ) );
 					addSelectedMarker(latlng);
 				}
 			} 
@@ -663,7 +676,7 @@ jQuery( function( $ ) {
 		} );
 
 	// Load the map
-	google.load( 'maps', '2', { callback: init } );
+	init();
 
 	// Ajax error messages
 	$ajax_message.ajaxError( function( event, request, settings ) {

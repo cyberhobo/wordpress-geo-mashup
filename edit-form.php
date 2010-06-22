@@ -112,9 +112,6 @@ function geo_mashup_edit_form( $object_name, $object_id, $ui_manager = '' ) {
 	$saved_location_options = implode( '', $saved_location_options );
 
 	$nonce = wp_create_nonce('geo-mashup-edit');
-	$ajax_nonce = wp_create_nonce('geo-mashup-ajax-edit');
-	$ajax_url = trailingslashit( get_bloginfo( 'url' ) ) . '?geo_mashup_content=ajax-edit&_wpnonce=' .
-		$ajax_nonce;
 
 	$static_maps_base_url = 'http://maps.google.com/maps/api/staticmap?sensor=false&amp;key=' .
 		$geo_mashup_options->get( 'overall', 'google_key' );
@@ -183,8 +180,6 @@ function geo_mashup_edit_form( $object_name, $object_id, $ui_manager = '' ) {
 
 	<?php echo empty( $location->id ) ? $search_html . $map_html . $location_table_html : $location_table_html . $map_html . $search_html; ?>
 
-	<input id="geo_mashup_url_path" name="geo_mashup_url_path" type="hidden" value="<?php echo GEO_MASHUP_URL_PATH; ?>" />
-	<input id="geo_mashup_ajax_url" name="geo_mashup_ajax_url" type="hidden" value="<?php echo $ajax_url; ?>" />
 	<input id="geo_mashup_ui_manager" name="geo_mashup_ui_manager" type="hidden" value="<?php echo $ui_manager; ?>" />
 	<input id="geo_mashup_object_id" name="geo_mashup_object_id" type="hidden" value="<?php echo $object_id; ?>" />
 	<input id="geo_mashup_no_js" name="geo_mashup_no_js" type="hidden" value="true" />

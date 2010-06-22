@@ -1,6 +1,6 @@
 .geo-mashup-js { display: none; }
 #geo_mashup_ajax_message { padding:5px; }
-#geo_mashup_map { margin:0; width:100%; height:300px; }
+#geo_mashup_map { margin:0; width:100%; height:300px; position:relative; }
 #geo_mashup_location_name { width: 95%; }
 #geo_mashup_date_ui input { font-size: 12px; padding: 1px; }
 #geo_mashup_date { width: 10em; }
