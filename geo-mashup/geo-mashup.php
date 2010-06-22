@@ -907,7 +907,7 @@ class GeoMashup {
 	 */
 	function admin_menu() {
 		if (function_exists('add_options_page')) {
-			add_options_page(__('Geo Mashup Options','GeoMashup'), __('Geo Mashup','GeoMashup'), 8, __FILE__, array('GeoMashup', 'options_page'));
+			add_options_page(__('Geo Mashup Options','GeoMashup'), __('Geo Mashup','GeoMashup'), 'manage_options', __FILE__, array('GeoMashup', 'options_page'));
 		}
 	}
 
