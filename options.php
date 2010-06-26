@@ -162,7 +162,7 @@ function geo_mashup_options_page() {
 								name="overall[google_key]" 
 								type="text" 
 								size="40" 
-								value="<?php echo attribute_escape( $geo_mashup_options->get ( 'overall', 'google_key' ) ); ?>" />
+								value="<?php echo esc_attr( $geo_mashup_options->get ( 'overall', 'google_key' ) ); ?>" />
 							<a href="http://maps.google.com/apis/maps/signup.html"><?php _e('Get yours here', 'GeoMashup'); ?></a>
 							<?php if ( empty( $google_key ) ) : ?>
 							<p class="setting-description">
@@ -180,7 +180,7 @@ function geo_mashup_options_page() {
 								$pages = get_pages(); 
 								if ( $pages ) : 
 									foreach ( $pages as $page ) : ?>
-									<option value="<?php echo attribute_escape( $page->ID ); ?>"<?php
+									<option value="<?php echo esc_attr( $page->ID ); ?>"<?php
 										if ( $geo_mashup_options->get( 'overall', 'mashup_page' ) == $page->ID ) { 
 											echo ' selected="selected"';
 										}
@@ -229,7 +229,7 @@ function geo_mashup_options_page() {
 								class="add-category-links-dep" 
 								type="text" 
 								size="3" 
-								value="<?php echo attribute_escape( $geo_mashup_options->get( 'overall', 'category_link_separator' ) ); ?>" />
+								value="<?php echo esc_attr( $geo_mashup_options->get( 'overall', 'category_link_separator' ) ); ?>" />
 						</td>
 					</tr>
 					<tr>
@@ -239,7 +239,7 @@ function geo_mashup_options_page() {
 								name="overall[category_link_text]" 
 								type="text" 
 								size="5" 
-								value="<?php echo attribute_escape( $geo_mashup_options->get( 'overall', 'category_link_text' ) ); ?>" />
+								value="<?php echo esc_attr( $geo_mashup_options->get( 'overall', 'category_link_text' ) ); ?>" />
 						</td>
 					</tr>
 					<tr>
@@ -247,11 +247,11 @@ function geo_mashup_options_page() {
 						<td>
 							<select id="category_zoom" name="overall[category_zoom]">
 								<?php foreach ( $zoomOptions as $value => $label ) : ?>
-								<option value="<?php echo attribute_escape( $value ); ?>"<?php
+								<option value="<?php echo esc_attr( $value ); ?>"<?php
 									if ( strcmp( $value, $geo_mashup_options->get( 'overall', 'category_zoom' ) ) == 0 ) {
 										echo ' selected="selected"';
 									}
-								?>><?php echo attribute_escape( $label ); ?></option>
+								?>><?php echo esc_attr( $label ); ?></option>
 								<?php endforeach; ?>
 							</select>
 							<span class="setting-description"><?php 
@@ -310,7 +310,7 @@ function geo_mashup_options_page() {
 								name="overall[adsense_code]" 
 								type="text" 
 								size="35" 
-								value="<?php echo attribute_escape( $geo_mashup_options->get ( 'overall', 'adsense_code' ) ); ?>" /><br/>
+								value="<?php echo esc_attr( $geo_mashup_options->get ( 'overall', 'adsense_code' ) ); ?>" /><br/>
 							<span class="setting-description"><?php 
 								_e('Your client ID, used with the Google Bar. Leave the default value to use Geo Mashup\'s :).', 'GeoMashup'); 
 							?></span>
@@ -348,7 +348,7 @@ function geo_mashup_options_page() {
 								name="single_map[width]" 
 								type="text" 
 								size="5" 
-								value="<?php echo attribute_escape( $geo_mashup_options->get ( 'single_map', 'width' ) ); ?>" />
+								value="<?php echo esc_attr( $geo_mashup_options->get ( 'single_map', 'width' ) ); ?>" />
 							<?php _e('Pixels, or append %.', 'GeoMashup'); ?>
 						</td>
 					</tr>
@@ -359,7 +359,7 @@ function geo_mashup_options_page() {
 								name="single_map[height]" 
 								type="text" 
 								size="5" 
-								value="<?php echo attribute_escape( $geo_mashup_options->get ( 'single_map', 'height' ) ); ?>" />
+								value="<?php echo esc_attr( $geo_mashup_options->get ( 'single_map', 'height' ) ); ?>" />
 							<?php _e('px', 'GeoMashup'); ?>
 						</td>
 					</tr>
@@ -368,7 +368,7 @@ function geo_mashup_options_page() {
 						<td>
 							<select id="in_post_map_control" name="single_map[map_control]">
 							<?php foreach($mapControls as $type => $label) : ?>
-								<option value="<?php echo attribute_escape( $type ); ?>"<?php
+								<option value="<?php echo esc_attr( $type ); ?>"<?php
 									if ( $type == $geo_mashup_options->get( 'single_map', 'map_control' ) ) {
 										echo ' selected="selected"';
 									}
@@ -382,7 +382,7 @@ function geo_mashup_options_page() {
 						<td>
 							<select id="in_post_map_type" name="single_map[map_type]">
 							<?php foreach ( $mapTypes as $type => $label ) : ?>
-								<option value="<?php echo attribute_escape( $type ); ?>"<?php
+								<option value="<?php echo esc_attr( $type ); ?>"<?php
 									if ( $type == $geo_mashup_options->get ( 'single_map', 'map_type' ) ) {
 										echo ' selected="selected"';
 									}
@@ -395,10 +395,10 @@ function geo_mashup_options_page() {
 						<th scope="row"><?php _e('Add Map Type Control', 'GeoMashup'); ?></th>
 						<td>
 						<?php foreach ( $mapTypes as $type => $label ) : ?>
-						<input id="in_post_add_map_type_<?php echo attribute_escape( $type ); ?>" 
+						<input id="in_post_add_map_type_<?php echo esc_attr( $type ); ?>" 
 							name="single_map[add_map_type_control][]" 
 							type="checkbox" 
-							value="<?php echo attribute_escape( $type ); ?>" <?php 
+							value="<?php echo esc_attr( $type ); ?>" <?php 
 								if ( in_array( $type, $geo_mashup_options->get ( 'single_map', 'add_map_type_control' ) ) ) {
 									echo ' checked="checked"';
 								}
@@ -435,7 +435,7 @@ function geo_mashup_options_page() {
 						<td>
 							<select id="in_post_zoom" name="single_map[zoom]">
 								<?php foreach ( $zoomOptions as $value => $label ) : ?>
-								<option value="<?php echo attribute_escape( $value ); ?>"<?php
+								<option value="<?php echo esc_attr( $value ); ?>"<?php
 									if ( strcmp( $value, $geo_mashup_options->get( 'single_map', 'zoom' ) ) == 0 ) {
 										echo ' selected="selected"';
 									}
@@ -464,7 +464,7 @@ function geo_mashup_options_page() {
 								name="single_map[click_to_load_text]" 
 								type="text" 
 								size="50" 
-								value="<?php echo attribute_escape( $geo_mashup_options->get( 'single_map', 'click_to_load_text' ) ); ?>" />
+								value="<?php echo esc_attr( $geo_mashup_options->get( 'single_map', 'click_to_load_text' ) ); ?>" />
 						</td>
 					</tr>
 				</table>
@@ -481,7 +481,7 @@ function geo_mashup_options_page() {
 								name="global_map[width]" 
 								type="text" 
 								size="5" 
-								value="<?php echo attribute_escape( $geo_mashup_options->get ( 'global_map', 'width' ) ); ?>" />
+								value="<?php echo esc_attr( $geo_mashup_options->get ( 'global_map', 'width' ) ); ?>" />
 							<?php _e('Pixels, or append %.', 'GeoMashup'); ?>
 						</td>
 					</tr>
@@ -492,7 +492,7 @@ function geo_mashup_options_page() {
 								name="global_map[height]" 
 								type="text" 
 								size="5" 
-								value="<?php echo attribute_escape( $geo_mashup_options->get ( 'global_map', 'height' ) ); ?>" />
+								value="<?php echo esc_attr( $geo_mashup_options->get ( 'global_map', 'height' ) ); ?>" />
 							<?php _e('px', 'GeoMashup'); ?>
 						</td>
 					</tr>
@@ -501,7 +501,7 @@ function geo_mashup_options_page() {
 						<td>
 							<select id="map_control" name="global_map[map_control]">
 							<?php	foreach($mapControls as $type => $label) : ?>
-								<option value="<?php echo attribute_escape( $type ); ?>"<?php 
+								<option value="<?php echo esc_attr( $type ); ?>"<?php 
 									if ( $type == $geo_mashup_options->get( 'global_map', 'map_control' ) ) {
 										echo ' selected="selected"';
 									}
@@ -515,7 +515,7 @@ function geo_mashup_options_page() {
 						<td>
 							<select id="map_type" name="global_map[map_type]">
 							<?php foreach($mapTypes as $type => $label) : ?>
-								<option value="<?php echo attribute_escape( $type ); ?>"<?php 
+								<option value="<?php echo esc_attr( $type ); ?>"<?php 
 									if ($type == $geo_mashup_options->get ( 'global_map', 'map_type' )) {
 										echo ' selected="selected"';
 									}
@@ -528,10 +528,10 @@ function geo_mashup_options_page() {
 						<th scope="row"><?php _e('Add Map Type Control', 'GeoMashup'); ?></th>
 						<td>
 						<?php foreach ( $mapTypes as $type => $label ) : ?>
-						<input id="add_map_type_<?php echo attribute_escape( $type ); ?>" 
+						<input id="add_map_type_<?php echo esc_attr( $type ); ?>" 
 							name="global_map[add_map_type_control][]" 
 							type="checkbox" 
-							value="<?php echo attribute_escape( $type ); ?>" <?php 
+							value="<?php echo esc_attr( $type ); ?>" <?php 
 								if ( in_array( $type, $geo_mashup_options->get ( 'global_map', 'add_map_type_control' ) ) ) {
 									echo ' checked="checked"';
 								}
@@ -572,7 +572,7 @@ function geo_mashup_options_page() {
 						<td>
 							<select id="zoom" name="global_map[zoom]">
 								<?php foreach ( $zoomOptions as $value => $label ) : ?>
-								<option value="<?php echo attribute_escape( $value ); ?>"<?php
+								<option value="<?php echo esc_attr( $value ); ?>"<?php
 									if ( strcmp( $value, $geo_mashup_options->get( 'global_map', 'zoom' ) ) == 0 ) {
 										echo ' selected="selected"';
 									}
@@ -591,7 +591,7 @@ function geo_mashup_options_page() {
 								name="global_map[cluster_max_zoom]" 
 								type="text" 
 								size="2" 
-								value="<?php echo attribute_escape( $geo_mashup_options->get( 'global_map', 'cluster_max_zoom' ) ); ?>" />
+								value="<?php echo esc_attr( $geo_mashup_options->get( 'global_map', 'cluster_max_zoom' ) ); ?>" />
 							<span class="setting-description"><?php 
 								_e( 'Highest zoom level to cluster markers, or blank for no clustering.', 'GeoMashup'); 
 							?></span>
@@ -638,7 +638,7 @@ function geo_mashup_options_page() {
 								name="global_map[max_posts]" 
 								type="text" 
 								size="4" 
-								value="<?php echo attribute_escape( $geo_mashup_options->get ( 'global_map', 'max_posts' ) ); ?>" />
+								value="<?php echo esc_attr( $geo_mashup_options->get ( 'global_map', 'max_posts' ) ); ?>" />
 							<span class="setting-description"><?php _e('Number of items to show, leave blank for all', 'GeoMashup'); ?></span>
 						</td>
 					</tr>
@@ -646,7 +646,7 @@ function geo_mashup_options_page() {
 						<th scope="row"><?php _e('Show Future Posts', 'GeoMashup'); ?></th>
 						<td><select id="show_future" name="global_map[show_future]">
 							<?php foreach($futureOptions as $value => $label) : ?>
-							<option value="<?php echo attribute_escape( $value ); ?>"<?php
+							<option value="<?php echo esc_attr( $value ); ?>"<?php
 								if ($value == $geo_mashup_options->get ( 'global_map', 'show_future' )) {
 									echo ' selected="selected"';
 								}
@@ -671,7 +671,7 @@ function geo_mashup_options_page() {
 								name="global_map[click_to_load_text]" 
 								type="text" 
 								size="50" 
-								value="<?php echo attribute_escape( $geo_mashup_options->get ( 'global_map', 'click_to_load_text' ) ); ?>" />
+								value="<?php echo esc_attr( $geo_mashup_options->get ( 'global_map', 'click_to_load_text' ) ); ?>" />
 						</td>
 					</tr>
 					<tr><td colspan="2" align="center">
@@ -683,21 +683,21 @@ function geo_mashup_options_page() {
 								<?php foreach($categories as $category) : ?>
 								<tr><td><?php echo esc_html( $category->name ); ?></td>
 									<td>
-										<select id="category_color_<?php echo attribute_escape( $category->slug ); ?>" 
-											name="global_map[category_color][<?php echo attribute_escape( $category->slug ); ?>]">
+										<select id="category_color_<?php echo esc_attr( $category->slug ); ?>" 
+											name="global_map[category_color][<?php echo esc_attr( $category->slug ); ?>]">
 										<?php foreach($colorNames as $name => $rgb) : ?>
-											<option value="<?php echo attribute_escape( $name ); ?>"<?php
+											<option value="<?php echo esc_attr( $name ); ?>"<?php
 												if ($name == $geo_mashup_options->get ( 'global_map', 'category_color', $category->slug ) ) {
 													echo ' selected="selected"';
 												}
-											?> style="background-color:<?php echo attribute_escape( $rgb ); ?>'"><?php echo esc_html( $name ); ?></option>
+											?> style="background-color:<?php echo esc_attr( $rgb ); ?>'"><?php echo esc_html( $name ); ?></option>
 										<?php endforeach; ?>	
 										</select>
 									</td><td>
 									<input id="category_line_zoom_<?php 
-										echo attribute_escape( $category->slug ); ?>" name="global_map[category_line_zoom][<?php 
-										echo attribute_escape( $category->slug ); ?>]" value="<?php 
-										echo attribute_escape( $geo_mashup_options->get( 'global_map', 'category_line_zoom', $category->slug ) );
+										echo esc_attr( $category->slug ); ?>" name="global_map[category_line_zoom][<?php 
+										echo esc_attr( $category->slug ); ?>]" value="<?php 
+										echo esc_attr( $geo_mashup_options->get( 'global_map', 'category_line_zoom', $category->slug ) );
 									?>" type="text" size="2" maxlength="2" /></td></tr>
 								<?php endforeach; ?>	
 							<?php endif; ?>
@@ -716,7 +716,7 @@ function geo_mashup_options_page() {
 								name="context_map[width]" 
 								type="text" 
 								size="5" 
-								value="<?php echo attribute_escape( $geo_mashup_options->get ( 'context_map', 'width' ) ); ?>" />
+								value="<?php echo esc_attr( $geo_mashup_options->get ( 'context_map', 'width' ) ); ?>" />
 							<?php _e('Pixels, or append %.', 'GeoMashup'); ?>
 						</td>
 					</tr>
@@ -727,7 +727,7 @@ function geo_mashup_options_page() {
 								name="context_map[height]" 
 								type="text" 
 								size="5" 
-								value="<?php echo attribute_escape( $geo_mashup_options->get ( 'context_map', 'height' ) ); ?>" />
+								value="<?php echo esc_attr( $geo_mashup_options->get ( 'context_map', 'height' ) ); ?>" />
 							<?php _e('px', 'GeoMashup'); ?>
 						</td>
 					</tr>
@@ -736,7 +736,7 @@ function geo_mashup_options_page() {
 						<td>
 							<select id="context_map_control" name="context_map[map_control]">
 							<?php foreach ( $mapControls as $type => $label ) : ?>
-								<option value="<?php echo attribute_escape( $type ); ?>"<?php 
+								<option value="<?php echo esc_attr( $type ); ?>"<?php 
 									if ($type == $geo_mashup_options->get ( 'context_map', 'map_control' )) {
 										echo ' selected="selected"';
 									}
@@ -750,7 +750,7 @@ function geo_mashup_options_page() {
 						<td>
 							<select id="context_map_type" name="context_map[map_type]">
 							<?php	foreach($mapTypes as $type => $label) : ?>
-								<option value="<?php echo attribute_escape( $type ); ?>"<?php
+								<option value="<?php echo esc_attr( $type ); ?>"<?php
 									if ($type == $geo_mashup_options->get ( 'context_map', 'map_type' )) {
 										echo ' selected="selected"';
 									}
@@ -763,10 +763,10 @@ function geo_mashup_options_page() {
 						<th scope="row"><?php _e('Add Map Type Control', 'GeoMashup'); ?></th>
 						<td>
 						<?php foreach ( $mapTypes as $type => $label ) : ?>
-						<input id="context_add_map_type_<?php echo attribute_escape( $type ); ?>" 
+						<input id="context_add_map_type_<?php echo esc_attr( $type ); ?>" 
 							name="context_map[add_map_type_control][]" 
 							type="checkbox" 
-							value="<?php echo attribute_escape( $type ); ?>" <?php 
+							value="<?php echo esc_attr( $type ); ?>" <?php 
 								if ( in_array( $type, $geo_mashup_options->get ( 'context_map', 'add_map_type_control' ) ) ) {
 									echo ' checked="checked"';
 								}
@@ -807,7 +807,7 @@ function geo_mashup_options_page() {
 						<td>
 							<select id="zoom" name="context_map[zoom]">
 								<?php foreach ( $zoomOptions as $value => $label ) : ?>
-								<option value="<?php echo attribute_escape( $value ); ?>"<?php
+								<option value="<?php echo esc_attr( $value ); ?>"<?php
 									if ( strcmp( $value, $geo_mashup_options->get( 'context_map', 'zoom' ) ) == 0 ) {
 										echo ' selected="selected"';
 									}
@@ -857,7 +857,7 @@ function geo_mashup_options_page() {
 								name="context_map[click_to_load_text]" 
 								type="text" 
 								size="50" 
-								value="<?php echo attribute_escape( $geo_mashup_options->get ( 'context_map', 'click_to_load_text' ) ); ?>" />
+								value="<?php echo esc_attr( $geo_mashup_options->get ( 'context_map', 'click_to_load_text' ) ); ?>" />
 						</td>
 					</tr>
 				</table>

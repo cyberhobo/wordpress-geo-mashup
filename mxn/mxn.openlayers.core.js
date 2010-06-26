@@ -18,6 +18,12 @@ mxn.register('openlayers', {
 			this.maps[api].events.register( 'moveend', this, function( e ) {
 				me.endPan.fire();
 			} );
+			this.maps[api].events.register( 'click', this, function( e ) {
+				var latlon = new mxn.LatLonPoint(), 
+					ollonlat = me.maps[api].getLonLatFromPixel( e.xy );
+				latlon.fromProprietary( api, ollonlat );
+				me.click.fire( { location: latlon } );
+			} );
 
 			this.layers['osmmapnik'] = new OpenLayers.Layer.OSM.Mapnik( 'OSM Mapnik' );
 			this.maps[api].addLayer(this.layers['osmmapnik']);
@@ -118,15 +124,14 @@ mxn.register('openlayers', {
 
 		removeMarker: function(marker) {
 			var map = this.maps[this.api];
-			var pin = marker.toProprietary(this.api);
-			this.layers.markers.removeMarker(pin);
-			pin.destroy();
-
+			this.layers.markers.removeMarker(marker.proprietary_marker);
+			marker.proprietary_marker.destroy();
 		},
 
 		removeAllMarkers: function() {
 			var map = this.maps[this.api];
 
+			// handled by prototype calls to removeMarker?
 			// TODO: Add provider code
 		},
 
@@ -343,7 +348,7 @@ mxn.register('openlayers', {
 			}
 
 			if(this.iconAnchor) {
-				anchor = new OpenLayers.Pixel(this.iconAnchor[0], this.iconAnchor[1]);
+				anchor = new OpenLayers.Pixel( -this.iconAnchor[0], -this.iconAnchor[1]);
 			}
 			else {
 				// FIXME: hard-coding the anchor point

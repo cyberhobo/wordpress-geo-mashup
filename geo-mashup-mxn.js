@@ -254,6 +254,16 @@ GeoMashup.createMap = function(container, opts) {
 	// For now, the map name is always the iframe name
 	opts.name = window.name;
 
+	// For now, siteurl is the home url
+	opts.home_url = opts.siteurl;
+
+	map_types = {
+		'G_NORMAL_MAP' : google.maps.NORMAL_MAP,
+		'G_SATELLITE_MAP' : google.maps.SATELLITE_MAP,
+		'G_HYBRID_MAP' : google.maps.HYBRID_MAP,
+		'G_PHYSICAL_MAP' : google.maps.PHYSICAL_MAP,
+		'G_SATELLITE_3D_MAP' : google.maps.SATELLITE_3D_MAP
+	};
 	map_types = {
 		'G_NORMAL_MAP' : mxn.Mapstraction.ROAD,
 		'G_SATELLITE_MAP' : mxn.Mapstraction.SATELLITE,
