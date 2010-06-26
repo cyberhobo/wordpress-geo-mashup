@@ -111,6 +111,7 @@ jQuery( function( $ ) {
 			};
 
 			this.set = function (data) {
+				var i, types;
 				if (typeof data === 'string') {
 					if (isNaN(data)) {
 						this.title = data;
@@ -125,6 +126,7 @@ jQuery( function( $ ) {
 						this.title = data.name;
 						this.address = data.address;
 					} else if (typeof data.name === 'string') { 
+						// GeoNames location
 						this.id = '';
 						this.title = data.name;
 						this.geoname = data.name; 
@@ -133,7 +135,9 @@ jQuery( function( $ ) {
 						this.admin_name = this.definedValue( data.adminName1, '' );
 						this.sub_admin_code = this.definedValue( data.adminCode2, '' );
 						this.sub_admin_name = this.definedValue( data.adminName2, '' );
+						this.address = this.title + ', ' + this.admin_name + ', ' + this.country_code;
 					} else if (typeof data.address === 'string') {
+						// Google v2 location
 						this.title = data.address;
 						this.address = data.address;
 						this.country_code = this.subValue(data, ['AddressDetails','Country','CountryNameCode']);
@@ -145,6 +149,31 @@ jQuery( function( $ ) {
 						} else if (this.admin_code) {
 							this.locality_name = this.subValue(data, ['AddressDetails','Country','AdministrativeArea','Locality','LocalityName']);
 							this.postal_code = this.subValue(data, ['AddressDetails','Country','AdministrativeArea','Locality','PostalCode','PostalCodeNumber']);
+						}
+						// Difficult to distinguish admin code from a name - but try
+						if ( this.admin_code.length > 20 || this.admin_code.indexOf(' ') >= 0 ) {
+							this.admin_name = this.admin_code;
+							this.admin_code = '';
+						}
+					} else if (typeof data.types === 'object') {
+						// Google v3 location
+						this.title = data.formatted_address;
+						this.address = data.formatted_address;
+						for( i = 0; i < data.address_components.length; i += 1 ) {
+							types = data.address_components[i].types.join('|');
+							if ( types.indexOf( 'country' ) >= 0 ) {
+								this.country_code = data.address_components[i].short_name;
+							} else if ( types.indexOf( 'administrative_area_level_1' ) >= 0 ) {
+								this.admin_code = data.address_components[i].short_name;
+								this.admin_name = data.address_components[i].long_name;
+							} else if ( types.indexOf( 'administrative_area_level_2' ) >= 0 ) {
+								this.sub_admin_code = data.address_components[i].short_name;
+								this.sub_admin_name = data.address_components[i].long_name;
+							} else if ( types.indexOf( 'locality' ) >= 0 ) {
+								this.locality_name = data.address_components[i].short_name;
+							} else if ( types.indexOf( 'postal_code') >= 0 ) {
+								this.postal_code = data.address_components[i].short_name;
+							}
 						}
 						// Difficult to distinguish admin code from a name - but try
 						if ( this.admin_code.length > 20 || this.admin_code.indexOf(' ') >= 0 ) {
@@ -184,7 +213,7 @@ jQuery( function( $ ) {
 								name: option.text,
 								address: saved_location[3]
 							};
-							selected_latlng = new google.maps.LatLng( saved_location[1], saved_location[2] );
+							selected_latlng = new mxn.LatLonPoint( parseFloat( saved_location[1] ), parseFloat( saved_location[2] ) );
 							$location_name_input.val( option.text );
 						}
 					}
@@ -193,9 +222,12 @@ jQuery( function( $ ) {
 			$select.change( function() {
 				selected_location = selected_latlng = null;
 				updateSelection();
-				addSelectedMarker( selected_latlng, selected_location );
+				if ( selected_latlng ) {
+					addSelectedMarker( selected_latlng, selected_location );
+				}
 			} );
 
+			// Return a public interface
 			return {
 				/**
 				 * Get the selected ID, if any.
@@ -297,8 +329,8 @@ jQuery( function( $ ) {
 				shadow: geo_mashup_url_path + '/images/mm_20_shadow.png',
 				iconSize: [12, 20],
 				shadowSize: [22, 20],
-				iconAnchor: [-6, -20],
-				infoWindowAnchor: [-5, -1]
+				iconAnchor: [6, 20],
+				infoWindowAnchor: [5, 1]
 			};
 
 			green_icon = {
@@ -306,13 +338,11 @@ jQuery( function( $ ) {
 				shadow: geo_mashup_url_path + '/images/mm_20_shadow.png',
 				iconSize: [12, 20],
 				shadowSize: [22, 20],
-				iconAnchor: [-6, -20],
-				infoWindowAnchor: [-5, -1]
+				iconAnchor: [6, 20],
+				infoWindowAnchor: [5, 1]
 			};
 
 			$container = $( '#geo_mashup_map' ).empty();
-			map = new mxn.Mapstraction( $container.get( 0 ), geo_mashup_location_editor_settings.map_api );
-			map.setCenterAndZoom( new mxn.LatLonPoint( 0, 0 ), 2 );
 
 			// Create the loading spinner icon and show it
 			$busy_icon = $( '<div id="gm-loading-icon" style="-moz-user-select: none; z-index: 100; position: absolute; left: ' +
@@ -320,8 +350,12 @@ jQuery( function( $ ) {
 				'<img style="border: 0px none ; margin: 0px; padding: 0px; width: 16px; height: 16px; -moz-user-select: none;" src="' +
 				geo_mashup_url_path + '/images/busy_icon.gif"/></a></div>' );
 			$container.append( $busy_icon );
+
+			map = new mxn.Mapstraction( $container.get( 0 ), geo_mashup_location_editor_settings.map_api );
+			map.addControls( { zoom: 'small' } );
 			GeoMashupLocationEditor.showBusyIcon();
-			map.load.addHandler( function() { GeoMashupLocationEditor.hideBusyIcon(); } );
+			map.load.addHandler( function() { GeoMashupLocationEditor.hideBusyIcon(); }, map );
+			map.setCenterAndZoom( new mxn.LatLonPoint( 0, 0 ), 2 );
 
 			if ( $kml_url_input.val().length > 0 ) {
 				GeoMashupLocationEditor.loadKml( $kml_url_input.val() );
@@ -335,7 +369,7 @@ jQuery( function( $ ) {
 				}
 			}
 
-			map.click.addHandler( handleClick );
+			map.click.addHandler( handleClick, map );
 		},
 
 		/**
@@ -393,6 +427,7 @@ jQuery( function( $ ) {
 			marker = new mxn.Marker( latlng );
 			marker.addData( marker_opts );
 			marker.geo_mashup_location = loc;
+			marker.click.addHandler( function () { selectMarker( marker ); } );
 			if ( !selected_marker ) {
 				selected_marker = marker;
 				map.setCenter( latlng );
@@ -460,40 +495,55 @@ jQuery( function( $ ) {
 		/**
 		 * Handle a click on the map.
 		 *
-		 * @param GOverlay overlay If a marker was clicked, it's passed here.
-		 * @param GLatLng latlng The location of a non-overlay click.
+		 * @param LatLon latlon The location of a non-overlay click.
 		 */
-		handleClick = function(overlay, latlng) {
-			if (overlay) {
-				selectMarker(overlay);
-			} else if (latlng) {
-				searchForLocations( latlng.toUrlValue() );
+		handleClick = function( click, map, args ) {
+			if ( args ) {
+				searchForLocations( args.location.toString() );
 			}
 		},
 
 		/**
-		 * Display the results of a Google geocode request.
+		 * Display the results of a geocode request.
 		 *
 		 * @param object response The query response data.
 		 */
-		showAddresses = function(response) {
-			var i, latlng, marker;
-			if ( response && response.Status.code == 200 && response.Placemark && response.Placemark.length > 0 ) {
+		showAddresses = function( response, status ) {
+			var i, latlng, marker, geonames_request_url;
 
-				for (i=0; i<response.Placemark.length && i<20 && response.Placemark[i]; i += 1) {
-					latlng = new google.maps.LatLng(
-						response.Placemark[i].Point.coordinates[1],
-						response.Placemark[i].Point.coordinates[0]);
-					marker = createMarker(latlng, new GeoAddress(response.Placemark[i]));
-					map.addOverlay(marker);
+			// Look for provider-specific geocoder responses
+			// Only google v3 provides the status argument
+			if ( response && typeof status !== 'undefined' && google.maps.GeocoderStatus.OK == status ) {
+
+				// Google v3 results
+				for ( i = 0; i < response.length && i<20 && response[i].geometry; i += 1 ) {
+					latlng = new mxn.LatLonPoint( 
+						response[i].geometry.location.lat(),
+						response[i].geometry.location.lng()
+					);
+					marker = createMarker( latlng, new GeoAddress( response[i] ) );
+					map.addMarker( marker );
 				}
 
+			} else if ( typeof status === 'undefined' && response && 200 == response.Status.code && response.Placemark && response.Placemark.length > 0 ) {
+
+				// Google v2 results
+				for ( i = 0; i < response.Placemark.length && i < 20 && response.Placemark[i]; i += 1) {
+					latlng = new mxn.LatLonPoint(
+						response.Placemark[i].Point.coordinates[1],
+						response.Placemark[i].Point.coordinates[0] 
+					);
+					marker = createMarker(latlng, new GeoAddress(response.Placemark[i]));
+					map.addMarker( marker );
+				}
+
+				
 			} else {
 
 				// Do a GeoNames search as backup
 				geonames_request_url = 'http://ws.geonames.org/search?type=json&maxRows=20&style=full&callback=?&name=' + 
-					encodeURIComponent(search_text);
-				jQuery.getJSON( geonames_request_url, function(data) { showGeoNames( data ); } );
+					encodeURIComponent( $( '#geo_mashup_search' ).val() );
+				jQuery.getJSON( geonames_request_url, showGeoNames );
 				GeoMashupLocationEditor.showBusyIcon();
 
 			}
@@ -507,26 +557,26 @@ jQuery( function( $ ) {
 		showGeoNames = function (data) {
 			var i, result_latlng, marker;
 			if (data) {
-				for (i=0; i<data.totalResultsCount && i<100 && data.geonames[i]; i += 1) {
-					result_latlng = new google.maps.LatLng(data.geonames[i].lat, data.geonames[i].lng);
-					marker = createMarker(result_latlng, new GeoAddress(data.geonames[i]));
-					map.addOverlay(marker);
+				for (i=0; i<data.geonames.length && i<100 && data.geonames[i]; i += 1) {
+					result_latlng = new mxn.LatLonPoint( data.geonames[i].lat, data.geonames[i].lng );
+					marker = createMarker( result_latlng, new GeoAddress(data.geonames[i]) );
+					map.addMarker( marker );
 				}
 				GeoMashupLocationEditor.hideBusyIcon();
 			}
 		},
 
 		/**
-		 * Use the Google geocoder to search for a location.
+		 * Use geocoding services to search for a location.
 		 * The search map is cleared and loaded with results.
 		 *
-		 * @param string search_text Name, address, coordinates, etc.
+		 * @param string|LatLonPoint search Name, address, coordinates, etc.
 		 */
 		searchForLocations = function( search_text ) {
-			var geocoder, geonames_request_url, latlng_array;
+			var geocoder, request, latlng_array, latlng = null, mxn_map_bounds;
 
 			// Clear current locations
-			map.clearOverlays();
+			map.removeAllMarkers();
 			selected_marker = null;
 			$location_input.val( '' );
 			GeoMashupLocationEditor.setHaveUnsavedChanges();
@@ -537,16 +587,62 @@ jQuery( function( $ ) {
 
 			} else {
 
-				// Do a Google geocoder search
-				geocoder = new google.maps.ClientGeocoder();
-				GeoMashupLocationEditor.showBusyIcon();
-				geocoder.getLocations( search_text, function (response) { showAddresses( response ); } );
-
 				if (search_text.match(/^[-\d\.\s]*,[-\d\.\s]*$/)) {
 					// For coorinates, add the selected marker at the exact location
 					latlng_array = search_text.split(',');
-					latlng = new mxn.LatLon( parseFloat( latlng_array[0] ), parseFloat( latlng_array[1] ) );
+					latlng = new mxn.LatLonPoint( parseFloat( latlng_array[0] ), parseFloat( latlng_array[1] ) );
 					addSelectedMarker(latlng);
+				}
+
+				// Geocoding is the place we'll reference individual providers if loaded
+				if ( typeof google === 'object' && typeof google.maps === 'object' ) {
+
+					GeoMashupLocationEditor.showBusyIcon();
+					if ( typeof google.maps.Geocoder === 'function' ) {
+
+						geocoder = new google.maps.Geocoder();
+					
+						mxn_map_bounds = map.getBounds();
+						request = {
+							bounds: new google.maps.LatLngBounds( 
+								new google.maps.LatLng( mxn_map_bounds.getSouthWest().lat, mxn_map_bounds.getSouthWest().lng ),
+								new google.maps.LatLng( mxn_map_bounds.getNorthEast().lat, mxn_map_bounds.getNorthEast().lng )
+							)
+						};
+						if ( latlng ) {
+							request.latLng = search_text;
+						} else {
+							request.address = search_text;
+						}
+						geocoder.geocode( request, showAddresses );
+
+					} else if ( typeof google.maps.ClientGeocoder === 'function' ) {
+
+						geocoder = new google.maps.ClientGeocoder();
+						GeoMashupLocationEditor.showBusyIcon();
+						mxn_map_bounds = map.getBounds();
+						geocoder.setViewport( 
+							new google.maps.LatLngBounds( 
+								new google.maps.LatLng( mxn_map_bounds.getSouthWest().lat, mxn_map_bounds.getSouthWest().lng ),
+								new google.maps.LatLng( mxn_map_bounds.getNorthEast().lat, mxn_map_bounds.getNorthEast().lng )
+							)
+						);
+						geocoder.getLocations( search_text, showAddresses );
+
+					}
+				} else {
+
+					// Do a GeoNames search 
+					if ( latlng ) {
+						geonames_request_url = 'http://ws.geonames.org/findNearbyJSON?radius=50&style=full&callback=?&lat=' +
+							latlng.lat + '&lng=' + latlng.lng;
+					} else {
+						geonames_request_url = 'http://ws.geonames.org/search?type=json&maxRows=20&style=full&callback=?&q=' + 
+							encodeURIComponent( $( '#geo_mashup_search' ).val() );
+					}
+					jQuery.getJSON( geonames_request_url, showGeoNames );
+					GeoMashupLocationEditor.showBusyIcon();
+
 				}
 			} 
 
@@ -594,9 +690,8 @@ jQuery( function( $ ) {
 			return have_unsaved_changes;
 		},
 
-		loadKml : function(kml_url) {
-			kml = new google.maps.GeoXml( kml_url, function() { addKml(); } );
-			map.addOverlay( kml );
+		loadKml : function( kml_url ) {
+			map.addOverlay( kml_url );
 		},
 
 		showBusyIcon : function() {
@@ -668,8 +763,9 @@ jQuery( function( $ ) {
 	// Search interface
 	$('#geo_mashup_search')
 		.focus( function() { 
+			var $container = $( '#geo_mashup_map' );
 			this.select(); 
-			map.checkResize();
+			map.resizeTo( $container.width(), $container.height() );
 		} )
 		.keypress( function(e) {
 			return searchKey( e, this.value );
