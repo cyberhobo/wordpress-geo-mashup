@@ -430,7 +430,7 @@ class GeoMashupPostUIManager extends GeoMashupUIManager {
 		if ( function_exists( 'get_post_types' ) ) {
 			$post_types = get_post_types( array(), 'objects' );
 			foreach ( $post_types as $post_type ) {
-				if ( $post_type->show_ui ) {
+				if ( !isset( $post_type->show_ui ) or $post_type->show_ui ) {
 					add_meta_box( 'geo_mashup_post_edit', __( 'Location', 'GeoMashup' ), array( &$this, 'print_form' ), $post_type->name, 'advanced' );
 				}
 			}
