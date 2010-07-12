@@ -798,7 +798,9 @@ class GeoMashupDB {
 			include_once( ABSPATH . WPINC. '/class-http.php' );
 
 		$status = null;
-		if ( GeoMashupDB::are_any_location_fields_empty( $location, array( 'country_code', 'admin_code' ) ) ) {
+		// GeoNames is our standard for admin_code and country_code, so we'll replace 
+		// existing values to be safe
+		//if ( empty( $location['admin_code'] ) or strpos( $location['admin_code'], ' ' ) !== false or strlen( $location['admin_code'] ) > 20 or empty( $location['country_code'] ) or strlen( $location['country_code'] ) != 2 ) {
 			$url = 'http://ws.geonames.org/countrySubdivisionJSON?style=FULL&lat=' . urlencode( $location['lat'] ) .
 				'&lng=' . urlencode( $location['lng'] );
 			$http = new WP_Http();
@@ -813,7 +815,7 @@ class GeoMashupDB {
 			}
 			$location['country_code'] = $data->countryCode;
 			$location['admin_code'] = $data->adminCode1;
-		}
+		//}
 		// Look up more things, postal code, locality or address in US
 		if ( 'US' == $location['country_code'] and GeoMashupDB::are_any_location_fields_empty( $location, array( 'address', 'locality_name', 'postal_code' ) ) ) {
 			$url = 'http://ws.geonames.org/findNearestAddressJSON?style=FULL&lat=' . urlencode( $location['lat'] ) .
@@ -1016,25 +1018,26 @@ class GeoMashupDB {
 
 		// Don't bother unless there are missing geocodable fields
 		$geocodable_fields = array( 'country_code', 'admin_code', 'address', 'locality_name', 'postal_code' );
-		if ( ! GeoMashupDB::are_any_location_fields_empty( $location, $geocodable_fields ) ) {
+		$have_empties = GeoMashupDB::are_any_location_fields_empty( $location, $geocodable_fields );
+		if ( ! $have_empties ) {
 			return '0';
 		}
 
 		$status = null;
 
-		// Use the google geocoder only if a google API is in use
-		if ( 'google' == substr( $geo_mashup_options->get( 'overall', 'map_api' ), 0, 6 ) ) {
-			$query = $location['lat']  . ',' . $location['lng'];
-			$status = GeoMashupDB::google_geocode( $query, $location, $language );
-		}
-		// Try other services if there are still missing fields
-		if ( GeoMashupDB::are_any_location_fields_empty( $location, $geocodable_fields ) ) {
-			GeoMashupDB::geonames_reverse_geocode_location( $location, $language );
-		}
-		if ( GeoMashupDB::are_any_location_fields_empty( $location, array( 'country_code', 'address', 'locality_name', 'postal_code' ) ) ) {
-			$status = GeoMashupDB::nominatim_reverse_geocode_location( $location, $language );
-		}
+		// Let GeoNames have a crack at country and admin codes
+		GeoMashupDB::geonames_reverse_geocode_location( $location, $language );
 
+		$have_empties = GeoMashupDB::are_any_location_fields_empty( $location, $geocodable_fields );
+		if ( $have_empties ) {
+			// Choose a geocoding service based on the default API in use
+			if ( 'google' == substr( $geo_mashup_options->get( 'overall', 'map_api' ), 0, 6 ) ) {
+				$query = $location['lat']  . ',' . $location['lng'];
+				$status = GeoMashupDB::google_geocode( $query, $location, $language );
+			} else if ( 'openlayers' == $geo_mashup_options->get( 'overall', 'map_api' ) ) {
+				$status = GeoMashupDB::nominatim_reverse_geocode_location( $location, $language );
+			}
+		}
 		return $status;
 	}
 
