@@ -892,7 +892,7 @@ GeoMashup = {
 				obj = loc.objects[j];
 				for ( k=0; k<obj.categories.length; k+=1 ) {
 					check_cat_id = obj.categories[k];
-					if ( this.categories[check_cat_id].visible ) {
+					if ( this.categories[check_cat_id] && this.categories[check_cat_id].visible ) {
 						has_visible_cats = true;
 					}
 				}
