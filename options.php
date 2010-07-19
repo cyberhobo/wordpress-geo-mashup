@@ -46,6 +46,13 @@ function geo_mashup_options_page() {
 		}
 	}
 
+	if ( isset( $_POST['reactivate'] ) ) {
+		check_admin_referer('geo-mashup-reactivate');
+		if ( GeoMashupDB::install( ) ) {
+			echo '<div class="updated fade"><p>'.__('Activation completed.', 'GeoMashup').'</p></div>';
+		}
+	}
+
 	if ( !empty ( $geo_mashup_options->corrupt_options ) ) {
 		// Options didn't load correctly
 		$message .= ' ' . __('Saved options may be corrupted, try updating again. Corrupt values: ') . 
@@ -867,7 +874,11 @@ function geo_mashup_options_page() {
 		<?php if ( isset( $_GET['view_activation_log'] ) ) : ?>
 		<div class="updated">
 			<p><strong><?php _e( 'Activation Log', 'GeoMashup' ); ?></strong></p>
-			<?php echo get_option( 'geo_mashup_activation_log' ) ?> 
+			<pre><?php echo get_option( 'geo_mashup_activation_log' ) ?></pre>
+			<form method="post" id="geo-mashup-activate-form" action="<?php echo $_SERVER['REQUEST_URI']; ?>">
+				<?php wp_nonce_field('geo-mashup-reactivate'); ?>
+				<input type="submit" name="reactivate" value="<?php _e('Reactivate Now', 'GeoMashup'); ?>" class="button" />
+			</form>
 		</div>
 		<?php else : ?>
 		<p><a href="<?php echo $_SERVER['REQUEST_URI']; ?>&amp;view_activation_log=1"><?php _e('View Activation Log', 'GeoMashup'); ?></a></p>

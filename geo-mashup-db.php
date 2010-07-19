@@ -347,6 +347,34 @@ class GeoMashupDB {
 	}
 
 	/**
+	 * Append to the activation log.
+	 * 
+	 * Add a message and optionally write the activation log.
+	 *
+	 * @since 1.4
+	 * @access private
+	 * @static
+	 *
+	 * @param string $message The message to append.
+	 * @param boolean $write Whether to save the log.
+	 * @return string The current log.
+	 */
+	function activation_log( $message = null, $write = false ) {
+		static $log = null;
+
+		if ( is_null( $log ) ) {
+			$log = get_option( 'geo_mashup_activation_log' );
+		}
+		if ( ! is_null( $message ) ) {
+			$log .= "\n" . $message;
+		}
+		if ( $write ) {
+			update_option( 'geo_mashup_activation_log', $log );
+		}
+		return $log;
+	}
+
+	/**
 	 * Install or update Geo Mashup tables.
 	 * 
 	 * @since 1.2
@@ -356,6 +384,7 @@ class GeoMashupDB {
 	function install( ) {
 		global $wpdb;
 
+		GeoMashupDB::activation_log( date( 'r' ) . ' ' . __( 'Activating Geo Mashup', 'GeoMashup' ) );
 		$location_table_name = $wpdb->prefix . 'geo_mashup_locations';
 		$relationships_table_name = $wpdb->prefix . 'geo_mashup_location_relationships';
 		$administrative_names_table_name = $wpdb->prefix . 'geo_mashup_administrative_names';
@@ -408,8 +437,7 @@ class GeoMashupDB {
 			$have_bad_errors = $have_create_errors || $have_bad_alter_errors;
 			if ( $errors && $have_bad_errors ) {
 				// Any errors other than duplicate or multiple primary key could be trouble
-				echo $errors;
-				update_option( 'geo_mashup_activation_log', $errors );
+				GeoMashupDB::activation_log( $errors, true );
 				die( $errors );
 			} else {
 				if ( GeoMashupDB::convert_prior_locations( ) ) {
@@ -418,7 +446,14 @@ class GeoMashupDB {
 			}
 			$wpdb->show_errors( $old_show_errors );
 		}
-		return ( GeoMashupDB::installed_version( ) == GEO_MASHUP_DB_VERSION );
+		if ( GeoMashupDB::installed_version( ) == GEO_MASHUP_DB_VERSION ) {
+			GeoMashupDB::duplicate_geodata();
+			GeoMashupDB::activation_log( __( 'Geo Mashup database is up to date.', 'GeoMashup' ), true );
+			return true;
+		} else {
+			GeoMashupDB::activation_log( __( 'Geo Mashup database upgrade failed.', 'GeoMashup' ), true );
+			return false;
+		}
 	}
 
 	/**
@@ -1140,6 +1175,111 @@ class GeoMashupDB {
 	}
 
 	/**
+	 * Copy missing geo data to and from the standard location (http://codex.wordpress.org/Geodata)
+	 *
+	 * @since 1.4
+	 * @access private
+	 * @static
+	 * @return bool True if no more orphan locations can be found.
+	 */
+	function duplicate_geodata() {
+		global $wpdb;
+
+		// Copy from postmeta to geo mashup
+		// NOT EXISTS doesn't work in MySQL 4, use left joins instead
+		$postmeta_select = "SELECT pmlat.post_id, pmlat.meta_value as lat, pmlng.meta_value as lng, pmaddr.meta_value as address, p.post_date
+			FROM {$wpdb->posts} p
+			INNER JOIN {$wpdb->postmeta} pmlat ON pmlat.post_id = p.ID AND pmlat.meta_key = 'geo_latitude'
+			INNER JOIN {$wpdb->postmeta} pmlng ON pmlng.post_id = p.ID AND pmlng.meta_key = 'geo_longitude'
+			LEFT JOIN {$wpdb->postmeta} pmaddr ON pmaddr.post_id = p.ID AND pmaddr.meta_key = 'geo_address'
+			LEFT JOIN {$wpdb->prefix}geo_mashup_location_relationships gmlr ON gmlr.object_id = pmlat.post_id AND gmlr.object_name = 'post'
+			WHERE pmlat.meta_key = 'geo_latitude' 
+			AND gmlr.object_id IS NULL";
+
+		$wpdb->query( $postmeta_select );
+
+		if ($wpdb->last_error) {
+			GeoMashupDB::activation_log( $wpdb->last_error );
+			return false;
+		}
+
+		$unconverted_metadata = $wpdb->last_result;
+		if ( $unconverted_metadata ) {
+			echo '<pre>';
+			$msg = __( 'Copying geodata from WordPress', 'GeoMashup' );
+			echo "$msg\n";
+			GeoMashupDB::activation_log( date( 'r' ) . ' ' . $msg );
+			$start_time = time();
+			foreach ( $unconverted_metadata as $postmeta ) {
+				$post_id = $postmeta->post_id;
+				$location = array( 'lat' => trim( $postmeta->lat ), 'lng' => trim( $postmeta->lng ), 'address' => trim( $postmeta->address ) );
+				$do_lookups = ( ( time() - $start_time ) < 10 ) ? true : false;
+				$set_id = GeoMashupDB::set_object_location( 'post', $post_id, $location, $do_lookups, $postmeta->post_date );
+				if ( $set_id ) {
+					// Echo a poor man's progress bar
+					GeoMashupDB::activation_log( 'OK: post_id ' . $post_id );
+					echo '.';
+					flush( );
+				} else {
+					$msg = sprintf( __( 'Failed to duplicate WordPress location (%s). You can %sedit the post%s ' .
+						'to update the location, and try again.', 'GeoMashup' ),
+						$postmeta->lat . ',' . $postmeta->lng, '<a href="post.php?action=edit&post=' . $post_id . '">', '</a>');
+					GeoMashupDB::activation_log( $msg, true );
+					echo "\n$msg\n";
+				}
+			}
+			echo '</pre>';
+		}
+
+		// Copy from Geo Mashup to missing postmeta
+		// NOT EXISTS doesn't work in MySQL 4, use left joins instead
+		$geomashup_select = "SELECT gmlr.object_id as post_id, gml.lat, gml.lng, gml.address
+			FROM {$wpdb->prefix}geo_mashup_locations gml
+			INNER JOIN {$wpdb->prefix}geo_mashup_location_relationships gmlr ON gmlr.location_id = gml.id
+			LEFT JOIN {$wpdb->postmeta} pmlat ON pmlat.post_id = gmlr.object_id AND pmlat.meta_key = 'geo_latitude'
+			WHERE gmlr.object_name = 'post'
+			AND pmlat.post_id IS NULL";
+
+		$wpdb->query( $geomashup_select );
+
+		if ($wpdb->last_error) {
+			GeoMashupDB::activation_log( $wpdb->last_error, true );
+			return false;
+		}
+
+		$unconverted_geomashup_posts = $wpdb->last_result;
+		if ( $unconverted_geomashup_posts ) {
+			echo '<pre>';
+			$msg = __( 'Copying geodata from Geo Mashup', 'GeoMashup' );
+			echo "$msg\n";
+			GeoMashupDB::activation_log( date( 'r' ) . ' ' . $msg );
+			$start_time = time();
+			foreach ( $unconverted_geomashup_posts as $location ) {
+				$lat_success = update_post_meta( $location->post_id, 'geo_latitude', $location->lat );
+				$lng_success = update_post_meta( $location->post_id, 'geo_longitude', $location->lng );
+				if ( ! empty( $location->address ) ) {
+					update_post_meta( $location->post_id, 'geo_address', $location->address );
+				}
+				if ( $lat_success and $lng_success ) {
+					// Echo a poor man's progress bar
+					GeoMashupDB::activation_log( 'OK: post_id ' . $location->post_id );
+					echo '.';
+					flush( );
+				} else {
+					$msg = sprintf( __( 'Failed to duplicate Geo Mashup location for post (%s).', 'GeoMashup' ), $location->post_id );
+					GeoMashupDB::activation_log( $msg );
+					echo 'x';
+				}
+			}
+			echo '</pre>';
+		}
+
+		$wpdb->query( $postmeta_select );
+
+		return ( empty( $wpdb->last_result ) );
+	}
+
+	/**
 	 * Convert Geo plugin locations to Geo Mashup format.
 	 *
 	 * @since 1.2
@@ -1165,17 +1305,17 @@ class GeoMashupDB {
 		$wpdb->query( $unconverted_select );
 
 		if ($wpdb->last_error) {
-			update_option( 'geo_mashup_activation_log', $wpdb->last_error );
+			GeoMashupDB::activation_log( $wpdb->last_error, true );
 			return false;
 		}
 
 		$unconverted_metadata = $wpdb->last_result;
-		$start_time = time();
-		$log = date( 'r' ) . '</br>';
 		if ( $unconverted_metadata ) {
-			$msg = '<p>' . __( 'Converting old locations', 'GeoMashup' );
-			$log .= $msg;
-			echo $msg;
+			echo '<pre>';
+			$msg = __( 'Converting old locations', 'GeoMashup' );
+			echo "$msg\n";
+			GeoMashupDB::activation_log( date( 'r' ) . ' ' . $msg );
+			$start_time = time();
 			foreach ( $unconverted_metadata as $postmeta ) {
 				$post_id = $postmeta->post_id;
 				list( $lat, $lng ) = split( ',', $postmeta->meta_value );
@@ -1185,28 +1325,26 @@ class GeoMashupDB {
 				if ( $set_id ) {
 					add_post_meta( $post_id, '_geo_converted', $wpdb->prefix . 'geo_mashup_locations.id = ' . $set_id );
 					// Echo a poor man's progress bar
-					$log .= '<br/>OK: post_id ' . $post_id;
+					GeoMashupDB::activation_log( 'OK: post_id ' . $post_id );
 					echo '.';
 					flush( );
 				} else {
-					$msg = '<br/>';
-					$msg .= sprintf( __( 'Failed to convert location (%s). You can %sedit the post%s ' .
+					$msg = sprintf( __( 'Failed to convert location (%s). You can %sedit the post%s ' .
 						'to update the location, and try again.', 'GeoMashup' ),
 						$postmeta->meta_value, '<a href="post.php?action=edit&post=' . $post_id . '">', '</a>');
-					$msg .= '<br/>';
-					$log .= $msg;
-					echo $msg;
+					GeoMashupDB::activation_log( $msg );
+					echo 'x';
 				}
 			}
-			$log .= '</p>';
-			echo '</p>';
+			echo '</pre>';
 		}
 
 		$geo_locations = get_option( 'geo_locations' );
 		if ( is_array( $geo_locations ) ) {
-			$msg = '<p>'. __( 'Converting saved locations', 'GeoMashup' ) . ':<br/>';
-			$log .= $msg;
-			echo $msg;
+			echo '<pre>';
+			$msg = __( 'Converting saved locations', 'GeoMashup' );
+			GeoMashupDB::activation_log( $msg );
+			echo "$msg\n";
 			foreach ( $geo_locations as $saved_name => $coordinates ) {
 				list( $lat, $lng, $converted ) = split( ',', $coordinates );
 				$location = array( 'lat' => trim( $lat ), 'lng' => trim( $lng ), 'saved_name' => $saved_name );
@@ -1215,22 +1353,21 @@ class GeoMashupDB {
 				if ( ! is_wp_error( $set_id ) ) {
 					$geo_locations[$saved_name] .= ',' . $wpdb->prefix . 'geo_mashup_locations.id=' . $set_id;
 					$msg = __( 'OK: ', 'GeoMashup' ) . $saved_name . '<br/>';
-					$log .= $msg;
-					echo $msg;
+					GeoMashupDB::activation_log( $msg );
+					echo '.';
+					flush();
 				} else {
 					$msg = $saved_name . ' - ' . 
 						sprintf( __( "Failed to convert saved location (%s). " .
 							"You'll have to save it again, sorry.", 'GeoMashup' ),
 						$coordinates );
-					$msg .= '<br/>';
-					$log .= $set_id->get_error_message() . '<br/>';
-					$log .= $msg;
-					echo $msg;
+					GeoMashup::activation_log( $set_id->get_error_message() . '<br/>' );
+					GeoMashup::activation_log( $msg );
+					echo 'x';
 				}
 			}
-			$log .= '</p>';
-			echo '</p>';
 			update_option( 'geo_locations', $geo_locations );
+			echo '</pre>';
 		}
 
 		$geo_date_update = "UPDATE {$wpdb->prefix}geo_mashup_location_relationships gmlr, $wpdb->posts p " .
@@ -1241,18 +1378,14 @@ class GeoMashupDB {
 
 		$geo_date_count = $wpdb->query( $geo_date_update );
 
-		$log .= '<p>';
-		echo '<p>';
 		if ( $geo_date_count === false ) {
 			$msg = __( 'Failed to initialize geo dates from post dates: ', 'GeoMashup' );
 			$msg .= $wpdb->last_error;
 		} else {
 			$msg = sprintf( __( 'Initialized %d geo dates from corresponding post dates.', 'GeoMashup' ), $geo_date_count );
 		}
-		$log .= $msg . '</p>';
-		echo $msg . '</p>';
-			
-		update_option( 'geo_mashup_activation_log', $log );
+
+		GeoMashup::activation_log( $msg, true );
 
 		$wpdb->query( $unconverted_select );
 
