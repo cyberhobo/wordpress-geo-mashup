@@ -411,9 +411,8 @@ class GeoMashupPostUIManager extends GeoMashupUIManager {
 		add_filter( 'upload_mimes', array( &$this, 'upload_mimes' ) );
 
 		// Enable this interface when the option is set 
-		$enabled = $geo_mashup_options->get( 'overall', 'located_object_name', 'post' ) == 'true';
 
-		if ( $enabled ) { 
+		if ( 'true' == $geo_mashup_options->get( 'overall', 'located_object_name', 'post' ) ) {
 
 			// Queue inline location handlers
 
@@ -452,7 +451,7 @@ class GeoMashupPostUIManager extends GeoMashupUIManager {
 	}
 
 	/**
-	 * Add a location meta box to the post and page editors.
+	 * Add a location meta box to the post editors.
 	 * 
 	 * admin_menu {@link http://codex.wordpress.org/Plugin_API/Action_Reference action}
 	 * called by Wordpress.
@@ -462,8 +461,17 @@ class GeoMashupPostUIManager extends GeoMashupUIManager {
 	 */
 	function admin_menu() {
 		// Not adding a menu, but at this stage add_meta_box is defined, so we can add the location form
-		add_meta_box( 'geo_mashup_post_edit', __( 'Location', 'GeoMashup' ), array( &$this, 'print_form' ), 'post', 'advanced' );
-		add_meta_box( 'geo_mashup_post_edit', __( 'Location', 'GeoMashup' ), array( &$this, 'print_form' ), 'page', 'advanced' );
+		if ( function_exists( 'get_post_types' ) ) {
+			$post_types = get_post_types( array(), 'objects' );
+			foreach ( $post_types as $post_type ) {
+				if ( !isset( $post_type->show_ui ) or $post_type->show_ui ) {
+					add_meta_box( 'geo_mashup_post_edit', __( 'Location', 'GeoMashup' ), array( &$this, 'print_form' ), $post_type->name, 'advanced' );
+				}
+			}
+		} else {
+			add_meta_box( 'geo_mashup_post_edit', __( 'Location', 'GeoMashup' ), array( &$this, 'print_form' ), 'post', 'advanced' );
+			add_meta_box( 'geo_mashup_post_edit', __( 'Location', 'GeoMashup' ), array( &$this, 'print_form' ), 'page', 'advanced' );
+		}
 	}
 
 	/**

@@ -2,7 +2,7 @@
 These are notes for the software author, to help ensure you don't get a broken release :)
 
 = Before =
-	* Current revision is working locally
+	* Current revision is tested and working locally
 	* New documentation is written
 
 = Release Steps =
@@ -23,6 +23,8 @@ If any step fails, fix before continuing, repeating any necessary prior steps.
 	1. Upload ZIP to Google code.
 	1. Check current WordPress tag.
 	1. File merge code with WordPress repo code.
-	1. Edit WP readme.txt (and maybe project site home page).
+	1. Edit WP readme.txt (remember stable tag and changelog!)
+		1. Edit project site home page.
 	1. Commit WP copy.
 	1. Tag WP copy.
+	1. Prune issues.
