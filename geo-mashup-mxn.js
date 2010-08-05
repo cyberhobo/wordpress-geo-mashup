@@ -225,8 +225,12 @@ GeoMashup.isMarkerVisible = function( marker ) {
 	return ( marker.getAttribute( 'visible' ) && map_bounds && map_bounds.contains( marker.location ) ); 
 };
 
-GeoMashup.centerMarker = function( marker ) {
-	this.map.setCenter( marker.location, {}, true );
+GeoMashup.centerMarker = function( marker, zoom ) {
+	if ( typeof zoom === 'number' ) {
+		this.map.setCenterAndZoom( marker.location, zoom );
+	} else {
+		this.map.setCenter( marker.location, {}, true );
+	}
 };
 
 GeoMashup.createMap = function(container, opts) {

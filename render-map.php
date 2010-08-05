@@ -102,6 +102,10 @@ function geo_mashup_render_map ( ) {
 		}
 	} else {
 		// Map content is not single
+		if ( isset( $_GET['object_id'] ) ) {
+			$map_properties['context_object_id'] = $_GET['object_id'];
+			unset( $_GET['object_id'] );
+		}
 		array_push( $option_keys, 'marker_select_info_window', 'marker_select_highlight', 
 			'marker_select_center', 'marker_select_attachments' );
 

@@ -625,30 +625,43 @@ class GeoMashup {
 		// Default query is for posts
 		$object_name = ( isset( $atts['object_name'] ) ) ? $atts['object_name'] : 'post';
 
+		// Find the ID and location of the container object if it exists
+		if ( 'post' == $object_name and $wp_query->in_the_loop ) {
+
+			$context_object_id = $wp_query->post->ID;
+
+		} else if ( 'comment' == $object_name and $in_comment_loop ) {
+			
+			$context_object_id = get_comment_ID();
+
+		} else if ( 'user' == $object_name and $wp_query->post ) {
+
+			$context_object_id = $wp_query->post->post_author;
+
+		}
+		if ( ! empty( $context_object_id ) ) {
+			
+			$url_params['object_id'] = $context_object_id;
+			$location = GeoMashupDB::get_object_location( $object_name, $context_object_id );
+
+		}
+
 		// Map content type isn't required, so resolve it
 		$map_content = isset( $atts['map_content'] ) ? $atts['map_content'] : null;
 		unset($atts['map_content']);
 
 		if ( empty ( $map_content ) ) {
-			if ( ( 'post' == $object_name && !$wp_query->in_the_loop ) || ( 'comment' == $object_name && !$in_comment_loop ) ) {
+
+			if ( empty( $context_object_id ) ) {
 				$map_content = 'contextual';
+			} else if ( empty( $location ) ) {
+				// Not located, go global
+				$map_content = 'global';
 			} else {
-				if ( 'user' == $object_name ) {
-					$context_object_id = $wp_query->post->post_author;
-				} else if ( 'comment' == $object_name ) {
-					$context_object_id = get_comment_ID();
-				} else {
-					$context_object_id = $wp_query->post->ID;
-				}
-				$location = GeoMashupDB::get_object_location( $object_name, $context_object_id );
-				if ( empty( $location ) ) {
-					// Not located, go global
-					$map_content = 'global';
-				} else {
-					// Located, go single
-					$map_content = 'single';
-				}
+				// Located, go single
+				$map_content = 'single';
 			}
+
 		}
 		
 		$single_option_keys = array ( 'width', 'height', 'zoom', 'background_color', 'click_to_load', 'click_to_load_text' );
@@ -683,23 +696,19 @@ class GeoMashup {
 			case 'single':
 				$url_params['map_content'] = 'single';
 				$url_params += $geo_mashup_options->get ( 'single_map', $single_option_keys );
-				if ( 'post' == $object_name ) {
-					$url_params['object_id'] = $wp_query->post->ID;
-				} else if ( 'user' == $object_name ) {
-					$url_params['object_id'] = $wp_query->post->post_author;
-				} else if ( 'comment' == $object_name ) {
-					$url_params['object_id'] = get_comment_ID();
-					if ( empty( $url_params['object_id'] ) ) { 
-						return '<!-- ' . __( 'Geo Mashup found no current object to map', 'GeoMashup' ) . '-->';
-					}
-					$location = GeoMashupDB::get_object_location( $object_name, $object_id ); 
-					if ( empty( $location ) ) {
-						return '<!-- ' . __( 'Geo Mashup ommitted a map for an object with no location', 'GeoMashup' ) . '-->';
-					}
+				if ( empty( $url_params['object_id'] ) ) { 
+					return '<!-- ' . __( 'Geo Mashup found no current object to map', 'GeoMashup' ) . '-->';
+				}
+				if ( empty( $location ) ) {
+					return '<!-- ' . __( 'Geo Mashup omitted a map for an object with no location', 'GeoMashup' ) . '-->';
 				}
 				break;
 
 			case 'global':
+				if ( isset( $_GET['template'] ) and 'full-post' == $_GET['template'] ) {
+					// Global maps tags in response to a full-post query can infinitely nest, prevent this
+					return '<!-- ' . __( 'Geo Mashup map omitted to avoid nesting maps', 'GeoMashup' ) . '-->';
+				}
 				$url_params['map_content'] = 'global';
 				$url_params += $geo_mashup_options->get ( 'global_map', $global_option_keys );
 				if (isset($_SERVER['QUERY_STRING'])) {

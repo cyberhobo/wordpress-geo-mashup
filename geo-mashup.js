@@ -649,7 +649,7 @@ GeoMashup = {
 		this.doAction( 'selectedMarker', this.opts, this.selected_marker, this.map );
 	},
 
-	centerMarker : function ( marker ) {
+	centerMarker : function ( marker, zoom ) {
 		// provider override
 	},
 
@@ -878,9 +878,6 @@ GeoMashup = {
 				// This object has not yet been loaded
 				this.objects[object_id] = response_data[i];
 				this.object_count += 1;
-				if ( !this.opts.open_object_id ) {
-					this.opts.open_object_id = object_id;
-				}
 				if (!this.locations[point]) {
 					// There are no other objects yet at this point, create a marker
 					this.extendLocationBounds( point );
@@ -917,6 +914,13 @@ GeoMashup = {
 		if (this.firstLoad) {
 			this.firstLoad = false;
 			if ( this.opts.auto_info_open && this.object_count > 0 ) {
+				if ( !this.opts.open_object_id ) {
+					if ( this.opts.context_object_id && this.objects[ this.opts.context_object_id ] ) {
+						this.opts.open_object_id = this.opts.context_object_id;
+					} else {
+						this.opts.open_object_id = response_data[0].object_id;
+					}
+				}
 				this.clickObjectMarker(this.opts.open_object_id);
 			}
 			if ( this.opts.zoom === 'auto' ) {
@@ -925,6 +929,8 @@ GeoMashup = {
 					this.map.getBoundsZoomLevel( this.location_bounds ),
 					function() { GeoMashup.updateVisibleList(); } 
 				);
+			} else if ( this.opts.context_object_id && this.objects[ this.opts.context_object_id ] ) {
+				this.centerMarker( this.objects[ this.opts.context_object_id ].marker, parseInt( this.opts.zoom ) );
 			}
 			this.updateVisibleList();
 		}

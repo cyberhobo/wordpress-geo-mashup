@@ -299,8 +299,12 @@ GeoMashup.autoZoom = function() {
 	);
 };
 
-GeoMashup.centerMarker = function( marker ) {
-	this.map.panTo( marker.getLatLng() );
+GeoMashup.centerMarker = function( marker, zoom ) {
+	if ( typeof zoom === 'number' ) {
+		this.map.setCenter( marker.getLatLng(), zoom );
+	} else {
+		this.map.panTo( marker.getLatLng() );
+	}
 };
 
 GeoMashup.requestObjects = function( use_bounds ) {
