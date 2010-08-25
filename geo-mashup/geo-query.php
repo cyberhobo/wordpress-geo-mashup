@@ -77,6 +77,8 @@ class GeoMashupQuery {
 				$query_vars['suppress_filters'] = true;
 				// No sticky posts please
 				$query_vars['caller_get_posts'] = true;
+				// Don't limit the number of results
+				$query_vars['posts_per_page'] = -1;
 
 				query_posts( $query_vars );
 				
