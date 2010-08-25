@@ -717,7 +717,7 @@ GeoMashup = {
 		// Provider override
 	},
 
-  addMarker : function( ) {
+  addMarkers : function( ) {
 		// Provider override
 	},
 
@@ -726,6 +726,10 @@ GeoMashup = {
 	},
 
   autoZoom : function( ) {
+		// Provider override
+	},
+
+	recluster : function( ) {
 		// Provider override
 	},
 
@@ -768,12 +772,6 @@ GeoMashup = {
 		} else {
 			this.categories[category_id].points.push(point);
 			this.categories[category_id].posts.push(post_id);
-		}
-	},
-
-	recluster : function( ) {
-		if (this.clusterer) { 
-			this.clusterer.refresh();
 		}
 	},
 
@@ -886,10 +884,7 @@ GeoMashup = {
 					marker = this.createMarker(point, response_data[i]);
 					this.objects[object_id].marker = marker;
 					this.locations[point].marker = marker;
-					if ( this.clusterer ) {
-						added_markers.push( marker );
-					} 
-					this.addMarker( marker );
+					added_markers.push( marker );
 				} else {
 					// There is already a marker at this point, add the new object to it
 					this.locations[point].objects.push( response_data[i] );
@@ -901,10 +896,7 @@ GeoMashup = {
 			}
 		} // end for each marker
 
-		if ( this.clusterer && added_markers.length > 0 ) {
-			this.clusterer.addMarkers( added_markers );
-			this.clusterer.refresh();
-		}
+		this.addMarkers( added_markers );
 
 		// Add category lines
 		if (add_category_info) {
@@ -979,7 +971,7 @@ GeoMashup = {
 			}
 		}
 
-		if ( this.clusterer ) {
+		if ( this.clusterer && 'markercluster' == this.opts.cluster_lib ) {
 			if ( old_level <= this.opts.cluster_max_zoom && 
 					new_level > this.opts.cluster_max_zoom ) {
 				this.clusterer.clusteringEnabled = false;

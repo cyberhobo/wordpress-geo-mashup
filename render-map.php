@@ -114,7 +114,7 @@ function geo_mashup_render_map ( ) {
 			// If desired we could make these real options
 			$options['auto_info_open'] = 'false';
 		} else {
-			array_push ( $option_keys, 'max_posts', 'show_post', 'auto_info_open', 'cluster_max_zoom' );
+			array_push ( $option_keys, 'max_posts', 'show_post', 'auto_info_open', 'cluster_max_zoom', 'cluster_lib' );
 			$options = $geo_mashup_options->get ( 'global_map', $option_keys );
 			if ( is_null ( $map_content ) ) {
 				$options['map_content'] = 'global';
@@ -135,9 +135,14 @@ function geo_mashup_render_map ( ) {
 
 		if ( !empty( $map_properties['cluster_max_zoom'] ) ) {
 			// Queue clustering scripts 
-			wp_register_script( 'mapiconmaker', path_join( GEO_MASHUP_URL_PATH, 'mapiconmaker.js' ), array( 'google-jsapi' ), '1.1' );
-			wp_register_script( 'clustermarker', path_join( GEO_MASHUP_URL_PATH, 'ClusterMarker.js' ), array( 'mapiconmaker' ), '1.3.2' );
-			$mashup_dependencies[] = 'clustermarker';
+			if ( 'clustermarker' == $map_properties['cluster_lib'] ) {
+				wp_register_script( 'mapiconmaker', path_join( GEO_MASHUP_URL_PATH, 'mapiconmaker.js' ), array( 'google-jsapi' ), '1.1' );
+				wp_register_script( 'clustermarker', path_join( GEO_MASHUP_URL_PATH, 'ClusterMarker.js' ), array( 'mapiconmaker' ), '1.3.2' );
+				$mashup_dependencies[] = 'clustermarker';
+			} else {
+				$map_properties['cluster_lib'] = 'markerclusterer';
+				wp_enqueue_script( 'markerclusterer', path_join( GEO_MASHUP_URL_PATH, 'markerclusterer.js' ), array( 'geo-mashup-google' ), '1.0' );
+			}
 		}
 	} else {
 		// Mapstraction base
@@ -248,7 +253,7 @@ function geo_mashup_render_map ( ) {
 		<body>
 		<div id="geo-mashup">
 			<noscript>
-				<?php _e( 'This map requires JavaScript. You may have to enable it in your settings.', 'GeoMashup' ); ?>
+				<p><?php _e( 'This map requires JavaScript. You may have to enable it in your settings.', 'GeoMashup' ); ?></p>
 			</noscript>
 		</div>
 		<script type="text/javascript">

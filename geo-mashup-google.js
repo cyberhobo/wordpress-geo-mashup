@@ -272,8 +272,17 @@ GeoMashup.extendLocationBounds = function( latlng ) {
 	this.location_bounds.extend( latlng );
 };
 
-GeoMashup.addMarker = function( marker ) {
-	this.map.addOverlay( marker );
+GeoMashup.addMarkers = function( markers ) {
+	if ( ( ! this.clusterer ) || 'clustermarker' === this.opts.cluster_lib ) {
+		// No clustering, or ClusterMarker need the markers added to the map 
+		this.forEach( markers, function( i, marker ) {
+			this.map.addOverlay( marker );
+		} );
+	}
+	if ( this.clusterer && markers.length > 0 ) {
+		this.clusterer.addMarkers( markers );
+		this.recluster();
+	}
 };
 
 GeoMashup.makeMarkerMultiple = function( marker ) {
@@ -343,6 +352,16 @@ GeoMashup.requestObjects = function( use_bounds ) {
 GeoMashup.isMarkerVisible = function( marker ) {
 	var map_bounds = this.map.getBounds();
 	return ( ! marker.isHidden() && map_bounds.containsLatLng( marker.getLatLng() ) );
+};
+
+GeoMashup.recluster = function( ) {
+	if (this.clusterer) { 
+		if ( 'clustermarker' == this.opts.cluster_lib ) {
+			this.clusterer.refresh();
+		} else {
+			this.clusterer.resetViewport();
+		}
+	}
 };
 
 GeoMashup.createMap = function(container, opts) {
@@ -433,14 +452,20 @@ GeoMashup.createMap = function(container, opts) {
 	google.maps.Event.bind(this.map, "moveend", this, this.adjustViewport);
 
 	if (opts.cluster_max_zoom) {
-		clusterer_opts = { 
-			'iconOptions' : {},
-			'fitMapMaxZoom' : opts.cluster_max_zoom,
-			'clusterMarkerTitle' : '%count',
-			'intersectPadding' : 3	
-		};
-		this.doAction( 'clusterOptions', this.opts, clusterer_opts );
-		this.clusterer = new ClusterMarker( this.map, clusterer_opts );
+		if ( 'clustermarker' === opts.cluster_lib ) {
+			clusterer_opts = { 
+				'iconOptions' : {},
+				'fitMapMaxZoom' : opts.cluster_max_zoom,
+				'clusterMarkerTitle' : '%count',
+				'intersectPadding' : 3	
+			};
+			this.doAction( 'clusterOptions', this.opts, clusterer_opts );
+			this.clusterer = new ClusterMarker( this.map, clusterer_opts );
+		} else {
+			clusterer_opts = { maxZoom: parseInt( opts.cluster_max_zoom ) };
+			this.doAction( 'clusterOptions', this.opts, clusterer_opts );
+			this.clusterer = new MarkerClusterer( this.map, [], clusterer_opts );
+		}
 	}
 
 	if ( opts.zoom !== 'auto' && typeof opts.zoom === 'string' ) {

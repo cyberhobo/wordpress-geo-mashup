@@ -121,6 +121,11 @@ function geo_mashup_options_page() {
 		$zoomOptions[$i] = $i;
 	}
 
+	$clusterOptions = Array( 
+		'clustermarker' => __( 'Cluster Marker', 'GeoMashup' ),
+		'markerclusterer' => __( 'Marker Clusterer', 'GeoMashup' )
+	);
+
 	$selected_tab = ( empty( $_POST['geo_mashup_selected_tab'] ) ) ? 0 : $_POST['geo_mashup_selected_tab']; 
 	$google_key = $geo_mashup_options->get( 'overall', 'google_key' );
 	// Now for the HTML
@@ -591,6 +596,24 @@ function geo_mashup_options_page() {
 							?></span>
 						</td>
 					</tr>
+					<?php if ( 'google' == $geo_mashup_options->get( 'overall', 'map_api' ) ) : ?>
+					<tr>
+						<th scope="row"><?php _e('Clustering Library', 'GeoMashup'); ?></th>
+						<td>
+							<select id="zoom" name="global_map[cluster_lib]">
+								<?php foreach ( $clusterOptions as $value => $label ) : ?>
+								<option value="<?php echo esc_attr( $value ); ?>"<?php
+									if ( strcmp( $value, $geo_mashup_options->get( 'global_map', 'cluster_lib' ) ) == 0 ) {
+										echo ' selected="selected"';
+									}
+								?>><?php echo esc_html( $label ); ?></option>
+								<?php endforeach; ?>
+							</select>
+							<span class="setting-description"><?php 
+								_e( 'Cluster Marker is the first library Geo Mashup used. Marker Clusterer may be faster.', 'GeoMashup' ); 
+							?></span>
+						</td>
+					</tr>
 					<tr>
 						<th scope="row"><?php _e('Cluster Markers Until Zoom Level', 'GeoMashup'); ?></th>
 						<td>
@@ -604,6 +627,7 @@ function geo_mashup_options_page() {
 							?></span>
 						</td>
 					</tr>
+					<?php endif; ?>
 					<tr>
 						<th scope="row"><?php _e('Marker Selection Behaviors', 'GeoMashup'); ?></th>
 						<td>

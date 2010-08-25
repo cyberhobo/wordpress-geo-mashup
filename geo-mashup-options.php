@@ -59,7 +59,8 @@ class GeoMashupOptions {
 			'auto_info_open' => 'true',
 			'click_to_load' => 'false',
 			'click_to_load_text' => '',
-	 		'cluster_max_zoom' => ''	),
+	 		'cluster_max_zoom' => '',
+	 		'cluster_lib' => 'clustermarker'	),
 		'single_map' => array (
 			'width' => '400',
 			'height' => '400',
@@ -395,6 +396,15 @@ class GeoMashupOptions {
 				if ( !in_array ( $value, $valid_apis ) ) {
 					array_push ( $this->validation_errors, '"'. $value . '" ' . __('is invalid for', 'GeoMashup') . ' ' . $key .
 						__(', which must be a valid map provider.', 'GeoMashup') );
+					return false;
+				}
+				return true;
+
+			case 'cluster_lib':
+				$valid_libs = array( 'clustermarker', 'markerclusterer' );
+				if ( !in_array( $value, $valid_libs ) ) {
+					array_push( $this->validation_errors, '"'. $value . '" ' . __('is invalid for', 'GeoMashup') . ' ' . $key .
+						__(', which must be a valid clustering library.', 'GeoMashup') );
 					return false;
 				}
 				return true;
