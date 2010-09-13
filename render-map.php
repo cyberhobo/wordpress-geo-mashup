@@ -141,7 +141,7 @@ function geo_mashup_render_map ( ) {
 				$mashup_dependencies[] = 'clustermarker';
 			} else {
 				$map_properties['cluster_lib'] = 'markerclusterer';
-				wp_enqueue_script( 'markerclusterer', path_join( GEO_MASHUP_URL_PATH, 'markerclusterer.js' ), array( 'geo-mashup-google' ), '1.0' );
+				wp_enqueue_script( 'markerclusterer', path_join( GEO_MASHUP_URL_PATH, 'markerclusterer.js' ), array( 'google-jsapi', 'geo-mashup-google' ), '1.0' );
 			}
 		}
 	} else {
