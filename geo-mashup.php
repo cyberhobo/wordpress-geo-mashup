@@ -3,7 +3,7 @@
 Plugin Name: Geo Mashup
 Plugin URI: http://code.google.com/p/wordpress-geo-mashup/ 
 Description: Save location for posts and pages, or even users and comments. Display these locations on Google maps. Make WordPress into your GeoCMS.
-Version: 1.4alpha6
+Version: 1.4alpha7
 Author: Dylan Kuhn
 Author URI: http://www.cyberhobo.net/
 Minimum WordPress Version Required: 2.8
@@ -170,7 +170,7 @@ class GeoMashup {
 		}
 		define('GEO_MASHUP_MAX_ZOOM', 20);
 		// Make numeric versions: -.02 for alpha, -.01 for beta
-		define('GEO_MASHUP_VERSION', '1.3.98.6');
+		define('GEO_MASHUP_VERSION', '1.3.98.7');
 		define('GEO_MASHUP_DB_VERSION', '1.3');
 	}
 
