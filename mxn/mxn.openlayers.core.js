@@ -123,22 +123,13 @@ mxn.register('openlayers', {
 		},
 
 		removeMarker: function(marker) {
-			var map = this.maps[this.api];
+			marker.hide();
 			this.layers.markers.removeMarker(marker.proprietary_marker);
 			marker.proprietary_marker.destroy();
 		},
 
-		removeAllMarkers: function() {
-			var map = this.maps[this.api];
-
-			// handled by prototype calls to removeMarker?
-			// TODO: Add provider code
-		},
-
 		declutterMarkers: function(opts) {
-			var map = this.maps[this.api];
-
-			// TODO: Add provider code
+			throw 'Not supported';
 		},
 
 		addPolyline: function(polyline, old) {
@@ -431,12 +422,10 @@ mxn.register('openlayers', {
 		},
 
 		hide: function() {
-			//this.proprietary_marker.setOptions({visible:false});
 			this.proprietary_marker.display( false );
 		},
 
 		show: function() {
-			//this.proprietary_marker.setOptions({visible:true});
 			this.proprietary_marker.display( true );
 		},
 
