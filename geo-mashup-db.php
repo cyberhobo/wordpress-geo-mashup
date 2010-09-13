@@ -1361,8 +1361,8 @@ class GeoMashupDB {
 						sprintf( __( "Failed to convert saved location (%s). " .
 							"You'll have to save it again, sorry.", 'GeoMashup' ),
 						$coordinates );
-					GeoMashup::activation_log( $set_id->get_error_message() . '<br/>' );
-					GeoMashup::activation_log( $msg );
+					GeoMashupDB::activation_log( $set_id->get_error_message() );
+					GeoMashupDB::activation_log( $msg );
 					echo 'x';
 				}
 			}
@@ -1385,7 +1385,7 @@ class GeoMashupDB {
 			$msg = sprintf( __( 'Initialized %d geo dates from corresponding post dates.', 'GeoMashup' ), $geo_date_count );
 		}
 
-		GeoMashup::activation_log( $msg, true );
+		GeoMashupDB::activation_log( $msg, true );
 
 		$wpdb->query( $unconverted_select );
 
