@@ -10,8 +10,6 @@
 /*glboal customGeoMashupSinglePostIcon, customGeoMashupMultiplePostImage */
 /*global mxn */
 
-google.load( 'maps', '2' );
-
 GeoMashup.createCategoryLine = function ( category ) {
 	category.line = new google.maps.Polyline(category.points, category.color);
 	google.maps.Event.addListener( category.line, 'click', function () {
