@@ -314,11 +314,6 @@ GeoMashup.createMap = function(container, opts) {
 	this.showLoadingIcon();
 	this.map.load.addHandler( function() { GeoMashup.hideLoadingIcon(); } );
 
-	if (window.location.search === this.getCookie('back_search'))
-	{
-		this.loadSettings(opts, this.getCookie('back_settings'));
-	}
-
 	if (!opts.object_name) {
 		opts.object_name = 'post';
 	}

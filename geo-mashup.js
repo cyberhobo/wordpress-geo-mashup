@@ -87,66 +87,6 @@ GeoMashup = {
 		}
 	},
 
-	getCookie : function(NameOfCookie) { 
-		var begin, end;
-
-		if (document.cookie.length > 0) { 
-			begin = document.cookie.indexOf(NameOfCookie+"=");
-			if (begin !== -1) { 
-				begin += NameOfCookie.length+1;
-				end = document.cookie.indexOf(";", begin);
-				if (end === -1) {
-					end = document.cookie.length;
-				}
-				return decodeURIComponent(document.cookie.substring(begin, end)); 
-			}
-		}
-		return null;
-	},
-
-	setCookie : function(NameOfCookie, value) { 
-		document.cookie = NameOfCookie + "=" + encodeURIComponent(value); 
-	},
-
-	delCookie : function(NameOfCookie) { 
-		if (this.getCookie(NameOfCookie)) {
-			document.cookie = NameOfCookie + "=" +
-				"; expires=Thu, 01-Jan-70 00:00:01 GMT";
-		}
-	},
-
-	loadSettings : function (obj, settings_str) {
-		var i, pairs, keyvalue;
-
-		if (!settings_str) {
-			return false;
-		}
-		if (settings_str.charAt(0) === '?') {
-			settings_str = settings_str.substr(1);
-		}
-		pairs = settings_str.split('&');
-		for (i=0; i<pairs.length; i += 1) {
-			keyvalue = pairs[i].split('=');
-			obj[keyvalue[0]] = decodeURIComponent(keyvalue[1]);
-			if (obj[keyvalue[0]] === 'false') {
-				obj[keyvalue[0]] = false;
-			}
-		}
-		return true;
-	},
-
-	settingsToString : function (obj) {
-		var str = [], sep = '', key;
-		this.forEach( obj, function (key, value) {
-			str.push(sep);
-			str.push(key);
-			str.push('=');
-			str.push(encodeURIComponent( value ));
-			sep = '&';
-		});
-		return str.join('');
-	},
-
 	addAction : function ( name, callback ) {
 		if ( typeof callback !== 'function' ) {
 			return false;
