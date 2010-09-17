@@ -69,6 +69,7 @@ var Mapstraction = mxn.Mapstraction = function(element, api, debug) {
 	this.controls = [];	
 	this.loaded = {};
 	this.onload = {};
+    //this.loaded[api] = true; // FIXME does this need to be true? -ajturner
 	this.onload[api] = [];
 	
 	/**
@@ -162,6 +163,7 @@ var Mapstraction = mxn.Mapstraction = function(element, api, debug) {
 Mapstraction.ROAD = 1;
 Mapstraction.SATELLITE = 2;
 Mapstraction.HYBRID = 3;
+Mapstraction.PHYSICAL = 4;
 
 // methods that have no implementation in mapstraction core
 mxn.addProxyMethods(Mapstraction, [ 
@@ -1465,6 +1467,13 @@ mxn.addProxyMethods(Marker, [
 	'openBubble',
 	
 	/**
+	 * Closes the marker's info bubble.
+	 * @name mxn.Marker#closeBubble
+	 * @function
+	 */
+	'closeBubble',
+	
+	/**
 	 * Show the marker.
 	 * @name mxn.Marker#show
 	 * @function
@@ -1546,6 +1555,9 @@ Marker.prototype.addData = function(options){
 					break;
 				case 'openBubble':
 					this.openBubble();
+					break;
+				case 'closeBubble':
+					this.closeBubble();
 					break;
 				case 'groupName':
 					this.setGroupName(options.groupName);

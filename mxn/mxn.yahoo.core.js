@@ -129,14 +129,9 @@ Mapstraction: {
 		var map = this.maps[this.api];
 		map.removeOverlay(marker.proprietary_marker);
 	},
-
-	removeAllMarkers: function() {
-		var map = this.maps[this.api];
-		map.removeMarkersAll();
-	},
 	
 	declutterMarkers: function(opts) {
-		throw 'Not implemented';
+		throw 'Not supported';
 	},
 
 	addPolyline: function(polyline, old) {
@@ -235,8 +230,8 @@ Mapstraction: {
 			if(sw_pix.x > ne_pix.x) {
 				sw_pix.x -= (1 << (26 - zoom)); //earth circumference in pixel
 			}
-			if(Math.abs(ne_pix.x - sw_pix.x) <= container.width
-				&& Math.abs(ne_pix.y - sw_pix.y) <= container.height){
+			if(Math.abs(ne_pix.x - sw_pix.x) <= container.width &&
+				Math.abs(ne_pix.y - sw_pix.y) <= container.height){
 				map.drawZoomAndCenter(center, zoom); //Call drawZoomAndCenter here: OK if called multiple times anyway
 				break;
 			}
@@ -351,6 +346,11 @@ Marker: {
 	openBubble: function() {
 		var ypin = this.proprietary_marker;
 		ypin.openSmartWindow(this.infoBubble);
+	},
+	
+	closeBubble: function() {
+		var ypin = this.proprietary_marker;
+		ypin.closeSmartWindow();
 	},
 
 	hide: function() {

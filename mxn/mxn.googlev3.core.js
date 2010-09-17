@@ -40,7 +40,9 @@ Mapstraction: {
 				
 			// deal with click
 			google.maps.event.addListener(map, 'click', function(location){
-				me.clickHandler(location.latLng.lat(),location.latLng.lng(),location,me);
+				me.click.fire({'location': 
+					new mxn.LatLonPoint(location.latLng.lat(),location.latLng.lng())
+				});
 			});
 
 			// deal with zoom change
@@ -52,9 +54,12 @@ Mapstraction: {
 				me.moveendHandler(me);
 				me.endPan.fire();
 			});
+			// deal with tile loading
+			google.maps.event.addListener(map, 'tilesloaded', function(){
+				me.load.fire();
+			});
 			this.maps[api] = map;
 			this.loaded[api] = true;
-			me.load.fire();
 		}
 		else {
 			alert(api + ' map script not imported');
@@ -162,12 +167,14 @@ Mapstraction: {
 
 	addPolyline: function(polyline, old) {
 		var map = this.maps[this.api];
-		return polyline.toProprietary(this.api);
+		var propPolyline = polyline.toProprietary(this.api);
+		propPolyline.setMap(map);
+		return propPolyline;
 	},
 
 	removePolyline: function(polyline) {
-		var map = this.maps[this.api];		
-		// TODO: Add provider code
+		var map = this.maps[this.api];
+		polyline.proprietary_polyline.setMap(null);
 	},
 	   
 	getCenter: function() {
@@ -246,7 +253,8 @@ Mapstraction: {
 	getBounds: function () {
 		var map = this.maps[this.api];
 		var gLatLngBounds = map.getBounds();
-		if ( typeof gLatLngBounds !== 'object' ) {
+		if ( ! gLatLngBounds ) {
+			// The map bounds are not available yet - probably called too soon
 			return null;
 		}
 		var sw = gLatLngBounds.getSouthWest();
@@ -282,9 +290,10 @@ Mapstraction: {
 	
 	addOverlay: function(url, autoCenterAndZoom) {
 		var map = this.maps[this.api];
-		
-		// TODO: Add provider code
-		
+
+		var opt = {preserveViewport: (!autoCenterAndZoom)};
+		var layer = new google.maps.KmlLayer(url, opt);
+		layer.setMap(map);
 	},
 
 	addTileLayer: function(tile_url, opacity, copyright_text, min_zoom, max_zoom, map_type) {
@@ -384,15 +393,13 @@ Marker: {
 		var marker = new google.maps.Marker(options);
 
 		if (this.infoBubble){
-			var infowindow = new google.maps.InfoWindow({
-				content: this.infoBubble
-			});
-
 			var event_action = "click";
 			if (this.hover) {
 				event_action = "mouseover";
 			}
-			google.maps.event.addListener(marker, event_action, function() { infowindow.open(this.map,marker); });
+			google.maps.event.addListener(marker, event_action, function() {
+				marker.mapstraction_marker.openBubble();
+			});
 		}
 
 		if (this.hoverIconUrl){
@@ -435,7 +442,17 @@ Marker: {
 		var infowindow = new google.maps.InfoWindow({
 	   		content: this.infoBubble
 		});
+		google.maps.event.addListener(infowindow, 'closeclick', function(closedWindow) {
+			// TODO: set proprietary_infowindow to null, fire closeInfoBubble
+		});
+		this.openInfoBubble.fire({'marker': this});
 		infowindow.open(this.map,this.proprietary_marker);
+		this.proprietary_infowindow = infowindow; // Save so we can close it later
+	},
+	
+	closeBubble: function() {
+		this.proprietary_infowindow.close();
+		this.closeInfoBubble.fire({'marker': this});
 	},
 
 	hide: function() {
@@ -455,7 +472,21 @@ Marker: {
 Polyline: {
 
 	toProprietary: function() {
-			throw 'Not implemented';
+		var points =[];
+		for(var i =0, length = this.points.length; i < length; i++) {
+			points.push(this.points[i].toProprietary('googlev3'));
+		}
+
+		var polyOptions = {
+			path: points,
+			strokeColor: this.color || '#000000',
+			strokeOpacity: 1.0,
+			strokeWeight: 3
+	    };
+
+		var polyline = new google.maps.Polyline(polyOptions);
+
+		return polyline;
 	},
 	
 	show: function() {

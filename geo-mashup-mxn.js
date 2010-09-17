@@ -45,6 +45,7 @@ GeoMashup.openInfoWindow = function( marker ) {
 			this.geo_query_url, 
 			{ object_name: this.opts.object_name, object_ids: object_ids.join(',') },
 			function( content ) {
+				marker.closeBubble();
 				marker.setInfoBubble( GeoMashup.parentizeLinksMarkup( content ) );
 				marker.openBubble();
 			}
@@ -58,7 +59,7 @@ GeoMashup.addGlowMarker = function( marker ) {
 			clickable : false,
 			icon : this.opts.url_path + '/images/mm_20_glow.png',
 			iconSize : [ 22, 30 ],
-			iconAnchor : [ -11, -27 ] 
+			iconAnchor : [ 11, 27 ] 
 		};
 
 	if ( this.glow_marker ) {
@@ -78,10 +79,12 @@ GeoMashup.removeGlowMarker = function( marker ) {
 GeoMashup.hideAttachments = function() {
 	var i, j, obj;
 
+	/* No removeOverlay (yet)
 	for ( i = 0; i < this.open_attachments.length; i += 1 ) {
 		this.map.removeOverlay( this.open_attachments[i] );
 	} 
 	this.open_attachments = [];
+	*/
 };
 
 GeoMashup.showMarkerAttachments = function( marker ) {
@@ -224,6 +227,10 @@ GeoMashup.autoZoom = function() {
 
 GeoMashup.isMarkerVisible = function( marker ) {
 	var map_bounds = this.map.getBounds();
+	if ( ! map_bounds ) {
+		// No bounds available yet, assume all markers are visible
+		return true;
+	}
 	return ( marker.getAttribute( 'visible' ) && map_bounds && map_bounds.contains( marker.location ) ); 
 };
 
@@ -245,8 +252,8 @@ GeoMashup.createMap = function(container, opts) {
 	this.base_color_icon.shadow = opts.url_path + '/images/mm_20_shadow.png';
 	this.base_color_icon.iconSize = [12, 20];
 	this.base_color_icon.shadowSize =  [22, 20];
-	this.base_color_icon.iconAnchor = [-6, -20];
-	this.base_color_icon.infoWindowAnchor = [-5, -1];
+	this.base_color_icon.iconAnchor = [6, 20];
+	this.base_color_icon.infoWindowAnchor = [5, 1];
 	this.multiple_category_icon = this.clone( this.base_color_icon );
 	this.multiple_category_icon.image = opts.url_path + '/images/mm_20_mixed.png';
 
@@ -305,7 +312,7 @@ GeoMashup.createMap = function(container, opts) {
 		'<img style="border: 0px none ; margin: 0px; padding: 0px; width: 16px; height: 16px; -moz-user-select: none;" src="' +
 		opts.url_path + '/images/busy_icon.gif"/></a></div>';
 	this.showLoadingIcon();
-	this.map.addEventListener( 'load', function() { GeoMashup.hideLoadingIcon(); } );
+	this.map.load.addHandler( function() { GeoMashup.hideLoadingIcon(); } );
 
 	if (window.location.search === this.getCookie('back_search'))
 	{

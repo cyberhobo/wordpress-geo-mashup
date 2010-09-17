@@ -154,15 +154,9 @@ Mapstraction: {
 		var map = this.maps[this.api];
 		map.removeOverlay(marker.proprietary_marker);
 	},
-
-	removeAllMarkers: function() {
-		var map = this.maps[this.api];
-		// FIXME: got a feeling this doesn't only delete markers
-		map.clearOverlays();
-	},
 	
 	declutterMarkers: function(opts) {
-		throw 'Not implemented';
+		throw 'Not supported';
 	},
 
 	addPolyline: function(polyline, old) {
@@ -227,6 +221,9 @@ Mapstraction: {
 			case mxn.Mapstraction.HYBRID:
 				map.setMapType(G_HYBRID_MAP);
 				break;
+			case mxn.Mapstraction.PHYSICAL:
+				map.setMapType(G_PHYSICAL_MAP);
+				break;
 			default:
 				map.setMapType(type || G_NORMAL_MAP);
 		}	 
@@ -242,6 +239,8 @@ Mapstraction: {
 				return mxn.Mapstraction.SATELLITE;
 			case G_HYBRID_MAP:
 				return mxn.Mapstraction.HYBRID;
+			case G_PHYSICAL_MAP:
+				return mxn.Mapstraction.PHYSICAL;
 			default:
 				return null;
 		}
@@ -389,18 +388,19 @@ LatLonPoint: {
 Marker: {
 	
 	toProprietary: function() {
+		var me = this;
 		var infoBubble, event_action, infoDiv, div;
 		var options = {};
-		if(this.labelText){
+		if (this.labelText) {
 			options.title =  this.labelText;
 		}
-		if(this.iconUrl){
+		if (this.iconUrl) {
 			var icon = new GIcon(G_DEFAULT_ICON, this.iconUrl);
 			icon.printImage = icon.mozPrintImage = icon.image;
-			if(this.iconSize) {
+			if (this.iconSize) {
 				icon.iconSize = new GSize(this.iconSize[0], this.iconSize[1]);
 				var anchor;
-				if(this.iconAnchor) {
+				if (this.iconAnchor) {
 					anchor = new GPoint(this.iconAnchor[0], this.iconAnchor[1]);
 				}
 				else {
@@ -409,63 +409,61 @@ Marker: {
 				}
 				icon.iconAnchor = anchor;
 			}
-			if(typeof(this.iconShadowUrl) != 'undefined') {
+			if (typeof(this.iconShadowUrl) != 'undefined') {
 				icon.shadow = this.iconShadowUrl;
 				if(this.iconShadowSize) {
 					icon.shadowSize = new GSize(this.iconShadowSize[0], this.iconShadowSize[1]);
 				}
-			} else {  // turn off shadow
-  					icon.shadow = '';
-								icon.shadowSize = '';
-						}
-			if(this.transparent) {
-  					icon.transparent = this.transparent;
-						}
-			if(this.imageMap) {
-  					icon.imageMap = this.imageMap;
-						}
+			} 
+			else {  // turn off shadow
+  				icon.shadow = '';
+				icon.shadowSize = '';
+			}
+			if (this.transparent) {
+  				icon.transparent = this.transparent;
+			}
+			if (this.imageMap) {
+  				icon.imageMap = this.imageMap;
+			}
 			options.icon = icon;
 		}
-		if(this.draggable){
+		if (this.draggable) {
 			options.draggable = this.draggable;
 		}
 		var gmarker = new GMarker( this.location.toProprietary('google'),options);
 				
-		if(this.infoBubble){
-			infoBubble = this.infoBubble;
-			if(this.hover) {
+		if (this.infoBubble) {
+			if (this.hover) {
 				event_action = "mouseover";
 			}
 			else {
 				event_action = "click";
 			}
 			GEvent.addListener(gmarker, event_action, function() {
-				gmarker.openInfoWindowHtml(infoBubble, {
+				gmarker.openInfoWindowHtml(me.infoBubble, {
 					maxWidth: 100
 				});
 			});
 		}
 
-		if(this.hoverIconUrl){
+		if (this.hoverIconUrl) {
 			GEvent.addListener(gmarker, "mouseover", function() {
-				gmarker.setImage(this.hoverIconUrl);
+				gmarker.setImage(me.hoverIconUrl);
 			});
 			GEvent.addListener(gmarker, "mouseout", function() {
-				gmarker.setImage(this.iconUrl);
+				gmarker.setImage(me.iconUrl);
 			});
 		}
 
-		if(this.infoDiv){
-			infoDiv = this.infoDiv;
-			div = this.div;
-			if(this.hover) {
+		if (this.infoDiv) {
+			if (this.hover) {
 				event_action = "mouseover";
 			}
 			else {
 				event_action = "click";
 			}
 			GEvent.addListener(gmarker, event_action, function() {
-				document.getElementById(div).innerHTML = infoDiv;
+				document.getElementById(me.div).innerHTML = me.infoDiv;
 			});
 		}
 
@@ -475,6 +473,11 @@ Marker: {
 	openBubble: function() {
 		var gpin = this.proprietary_marker;
 		gpin.openInfoWindowHtml(this.infoBubble);
+	},
+	
+	closeBubble: function() {
+		var gpin = this.proprietary_marker;
+		gpin.closeInfoWindow();
 	},
 
 	hide: function() {
