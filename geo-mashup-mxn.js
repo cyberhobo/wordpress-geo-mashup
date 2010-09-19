@@ -304,17 +304,10 @@ GeoMashup.createMap = function(container, opts) {
 	} else if (typeof opts.map_type === 'undefined') {
 		opts.map_type = map_types['G_NORMAL_MAP'];
 	}
-	/* 
-	map_opts = {
-		backgroundColor : '#' + opts.background_color,
-		mapTypes : [ opts.map_type ],
-		googleBarOptions : { 
-			adsOptions : { client : ( opts.adsense_code ) ? opts.adsense_code : 'pub-5088093001880917' }	
-		}
-	};
-	this.doAction( 'mapOptions', opts, map_opts );
-	*/
 	this.map = new mxn.Mapstraction( this.container, opts.map_api );
+	map_opts = { enableScrollWheelZoom: true, enableDragging: true };
+	this.doAction( 'mapOptions', opts, map_opts );
+	this.map.setOptions( map_opts );
 	this.map.setCenterAndZoom(new mxn.LatLonPoint(0,0), 0);
 
 	this.doAction( 'newMap', opts, this.map );
@@ -375,24 +368,17 @@ GeoMashup.createMap = function(container, opts) {
 		center_latlng = new mxn.LatLonPoint( parseFloat( opts.object_data.objects[0].lat ), parseFloat( opts.object_data.objects[0].lng ) );
 		this.map.setCenterAndZoom( center_latlng, initial_zoom );
 	} else {
-		// TODO: change to jquery xmlhttp
 		// Center on the most recent located object
-		/*
-		request = google.maps.XmlHttp.create();
 		url = this.geo_query_url + '&limit=1';
 		if (opts.map_cat) {
-			url += '&cat='+opts.map_cat;
+			url += '&map_cat='+opts.map_cat;
 		}
-		request.open("GET", url, false);
-		request.send(null);
-		objects = window['eval']( '(' + request.responseText + ')' );
-		if (objects.length>0) {
-			point = new google.maps.LatLng(objects[0].lat,objects[0].lng);
-			this.map.setCenter(point,initial_zoom,opts.map_type);
-		} else {
-			this.map.setCenter(new google.maps.LatLng(0,0),initial_zoom,opts.map_type);
-		}
-		*/
+		jQuery.getJSON( url, function( objects ) {
+			if (objects.length>0) {
+				center_latlng = new mxn.LatLonPoint( parseFloat( objects[0].lat ), parseFloat( objects[0].lng ) );
+				this.map.setCenterAndZoom( center_latlng, initial_zoom );
+			} 
+		} );
 	}
 
 	this.location_bounds = new mxn.BoundingBox( new mxn.LatLonPoint( 0, 0 ), new mxn.LatLonPoint( 0, 0 ) );
@@ -401,18 +387,19 @@ GeoMashup.createMap = function(container, opts) {
 	{
 		if (opts.center_lat && opts.center_lng && !this.kml)
 		{
-			marker_opts = {};
+			marker_opts = { visible: true };
 			if (typeof customGeoMashupSinglePostIcon === 'function') {
-				marker_opts.icon = customGeoMashupSinglePostIcon(this.opts);
+				marker_opts = customGeoMashupSinglePostIcon(this.opts);
 			}
-			if ( !marker_opts.icon ) {
-				marker_opts.icon = this.clone( this.base_color_icon );
+			if ( !marker_opts.image ) {
+				marker_opts = this.colorIcon( 'red' );
+				marker_opts.icon = marker_opts.image;
 			}
 			this.doAction( 'singleMarkerOptions', this.opts, marker_opts );
 			single_marker = new mxn.Marker(
 				new mxn.LatLonPoint( parseFloat( this.opts.center_lat ), parseFloat( this.opts.center_lng ) )
 			);
-			this.map.addOverlay( single_marker );
+			this.map.addMarkerWithData( single_marker, marker_opts );
 			this.doAction( 'singleMarker', this.opts, single_marker );
 		}
 	} else if (opts.object_data) {
