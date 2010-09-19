@@ -10,6 +10,20 @@
 /*glboal customGeoMashupSinglePostIcon, customGeoMashupMultiplePostImage */
 /*global mxn */
 
+GeoMashup.loadFullPost = function( point ) {
+	var i, url, post_request, object_ids;
+
+	this.getShowPostElement().innerHTML = '<div align="center"><img src="' +
+		this.opts.url_path + '/images/busy_icon.gif" alt="Loading..." /></div>';
+	object_ids = [];
+	for(i=0; i<this.locations[point].objects.length; i += 1) {
+		object_ids.push( this.locations[point].objects[i].object_id );
+	}
+	url = this.geo_query_url + '&object_name=' + this.opts.object_name +
+		'&object_ids=' + object_ids.join( ',' ) + '&template=full-post';
+	jQuery( this.getShowPostElement() ).load( url );
+};
+
 GeoMashup.createCategoryLine = function ( category ) {
 	// Polylines are close, but the openlayers implementation at least cannot hide or remove a polyline
 	/*
@@ -138,9 +152,8 @@ GeoMashup.createMarker = function(point,obj) {
 	marker = new mxn.Marker( point );
 	marker.addData( marker_opts );
 
-	// Not sure how mxn marker events work 
 	marker.click.addHandler( function() {
-		GeoMashup.selectMarker( marker );
+		GeoMashup.selectMarker( marker, point );
 	} ); 
 
 	this.doAction( 'marker', this.opts, marker );
