@@ -273,7 +273,8 @@ GeoMashup.createMap = function(container, opts) {
 	map_types = {
 		'G_NORMAL_MAP' : mxn.Mapstraction.ROAD,
 		'G_SATELLITE_MAP' : mxn.Mapstraction.SATELLITE,
-		'G_HYBRID_MAP' : mxn.Mapstraction.HYBRID
+		'G_HYBRID_MAP' : mxn.Mapstraction.HYBRID,
+		'G_PHYSICAL_MAP' : mxn.Mapstraction.PHYSICAL
 	};
 
 	if (typeof opts.map_type === 'string') {
@@ -430,15 +431,6 @@ GeoMashup.createMap = function(container, opts) {
 	}
 	this.map.addControls( controls );
 
-	credit_div = document.createElement( 'div' );
-	credit_div.innerHTML = [
-		'<div class="gmnoprint" style="-moz-user-select: none; z-index: 0; position: absolute; left: 2px; bottom: 38px;">',
-		'<a title="Geo Mashup" href="http://code.google.com/p/wordpress-geo-mashup" target="_blank">',
-		'<img style="border: 0px none ; margin: 0px; padding: 0px; width: 60px; height: 39px; -moz-user-select: none; cursor: pointer;" src="',
-		this.opts.url_path,
-		'/images/gm-credit.png"/></a></div>'].join( '' );
-	this.container.appendChild( credit_div );
-	
 	if (typeof customizeGeoMashupMap === 'function') {
 		customizeGeoMashupMap(this.opts, this.map);
 	}
