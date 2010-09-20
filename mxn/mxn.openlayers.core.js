@@ -139,6 +139,9 @@ mxn.register('openlayers', {
 			if (!this.layers.polylines) {
 				this.layers.polylines = new OpenLayers.Layer.Vector('polylines');
 				map.addLayer(this.layers.polylines);
+				if (this.layers.markers) {
+					map.raiseLayer( this.layers.markers, 1 );
+				}
 			}
 			polyline.setChild(pl);
 			this.layers.polylines.addFeatures([pl]);
@@ -150,6 +153,7 @@ mxn.register('openlayers', {
 			var pl = polyline.toProprietary(this.api);
 			this.layers.polylines.removeFeatures([pl]);
 		},
+
 		removeAllPolylines: function() {
 			var olpolylines = [];
 			for(var i = 0, length = this.polylines.length; i < length; i++){
@@ -455,6 +459,11 @@ mxn.register('openlayers', {
 				fillColor: this.fillColor || "#000000",
 				fillOpacity: this.getAttribute('fillOpacity') || 0.2
 			};
+
+			if ( this.proprietary_polyline ) {
+				// Don't create a new proprietary object every time this is called
+				return this.proprietary_polyline;
+			}
 
 			//TODO Handle closed attribute
 

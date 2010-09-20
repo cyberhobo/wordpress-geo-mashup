@@ -26,7 +26,6 @@ GeoMashup.loadFullPost = function( point ) {
 
 GeoMashup.createCategoryLine = function ( category ) {
 	// Polylines are close, but the openlayers implementation at least cannot hide or remove a polyline
-	/*
 	category.line = new mxn.Polyline(category.points);
 	this.doAction( 'categoryLine', this.opts, category.line );
 	this.map.addPolylineWithData( category.line, { color: category.color, width: 5, opacity: 0.5 } );
@@ -38,7 +37,6 @@ GeoMashup.createCategoryLine = function ( category ) {
 			this.map.removePolyline( category.line );
 		}
 	}
-	*/
 };
 
 GeoMashup.openInfoWindow = function( marker ) {
