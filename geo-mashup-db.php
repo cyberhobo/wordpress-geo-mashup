@@ -5,10 +5,8 @@
  * @package GeoMashup
  */
 
-// Actions to maintain data integrity with WordPress
-add_action( 'delete_post', array( 'GeoMashupDB', 'delete_post' ) );
-add_action( 'delete_comment', array( 'GeoMashupDB', 'delete_comment' ) );
-add_action( 'delete_user', array( 'GeoMashupDB', 'delete_user' ) );
+// init action
+add_action( 'init', array( 'GeoMashupDB', 'init' ) );
 
 /**
  * Static class to provide a namespace for Geo Mashup data functions.
@@ -19,6 +17,85 @@ add_action( 'delete_user', array( 'GeoMashupDB', 'delete_user' ) );
  * @static
  */
 class GeoMashupDB {
+
+	/**
+	 * At init time set up data-related WordPress hooks.
+	 *
+	 * @since 1.4
+	 * @access private
+	 * @static
+	 * @usedby do_action() init
+	 */
+	function init() {
+		// Sync deletions
+		add_action( 'delete_post', array( 'GeoMashupDB', 'delete_post' ) );
+		add_action( 'delete_comment', array( 'GeoMashupDB', 'delete_comment' ) );
+		add_action( 'delete_user', array( 'GeoMashupDB', 'delete_user' ) );
+
+		// Action to update Geo Mashup post location when custom fields are added
+		add_action( 'added_post_meta', array( 'GeoMashupDB', 'added_post_meta' ), 10, 4 );
+		// AJAX calls use a slightly different hook - triksy!
+		add_action( 'added_postmeta', array( 'GeoMashupDB', 'added_post_meta' ), 10, 4 );
+	}
+	
+	/**
+	 * WordPress action to update Geo Mashup post location when geodata custom fields are updated.
+	 *
+	 * @since 1.4
+	 * @private
+	 * @static
+	 * @see http://codex.wordpress.org/Geodata
+	 * @usedby do_action() added_post_meta and added_postmeta
+	 */
+	function added_post_meta( $meta_id, $post_id, $meta_key, $meta_value ) {
+
+		// Do nothing if meta_key is not a known location field
+		$location_keys = array( 'geo_latitude', 'geo_longitude', 'geo_lat_lng' );
+		if ( ! in_array( $meta_key, $location_keys ) ) {
+			return;
+		}
+
+		// Do nothing if Geo Mashup location already exists
+		$existing_location = GeoMashupDB::get_object_location( 'post', $post_id );
+		if ( ! empty( $existing_location ) ) {
+			return;
+		}
+
+		$location = array();
+
+		// Do nothing unless both latitude and longitude exist for the post
+		if ( 'geo_lat_lng' == $meta_key ) {
+
+			$lat_lng = preg_split( '/\s*[, ]\s*/', trim( $meta_value ) );
+			if ( 2 != count( $lat_lng ) ) {
+				return; 
+			}
+			$location['lat'] = $lat_lng[0];
+			$location['lng'] = $lat_lng[1];
+
+		} else if ( 'geo_latitude' == $meta_key ) {
+
+			$location['lat'] = $meta_value;
+			$lngs = get_post_custom_values( 'geo_longitude', $post_id );
+			if ( empty( $lngs ) ) {
+				return;
+			}
+			$location['lng'] = $lngs[0];
+
+		} else if ( 'geo_longitude' == $meta_key ) {
+
+			$location['lng'] = $meta_value;
+			$lats = get_post_custom_values( 'geo_latitude', $post_id );
+			if ( empty( $lats ) ) {
+				return;
+			}
+			$location['lat'] = $lats[0];
+
+		}
+
+		// Save the location, attempt reverse geocoding
+		GeoMashupDB::set_object_location( 'post', $post_id, $location, null );
+	}
 
 	/**
 	 * Get or set the installed database version.
@@ -1205,9 +1282,7 @@ class GeoMashupDB {
 
 		$unconverted_metadata = $wpdb->last_result;
 		if ( $unconverted_metadata ) {
-			echo '<pre>';
 			$msg = __( 'Copying geodata from WordPress', 'GeoMashup' );
-			echo "$msg\n";
 			GeoMashupDB::activation_log( date( 'r' ) . ' ' . $msg );
 			$start_time = time();
 			foreach ( $unconverted_metadata as $postmeta ) {
@@ -1216,19 +1291,14 @@ class GeoMashupDB {
 				$do_lookups = ( ( time() - $start_time ) < 10 ) ? true : false;
 				$set_id = GeoMashupDB::set_object_location( 'post', $post_id, $location, $do_lookups, $postmeta->post_date );
 				if ( $set_id ) {
-					// Echo a poor man's progress bar
 					GeoMashupDB::activation_log( 'OK: post_id ' . $post_id );
-					echo '.';
-					flush( );
 				} else {
 					$msg = sprintf( __( 'Failed to duplicate WordPress location (%s). You can %sedit the post%s ' .
 						'to update the location, and try again.', 'GeoMashup' ),
 						$postmeta->lat . ',' . $postmeta->lng, '<a href="post.php?action=edit&post=' . $post_id . '">', '</a>');
 					GeoMashupDB::activation_log( $msg, true );
-					echo "\n$msg\n";
 				}
 			}
-			echo '</pre>';
 		}
 
 		// Copy from Geo Mashup to missing postmeta
@@ -1249,9 +1319,7 @@ class GeoMashupDB {
 
 		$unconverted_geomashup_posts = $wpdb->last_result;
 		if ( $unconverted_geomashup_posts ) {
-			echo '<pre>';
 			$msg = __( 'Copying geodata from Geo Mashup', 'GeoMashup' );
-			echo "$msg\n";
 			GeoMashupDB::activation_log( date( 'r' ) . ' ' . $msg );
 			$start_time = time();
 			foreach ( $unconverted_geomashup_posts as $location ) {
@@ -1261,17 +1329,12 @@ class GeoMashupDB {
 					update_post_meta( $location->post_id, 'geo_address', $location->address );
 				}
 				if ( $lat_success and $lng_success ) {
-					// Echo a poor man's progress bar
 					GeoMashupDB::activation_log( 'OK: post_id ' . $location->post_id );
-					echo '.';
-					flush( );
 				} else {
 					$msg = sprintf( __( 'Failed to duplicate Geo Mashup location for post (%s).', 'GeoMashup' ), $location->post_id );
 					GeoMashupDB::activation_log( $msg );
-					echo 'x';
 				}
 			}
-			echo '</pre>';
 		}
 
 		$wpdb->query( $postmeta_select );
@@ -1311,9 +1374,7 @@ class GeoMashupDB {
 
 		$unconverted_metadata = $wpdb->last_result;
 		if ( $unconverted_metadata ) {
-			echo '<pre>';
 			$msg = __( 'Converting old locations', 'GeoMashup' );
-			echo "$msg\n";
 			GeoMashupDB::activation_log( date( 'r' ) . ' ' . $msg );
 			$start_time = time();
 			foreach ( $unconverted_metadata as $postmeta ) {
@@ -1324,27 +1385,20 @@ class GeoMashupDB {
 				$set_id = GeoMashupDB::set_object_location( 'post', $post_id, $location, $do_lookups );
 				if ( $set_id ) {
 					add_post_meta( $post_id, '_geo_converted', $wpdb->prefix . 'geo_mashup_locations.id = ' . $set_id );
-					// Echo a poor man's progress bar
 					GeoMashupDB::activation_log( 'OK: post_id ' . $post_id );
-					echo '.';
-					flush( );
 				} else {
 					$msg = sprintf( __( 'Failed to convert location (%s). You can %sedit the post%s ' .
 						'to update the location, and try again.', 'GeoMashup' ),
 						$postmeta->meta_value, '<a href="post.php?action=edit&post=' . $post_id . '">', '</a>');
 					GeoMashupDB::activation_log( $msg );
-					echo 'x';
 				}
 			}
-			echo '</pre>';
 		}
 
 		$geo_locations = get_option( 'geo_locations' );
 		if ( is_array( $geo_locations ) ) {
-			echo '<pre>';
 			$msg = __( 'Converting saved locations', 'GeoMashup' );
 			GeoMashupDB::activation_log( $msg );
-			echo "$msg\n";
 			foreach ( $geo_locations as $saved_name => $coordinates ) {
 				list( $lat, $lng, $converted ) = split( ',', $coordinates );
 				$location = array( 'lat' => trim( $lat ), 'lng' => trim( $lng ), 'saved_name' => $saved_name );
@@ -1354,8 +1408,6 @@ class GeoMashupDB {
 					$geo_locations[$saved_name] .= ',' . $wpdb->prefix . 'geo_mashup_locations.id=' . $set_id;
 					$msg = __( 'OK: ', 'GeoMashup' ) . $saved_name . '<br/>';
 					GeoMashupDB::activation_log( $msg );
-					echo '.';
-					flush();
 				} else {
 					$msg = $saved_name . ' - ' . 
 						sprintf( __( "Failed to convert saved location (%s). " .
@@ -1363,11 +1415,9 @@ class GeoMashupDB {
 						$coordinates );
 					GeoMashupDB::activation_log( $set_id->get_error_message() );
 					GeoMashupDB::activation_log( $msg );
-					echo 'x';
 				}
 			}
 			update_option( 'geo_locations', $geo_locations );
-			echo '</pre>';
 		}
 
 		$geo_date_update = "UPDATE {$wpdb->prefix}geo_mashup_location_relationships gmlr, $wpdb->posts p " .
