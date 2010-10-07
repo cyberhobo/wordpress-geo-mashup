@@ -239,8 +239,8 @@ GeoMashup.autoZoom = function() {
 GeoMashup.isMarkerVisible = function( marker ) {
 	var map_bounds = this.map.getBounds();
 	if ( ! map_bounds ) {
-		// No bounds available yet, assume all markers are visible
-		return true;
+		// No bounds available yet, no markers are visible
+		return false;
 	}
 	return ( marker.getAttribute( 'visible' ) && map_bounds && map_bounds.contains( marker.location ) ); 
 };
@@ -429,6 +429,7 @@ GeoMashup.createMap = function(container, opts) {
 	}
 	this.map.addControls( controls );
 
+	this.map.load.addHandler( function() { GeoMashup.updateVisibleList(); } );
 	if (typeof customizeGeoMashupMap === 'function') {
 		customizeGeoMashupMap(this.opts, this.map);
 	}
