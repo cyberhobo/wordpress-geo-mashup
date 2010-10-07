@@ -113,19 +113,27 @@ mxn.register('openlayers', {
 		addMarker: function(marker, old) {
 			var map = this.maps[this.api];
 			var pin = marker.toProprietary(this.api);
-			if (!this.layers.markers) {
-				this.layers.markers = new OpenLayers.Layer.Markers('markers');
-				map.addLayer(this.layers.markers);
+			var layers = map.getLayersByName('markers');
+			var layer;
+			if (layers.length === 0) {
+				layer = new OpenLayers.Layer.Markers('markers');
+				map.addLayer(layer);
+			} else {
+				layer = layers[0];
 			}
-			this.layers.markers.addMarker(pin);
+			layer.addMarker(pin);
 
 			return pin;
 		},
 
 		removeMarker: function(marker) {
-			marker.hide();
-			this.layers.markers.removeMarker(marker.proprietary_marker);
-			marker.proprietary_marker.destroy();
+			var map = this.maps[this.api];
+			var layers = map.getLayersByName('markers');
+			if ( layers.length > 0 ) {
+				marker.hide();
+				layers[0].removeMarker(marker.proprietary_marker);
+				marker.proprietary_marker.destroy();
+			}
 		},
 
 		declutterMarkers: function(opts) {
@@ -135,32 +143,41 @@ mxn.register('openlayers', {
 		addPolyline: function(polyline, old) {
 			var map = this.maps[this.api];
 			var pl = polyline.toProprietary(this.api);
-
-			if (!this.layers.polylines) {
-				this.layers.polylines = new OpenLayers.Layer.Vector('polylines');
-				map.addLayer(this.layers.polylines);
-				if (this.layers.markers) {
-					map.raiseLayer( this.layers.markers, 1 );
+			var layers = map.getLayersByName('polylines');
+			var layer;
+			if (layers.length === 0) {
+				layer = new OpenLayers.Layer.Vector('polylines');
+				map.addLayer(layer);
+				var marker_layers = map.getLayersByName('markers');
+				if (marker_layers.length > 0 ) {
+					// Marker layer must be above polylines to be clickable
+					map.setLayerIndex( marker_layers[0], map.getLayerIndex( layer ) );
 				}
+			} else {
+				layer = layers[0];
 			}
 			polyline.setChild(pl);
-			this.layers.polylines.addFeatures([pl]);
+			layer.addFeatures([pl]);
 			return pl;
 		},
 
 		removePolyline: function(polyline) {
 			var map = this.maps[this.api];
 			var pl = polyline.toProprietary(this.api);
-			this.layers.polylines.removeFeatures([pl]);
+			var layers = map.getLayersByName('polylines');
+			if (layers.length > 0) {
+				layers[0].removeFeatures([pl]);
+			}
 		},
 
 		removeAllPolylines: function() {
 			var olpolylines = [];
+			var layers = map.getLayersByName('polylines');
 			for(var i = 0, length = this.polylines.length; i < length; i++){
 				olpolylines.push(this.polylines[i].toProprietary(this.api));
 			}
-			if (this.layers.polylines) {
-				this.layers.polylines.removeFeatures(olpolylines);
+			if (layers.length > 0) {
+				layers[0].removeFeatures(olpolylines);
 			}
 		},
 
@@ -335,6 +352,9 @@ mxn.register('openlayers', {
 
 		toProprietary: function() {
 			var size, anchor, icon;
+			if(this.proprietary_marker) {
+				return this.proprietary_marker;
+			}
 			if(this.iconSize) {
 				size = new OpenLayers.Size(this.iconSize[0], this.iconSize[1]);
 			}
@@ -460,8 +480,7 @@ mxn.register('openlayers', {
 				fillOpacity: this.getAttribute('fillOpacity') || 0.2
 			};
 
-			if ( this.proprietary_polyline ) {
-				// Don't create a new proprietary object every time this is called
+			if (this.proprietary_polyline) {
 				return this.proprietary_polyline;
 			}
 
