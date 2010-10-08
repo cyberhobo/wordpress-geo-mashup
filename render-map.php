@@ -56,7 +56,7 @@ function geo_mashup_render_map ( ) {
 
 	$map_api = $geo_mashup_options->get( 'overall', 'map_api' );
 	$map_properties = array( 
-		'siteurl' => get_bloginfo( 'url' ), // qTranslate doesn't work with get_option( 'home' )
+		'siteurl' => home_url(), // qTranslate doesn't work with get_option( 'home' )
 		'url_path' => GEO_MASHUP_URL_PATH,
 		'template_url_path' => get_template_directory_uri(),
 		'map_api' => $map_api 

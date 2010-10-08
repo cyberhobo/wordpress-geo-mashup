@@ -6,7 +6,7 @@ Description: Save location for posts and pages, or even users and comments. Disp
 Version: 1.4alpha7
 Author: Dylan Kuhn
 Author URI: http://www.cyberhobo.net/
-Minimum WordPress Version Required: 2.8
+Minimum WordPress Version Required: 3.0
 */
 
 /*  Copyright 2010  Dylan Kuhn  (email : cyberhobo@cyberhobo.net)
@@ -229,7 +229,7 @@ class GeoMashup {
 	}
 
 	/**
-	 * Deliver templated Geo Mashup content and AJAX responses.
+	 * Deliver templated Geo Mashup content.
 	 *
 	 * template_redirect {@link http://codex.wordpress.org/Plugin_API/Filter_Reference#Advanced_WordPress_Filters filter},
 	 * called by WordPress.
@@ -238,7 +238,6 @@ class GeoMashup {
 	 * @access private
 	 * @static
 	 *
-	 * @uses ajax_edit
 	 * @uses geo_query
 	 * @uses render_map
 	 */
@@ -765,7 +764,7 @@ class GeoMashup {
 			}
 		}
 					
-		$iframe_src = get_bloginfo( 'url' ) . '?geo_mashup_content=render-map&amp;' . 
+		$iframe_src =  home_url( '?geo_mashup_content=render-map&amp;' ) . 
 			GeoMashup::implode_assoc('=', '&amp;', $url_params, false, true);
 		$content = "";
 

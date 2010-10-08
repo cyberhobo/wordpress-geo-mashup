@@ -68,8 +68,7 @@ class GeoMashupUIManager {
 
 		$map_api = $geo_mashup_options->get( 'overall', 'map_api' );
 		$ajax_nonce = wp_create_nonce('geo-mashup-ajax-edit');
-		$ajax_url = trailingslashit( get_bloginfo( 'url' ) ) . '?geo_mashup_content=ajax-edit&_wpnonce=' .
-			$ajax_nonce;
+		$ajax_url = admin_url( 'admin-ajax.php' );
 		$geo_mashup_url_path = GEO_MASHUP_URL_PATH;
 		wp_localize_script( 'mxn-core', 'geo_mashup_location_editor_settings', compact( 'map_api', 'ajax_url', 'geo_mashup_url_path' ) );
 		$required_scripts = array( 'jquery');
@@ -258,14 +257,18 @@ class GeoMashupUserUIManager extends GeoMashupUIManager {
 	 * 
 	 * @since 1.3
 	 * @access private
+	 * @global array $geo_mashup_options 
+	 * @global string $pagenow The WordPress-supplied requested filename.
+	 * @uses apply_filters geo_mashup_load_user_editor Returns a boolean that loads the editor when true.
 	 */
 	function init() {
-		global $geo_mashup_options;
+		global $geo_mashup_options, $pagenow;
 
 		// Enable this interface when the option is set and we're on a destination page
 		$enabled = is_admin() &&
 			$geo_mashup_options->get( 'overall', 'located_object_name', 'user' ) == 'true' &&
-			preg_match( '/(user-edit|user-new|profile).php/', $_SERVER['REQUEST_URI'] );
+			preg_match( '/(user-edit|user-new|profile).php/', $pagenow );
+		$enabled = apply_filters( 'geo_mashup_load_user_editor', $enabled );
 
 		// If enabled, register all the interface elements
 		if ( $enabled ) { 
@@ -403,9 +406,12 @@ class GeoMashupPostUIManager extends GeoMashupUIManager {
 	 * 
 	 * @since 1.3
 	 * @access private
+	 * @global array $geo_mashup_options 
+	 * @global string $pagenow The WordPress-supplied requested filename.
+	 * @uses apply_filters geo_mashup_load_location_editor Returns a boolean that loads the editor when true.
 	 */
 	function init() {
-		global $geo_mashup_options;
+		global $geo_mashup_options, $pagenow;
 
 		// Uploadable geo content type expansion always enabled
 		add_filter( 'upload_mimes', array( &$this, 'upload_mimes' ) );
@@ -425,8 +431,14 @@ class GeoMashupPostUIManager extends GeoMashupUIManager {
 			// Browser upload processing
 			add_filter( 'wp_handle_upload', array( &$this, 'wp_handle_upload' ) );
 
+			// Enable front or back end ajax edits
+			add_action( 'wp_ajax_nopriv_geo_mashup_edit', array( 'GeoMashup', 'ajax_edit' ) );
+			add_action( 'wp_ajax_geo_mashup_edit', array( 'GeoMashup', 'ajax_edit' ) );
+			$load_location_editor = ( is_admin() && preg_match( '/(post|page)(-new|).php/', $pagenow ) );
+			$load_location_editor = apply_filters( 'geo_mashup_load_location_editor', $load_location_editor );
+
 			// If we're on a post editing page, queue up the form interface elements
-			if ( is_admin() && preg_match( '/(post|page)(-new|).php/', $_SERVER['REQUEST_URI'] ) ) {
+			if ( $load_location_editor ) {
 
 				// Form generation
 				add_action( 'admin_menu', array( &$this, 'admin_menu' ) );
@@ -436,18 +448,18 @@ class GeoMashupPostUIManager extends GeoMashupUIManager {
 
 				wp_enqueue_script( 'jquery-ui-datepicker', trailingslashit( GEO_MASHUP_URL_PATH ) . 'jquery-ui.1.7.datepicker.min.js', array( 'jquery', 'jquery-ui-core'), '1.7' );
 
-			} else if ( strpos( $_SERVER['REQUEST_URI'], 'async-upload.php' ) > 0 ) {
+			} else if ( 'async-upload.php' === $pagenow ) {
 
 				// Flash upload display
 				add_filter( 'media_meta', array( &$this, 'media_meta' ), 10, 2 );
 
-			} else if ( strpos( $_SERVER['REQUEST_URI'], 'upload.php' ) > 0 ) {
+			} else if ( 'upload.php' === $pagenow ) {
 
 				// Browser upload display
 				add_action( 'admin_print_scripts', array( &$this, 'admin_print_scripts' ) );
 
 			} 
-		} // end if enabled
+		} // end if load
 	}
 
 	/**
@@ -715,13 +727,17 @@ class GeoMashupCommentUIManager {
 	 * 
 	 * @since 1.3
 	 * @access private
+	 * @global array $geo_mashup_options 
+	 * @uses apply_filters geo_mashup_load_comment_editor Returns a boolean that loads the editor when true.
 	 */
 	function init() {
 		global $geo_mashup_options;
 
+		$load_comment_editor = ( !is_admin() && $geo_mashup_options->get( 'overall', 'located_object_name', 'comment' ) == 'true' ); 
+		$load_comment_editor = apply_filters( 'geo_mashup_load_comment_editor', $load_comment_editor );
 
 		// If enabled, register all the interface elements
-		if ( !is_admin() && $geo_mashup_options->get( 'overall', 'located_object_name', 'comment' ) == 'true' ) { 
+		if ( $load_comment_editor ) {
 
 			// Form generation
 			add_action( 'comment_form', array( &$this, 'print_form' ) );
