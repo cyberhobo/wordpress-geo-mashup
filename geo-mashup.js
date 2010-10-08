@@ -863,8 +863,8 @@ GeoMashup = {
 				);
 			} else if ( this.opts.context_object_id && this.objects[ this.opts.context_object_id ] ) {
 				this.centerMarker( this.objects[ this.opts.context_object_id ].marker, parseInt( this.opts.zoom ) );
+				this.updateVisibleList();
 			}
-			this.updateVisibleList();
 		}
 	},
 
