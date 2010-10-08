@@ -352,6 +352,7 @@ jQuery( function( $ ) {
 			$container.append( $busy_icon );
 
 			map = new mxn.Mapstraction( $container.get( 0 ), geo_mashup_location_editor_settings.map_api );
+			map.setOptions( { enableDragging: true, enableScrollWheelZoom: true } );
 			map.addControls( { zoom: 'small' } );
 			GeoMashupLocationEditor.showBusyIcon();
 			map.load.addHandler( function() { GeoMashupLocationEditor.hideBusyIcon(); }, map );
