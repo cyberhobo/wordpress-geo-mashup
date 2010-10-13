@@ -1061,7 +1061,17 @@ class GeoMashup {
 					if ( 'country_name' == $field ) { 
 						array_push( $values, GeoMashupDB::get_administrative_name( $location['country_code'] ) );
 					} else if ( 'admin_name' == $field ) {
-						array_push( $values, GeoMashupDB::get_administrative_name( $location['country_code'], $location['admin_code'] ) );
+						$admin_name = GeoMashupDB::get_cached_administrative_name( $location['country_code'], $location['admin_code'] );
+						if ( empty( $admin_name ) ) {
+							$subdiv = GeoMashupDB::get_geonames_subdivision( $location['lat'], $location['lng'] );
+							if ( empty( $subdiv ) ) {
+								array_push( $values, $admin_code );
+							} else {
+								array_push( $values, GeoMashupDB::get_administrative_name( $subdiv['country_code'], $subdiv['admin_code'] ) );
+							}
+						} else {
+							array_push( $values, $admin_name );
+						}
 					} else {
 						array_push( $values, '' );
 					}
