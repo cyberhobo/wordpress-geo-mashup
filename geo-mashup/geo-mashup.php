@@ -493,21 +493,6 @@ class GeoMashup {
 				echo '<meta name="geo.position" content="' .  esc_attr( $loc->lat . ';' . $loc->lng ) . '" />' . "\n";
 			}
 		}
-		else
-		{
-			$saved_locations = GeoMashupDB::get_saved_locations( );
-			if ( !empty( $saved_locations ) )
-			{
-				foreach ( $saved_locations as $saved_location ) {
-					if ( $saved_location->saved_name == 'default' ) {
-						$title = esc_html(convert_chars(strip_tags(get_bloginfo('name'))));
-						echo '<meta name="ICBM" content="' . esc_attr( $saved_location->lat . ', ' . $saved_location->lon ) . '\" />'. "\n";
-						echo '<meta name="DC.title" content="' . esc_attr( $title ) . '" />' . "\n";
-						echo '<meta name="geo.position" content="' . esc_attr( $saved_location->lat . ';' . $saved_location->lon ) . '\" />' . "\n";
-					}
-				}
-			}
-		}
 	}
 
 	/**
