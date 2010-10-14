@@ -53,7 +53,7 @@ class GeoMashupUIManager {
 	 * @access public
 	 */
 	function enqueue_form_client_items() {	
-		global $geo_mashup_options;
+		global $geo_mashup_options, $geo_mashup_custom;
 
 		wp_enqueue_style( 
 			'geo-mashup-edit-form', 
@@ -94,6 +94,13 @@ class GeoMashupUIManager {
 			$required_scripts, 
 			GEO_MASHUP_VERSION 
 		);
+
+		if ( isset( $geo_mashup_custom ) ) {
+			$custom_url = $geo_mashup_custom->file_url( 'location-editor.js' );
+			if ( ! empty( $custom_url ) ) {
+				wp_enqueue_script( 'geo-mashup-location-editor-custom', $custom_url, array( 'geo-mashup-location-editor' ) );
+			}
+		}
 	}
 
 	/**
