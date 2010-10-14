@@ -1656,6 +1656,7 @@ id.
 			$wpdb->prepare( 'ON gmlr.object_name = %s AND gmlr.location_id = gml.id ', $object_name ) .
 			"INNER JOIN {$object_store['table']} o ON o.{$object_store['id_column']} = gmlr.object_id";
 		$wheres = array( );
+		$groupby = '';
 		$having = '';
 
 		if ( 'post' == $object_name ) {
@@ -1744,6 +1745,8 @@ id.
 			if ( ! empty( $escaped_exclude_ids ) ) {
 				$wheres[] = 'tt.term_id NOT IN (' . implode( ',', $escaped_exclude_ids ) . ')';
 			}
+
+			$groupby = 'GROUP BY gmlr.object_id';
 		} // end if map_cat exists 
 
 		if ( isset( $query_args['object_id'] ) ) {
@@ -1769,10 +1772,11 @@ id.
 			$table_string = apply_filters( 'geo_mashup_locations_join', $table_string );
 			$where = apply_filters( 'geo_mashup_locations_where', $where );
 			$sort = apply_filters( 'geo_mashup_locations_orderby', $sort );
+			$groupby = apply_filters( 'geo_mashup_locations_groupby', $groupby );
 			$limit = apply_filters( 'geo_mashup_locations_limits', $limit );
 		}
 		
-		$query_string = "SELECT $field_string FROM $table_string $where $having $sort $limit";
+		$query_string = "SELECT $field_string FROM $table_string $where $groupby $having $sort $limit";
 
 		$wpdb->query( $query_string );
 		

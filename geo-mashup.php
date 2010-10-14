@@ -494,21 +494,6 @@ class GeoMashup {
 				echo '<meta name="geo.position" content="' .  esc_attr( $loc->lat . ';' . $loc->lng ) . '" />' . "\n";
 			}
 		}
-		else
-		{
-			$saved_locations = GeoMashupDB::get_saved_locations( );
-			if ( !empty( $saved_locations ) )
-			{
-				foreach ( $saved_locations as $saved_location ) {
-					if ( $saved_location->saved_name == 'default' ) {
-						$title = esc_html(convert_chars(strip_tags(get_bloginfo('name'))));
-						echo '<meta name="ICBM" content="' . esc_attr( $saved_location->lat . ', ' . $saved_location->lon ) . '\" />'. "\n";
-						echo '<meta name="DC.title" content="' . esc_attr( $title ) . '" />' . "\n";
-						echo '<meta name="geo.position" content="' . esc_attr( $saved_location->lat . ';' . $saved_location->lon ) . '\" />' . "\n";
-					}
-				}
-			}
-		}
 	}
 
 	/**
@@ -1086,7 +1071,17 @@ class GeoMashup {
 					if ( 'country_name' == $field ) { 
 						array_push( $values, GeoMashupDB::get_administrative_name( $location['country_code'] ) );
 					} else if ( 'admin_name' == $field ) {
-						array_push( $values, GeoMashupDB::get_administrative_name( $location['country_code'], $location['admin_code'] ) );
+						$admin_name = GeoMashupDB::get_cached_administrative_name( $location['country_code'], $location['admin_code'] );
+						if ( empty( $admin_name ) ) {
+							$subdiv = GeoMashupDB::get_geonames_subdivision( $location['lat'], $location['lng'] );
+							if ( empty( $subdiv ) ) {
+								array_push( $values, $admin_code );
+							} else {
+								array_push( $values, GeoMashupDB::get_administrative_name( $subdiv['country_code'], $subdiv['admin_code'] ) );
+							}
+						} else {
+							array_push( $values, $admin_name );
+						}
 					} else {
 						array_push( $values, '' );
 					}
