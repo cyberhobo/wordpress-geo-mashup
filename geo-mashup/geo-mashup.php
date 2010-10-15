@@ -532,7 +532,11 @@ class GeoMashup {
 
 					// Include post author
 					$author = get_userdata( $object->post_author );
-					$author_name = $author->display_name;
+					if ( empty( $author ) ) {
+						$author_name = '';
+					} else {
+						$author_name = $author->display_name;
+					}
 				}
 
 				$json_object = array(
