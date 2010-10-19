@@ -384,7 +384,7 @@ var
 
 		geo_mashup_location_editor.map = map = new mxn.Mapstraction( $container.get( 0 ), geo_mashup_location_editor_settings.map_api );
 		map.setOptions( { enableDragging: true, enableScrollWheelZoom: true } );
-		map.addControls( { zoom: 'small' } );
+		map.addControls( { zoom: 'small', map_type: true } );
 		geo_mashup_location_editor.showBusyIcon();
 		map.load.addHandler( function() { geo_mashup_location_editor.hideBusyIcon(); }, map );
 		map.setCenterAndZoom( new mxn.LatLonPoint( 0, 0 ), 2 );
