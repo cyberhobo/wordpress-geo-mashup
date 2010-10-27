@@ -101,6 +101,9 @@ class GeoMashup {
 	function load_hooks() {
 		global $geo_mashup_options;
 
+		add_action( 'wp_ajax_geo_mashup_query', array( 'GeoMashup', 'geo_query') );
+		add_action( 'wp_ajax_nopriv_geo_mashup_query', array( 'GeoMashup', 'geo_query') );
+
 		if (is_admin()) {
 
 			// To upgrade tables
@@ -266,6 +269,7 @@ class GeoMashup {
 	 */
 	function geo_query() {
 		require_once( 'geo-query.php' );
+		exit();
 	}
 
 	/**
@@ -321,7 +325,7 @@ class GeoMashup {
 			}
 		} 
 
-		echo GeoMashup::json_encode( array( 'status' => $status ) );
+		echo json_encode( array( 'status' => $status ) );
 		exit();
 	}
 
@@ -401,6 +405,7 @@ class GeoMashup {
 	 *
 	 * @since 1.3
 	 * @access public
+	 * @deprecated use WP / PHP json_encode
 	 * @static
 	 *
 	 * @param scalar|array Scalars are quoted, number-indexed arrays become JSON arrays, string-indexed arrays become JSON objects.
@@ -552,11 +557,10 @@ class GeoMashup {
 
 				// Allow companion plugins to add data
 				$json_object = apply_filters( 'geo_mashup_locations_json_object', $json_object, $object );
-
 				$json_objects[] = $json_object;
 			}
 		}
-		return GeoMashup::json_encode( array( 'objects' => $json_objects ) );
+		return json_encode( array( 'objects' => $json_objects ) );
 	}
 
 	/**
