@@ -268,7 +268,7 @@ class GeoMashupQuery {
 		header( 'Pragma:' );
 		 */
 		status_header(200);
-		header('Content-type: text/plain; charset='.get_option('blog_charset'), true);
+		header('Content-type: application/json; charset='.get_option('blog_charset'), true);
 		header('Cache-Control: no-cache;', true);
 		header('Expires: -1;', true);
 
