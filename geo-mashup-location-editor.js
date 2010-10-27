@@ -16,7 +16,7 @@ var GeoMashupLocationEditor, geo_mashup_location_editor;
  * The public interface for the location editor.
  *
  * The camel case name is against convention, since it is not 
- * a constructor, but preserved for backwards compatibility.
+ * a constructor, and is deprecated. Use geo_mashup_location_editor.
  *
  * The object is created with event properties defined. Other members are 
  * added when the editor loads.
@@ -25,6 +25,13 @@ var GeoMashupLocationEditor, geo_mashup_location_editor;
  * @since 1.4
  */
 geo_mashup_location_editor = GeoMashupLocationEditor = {
+
+	/**
+	 * The object id being edited
+	 * @public
+	 * @since 1.4
+	 */
+	object_id: null,
 
 	/**
 	 * The Mapstraction object.
@@ -41,7 +48,19 @@ geo_mashup_location_editor = GeoMashupLocationEditor = {
 	/**
 	 * An event fired when the editor has loaded.
 	 */
-	loaded: new mxn.Event( 'loaded', this )
+	loaded: new mxn.Event( 'loaded', this ),
+
+	/**
+	 * An event fired when a marker is created.
+	 * @param object Marker filter.
+	 */
+	markerCreated: new mxn.Event( 'markerCreated', this ),
+
+	/**
+	 * An event fired when a marker is selected.
+	 * @param object Marker filter.
+	 */
+	markerSelected: new mxn.Event( 'markerSelected', this )
 
 };
 
@@ -383,10 +402,10 @@ var
 		$container.append( $busy_icon );
 
 		geo_mashup_location_editor.map = map = new mxn.Mapstraction( $container.get( 0 ), geo_mashup_location_editor_settings.map_api );
-		map.setOptions( { enableDragging: true, enableScrollWheelZoom: true } );
-		map.addControls( { zoom: 'small', map_type: true } );
+		map.setOptions( {enableDragging: true, enableScrollWheelZoom: true} );
+		map.addControls( {zoom: 'small', map_type: true} );
 		geo_mashup_location_editor.showBusyIcon();
-		map.load.addHandler( function() { geo_mashup_location_editor.hideBusyIcon(); }, map );
+		map.load.addHandler( function() {geo_mashup_location_editor.hideBusyIcon();}, map );
 		map.setCenterAndZoom( new mxn.LatLonPoint( 0, 0 ), 2 );
 		geo_mashup_location_editor.mapCreated.fire();
 
@@ -398,7 +417,7 @@ var
 			latlng_array = $location_input.val().split( ',' );
 			if ( latlng_array.length > 1 ) {
 				latlng = new mxn.LatLonPoint( parseFloat( latlng_array[0] ), parseFloat( latlng_array[1] ) );
-				addSelectedMarker( latlng, { location_id: $location_id_input.val(), name: $location_name_input.val() } );
+				addSelectedMarker( latlng, {location_id: $location_id_input.val(), name: $location_name_input.val()} );
 			}
 		}
 
@@ -446,8 +465,8 @@ var
 	 * @param GeoMashupAddress loc The related Geo Mashup location info.
 	 */
 	createMarker = function(latlng, loc) {
-		var marker, 
-			marker_opts = { 
+		var marker, filter;
+		var marker_opts = {
 				label: loc.title,
 				icon: red_icon.image,
 				iconSize: green_icon.iconSize,
@@ -456,14 +475,17 @@ var
 				iconShadowSize: green_icon.shadowSize
 			};
 		if ( !selected_marker ) {
-			marker_opts.icon = green_icon.image;
-			marker_opts.draggable = true;
+			//marker_opts.icon = green_icon.image;
+			//marker_opts.draggable = true;
 		}
 		marker = new mxn.Marker( latlng );
 		marker.addData( marker_opts );
 		marker.geo_mashup_location = loc;
-		marker.click.addHandler( function () { selectMarker( marker ); } );
+		marker.click.addHandler( function () {selectMarker( marker );} );
 		if ( !selected_marker ) {
+			marker_opts.icon = green_icon.image;
+			marker_opts.draggable = true;
+			marker.addData( marker_opts );
 			selected_marker = marker;
 			map.setCenter( latlng );
 			setInputs( latlng, loc );
@@ -476,8 +498,13 @@ var
 				map.setCenter( marker.location );
 			});
 			*/
+			filter = { marker: marker };
+			geo_mashup_location_editor.markerSelected.fire( filter );
+			marker = filter.marker;
 		}
-		return marker;
+		filter = { marker: marker };
+		geo_mashup_location_editor.markerCreated.fire( filter );
+		return filter.marker;
 	},
 
 	/**
@@ -709,7 +736,16 @@ var
 	// End of private function variables
 
 	// Add public members
+	geo_mashup_location_editor.object_id = object_id;
 	geo_mashup_location_editor.map = map;
+
+	geo_mashup_location_editor.getSelectedLatLngs = function() {
+		var latlngs = [];
+		if ( selected_marker ) {
+			latlngs.push( selected_marker.location );
+		}
+		return latlngs;
+	}
 
 	geo_mashup_location_editor.setHaveUnsavedChanges = function() {
 		have_unsaved_changes = true;
