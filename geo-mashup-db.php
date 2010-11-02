@@ -381,7 +381,7 @@ class GeoMashupDB {
 		}
 		$locality = get_query_var( 'geo_mashup_locality' );
 		if ( $locality ) {
-			$where .= $wpdb->prepare( " AND $gml.locality = %s ", $locality );
+			$where .= $wpdb->prepare( " AND $gml.locality_name = %s ", $locality );
 		}
 		$country_code = get_query_var( 'geo_mashup_country_code' );
 		if ( $country_code ) {
