@@ -327,7 +327,11 @@ GeoMashup.createMap = function(container, opts) {
 
 
 	// TODO: Try to deleselect markers with clicks? Need to make sure we don't get other object's clicks.
-	this.map.changeZoom.addHandler( function( old_zoom, new_zoom ) { GeoMashup.adjustZoom( old_zoom, new_zoom ); } );
+	this.map.changeZoom.addHandler( function( old_zoom, new_zoom ) {
+		GeoMashup.adjustZoom( old_zoom, new_zoom );
+		// A slight delay may be needed before the new viewport is available
+		setTimeout( function() { GeoMashup.adjustViewport(); }, 25 );
+	} );
 	this.map.endPan.addHandler( function() { GeoMashup.adjustViewport(); } );
 
 	// No clustering available
