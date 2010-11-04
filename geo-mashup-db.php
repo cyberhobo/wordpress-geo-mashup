@@ -1638,6 +1638,8 @@ id.
 			'maxlon' => null,
 			'radius_km' => null,
 			'radius_mi' => null,
+			'map_cat' => null,
+			'map_post_type' => 'any',
 			'object_name' => 'post',
 			'show_future' => 'false', 
 			'suppress_filters' => false,
@@ -1748,6 +1750,22 @@ id.
 
 			$groupby = 'GROUP BY gmlr.object_id';
 		} // end if map_cat exists 
+
+		if ( 'post' == $object_name ) {
+			// Handle inclusion and exclusion of post types
+			if ( 'any' == $query_args['map_post_type'] ) {
+				$exclude_post_types = '';
+				$in_search_post_types = get_post_types( array('exclude_from_search' => false) );
+
+				if ( ! empty( $in_search_post_types ) )
+					$exclude_post_types .= $wpdb->prepare("o.post_type IN ('" . join("', '", $in_search_post_types ) . "')");
+
+				$wheres[] = $exclude_post_types;
+			} else {
+				$post_types = preg_split( '/[,\s]+/', $query_args['map_post_type'] );
+				$wheres[] = "o.post_type IN ('" . join("', '", $post_types) . "')";
+			}
+		} 
 
 		if ( isset( $query_args['object_id'] ) ) {
 			$wheres[] = 'gmlr.object_id = ' . $wpdb->escape( $query_args['object_id'] );
