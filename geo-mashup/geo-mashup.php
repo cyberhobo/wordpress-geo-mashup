@@ -133,13 +133,11 @@ class GeoMashup {
 				add_filter( 'widget_text', 'do_shortcode' );
 			}
 
-			// To add the GeoRSS namespace to RSS feeds
-			add_action('rss_ns', array('GeoMashup', 'rss_ns'));
+			// To add the GeoRSS namespace to feeds (not available for RSS 0.92)
 			add_action('rss2_ns', array('GeoMashup', 'rss_ns'));
 			add_action('atom_ns', array('GeoMashup', 'rss_ns'));
 
-			// To add GeoRSS location to RSS feeds
-			add_action('rss_item', array('GeoMashup', 'rss_item'));
+			// To add GeoRSS location to feeds
 			add_action('rss2_item', array('GeoMashup', 'rss_item'));
 			add_action('atom_entry', array('GeoMashup', 'rss_item'));
 
