@@ -262,7 +262,7 @@ Mapstraction: {
 		var map = this.maps[this.api];
 		var layer = new VEShapeLayer(); 
 		var mlayerspec = new VEShapeSourceSpecification(VEDataType.GeoRSS, url, layer);
-	 	map.AddShapeLayer(layer);
+	 	map.ImportShapeLayerData(mlayerspec);
 	},
 
 	addTileLayer: function(tile_url, opacity, copyright_text, min_zoom, max_zoom) {
@@ -323,6 +323,9 @@ Marker: {
 			   customIcon.ImageOffset = new VEPixel(-this.iconSize[0]/2, -this.iconSize[1]/2);
 			}
 			mmarker.SetCustomIcon(customIcon);	
+		}
+		if (this.draggable){
+			mmarker.Draggable = true;
 		}
 		
 		return mmarker;

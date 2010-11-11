@@ -254,9 +254,8 @@ Mapstraction: {
 	getBounds: function () {
 		var map = this.maps[this.api];
 		var gLatLngBounds = map.getBounds();
-		if ( ! gLatLngBounds ) {
-			// The map bounds are not available yet - probably called too soon
-			return null;
+		if (!gLatLngBounds) {
+			throw 'Bounds not available, map must be initialized';
 		}
 		var sw = gLatLngBounds.getSouthWest();
 		var ne = gLatLngBounds.getNorthEast();
@@ -274,19 +273,16 @@ Mapstraction: {
 	addImageOverlay: function(id, src, opacity, west, south, east, north, oContext) {
 		var map = this.maps[this.api];
 		
-		// TODO: Add provider code
+		var imageBounds = new google.maps.LatLngBounds(
+			new google.maps.LatLng(south,west),
+			new google.maps.LatLng(north,east));
+		
+		var groundOverlay = new google.maps.GroundOverlay(src, imageBounds);
+		groundOverlay.setMap(map);
 	},
 
 	setImagePosition: function(id, oContext) {
-		var map = this.maps[this.api];
-		var topLeftPoint; var bottomRightPoint;
-
-		// TODO: Add provider code
-
-		//oContext.pixels.top = ...;
-		//oContext.pixels.left = ...;
-		//oContext.pixels.bottom = ...;
-		//oContext.pixels.right = ...;
+		// do nothing
 	},
 	
 	addOverlay: function(url, autoCenterAndZoom) {
@@ -317,8 +313,14 @@ Mapstraction: {
 	
 	mousePosition: function(element) {
 		var map = this.maps[this.api];
-
-		// TODO: Add provider code	
+		var locDisp = document.getElementById(element);
+		if (locDisp !== null) {
+			google.maps.event.addListener(map, 'mousemove', function (point) {
+				var loc = point.latLng.lat().toFixed(4) + ' / ' + point.latLng.lng().toFixed(4);
+				locDisp.innerHTML = loc;
+			});
+			locDisp.innerHTML = '0.0000 / 0.0000';
+		}
 	}
 },
 
@@ -465,7 +467,9 @@ Marker: {
 	},
 
 	update: function() {
-		// TODO: Add provider code
+		var point = new mxn.LatLonPoint();
+		point.fromProprietary('googlev3', this.proprietary_marker.getPosition());
+		this.location = point;
 	}
 	
 },
