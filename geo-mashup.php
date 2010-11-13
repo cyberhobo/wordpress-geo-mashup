@@ -230,6 +230,32 @@ class GeoMashup {
 	}
 
 	/**
+	 *	Locate a Geo Mashup template.
+	 * 
+	 * Geo Mashup looks for templates given a certain base name. Given a base 
+	 * name of 'info-window', it will return the first of:
+	 * 	'geo-mashup-info-window.php' in the active theme directory
+	 * 	'info-window.php' in the geo-mashup-custom plugin directory
+	 * 	'info-window-default.php' in the geo-mashup plugin directory
+	 * 
+	 * @param string $template_base The base name of the template.
+	 * @return string The file path of the template found.
+	 */
+	function locate_template( $template_base ) {
+		$template = locate_template( array("geo-mashup-$template_base.php") );
+		if ( empty( $template ) && isset( $geo_mashup_custom ) && $geo_mashup_custom->file_url( $template_base . '.php' ) ) {
+			$template = path_join( $geo_mashup_custom->dir_path, $template_base . '.php' );
+		}
+		if ( !is_readable( $template ) ) {
+			$template = path_join( GEO_MASHUP_DIR_PATH, $template_base . '-default.php' );
+		}
+		if ( !is_readable( $template ) ) {
+			$template = path_join( GEO_MASHUP_DIR_PATH, 'info-window-default.php' );
+		}
+		return $template;
+	}
+
+	/**
 	 * Deliver templated Geo Mashup content.
 	 *
 	 * template_redirect {@link http://codex.wordpress.org/Plugin_API/Filter_Reference#Advanced_WordPress_Filters filter},
@@ -280,6 +306,8 @@ class GeoMashup {
 	 */
 	function render_map() {
 		require_once( 'render-map.php' );
+		GeoMashupRenderMap::render_map();
+		exit();
 	}
 
 	/**

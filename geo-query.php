@@ -105,17 +105,7 @@ class GeoMashupQuery {
 				break;
 		}
 
-		$template = locate_template( array("geo-mashup-$template_base.php") );
-		if ( empty( $template ) && isset( $geo_mashup_custom ) && $geo_mashup_custom->file_url( $template_base . '.php' ) ) {
-			$template = trailingslashit( $geo_mashup_custom->dir_path ) . $template_base . '.php';
-		}
-		if ( !is_readable( $template ) ) {
-			$template = trailingslashit( GEO_MASHUP_DIR_PATH ) . $template_base . '-default.php';
-		}
-		if ( !is_readable( $template ) ) {
-			$template = trailingslashit( GEO_MASHUP_DIR_PATH ) . 'info-window-default.php';
-		}
-		load_template( $template );
+		load_template( GeoMashup::locate_template( $template_base ) );
 	}
 
 	/** 
