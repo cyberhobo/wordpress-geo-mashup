@@ -242,6 +242,7 @@ class GeoMashup {
 	 * @return string The file path of the template found.
 	 */
 	function locate_template( $template_base ) {
+		global $geo_mashup_custom;
 		$template = locate_template( array("geo-mashup-$template_base.php") );
 		if ( empty( $template ) && isset( $geo_mashup_custom ) && $geo_mashup_custom->file_url( $template_base . '.php' ) ) {
 			$template = path_join( $geo_mashup_custom->dir_path, $template_base . '.php' );
