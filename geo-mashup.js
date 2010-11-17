@@ -487,8 +487,10 @@ GeoMashup = {
 				// Select the first tab
 				for (category_id in this.tab_hierarchy) {
 					if (this.tab_hierarchy.hasOwnProperty(category_id) && typeof category_id !== 'function') {
-						this.categoryTabSelect(category_id);
-						break;
+						if (this.hasLocatedChildren(category_id, this.tab_hierarchy[category_id])) {
+							this.categoryTabSelect(category_id);
+							break;
+						}
 					}
 				}
 			}
