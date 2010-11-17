@@ -47,7 +47,10 @@ Mapstraction: {
 
 			// deal with zoom change
 			google.maps.event.addListener(map, 'zoom_changed', function(){
-				me.changeZoom.fire();
+				var idleListener = google.maps.event.addListener(map, 'idle', function() {
+					me.changeZoom.fire();
+					google.maps.event.removeListener( idleListener );
+				})
 			});
 			// deal with map movement
 			google.maps.event.addListener(map, 'dragend', function(){

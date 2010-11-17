@@ -863,8 +863,10 @@ GeoMashup = {
 					this.map.getBoundsZoomLevel( this.location_bounds ),
 					function() { GeoMashup.updateVisibleList(); } 
 				);
-			} else if ( this.opts.context_object_id && this.objects[ this.opts.context_object_id ] ) {
-				this.centerMarker( this.objects[ this.opts.context_object_id ].marker, parseInt( this.opts.zoom ) );
+			} else {
+				if ( this.opts.context_object_id && this.objects[ this.opts.context_object_id ] ) {
+					this.centerMarker( this.objects[ this.opts.context_object_id ].marker, parseInt( this.opts.zoom ) );
+				}
 				this.updateVisibleList();
 			}
 		}
@@ -899,8 +901,13 @@ GeoMashup = {
 		}
 	},
 
-	adjustZoom : function(old_level, new_level) {
-		var category_id;
+	adjustZoom : function() {
+		var category_id, old_level, new_level;
+		new_level = this.map.getZoom();
+		if ( typeof this.last_zoom_level === 'undefined' ) {
+			this.last_zoom_level = new_level;
+		}
+		old_level = this.last_zoom_level;
 
 		for (category_id in this.categories) {
 			if (old_level <= this.categories[category_id].max_line_zoom &&
@@ -924,6 +931,7 @@ GeoMashup = {
 				this.clusterer.refresh( true );
 			}
 		}
+		this.last_zoom_level = new_level;
 	},
 
 	objectLinkHtml : function(object_id) {

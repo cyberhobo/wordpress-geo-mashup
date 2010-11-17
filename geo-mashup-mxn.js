@@ -237,8 +237,10 @@ GeoMashup.autoZoom = function() {
 };
 
 GeoMashup.isMarkerVisible = function( marker ) {
-	var map_bounds = this.map.getBounds();
-	if ( ! map_bounds ) {
+	var map_bounds;
+	try {
+		map_bounds = this.map.getBounds();
+	} catch( e ) {
 		// No bounds available yet, no markers are visible
 		return false;
 	}
@@ -329,8 +331,7 @@ GeoMashup.createMap = function(container, opts) {
 	// TODO: Try to deleselect markers with clicks? Need to make sure we don't get other object's clicks.
 	this.map.changeZoom.addHandler( function( old_zoom, new_zoom ) {
 		GeoMashup.adjustZoom( old_zoom, new_zoom );
-		// A slight delay may be needed before the new viewport is available
-		setTimeout( function() { GeoMashup.adjustViewport(); }, 25 );
+		GeoMashup.adjustViewport();
 	} );
 	this.map.endPan.addHandler( function() { GeoMashup.adjustViewport(); } );
 
