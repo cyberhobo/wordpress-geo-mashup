@@ -103,6 +103,7 @@ class GeoMashup {
 
 		add_action( 'wp_ajax_geo_mashup_query', array( 'GeoMashup', 'geo_query') );
 		add_action( 'wp_ajax_nopriv_geo_mashup_query', array( 'GeoMashup', 'geo_query') );
+		add_action( 'wp_ajax_geo_mashup_suggest_custom_keys', array( 'GeoMashupDB', 'post_meta_key_suggest' ) );
 
 		if (is_admin()) {
 
@@ -208,8 +209,10 @@ class GeoMashup {
 	function load_styles() {
 		if (is_admin()) {
 			if ( isset($_GET['page']) && GEO_MASHUP_PLUGIN_NAME === $_GET['page'] ) {
+				// Queue resources for the options page
 				$tabs_css = trailingslashit( GEO_MASHUP_URL_PATH ) . 'jquery-ui.1.7.smoothness.css';
 				wp_enqueue_style( 'jquery-smoothness', $tabs_css, false, GEO_MASHUP_VERSION, 'screen' );
+				wp_enqueue_script( 'suggest' );
 			}
 		}
 	}

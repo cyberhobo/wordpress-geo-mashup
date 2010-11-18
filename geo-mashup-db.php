@@ -46,11 +46,15 @@ class GeoMashupDB {
 	 * @static
 	 * @see http://codex.wordpress.org/Geodata
 	 * @usedby do_action() added_post_meta and added_postmeta
+	 * @uses $geo_mashup_options
 	 */
 	function added_post_meta( $meta_id, $post_id, $meta_key, $meta_value ) {
+		global $geo_mashup_options, $wpdb;
 
 		// Do nothing if meta_key is not a known location field
 		$location_keys = array( 'geo_latitude', 'geo_longitude', 'geo_lat_lng' );
+		$import_custom_key = $geo_mashup_options->get( 'overall', 'import_custom_field' );
+		$location_keys[] = $import_custom_key;
 		if ( ! in_array( $meta_key, $location_keys ) ) {
 			return;
 		}
@@ -61,6 +65,7 @@ class GeoMashupDB {
 			return;
 		}
 
+		$restore_insert_id = $wpdb->insert_id; // Work around a little WP bug in add_meta #15465
 		$location = array();
 
 		// Do nothing unless both latitude and longitude exist for the post
@@ -91,10 +96,20 @@ class GeoMashupDB {
 			}
 			$location['lat'] = $lats[0];
 
+		} else if ( $import_custom_key == $meta_key ) {
+
+			$lat_lng = preg_split( '/\s*[, ]\s*/', trim( $meta_value ) );
+			if ( count( $lat_lng ) == 2 and is_numeric( $lat_lng[0] ) and is_numeric( $lat_lng[1] ) ) {
+				$location['lat'] = $lat_lng[0];
+				$location['lng'] = $lat_lng[1];
+			} else if ( !empty( $meta_value ) ) {
+				GeoMashupDB::geocode( $meta_value, $location );
+			}
 		}
 
 		// Save the location, attempt reverse geocoding
 		GeoMashupDB::set_object_location( 'post', $post_id, $location, null );
+		$wpdb->insert_id = $restore_insert_id;
 	}
 
 	/**
@@ -2174,5 +2189,31 @@ id.
 	function delete_user( $id ) {
 		return GeoMashupDB::delete_object_location( 'user', $id );
 	}
+
+	/**
+	 * Echo post meta keys that match a jQuery suggest query.
+	 *
+	 * @since 1.4
+	 * @access private
+	 * @global object $wpdb
+	 * @static
+	 */
+	function post_meta_key_suggest() {
+		global $wpdb;
+		if ( isset( $_GET['q'] ) ) {
+			$limit = (int) apply_filters( 'postmeta_form_limit', 30 );
+			$like = $wpdb->escape( $_GET['q'] );
+			$keys = $wpdb->get_col( "
+				SELECT meta_key
+				FROM $wpdb->postmeta
+				GROUP BY meta_key
+				HAVING meta_key LIKE '$like%'
+				ORDER BY meta_key
+				LIMIT $limit" );
+			foreach( $keys as $key ) {
+				echo "$key\n";
+			}
+		}
+		exit;
+	}
 }
-?>

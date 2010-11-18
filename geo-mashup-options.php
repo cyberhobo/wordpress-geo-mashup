@@ -35,7 +35,8 @@ class GeoMashupOptions {
 				'comment' => 'false' ),
 			'enable_reverse_geocoding' => 'true',
 			'adsense_code' => 'partner-pub-5088093001880917',
-	 		'map_api' => 'google'	),
+	 		'map_api' => 'google',
+			'import_custom_field' => '' ),
 		'global_map' => array (
 			'width' => '400',
 			'height' => '400',
@@ -415,6 +416,7 @@ class GeoMashupOptions {
 			case 'category_link_separator':
 			case 'category_link_text':
 			case 'click_to_load_text':
+			case 'import_custom_field':
 				if ( empty ( $value ) ) return true;
 			case 'google_key':
 			case 'mashup_page':

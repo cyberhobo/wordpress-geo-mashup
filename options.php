@@ -138,7 +138,8 @@ function geo_mashup_options_page() {
 			select: function ( event, ui ) {
 				$( '#geo-mashup-selected-tab' ).val( ui.index );
 			}
-		} ); 
+		} );
+		$( '#import_custom_field' ).suggest( ajaxurl + '?action=geo_mashup_suggest_custom_keys' );
  	} ); 
 	</script>
 	<div class="wrap">
@@ -315,6 +316,19 @@ function geo_mashup_options_page() {
 						</td>
 					</tr>
 					<?php endif; ?>
+					<tr>
+						<th scope="row"><?php _e('Geocode Custom Field', 'GeoMashup'); ?></th>
+						<td>
+							<input id="import_custom_field"
+								name="overall[import_custom_field]"
+								type="text"
+								size="35"
+								value="<?php echo esc_attr( $geo_mashup_options->get ( 'overall', 'import_custom_field' ) ); ?>" /><br/>
+							<span class="setting-description"><?php
+								_e('Custom fields with this key will be geocoded and the resulting location saved for the post.', 'GeoMashup');
+							?></span>
+						</td>
+					</tr>
 					<tr>
 						<th scope="row"><?php _e('AdSense For Search ID', 'GeoMashup'); ?></th>
 						<td>
