@@ -863,7 +863,7 @@ var
 			if ( 200 == data.status.code ) {
 				clearHaveUnsavedChanges();
 				$display.find( '.ui-state-highlight' ).removeClass( 'ui-state-highlight' );
-				map.clearOverlays();
+				map.removeAllMarkers();
 				selected_marker = null;
 				saved_selector.selectNone();
 				$address_display.text( '' );
