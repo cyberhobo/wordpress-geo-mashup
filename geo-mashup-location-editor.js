@@ -474,17 +474,14 @@ var
 				iconAnchor: green_icon.iconAnchor,
 				iconShadowSize: green_icon.shadowSize
 			};
-		if ( !selected_marker ) {
-			//marker_opts.icon = green_icon.image;
-			//marker_opts.draggable = true;
-		}
 		marker = new mxn.Marker( latlng );
 		marker.addData( marker_opts );
 		marker.geo_mashup_location = loc;
 		marker.click.addHandler( function () {selectMarker( marker );} );
 		if ( !selected_marker ) {
 			marker_opts.icon = green_icon.image;
-			marker_opts.draggable = true;
+			// Maybe not yet with mapstraction
+			//marker_opts.draggable = true;
 			marker.addData( marker_opts );
 			selected_marker = marker;
 			map.setCenter( latlng );
