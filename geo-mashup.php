@@ -487,20 +487,14 @@ class GeoMashup {
 			'post_type' => 'attachment',
 			'numberposts' => null,
 			'post_status' => null,
+			'post_mime_type' => 'application/vnd.google-earth.kml+xml,application/vnd.google-earth.kmz',
 			'post_parent' => $post_id
 			); 
 		$attachments = get_posts($args);
 		$urls = array();
 		if ($attachments) {
 			foreach ($attachments as $attachment) {
-				$attachment_url = $attachment->guid;
-				$dot_pos = stripos( $attachment_url, '.kml');
-				if ( $dot_pos === false ) {
-					$dot_pos = stripos( $attachment_url, '.kmz');
-				}
-				if ( $dot_pos == strlen( $attachment_url ) - 4) {
-					array_push($urls,$attachment_url);
-				}
+				array_push( $urls, wp_get_attachment_url( $attachment->ID ) );
 			}
 		}
 		return $urls;

@@ -659,6 +659,7 @@ class GeoMashupPostUIManager extends GeoMashupUIManager {
 	 */
 	function upload_mimes( $mimes ) {
 		$mimes['kml'] = 'application/vnd.google-earth.kml+xml';
+		$mimes['kmz'] = 'application/vnd.google-earth.kmz';
 		$mimes['gpx'] = 'application/octet-stream';
 		return $mimes;
 	}
