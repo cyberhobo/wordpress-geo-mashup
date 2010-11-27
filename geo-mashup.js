@@ -543,11 +543,9 @@ GeoMashup = {
 
 	addGlowMarker : function( marker, point ) {
 		// Provider override
-	},	openInfoWindow : function( marker ) {
-		// Provider override
 	},
 
-	addGlowMarker : function( marker, point ) {
+	openInfoWindow : function( marker ) {
 		// Provider override
 	},
 
@@ -563,7 +561,7 @@ GeoMashup = {
 		// Provider override
 	},
 
-  loadFullPost : function( point ) {
+	loadFullPost : function( point ) {
 		// jQuery or provider override
 	},
 
@@ -633,41 +631,41 @@ GeoMashup = {
 		return this.category_opts[category_id].name;
 	},
 
-  hideMarker : function( marker ) {
+	hideMarker : function( marker ) {
 		// Provider override
 	},
 
-  showMarker : function( marker ) {
+	showMarker : function( marker ) {
 		// Provider override
 	},
 
-  hideLine : function( line ) {
+	hideLine : function( line ) {
 		// Provider override
 	},
 
-  showLine : function( line ) {
+	showLine : function( line ) {
 		// Provider override
 	},
 
-  newLatLng : function( lat, lng ) {
+	newLatLng : function( lat, lng ) {
 		var latlng;
 		// Provider override
 		return latlng;
 	},
 
-  extendLocationBounds : function( ) {
+	extendLocationBounds : function( ) {
 		// Provider override
 	},
 
-  addMarkers : function( ) {
+	addMarkers : function( ) {
 		// Provider override
 	},
 
-  makeMarkerMultiple : function( ) {
+	makeMarkerMultiple : function( ) {
 		// Provider override
 	},
 
-  autoZoom : function( ) {
+	autoZoom : function( ) {
 		// Provider override
 	},
 
