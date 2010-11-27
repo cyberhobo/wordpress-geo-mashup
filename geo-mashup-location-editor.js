@@ -407,6 +407,9 @@ var
 		geo_mashup_location_editor.showBusyIcon();
 		map.load.addHandler( function() {geo_mashup_location_editor.hideBusyIcon();}, map );
 		map.setCenterAndZoom( new mxn.LatLonPoint( 0, 0 ), 2 );
+		if ( 'enableGeoMashupExtras' in map ) {
+			map.enableGeoMashupExtras();
+		}
 		geo_mashup_location_editor.mapCreated.fire();
 
 		if ( $kml_url_input.val().length > 0 ) {
@@ -480,27 +483,32 @@ var
 		marker.click.addHandler( function () {selectMarker( marker );} );
 		if ( !selected_marker ) {
 			marker_opts.icon = green_icon.image;
-			// Maybe not yet with mapstraction
-			//marker_opts.draggable = true;
+			if ( 'enableGeoMashupExtras' in map ) {
+				// Only some APIs have draggable markers with events
+				marker_opts.draggable = true;
+			}
 			marker.addData( marker_opts );
 			selected_marker = marker;
 			map.setCenter( latlng );
 			setInputs( latlng, loc );
 
-			/* Maybe not yet with mapstraction
-			google.maps.Event.addListener(marker,'dragend',function () { 
-				// Dragging will create a new location under the hood
-				loc.id = '';
-				setInputs( marker.location, loc);
-				map.setCenter( marker.location );
-			});
-			*/
-			filter = { marker: marker };
+			filter = {marker: marker};
 			geo_mashup_location_editor.markerSelected.fire( filter );
 			marker = filter.marker;
 		}
-		filter = { marker: marker };
+		filter = {marker: marker};
 		geo_mashup_location_editor.markerCreated.fire( filter );
+
+		map.addMarker( filter.marker );
+		if ( filter.marker.draggable ) {
+			// Drag handling must be set after the marker is added to a map
+			filter.marker.dragend.addHandler( function( name, source, args) {
+				// Dragging will create a new location under the hood
+				loc.id = '';
+				setInputs( args.location, loc );
+				map.setCenter( args.location );
+			});
+		}
 		return filter.marker;
 	},
 
@@ -510,21 +518,16 @@ var
 	 * @param GMarker marker The marker to select.
 	 */
 	selectMarker = function(marker) {
-		var new_marker, deselected_marker;
 		if (marker !== selected_marker) {
-			deselected_marker = createMarker( selected_marker.location, selected_marker.geo_mashup_location );
+			createMarker( selected_marker.location, selected_marker.geo_mashup_location );
 			map.removeMarker( selected_marker );
-			map.addMarker( deselected_marker );
 			selected_marker = null;
 
 			// The new marker will be selected on creation
-			new_marker = createMarker( marker.location, marker.geo_mashup_location );
+			createMarker( marker.location, marker.geo_mashup_location );
 			map.removeMarker( marker );
-			map.addMarker( new_marker );
-			map.setCenter( new_marker.location );
-		} else {
-			map.setCenter( marker.location );
 		}
+		map.setCenter( marker.location );
 	},
 	
 	/**
@@ -535,7 +538,6 @@ var
 	 */
 	addSelectedMarker = function(latlng, selection) {
 		var marker = createMarker(latlng, new GeoAddress(selection));
-		map.addMarker( marker );
 		selectMarker( marker );
 	},
 
@@ -581,7 +583,6 @@ var
 					response[i].geometry.location.lng()
 				);
 				marker = createMarker( latlng, new GeoAddress( response[i] ) );
-				map.addMarker( marker );
 			}
 
 		} else if ( typeof status === 'undefined' && response && 200 == response.Status.code && response.Placemark && response.Placemark.length > 0 ) {
@@ -593,7 +594,6 @@ var
 					response.Placemark[i].Point.coordinates[0] 
 				);
 				marker = createMarker(latlng, new GeoAddress(response.Placemark[i]));
-				map.addMarker( marker );
 			}
 
 			
@@ -619,7 +619,6 @@ var
 			for (i=0; i<data.geonames.length && i<100 && data.geonames[i]; i += 1) {
 				result_latlng = new mxn.LatLonPoint( data.geonames[i].lat, data.geonames[i].lng );
 				marker = createMarker( result_latlng, new GeoAddress(data.geonames[i]) );
-				map.addMarker( marker );
 			}
 			geo_mashup_location_editor.hideBusyIcon();
 		}
