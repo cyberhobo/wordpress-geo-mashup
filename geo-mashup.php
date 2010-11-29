@@ -134,7 +134,7 @@ class GeoMashup {
 
 			// To allow shortcodes in the text widget
 			if ( ! has_filter( 'widget_text', 'do_shortcode' ) ) {
-				add_filter( 'widget_text', 'do_shortcode' );
+				add_filter( 'widget_text', 'do_shortcode', 11 );
 			}
 
 			// To add the GeoRSS namespace to feeds (not available for RSS 0.92)
@@ -537,9 +537,10 @@ class GeoMashup {
 	 * @filter geo_mashup_locations_json_object Filter each location associative array before conversion to JSON.
 	 *
 	 * @param string|array $query_args Query variables for GeoMashupDB::get_object_locations().
+	 * @param string $format (optional) 'JSON' (default) or ARRAY_A
 	 * @return string Queried object locations JSON ( { "object" : [...] } ).
 	 */
-	function get_locations_json( $query_args ) {
+	function get_locations_json( $query_args, $format = 'JSON' ) {
 		$default_args = array( 'object_name' => 'post' );
 		$query_args = wp_parse_args( $query_args, $default_args );
 		$json_objects = array();
@@ -588,7 +589,10 @@ class GeoMashup {
 				$json_objects[] = $json_object;
 			}
 		}
-		return json_encode( array( 'objects' => $json_objects ) );
+		if ( ARRAY_A == $format ) 
+			return array( 'objects' => $json_objects );
+		else
+			return json_encode( array( 'objects' => $json_objects ) );
 	}
 
 	/**
@@ -616,6 +620,92 @@ class GeoMashup {
 	}
 
 	/**
+	 * Build the data for a javascript map.
+	 *
+	 * Parameters are used both to retrieve data and as options to
+	 * eventually pass to the javascript.
+	 *
+	 * @since 1.4
+	 * @access public
+	 * @static
+	 * @uses GeoMashup::get_locations_json()
+	 *
+	 * @global array $geo_mashup_options
+	 * @global object $geo_mashup_custom
+	 * @param array $query Query parameters
+	 * @return array Map data ready to be rendered.
+	 */
+	function build_map_data( $query ) {
+		global $geo_mashup_options, $geo_mashup_custom;
+		$defaults = array(
+			'map_api' => $geo_mashup_options->get( 'overall', 'map_api' )
+		);
+		$query = wp_parse_args( $query, $defaults );
+		$object_id = isset( $query['object_id'] ) ? $query['object_id'] : 0;
+		unset( $query['object_id'] );
+
+		$map_data = $query + array(
+			'siteurl' => home_url(), // qTranslate doesn't work with get_option( 'home' )
+			'url_path' => GEO_MASHUP_URL_PATH,
+			'template_url_path' => get_template_directory_uri()
+		);
+		if ( isset( $geo_mashup_custom ) ) {
+			$map_data['custom_url_path'] = $geo_mashup_custom->url_path;
+		}
+
+		$map_content = ( isset( $query['map_content'] ) ) ? $query['map_content'] : null;
+		$object_name = ( isset( $query['object_name'] ) ) ? $query['object_name'] : 'post';
+
+		if ( $map_content == 'single') {
+			$location = GeoMashupDB::get_object_location( $object_name, $object_id, ARRAY_A );
+			$options = $geo_mashup_options->get( 'single_map' );
+			if ( !empty( $location ) ) {
+				$map_data['object_data'] = array( 'objects' => array( $location ) );
+				$map_data['center_lat'] = $location['lat'];
+				$map_data['center_lng'] = $location['lng'];
+			}
+			$map_data = array_merge ( $options, $map_data );
+			if ( 'post' == $object_name ) {
+				$kml_urls = GeoMashup::get_kml_attachment_urls( $object_id );
+				if (count($kml_urls)>0) {
+					$map_data['load_kml'] = array_pop( $kml_urls );
+				}
+			}
+		} else {
+			// Map content is not single
+			$map_data['context_object_id'] = $object_id;
+
+			if ( $map_content == 'contextual' ) {
+				$options = $geo_mashup_options->get( 'context_map' );
+				// If desired we could make these real options
+				$options['auto_info_open'] = 'false';
+			} else {
+				$options = $geo_mashup_options->get( 'global_map' );
+				// Category options done during render
+				unset( $options['category_color'] );
+				unset( $options['category_line_zoom'] );
+				if ( empty( $query['show_future'] ) )
+					$query['show_future'] = $options['show_future'];
+				if ( is_null( $map_content ) ) 
+					$options['map_content'] = 'global';
+			}
+
+			if ( isset( $options['add_google_bar'] ) and 'true' == $options['add_google_bar'] ) {
+				$options['adsense_code'] = $geo_mashup_options->get( 'overall', 'adsense_code' );
+			}
+
+			// We have a lot map control parameters that don't effect the locations query,
+			// but only the relevant ones are used
+			$map_data['object_data'] = GeoMashup::get_locations_json( $query, ARRAY_A );
+
+			// Incorporate parameters from the query and options
+			$map_data = array_merge( $query, $map_data );
+			$map_data = array_merge( $options, $map_data );
+		}
+		return $map_data;
+	}
+
+	/**
 	 * The map template tag.
 	 *
 	 * Returns HTML for a Google map. Must use with echo in a template: echo GeoMashup::map();.
@@ -623,7 +713,9 @@ class GeoMashup {
 	 * @since 1.0
 	 * @access public
 	 * @static
-	 * @link http://code.google.com/p/wordpress-geo-mashup/wiki/TagReference#Map
+	 * @link http://code.google.com/p/wordpress-geo-mashup/wiki/TagReference#Map tag parameter documentation
+	 * @uses $_SERVER['QUERY_STRING'] The first global map on a page uses query string parameters like tag parameters.
+	 * @staticvar $map_number Used to index maps per request.
 	 *
 	 * @param string|array $atts Template tag parameters.
 	 * @return string The HTML for the requested map.
@@ -633,8 +725,10 @@ class GeoMashup {
 		static $map_number = 0;
 
 		$map_number++;
-		$url_params = array();
 		$atts = wp_parse_args( $atts );
+		$static = (bool)( !empty( $atts['static'] ) and 'true' == $atts['static'] );
+		unset( $atts['static'] );
+		$click_to_load_options = array( 'click_to_load', 'click_to_load_text' );
 
 		GeoMashup::convert_map_attributes( $atts );
 
@@ -657,20 +751,19 @@ class GeoMashup {
 		}
 		if ( ! empty( $context_object_id ) ) {
 			
-			$url_params['object_id'] = $context_object_id;
-			$location = GeoMashupDB::get_object_location( $object_name, $context_object_id );
+			$atts['object_id'] = $context_object_id;
+			$context_location = GeoMashupDB::get_object_location( $object_name, $context_object_id );
 
 		}
 
 		// Map content type isn't required, so resolve it
 		$map_content = isset( $atts['map_content'] ) ? $atts['map_content'] : null;
-		unset($atts['map_content']);
 
 		if ( empty ( $map_content ) ) {
 
 			if ( empty( $context_object_id ) ) {
 				$map_content = 'contextual';
-			} else if ( empty( $location ) ) {
+			} else if ( empty( $context_location ) ) {
 				// Not located, go global
 				$map_content = 'global';
 			} else {
@@ -679,15 +772,11 @@ class GeoMashup {
 			}
 
 		}
-		
-		$single_option_keys = array ( 'width', 'height', 'zoom', 'background_color', 'click_to_load', 'click_to_load_text' );
-		$global_option_keys = array_merge( $single_option_keys, array( 'show_future', 'marker_select_info_window', 'marker_select_center', 
-			'marker_select_highlight', 'marker_select_attachments' ) );
-		$contextual_option_keys = array_diff( $global_option_keys, array( 'show_future' ) );
+
 		switch ($map_content) {
 			case 'contextual':
-				$url_params['map_content'] = 'contextual';
-				$url_params += $geo_mashup_options->get ( 'context_map', $contextual_option_keys );
+				$atts['map_content'] = 'contextual';
+				$atts += $geo_mashup_options->get( 'context_map', $click_to_load_options );
 				$object_ids = array();
 				if ( 'comment' == $object_name ) {
 					$context_objects = $wp_query->comments;
@@ -706,16 +795,16 @@ class GeoMashup {
 						$object_ids[] = $context_object->comment_ID;
 					}
 				}
-				$url_params['object_ids'] = implode( ',', $object_ids );
+				$atts['object_ids'] = implode( ',', $object_ids );
 				break;
 
 			case 'single':
-				$url_params['map_content'] = 'single';
-				$url_params += $geo_mashup_options->get ( 'single_map', $single_option_keys );
-				if ( empty( $url_params['object_id'] ) ) { 
+				$atts['map_content'] = 'single';
+				$atts += $geo_mashup_options->get( 'single_map', $click_to_load_options );
+				if ( empty( $atts['object_id'] ) ) {
 					return '<!-- ' . __( 'Geo Mashup found no current object to map', 'GeoMashup' ) . '-->';
 				}
-				if ( empty( $location ) ) {
+				if ( empty( $context_location ) ) {
 					return '<!-- ' . __( 'Geo Mashup omitted a map for an object with no location', 'GeoMashup' ) . '-->';
 				}
 				break;
@@ -725,87 +814,86 @@ class GeoMashup {
 					// Global maps tags in response to a full-post query can infinitely nest, prevent this
 					return '<!-- ' . __( 'Geo Mashup map omitted to avoid nesting maps', 'GeoMashup' ) . '-->';
 				}
-				$url_params['map_content'] = 'global';
-				$url_params += $geo_mashup_options->get ( 'global_map', $global_option_keys );
-				if (isset($_SERVER['QUERY_STRING'])) {
-					$url_params = wp_parse_args($_SERVER['QUERY_STRING'],$url_params);
+				$atts['map_content'] = 'global';
+				if ( isset($_SERVER['QUERY_STRING']) and 1 == $map_number ) {
+					// The first global map on a page will make use of query string arguments
+					$atts = wp_parse_args( $_SERVER['QUERY_STRING'], $atts );
 				} 
-				// Un-savable options
-				if (isset($atts['start_tab_category_id'])) {
-					$url_params['start_tab_category_id'] = $atts['start_tab_category_id'];
-				}
-				if (isset($atts['tab_index_group_size'])) {
-					$url_params['tab_index_group_size'] = $atts['tab_index_group_size'];
-				}
-				if (isset($atts['show_inactive_tab_markers'])) {
-					$url_params['show_inactive_tab_markers'] = $atts['show_inactive_tab_markers'];
-				}
+				$atts += $geo_mashup_options->get( 'global_map', $click_to_load_options );
 				break;
 
 			default:
 				return '<div class="gm-map"><p>Unrecognized value for map_content: "'.$map_content.'".</p></div>';
 		}
-		$url_params = array_merge($url_params, $atts);
 		
-		$click_to_load = $url_params['click_to_load'];
-		unset($url_params['click_to_load']);
-		$click_to_load_text = $url_params['click_to_load_text'];
-		unset($url_params['click_to_load_text']);
+		$click_to_load = $atts['click_to_load'];
+		unset( $atts['click_to_load'] );
+		$click_to_load_text = $atts['click_to_load_text'];
+		unset( $atts['click_to_load_text'] );
 		$name = 'gm-map-' . $map_number;
-		if (isset($url_params['name'])) {
-			$name = $url_params['name'];
-		}
-		unset($url_params['name']);
+		if ( isset( $atts['name'] ) )
+			$name = $atts['name'];
+		unset($atts['name']);
+
+		$map_data = GeoMashup::build_map_data( $atts );
+		if ( empty( $map_data['object_data']['objects'] ) and !isset( $map_data['load_empty_map'] ) )
+			return '<!-- ' . __( 'Geo Mashup omitted a map with no located objects found.', 'GeoMashup' ) . '-->';
+		unset( $map_data['load_empty_map'] );
 
 		$map_image = '';
-		if ( isset($url_params['static']) && 'true' === $url_params['static'] ) {
+		if ( $static ) {
 			// Static maps have a limit of 50 markers: http://code.google.com/apis/maps/documentation/staticmaps/#Markers
-			$url_params['limit'] = empty( $url_params['limit'] ) ? 50 : $url_params['limit'];
+			$atts['limit'] = empty( $atts['limit'] ) ? 50 : $atts['limit'];
 
-			$locations = GeoMashupDB::get_object_locations( $url_params );
-			if (!empty($locations)) {
-				$map_image = '<img src="http://maps.google.com/maps/api/staticmap?size='.$url_params['width'].'x'.$url_params['height'];
-				if (count($locations) == 1) {
-					$map_image .= '&amp;center='.$locations[0]->lat . ',' . $locations[0]->lng;
+			if ( !empty( $map_data['object_data']['objects'] ) ) {
+				$image_width = str_replace( '%', '', $map_data['width'] );
+				$image_height = str_replace( '%', '', $map_data['height'] );
+				$map_image = '<img src="http://maps.google.com/maps/api/staticmap?size='.$image_width.'x'.$image_height;
+				if ( count( $map_data['object_data']['objects'] ) == 1) {
+					$map_image .= '&amp;center=' . $map_data['object_data']['objects'][0]['lat'] . ',' .
+						$map_data['object_data']['objects'][0]['lng'];
 				}
-				$map_image .= '&amp;sensor=false&amp;zoom=' . $url_params['zoom'] . '&amp;markers=size:small|color:red';
-				foreach ($locations as $location) {
+				$map_image .= '&amp;sensor=false&amp;zoom=' . $map_data['zoom'] . '&amp;markers=size:small|color:red';
+				foreach( $map_data['object_data']['objects'] as $location ) {
 					// TODO: Try to use the correct color for the category? Draw category lines?
-					$map_image .= '|' . $location->lat . ',' . $location->lng;
+					$map_image .= '|' . $location['lat'] . ',' . $location['lng'];
 				}
-				$map_image .= '&amp;key='.$geo_mashup_options->get('overall', 'google_key').'" alt="geo_mashup_map"';
+				$map_image .= '" alt="geo_mashup_map"';
 				if ($click_to_load == 'true') {
 					$map_image .= '" title="'.$click_to_load_text.'"';
 				}
 				$map_image .= ' />';
 			}
 		}
-					
-		$iframe_src =  home_url( '?geo_mashup_content=render-map&amp;' ) . 
-			GeoMashup::implode_assoc('=', '&amp;', $url_params, false, true);
+
+		$map_data_key = md5( serialize( $atts ) );
+		set_transient( $map_data_key, $map_data, 5 );
+
+		$iframe_src =  home_url( '?geo_mashup_content=render-map&amp;map_data_key=' . $map_data_key );
+			
 		$content = "";
 
 		if ($click_to_load == 'true') {
 			if ( is_feed() ) {
 				$content .= "<a href=\"{$iframe_src}\">$click_to_load_text</a>";
 			} else {
-				$style = "height:{$url_params['height']}px;width:{$url_params['width']}px;background-color:#ddd;".
+				$style = "height:{$map_data['height']}px;width:{$map_data['width']}px;background-color:#ddd;".
 					"background-image:url(".GEO_MASHUP_URL_PATH."/images/wp-gm-pale.png);".
 					"background-repeat:no-repeat;background-position:center;cursor:pointer;";
 				$content = "<div class=\"gm-map\" style=\"$style\" " .
-					"onclick=\"GeoMashupLoader.addMapFrame(this,'$iframe_src','{$url_params['height']}','{$url_params['width']}','$name')\">";
-				if ( isset($url_params['static']) &&  'true' === $url_params['static'] ) {
+					"onclick=\"GeoMashupLoader.addMapFrame(this,'$iframe_src','{$map_data['height']}','{$map_data['width']}','$name')\">";
+				if ( $static ) {
 					// TODO: test whether click to load really works with a static map
 					$content .= $map_image . '</div>';
 				} else {
 					$content .= "<p style=\"text-align:center;\">$click_to_load_text</p></div>";
 				}
 			}
-		} else if ( isset($url_params['static']) &&  'true' === $url_params['static'] ) {
+		} else if ( $static ) {
 			$content = "<div class=\"gm-map\">$map_image</div>";
 		} else {
 			$content =  "<div class=\"gm-map\"><iframe name=\"{$name}\" src=\"{$iframe_src}\" " .
-				"height=\"{$url_params['height']}\" width=\"{$url_params['width']}\" marginheight=\"0\" marginwidth=\"0\" ".
+				"height=\"{$map_data['height']}\" width=\"{$map_data['width']}\" marginheight=\"0\" marginwidth=\"0\" ".
 				"scrolling=\"no\" frameborder=\"0\"></iframe></div>";
 		}
 		return $content;
