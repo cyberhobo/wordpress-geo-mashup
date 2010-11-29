@@ -440,6 +440,9 @@ GeoMashup.createMap = function(container, opts) {
 	}
 	this.opts = opts;
 	this.geo_query_url = opts.siteurl + '?geo_mashup_content=geo-query';
+	if ( opts.hasOwnProperty( 'lang' ) ) {
+		this.geo_query_url += '&lang=' + opts.lang;
+	}
 
 	google.maps.Event.bind(this.map, "zoomend", this, this.adjustZoom);
 	google.maps.Event.bind(this.map, "moveend", this, this.adjustViewport);
