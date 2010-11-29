@@ -728,6 +728,14 @@ class GeoMashup {
 		$atts = wp_parse_args( $atts );
 		$static = (bool)( !empty( $atts['static'] ) and 'true' == $atts['static'] );
 		unset( $atts['static'] );
+		$language = null;
+		if ( function_exists( 'qtrans_getLanguage' ) ) {
+			// qTranslate integration
+			$language = qtrans_getLanguage();
+		} else if ( defined( 'ICL_LANGUAGE_CODE' ) ) {
+			// WPML integration
+			$language = ICL_LANGUAGE_CODE;
+		}
 		$language = isset( $atts['lang'] ) ? $atts['lang'] : null;
 		$click_to_load_options = array( 'click_to_load', 'click_to_load_text' );
 
