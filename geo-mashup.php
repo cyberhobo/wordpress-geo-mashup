@@ -728,6 +728,7 @@ class GeoMashup {
 		$atts = wp_parse_args( $atts );
 		$static = (bool)( !empty( $atts['static'] ) and 'true' == $atts['static'] );
 		unset( $atts['static'] );
+		$language = isset( $atts['lang'] ) ? $atts['lang'] : null;
 		$click_to_load_options = array( 'click_to_load', 'click_to_load_text' );
 
 		GeoMashup::convert_map_attributes( $atts );
@@ -870,6 +871,8 @@ class GeoMashup {
 		set_transient( $map_data_key, $map_data, 5 );
 
 		$iframe_src =  home_url( '?geo_mashup_content=render-map&amp;map_data_key=' . $map_data_key );
+		if ( !empty( $language ) )
+			$iframe_src .= '&amp;lang=' . $language;
 			
 		$content = "";
 

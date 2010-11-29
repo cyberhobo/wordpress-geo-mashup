@@ -132,7 +132,9 @@ class GeoMashupRenderMap {
 		// Queue scripts
 		$mashup_dependencies = array( 'jquery' );
 		$language_code = '';
-		if ( function_exists( 'qtrans_getLanguage' ) ) {
+		if ( isset( $_GET['lang'] ) ) {
+			$language_code = $_GET['lang'];
+		} else if ( function_exists( 'qtrans_getLanguage' ) ) {
 			// qTranslate integration
 			$language_code = qtrans_getLanguage();
 		} else if ( defined( 'ICL_LANGUAGE_CODE' ) ) {
