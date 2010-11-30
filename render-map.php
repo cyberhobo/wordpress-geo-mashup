@@ -123,7 +123,14 @@ class GeoMashupRenderMap {
 
 		if ( isset( $_GET['map_data_key'] ) ) {
 			// Map data is cached in a transient
-			$map_data = get_transient( $_GET['map_data_key'] );
+			$map_data = get_transient( 'gmm' . $_GET['map_data_key'] );
+			if ( !$map_data ) {
+				$map_parameters = get_transient( 'gmp' . $_GET['map_data_key'] );
+				if ( $map_parameters )
+					$map_data = GeoMashup::build_map_data( $map_parameters );
+				else
+					$map_data = GeoMashup::build_map_data( '' );
+			}
 		} else {
 			// Try building map data from the query string
 			$map_data = GeoMashup::build_map_data( $_GET );

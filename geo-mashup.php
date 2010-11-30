@@ -552,6 +552,9 @@ class GeoMashup {
 				$attachments = array();
 				if ( 'post' == $query_args['object_name'] ) {
 
+					// Filter the title
+					$object->label = apply_filters( 'the_title', $object->label, $object->object_id );
+
 					// Only know about post categories now, but could abstract to objects
 					$categories = get_the_category( $object->object_id );
 					foreach ($categories as $category) {
@@ -875,10 +878,11 @@ class GeoMashup {
 			}
 		}
 
-		$map_data_key = md5( serialize( $atts ) );
-		set_transient( $map_data_key, $map_data, 5 );
+		$atts_md5 =  md5( serialize( $atts ) );
+		set_transient( 'gmm' . $atts_md5, $map_data, 20 );
+		set_transient( 'gmp' . $atts_md5, $atts, 60*60*24 );
 
-		$iframe_src =  home_url( '?geo_mashup_content=render-map&amp;map_data_key=' . $map_data_key );
+		$iframe_src =  home_url( '?geo_mashup_content=render-map&amp;map_data_key=' . $atts_md5 );
 		if ( !empty( $atts['lang'] ) )
 			$iframe_src .= '&amp;lang=' . $atts['lang'];
 			
