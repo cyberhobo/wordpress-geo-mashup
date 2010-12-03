@@ -27,6 +27,9 @@ function geo_mashup_options_page() {
 		if ( empty( $_POST['context_map']['add_map_type_control'] ) ) {
 			$_POST['context_map']['add_map_type_control']  = array();
 		}
+		if ( empty( $_POST['overall']['located_post_types'] ) ) {
+			$_POST['overall']['located_post_types']  = array();
+		}
 		$geo_mashup_options->set_valid_options ( $_POST );
 		if ($geo_mashup_options->save()) {
 			echo '<div class="updated fade"><p>'.__('Options updated.', 'GeoMashup').'</p></div>';
@@ -275,21 +278,23 @@ function geo_mashup_options_page() {
 					<tr>
 						<th scope="row"><?php _e('Collect Location For', 'GeoMashup'); ?></th>
 						<td>
-							<input id="locate_posts" name="overall[located_object_name][post]" type="checkbox" value="true"<?php 
-								if ( $geo_mashup_options->get( 'overall', 'located_object_name', 'post' ) == 'true' ) {
+							<?php foreach( get_post_types( array( 'show_ui' => true ), 'objects' ) as $post_type) : ?>
+							<input id="locate_posts" name="overall[located_post_types][]" type="checkbox" value="<?php echo $post_type->name; ?>"<?php
+								if ( in_array( $post_type->name, $geo_mashup_options->get( 'overall', 'located_post_types' ) ) ) {
 									echo ' checked="checked"';
 								}
-							?> /> <?php _e( 'posts and pages', 'GeoMashup' ); ?>
+							?> /> <?php echo $post_type->labels->name; ?>
+							<?php endforeach; ?>
 							<input id="locate_users" name="overall[located_object_name][user]" type="checkbox" value="true"<?php 
 								if ( $geo_mashup_options->get( 'overall', 'located_object_name', 'user' ) == 'true' ) {
 									echo ' checked="checked"';
 								}
-							?> /> <?php _e( 'users', 'GeoMashup' ); ?>
+							?> /> <?php _e( 'Users', 'GeoMashup' ); ?>
 							<input id="locate_comments" name="overall[located_object_name][comment]" type="checkbox" value="true"<?php 
 								if ($geo_mashup_options->get( 'overall', 'located_object_name', 'comment' ) == 'true' ) {
 									echo ' checked="checked"';
 								}
-							?> /> <?php _e( 'comments', 'GeoMashup' ); ?>
+							?> /> <?php _e( 'Comments', 'GeoMashup' ); ?>
 						</td>
 					</tr>
 					<tr>

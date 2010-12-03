@@ -29,8 +29,9 @@ class GeoMashupOptions {
 			'category_zoom' => 'auto',
 			'add_category_links' => 'false',
 			'theme_stylesheet_with_maps' => 'false',
-			'located_object_name' => array ( 
-				'post' => 'true',
+			'located_post_types' => array( 'post', 'page' ),
+			'located_object_name' => array( 
+				'post' => 'deprecated',
 				'user' => 'false',
 				'comment' => 'false' ),
 			'enable_reverse_geocoding' => 'true',
@@ -141,7 +142,7 @@ class GeoMashupOptions {
 	 * @access private
 	 * @var array
 	 */
-	var $freeform_option_keys = array ( 'category_color', 'category_line_zoom', 'add_map_type_control' );
+	var $freeform_option_keys = array ( 'category_color', 'category_line_zoom', 'add_map_type_control', 'located_post_types' );
 
 	/**
 	 * Valid map types.
@@ -223,6 +224,11 @@ class GeoMashupOptions {
 				$settings[$new_keys[0]][$new_keys[1]] = $settings[$old_key];
 				unset ( $settings[$old_key] );
 			}
+		}
+		if ( isset( $settings['overall']['located_object_name']['post']) and 'true' == $settings['overall']['located_object_name']['post'] ) {
+			$settings['overall']['located_object_name']['post'] = 'deprecated';
+			if ( empty( $settings['overall']['located_post_types']['post'] ) )
+				$settings['overall']['located_post_types'] = array( 'post', 'page' );
 		}
 		return $settings;
 	}
@@ -343,7 +349,7 @@ class GeoMashupOptions {
 				} else { 
 					$valid_options[$key] = $default_value;
 				}
-			} 
+			}
 		}
 		return $valid_options;
 	}
@@ -463,7 +469,6 @@ class GeoMashupOptions {
 			case 'theme_stylesheet_with_maps':
 			case 'show_post':
 			case 'click_to_load':
-			case 'post':
 			case 'user':
 			case 'comment':
 			case 'enable_reverse_geocoding':
@@ -484,6 +489,7 @@ class GeoMashupOptions {
 			case 'context_map':
 			case 'category_color':
 			case 'category_line_zoom':
+			case 'located_post_types':
 			case 'located_object_name':
 				if ( !is_array ( $value ) ) {
 					array_push ( $this->validation_errors, '"'. $value . '" ' . __('is invalid for', 'GeoMashup') . ' ' . $key .
@@ -505,6 +511,13 @@ class GeoMashupOptions {
 				}
 				return true;
 
+			// deprecated
+			case 'post':
+				if ( 'deprecated' != $value ) {
+					array_push( $this->validation_errors, '"'. $value . '" ' . __( 'is invalid for', 'GeoMashup' ) . ' ' . $key .
+						__( ', which is a deprecated option', 'GeoMashup' ) );
+					return false;
+				}
 			default:
 				return false;
 		}

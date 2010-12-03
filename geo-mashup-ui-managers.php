@@ -97,6 +97,8 @@ class GeoMashupUIManager {
 			GEO_MASHUP_VERSION 
 		);
 
+		wp_enqueue_script( 'jquery-ui-datepicker', trailingslashit( GEO_MASHUP_URL_PATH ) . 'jquery-ui.1.7.datepicker.min.js', array( 'jquery', 'jquery-ui-core'), '1.7' );
+
 		if ( isset( $geo_mashup_custom ) ) {
 			$custom_url = $geo_mashup_custom->file_url( 'location-editor.js' );
 			if ( ! empty( $custom_url ) ) {
@@ -408,7 +410,7 @@ class GeoMashupPostUIManager extends GeoMashupUIManager {
 	}
 
 	/**
-	 * Initialize for use in relevant requests.
+	 * Initialize for use in relevant post editing requests.
 	 *
 	 * init {@link http://codex.wordpress.org/Plugin_API/Action_Reference action}
 	 * called by WordPress.
@@ -420,55 +422,78 @@ class GeoMashupPostUIManager extends GeoMashupUIManager {
 	 * @uses apply_filters geo_mashup_load_location_editor Returns a boolean that loads the editor when true.
 	 */
 	function init() {
-		global $geo_mashup_options, $pagenow;
+		global $geo_mashup_options;
 
 		// Uploadable geo content type expansion always enabled
 		add_filter( 'upload_mimes', array( &$this, 'upload_mimes' ) );
 
-		// Enable this interface when the option is set 
+		// Queue inline location handlers - these could be used in nearly any request
 
-		if ( 'true' == $geo_mashup_options->get( 'overall', 'located_object_name', 'post' ) ) {
+		// Pre-save filter checks saved content for inline location tags
+		add_filter( 'content_save_pre', array( &$this, 'content_save_pre') );
 
-			// Queue inline location handlers
+		// Save post handles both inline and form processing
+		add_action( 'save_post', array( &$this, 'save_post'), 10, 2 );
 
-			// Pre-save filter checks saved content for inline location tags
-			add_filter( 'content_save_pre', array( &$this, 'content_save_pre') );
+		// Browser upload processing
+		add_filter( 'wp_handle_upload', array( &$this, 'wp_handle_upload' ) );
 
-			// Save post handles both inline and form processing
-			add_action( 'save_post', array( &$this, 'save_post'), 10, 2 );
+		// Enable front or back end ajax edits
+		add_action( 'wp_ajax_nopriv_geo_mashup_edit', array( 'GeoMashup', 'ajax_edit' ) );
+		add_action( 'wp_ajax_geo_mashup_edit', array( 'GeoMashup', 'ajax_edit' ) );
 
-			// Browser upload processing
-			add_filter( 'wp_handle_upload', array( &$this, 'wp_handle_upload' ) );
+		// Form generation
+		add_action( 'admin_menu', array( &$this, 'admin_menu' ) );
 
-			// Enable front or back end ajax edits
-			add_action( 'wp_ajax_nopriv_geo_mashup_edit', array( 'GeoMashup', 'ajax_edit' ) );
-			add_action( 'wp_ajax_geo_mashup_edit', array( 'GeoMashup', 'ajax_edit' ) );
-			$load_location_editor = ( is_admin() && preg_match( '/(post|page)(-new|).php/', $pagenow ) );
-			$load_location_editor = apply_filters( 'geo_mashup_load_location_editor', $load_location_editor );
+		// Queue scripts later, when we can determine post type, front or back end
+		add_action( 'admin_enqueue_scripts', array( &$this, 'enqueue_scripts' ) );
+		add_action( 'wp_enqueue_scripts', array( &$this, 'enqueue_scripts' ) );
+	}
 
-			// If we're on a post editing page, queue up the form interface elements
-			if ( $load_location_editor ) {
+	/**
+	 * Queue scripts if the post type is enabled.
+	 *
+	 * Monitor for checking post type: http://core.trac.wordpress.org/ticket/14886
+	 *
+	 * @since 1.4
+	 * @access private
+	 * @uses apply_filters geo_mashup_load_location_editor intended for enabling a front end interface
+	 *
+	 * @global array $geo_mashup_options
+	 * @global string $pagenow
+	 * @global object $post
+	 */
+	function enqueue_scripts() {
+		global $geo_mashup_options, $pagenow, $post;
 
-				// Form generation
-				add_action( 'admin_menu', array( &$this, 'admin_menu' ) );
+		// Must be editing a post
+		if ( empty( $post ) )
+			return null;
 
-				$this->enqueue_jquery_styles();
-				$this->enqueue_form_client_items();
+		$load_location_editor = (
+				is_admin() and
+				preg_match( '/(post|page)(-new|).php/', $pagenow ) and
+				in_array( $post->post_type, $geo_mashup_options->get( 'overall', 'located_post_types' ) )
+				);
+		$load_location_editor = apply_filters( 'geo_mashup_load_location_editor', $load_location_editor );
 
-				wp_enqueue_script( 'jquery-ui-datepicker', trailingslashit( GEO_MASHUP_URL_PATH ) . 'jquery-ui.1.7.datepicker.min.js', array( 'jquery', 'jquery-ui-core'), '1.7' );
+		// If we're on a post editing page, queue up the form interface elements
+		if ( $load_location_editor ) {
 
-			} else if ( 'async-upload.php' === $pagenow ) {
+			$this->enqueue_jquery_styles();
+			$this->enqueue_form_client_items();
 
-				// Flash upload display
-				add_filter( 'media_meta', array( &$this, 'media_meta' ), 10, 2 );
+		} else if ( 'async-upload.php' === $pagenow ) {
 
-			} else if ( 'upload.php' === $pagenow ) {
+			// Flash upload display
+			add_filter( 'media_meta', array( &$this, 'media_meta' ), 10, 2 );
 
-				// Browser upload display
-				add_action( 'admin_print_scripts', array( &$this, 'admin_print_scripts' ) );
+		} else if ( 'upload.php' === $pagenow ) {
 
-			} 
-		} // end if load
+			// Browser upload display
+			add_action( 'admin_print_scripts', array( &$this, 'admin_print_scripts' ) );
+
+		}
 	}
 
 	/**
@@ -481,17 +506,10 @@ class GeoMashupPostUIManager extends GeoMashupUIManager {
 	 * @access private
 	 */
 	function admin_menu() {
+		global $geo_mashup_options;
 		// Not adding a menu, but at this stage add_meta_box is defined, so we can add the location form
-		if ( function_exists( 'get_post_types' ) ) {
-			$post_types = get_post_types( array(), 'objects' );
-			foreach ( $post_types as $post_type ) {
-				if ( !isset( $post_type->show_ui ) or $post_type->show_ui ) {
-					add_meta_box( 'geo_mashup_post_edit', __( 'Location', 'GeoMashup' ), array( &$this, 'print_form' ), $post_type->name, 'advanced' );
-				}
-			}
-		} else {
-			add_meta_box( 'geo_mashup_post_edit', __( 'Location', 'GeoMashup' ), array( &$this, 'print_form' ), 'post', 'advanced' );
-			add_meta_box( 'geo_mashup_post_edit', __( 'Location', 'GeoMashup' ), array( &$this, 'print_form' ), 'page', 'advanced' );
+		foreach ( $geo_mashup_options->get( 'overall', 'located_post_types' ) as $post_type ) {
+			add_meta_box( 'geo_mashup_post_edit', __( 'Location', 'GeoMashup' ), array( &$this, 'print_form' ), $post_type, 'advanced' );
 		}
 	}
 
