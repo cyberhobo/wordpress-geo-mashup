@@ -1854,6 +1854,8 @@ id.
 
 		if ( empty( $geo_date ) ) {
 			$geo_date = date( 'Y-m-d H:i:s' );
+		} else {
+			$geo_date = date( 'Y-m-d H:i:s', strtotime( $geo_date ) );
 		}
 
 		$relationship_table = "{$wpdb->prefix}geo_mashup_location_relationships"; 

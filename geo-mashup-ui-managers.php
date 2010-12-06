@@ -563,7 +563,15 @@ class GeoMashupPostUIManager extends GeoMashupUIManager {
 		// WP has already saved the post - allow location saving without added capability checks
 
 		if ( !empty( $this->inline_location ) ) {
-			GeoMashupDB::set_object_location( 'post', $post_id, $this->inline_location );
+			$geo_date = '';
+			if ( isset( $this->inline_location['geo_date'] ) ) {
+				$geo_date = $this->inline_location['geo_date'];
+				unset( $this->inline_location['geo_date'] );
+			}
+			$location_id = GeoMashupDB::set_object_location( 'post', $post_id, $this->inline_location, true, $geo_date );
+			if ( is_wp_error( $location_id ) ) {
+				update_post_meta( $post_id, 'geo_mashup_save_location_error', $location_id->get_error_message() );
+			}
 			$this->inline_location = null;
 		}
 
@@ -620,6 +628,9 @@ class GeoMashupPostUIManager extends GeoMashupUIManager {
 			if ( 200 == $status ) {
 				// Remove the tag
 				$content = '';
+			} else {
+				$content = str_replace( ']', ' geocoding_error="' . $status . '"]', $content );
+				$this->inline_location = null;
 			}
 		} 
 		return $content;
