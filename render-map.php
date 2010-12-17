@@ -32,6 +32,63 @@ class GeoMashupRenderMap {
 	}
 
 	/**
+	 * Enqueue a style to be included in the map frame.
+	 *
+	 * Register styles with wp_register_style().
+	 *
+	 * @since 1.4
+	 * @access public
+	 * @static
+	 *
+	 * @param string $handle The handle used to register the style.
+	 */
+	function enqueue_style( $handle ) {
+		$styles = self::map_property( 'styles' );
+		if ( is_null( $styles ) ) {
+			$styles = array();
+		}
+		$styles[] = $handle;
+		self::map_property( 'styles', $styles );
+	}
+
+	/**
+	 * Enqueue a script to be included in the map frame.
+	 *
+	 * Register scripts with wp_register_script().
+	 *
+	 * @since 1.4
+	 * @access public
+	 * @static
+	 *
+	 * @param string $handle The handle used to register the script.
+	 */
+	function enqueue_script( $handle ) {
+		$scripts = self::map_property( 'scripts' );
+		if ( is_null( $scripts ) ) {
+			$scripts = array();
+		}
+		$scripts[] = $handle;
+		self::map_property( 'scripts', $scripts );
+	}
+
+	/**
+	 * Print only resources queued for the Geo Mashup map frame.
+	 * 
+	 * Can be replaced with wp_head() to include all blog resources in
+	 * map frames.
+	 * 
+	 * @since 1.4
+	 * @access public
+	 * @static
+	 */
+	function head() {
+		$styles = self::map_property( 'styles' );
+		wp_print_styles( $styles );
+		$scripts = self::map_property( 'scripts' );
+		wp_print_scripts( $scripts );
+	}
+
+	/**
 	 * Template tag to get a property of the map for the current request.
 	 *
 	 * Current properties available: height and width for inline map styles.
@@ -106,6 +163,7 @@ class GeoMashupRenderMap {
 		// Include theme stylesheet if requested
 		if ( $geo_mashup_options->get('overall', 'theme_stylesheet_with_maps' ) == 'true' ) {
 			wp_enqueue_style( 'theme-style', get_stylesheet_uri() );
+			self::enqueue_style( 'theme-style' );
 		}
 
 		// Resolve map style
@@ -120,6 +178,7 @@ class GeoMashupRenderMap {
 			$style_url_path = trailingslashit( GEO_MASHUP_URL_PATH ) . 'map-style-default.css';
 		}
 		wp_enqueue_style( 'geo-mashup-map-style', $style_url_path );
+		self::enqueue_style( 'geo-mashup-map-style' );
 
 		if ( isset( $_GET['map_data_key'] ) ) {
 			// Map data is cached in a transient
@@ -169,6 +228,7 @@ class GeoMashupRenderMap {
 				} else {
 					$map_data['cluster_lib'] = 'markerclusterer';
 					wp_enqueue_script( 'markerclusterer', path_join( GEO_MASHUP_URL_PATH, 'markerclusterer.js' ), array( 'google-maps-2', 'geo-mashup-google' ), '1.0' );
+					self::enqueue_script( 'markerclusterer' );
 				}
 			}
 		} else {
@@ -197,6 +257,7 @@ class GeoMashupRenderMap {
 		// Geo Mashup scripts
 		wp_register_script( 'geo-mashup', path_join( GEO_MASHUP_URL_PATH, 'geo-mashup.js' ), $mashup_dependencies, GEO_MASHUP_VERSION );
 		wp_enqueue_script( $mashup_script, path_join( GEO_MASHUP_URL_PATH, $mashup_script . '.js' ), array( 'geo-mashup' ), GEO_MASHUP_VERSION );
+		self::enqueue_script( $mashup_script );
 
 		// Custom javascript
 		$custom_js_url_path = '';
@@ -207,6 +268,7 @@ class GeoMashupRenderMap {
 		}
 		if ( ! empty( $custom_js_url_path ) ) {
 			wp_enqueue_script( 'geo-mashup-custom', $custom_js_url_path, array( $mashup_script ) );
+			self::enqueue_script( 'geo-mashup-custom' );
 		}
 
 		// Set height and width properties for the template

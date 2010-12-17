@@ -1,3 +1,30 @@
+<?php
+/**
+ * This is the default template for map frames.
+ *
+ * Don't modify this file! It will be overwritten by upgrades.
+ *
+ * Instead, copy this file to "geo-mashup-map-frame.php" in your theme directory,
+ * or map-frame.php in the Geo Mashup Custom plugin directory, if you have that
+ * installed. Those files take precedence over this one.
+ *
+ * For styling of map elements, see map-style-default.css.
+ *
+ * Individual registered scripts can be added with code like
+ *
+ * <code>GeoMashupRenderMap::enqueue_script( 'colorbox' );</code>
+ *
+ * Or include all queued resources by replacing
+ *
+ * <code>GeoMashupRenderMap::head();</code>
+ *
+ * with
+ *
+ * <code>wp_head();</code>
+ *
+ * @package GeoMashup
+ */
+?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
 		"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -8,7 +35,7 @@
 	<head>
 		<meta http-equiv="content-type" content="text/html; charset=utf-8"/>
 	<title>Geo Mashup Map</title>
-		<?php wp_head(); ?>
+		<?php GeoMashupRenderMap::head(); ?>
 
 		<style type="text/css">
 			v\:* { behavior:url(#default#VML); }
