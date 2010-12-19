@@ -101,6 +101,7 @@ class GeoMashup {
 	function load_hooks() {
 		global $geo_mashup_options;
 
+		add_action( 'plugins_loaded', array( 'GeoMashup', 'dependent_init' ), -1 );
 		add_action( 'wp_ajax_geo_mashup_query', array( 'GeoMashup', 'geo_query') );
 		add_action( 'wp_ajax_nopriv_geo_mashup_query', array( 'GeoMashup', 'geo_query') );
 		add_action( 'wp_ajax_geo_mashup_suggest_custom_keys', array( 'GeoMashupDB', 'post_meta_key_suggest' ) );
@@ -215,6 +216,18 @@ class GeoMashup {
 				wp_enqueue_script( 'suggest' );
 			}
 		}
+	}
+
+	/**
+	 * Supply an init action for plugins that would like to use Geo Mashup APIs.
+	 * 
+	 * @since 1.4
+	 * @access private
+	 * @static
+	 * @uses do_action() geo_mashup_init Fired when Geo Mashup is loaded and ready.
+	 */
+	function dependent_init() {
+		do_action( 'geo_mashup_init' );
 	}
 
 	/**
@@ -534,7 +547,8 @@ class GeoMashup {
 	 * @access public
 	 * @static
 	 * @uses GeoMashupDB::get_object_locations()
-	 * @filter geo_mashup_locations_json_object Filter each location associative array before conversion to JSON.
+	 * @uses apply_filters() the_title Filter post titles.
+	 * @uses apply_filters() geo_mashup_locations_json_object Filter each location associative array before conversion to JSON.
 	 *
 	 * @param string|array $query_args Query variables for GeoMashupDB::get_object_locations().
 	 * @param string $format (optional) 'JSON' (default) or ARRAY_A
