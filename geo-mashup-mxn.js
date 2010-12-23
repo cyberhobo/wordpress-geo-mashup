@@ -28,7 +28,7 @@ GeoMashup.createCategoryLine = function ( category ) {
 	// Polylines are close, but the openlayers implementation at least cannot hide or remove a polyline
 	category.line = new mxn.Polyline(category.points);
 	this.doAction( 'categoryLine', this.opts, category.line );
-	this.map.addPolylineWithData( category.line, { color: category.color, width: 5, opacity: 0.5 } );
+	this.map.addPolylineWithData( category.line, {color: category.color, width: 5, opacity: 0.5} );
 	if (this.map.getZoom() > category.max_line_zoom) {
 		try {
 			category.line.hide();
@@ -55,7 +55,7 @@ GeoMashup.openInfoWindow = function( marker ) {
 		// Do an AJAX query to get content for these objects
 		jQuery.get( 
 			this.geo_query_url, 
-			{ object_name: this.opts.object_name, object_ids: object_ids.join(',') },
+			{object_name: this.opts.object_name, object_ids: object_ids.join(',')},
 			function( content ) {
 				marker.closeBubble();
 				marker.setInfoBubble( GeoMashup.parentizeLinksMarkup( content ) );
@@ -168,7 +168,7 @@ GeoMashup.clickObjectMarker = function( object_id, try_count ) {
 		// openlayers/mxn seems to have trouble displaying an infobubble right away
 		if ( try_count < 2 ) {
 			try_count += 1;
-			setTimeout(function () { GeoMashup.clickObjectMarker(object_id, try_count); }, 1000);
+			setTimeout(function () {GeoMashup.clickObjectMarker(object_id, try_count);}, 1000);
 		} else {
 			obj.marker.click.fire();
 		}
@@ -210,7 +210,11 @@ GeoMashup.newLatLng = function( lat, lng ) {
 };
 
 GeoMashup.extendLocationBounds = function( latlng ) {
-	this.location_bounds.extend( latlng );
+	if ( this.location_bounds ) {
+		this.location_bounds.extend( latlng );
+	} else {
+		this.location_bounds = new mxn.BoundingBox( latlng, latlng );
+	}
 };
 
 GeoMashup.addMarkers = function( markers ) {
@@ -233,7 +237,12 @@ GeoMashup.makeMarkerMultiple = function( marker ) {
 };
 
 GeoMashup.autoZoom = function() {
+	var max_zoom;
 	this.map.autoCenterAndZoom();
+	max_zoom = parseInt( this.opts.auto_zoom_max, 10 );
+	if ( this.map.getZoom() > max_zoom ) {
+		this.map.setZoom( max_zoom );
+	} 
 };
 
 GeoMashup.isMarkerVisible = function( marker ) {
@@ -305,7 +314,7 @@ GeoMashup.createMap = function(container, opts) {
 		opts.map_type = map_types['G_NORMAL_MAP'];
 	}
 	this.map = new mxn.Mapstraction( this.container, opts.map_api );
-	map_opts = { enableScrollWheelZoom: true, enableDragging: true };
+	map_opts = {enableScrollWheelZoom: true, enableDragging: true};
 	this.doAction( 'mapOptions', opts, map_opts );
 	this.map.setOptions( map_opts );
 	this.map.setCenterAndZoom(new mxn.LatLonPoint(0,0), 0);
@@ -319,7 +328,7 @@ GeoMashup.createMap = function(container, opts) {
 		'<img style="border: 0px none ; margin: 0px; padding: 0px; width: 16px; height: 16px; -moz-user-select: none;" src="' +
 		opts.url_path + '/images/busy_icon.gif"/></a></div>';
 	this.showLoadingIcon();
-	this.map.load.addHandler( function() { GeoMashup.hideLoadingIcon(); } );
+	this.map.load.addHandler( function() {GeoMashup.hideLoadingIcon();} );
 
 	if (!opts.object_name) {
 		opts.object_name = 'post';
@@ -333,7 +342,7 @@ GeoMashup.createMap = function(container, opts) {
 		GeoMashup.adjustZoom( old_zoom, new_zoom );
 		GeoMashup.adjustViewport();
 	} );
-	this.map.endPan.addHandler( function() { GeoMashup.adjustViewport(); } );
+	this.map.endPan.addHandler( function() {GeoMashup.adjustViewport();} );
 
 	// No clustering available
 
@@ -384,13 +393,13 @@ GeoMashup.createMap = function(container, opts) {
 		} );
 	}
 
-	this.location_bounds = new mxn.BoundingBox( new mxn.LatLonPoint( 0, 0 ), new mxn.LatLonPoint( 0, 0 ) );
+	this.location_bounds = null;
 
 	if (opts.map_content === 'single')
 	{
 		if (opts.center_lat && opts.center_lng && !this.kml)
 		{
-			marker_opts = { visible: true };
+			marker_opts = {visible: true};
 			if (typeof customGeoMashupSinglePostIcon === 'function') {
 				marker_opts = customGeoMashupSinglePostIcon(this.opts);
 			}
@@ -434,7 +443,7 @@ GeoMashup.createMap = function(container, opts) {
 	}
 	this.map.addControls( controls );
 
-	this.map.load.addHandler( function() { GeoMashup.updateVisibleList(); } );
+	this.map.load.addHandler( function() {GeoMashup.updateVisibleList();} );
 	if (typeof customizeGeoMashupMap === 'function') {
 		customizeGeoMashupMap(this.opts, this.map);
 	}
