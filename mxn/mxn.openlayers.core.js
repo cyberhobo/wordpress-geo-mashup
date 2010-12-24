@@ -4,30 +4,60 @@ mxn.register('openlayers', {
 
 		init: function(element, api){
 			var me = this;
-			this.maps[api] = new OpenLayers.Map(
+			
+			var map = new OpenLayers.Map(
 				element.id,
 				{
 					maxExtent: new OpenLayers.Bounds(-20037508.34,-20037508.34,20037508.34,20037508.34),
-					maxResolution:156543,
-					numZoomLevels:18,
-					units:'meters',
-					projection: "EPSG:41001"
+					maxResolution: 156543,
+					numZoomLevels: 18,
+					units: 'meters',
+					projection: 'EPSG:900913'
 				}
 			);
-
-			this.maps[api].events.register( 'moveend', this, function( e ) {
-				me.endPan.fire();
-			} );
-			this.maps[api].events.register( 'click', this, function( e ) {
-				var latlon = new mxn.LatLonPoint(), 
-					ollonlat = me.maps[api].getLonLatFromPixel( e.xy );
-				latlon.fromProprietary( api, ollonlat );
-				me.click.fire( { location: latlon } );
-			} );
-
-			this.layers['osmmapnik'] = new OpenLayers.Layer.OSM.Mapnik( 'OSM Mapnik' );
-			this.maps[api].addLayer(this.layers['osmmapnik']);
 			
+			// initialize layers map (this was previously in mxn.core.js)
+			this.layers = {};
+
+			this.layers.osmmapnik = new OpenLayers.Layer.OSM.Mapnik( 'OSM Mapnik' );
+			
+
+
+			// deal with click
+			map.events.register('click', map, function(evt){
+				var lonlat = map.getLonLatFromViewPortPx(evt.xy);
+				var point = new mxn.LatLonPoint();
+				point.fromProprietary(api, lonlat);
+				me.click.fire({'location': point });
+			});
+
+			// deal with zoom change
+			map.events.register('zoomend', map, function(evt){
+				me.changeZoom.fire();
+			});
+			
+			// deal with map movement
+			map.events.register('moveend', map, function(evt){
+				me.moveendHandler(me);
+				me.endPan.fire();
+			});
+			
+			// deal with initial tile loading
+			var loadfire = function(e) {
+				me.load.fire();
+				this.events.unregister('loadend', this, loadfire);
+			};
+			
+			for (var layerName in this.layers) {
+				if (this.layers.hasOwnProperty(layerName)) {
+					if (this.layers[layerName].visibility === true) {
+						this.layers[layerName].events.register('loadend', this.layers[layerName], loadfire);
+					}
+				}
+			}
+			
+			map.addLayer(this.layers.osmmapnik);
+			this.maps[api] = map;
 			this.loaded[api] = true;
 		},
 
@@ -113,27 +143,19 @@ mxn.register('openlayers', {
 		addMarker: function(marker, old) {
 			var map = this.maps[this.api];
 			var pin = marker.toProprietary(this.api);
-			var layers = map.getLayersByName('markers');
-			var layer;
-			if (layers.length === 0) {
-				layer = new OpenLayers.Layer.Markers('markers');
-				map.addLayer(layer);
-			} else {
-				layer = layers[0];
+			if (!this.layers.markers) {
+				this.layers.markers = new OpenLayers.Layer.Markers('markers');
+				map.addLayer(this.layers.markers);
 			}
-			layer.addMarker(pin);
-
+			this.layers.markers.addMarker(pin);
 			return pin;
 		},
 
 		removeMarker: function(marker) {
 			var map = this.maps[this.api];
-			var layers = map.getLayersByName('markers');
-			if ( layers.length > 0 ) {
-				marker.hide();
-				layers[0].removeMarker(marker.proprietary_marker);
-				marker.proprietary_marker.destroy();
-			}
+			var pin = marker.proprietary_marker;
+			this.layers.markers.removeMarker(pin);
+			pin.destroy();
 		},
 
 		declutterMarkers: function(opts) {
@@ -143,41 +165,31 @@ mxn.register('openlayers', {
 		addPolyline: function(polyline, old) {
 			var map = this.maps[this.api];
 			var pl = polyline.toProprietary(this.api);
-			var layers = map.getLayersByName('polylines');
-			var layer;
-			if (layers.length === 0) {
-				layer = new OpenLayers.Layer.Vector('polylines');
-				map.addLayer(layer);
-				var marker_layers = map.getLayersByName('markers');
-				if (marker_layers.length > 0 ) {
+			if (!this.layers.polylines) {
+				this.layers.polylines = new OpenLayers.Layer.Vector('polylines');
+				map.addLayer(this.layers.polylines);
+				if (this.layers.markers) {
 					// Marker layer must be above polylines to be clickable
-					map.setLayerIndex( marker_layers[0], map.getLayerIndex( layer ) );
+					map.setLayerIndex(this.layers.markers, map.getLayerIndex(this.layers.polylines));
 				}
-			} else {
-				layer = layers[0];
 			}
-			polyline.setChild(pl);
-			layer.addFeatures([pl]);
+			this.layers.polylines.addFeatures([pl]);
 			return pl;
 		},
 
 		removePolyline: function(polyline) {
 			var map = this.maps[this.api];
-			var pl = polyline.toProprietary(this.api);
-			var layers = map.getLayersByName('polylines');
-			if (layers.length > 0) {
-				layers[0].removeFeatures([pl]);
-			}
+			var pl = polyline.proprietary_polyline;
+			this.layers.polylines.removeFeatures([pl]);
 		},
-
+		
 		removeAllPolylines: function() {
 			var olpolylines = [];
-			var layers = map.getLayersByName('polylines');
-			for(var i = 0, length = this.polylines.length; i < length; i++){
-				olpolylines.push(this.polylines[i].toProprietary(this.api));
+			for (var i = 0, length = this.polylines.length; i < length; i++) {
+				olpolylines.push(this.polylines[i].proprietary_polyline);
 			}
-			if (layers.length > 0) {
-				layers[0].removeFeatures(olpolylines);
+			if (this.layers.polylines) {
+				this.layers.polylines.removeFeatures(olpolylines);
 			}
 		},
 
@@ -193,7 +205,6 @@ mxn.register('openlayers', {
 			var map = this.maps[this.api];
 			var pt = point.toProprietary(this.api);
 			map.setCenter(pt);
-			
 		},
 
 		setZoom: function(zoom) {
@@ -254,13 +265,7 @@ mxn.register('openlayers', {
 		getBounds: function () {
 			var map = this.maps[this.api];
 			var olbox = map.calculateBounds();
-			var ol_sw = new OpenLayers.LonLat( olbox.left, olbox.bottom );
-			var mxn_sw = new mxn.LatLonPoint(0,0);
-			mxn_sw.fromProprietary( this.api, ol_sw );
-			var ol_ne = new OpenLayers.LonLat( olbox.right, olbox.top );
-			var mxn_ne = new mxn.LatLonPoint(0,0);
-			mxn_ne.fromProprietary( this.api, ol_ne );
-			return new mxn.BoundingBox(mxn_sw.lat, mxn_sw.lon, mxn_ne.lat, mxn_ne.lon);			
+			return new mxn.BoundingBox(olbox.bottom, olbox.left, olbox.top, olbox.right);			
 		},
 
 		setBounds: function(bounds){
@@ -281,33 +286,57 @@ mxn.register('openlayers', {
 
 		addImageOverlay: function(id, src, opacity, west, south, east, north, oContext) {
 			var map = this.maps[this.api];
-
-			// TODO: Add provider code
+			var bounds = new OpenLayers.Bounds();
+			bounds.extend(new mxn.LatLonPoint(south,west).toProprietary(this.api));
+			bounds.extend(new mxn.LatLonPoint(north,east).toProprietary(this.api));
+			var overlay = new OpenLayers.Layer.Image(
+				id, 
+				src,
+				bounds,
+				new OpenLayers.Size(oContext.imgElm.width, oContext.imgElm.height),
+				{'isBaseLayer': false, 'alwaysInRange': true}
+			);
+			map.addLayer(overlay);
+			this.setImageOpacity(overlay.div.id, opacity);
 		},
 
 		setImagePosition: function(id, oContext) {
-			var map = this.maps[this.api];
-			var topLeftPoint; var bottomRightPoint;
-
-			// TODO: Add provider code
-
-			//oContext.pixels.top = ...;
-			//oContext.pixels.left = ...;
-			//oContext.pixels.bottom = ...;
-			//oContext.pixels.right = ...;
+			// do nothing
 		},
 
 		addOverlay: function(url, autoCenterAndZoom) {
 			var map = this.maps[this.api];
-
-			// TODO: Add provider code
-
+			var kml = new OpenLayers.Layer.GML("kml", url,{
+				'format': OpenLayers.Format.KML,
+				'formatOptions': new OpenLayers.Format.KML({
+					'extractStyles': true,
+					'extractAttributes': true
+				}),
+				'projection': new OpenLayers.Projection('EPSG:4326')
+			});
+			if (autoCenterAndZoom) {
+				var setExtent = function() {
+					dataExtent = this.getDataExtent();
+					map.zoomToExtent(dataExtent);
+				};
+				kml.events.register('loadend', kml, setExtent); 
+			}
+			map.addLayer(kml);
 		},
 
-		addTileLayer: function(tile_url, opacity, copyright_text, min_zoom, max_zoom) {
+		addTileLayer: function(tile_url, opacity, copyright_text, min_zoom, max_zoom, map_type) {
 			var map = this.maps[this.api];
-
-			// TODO: Add provider code
+			tile_url = tile_url.replace(/\{Z\}/g,'${z}');
+			tile_url = tile_url.replace(/\{X\}/g,'${x}');
+			tile_url = tile_url.replace(/\{Y\}/g,'${y}');
+			var overlay = new OpenLayers.Layer.XYZ(copyright_text,
+				tile_url,
+				{sphericalMercator: false, opacity: opacity}
+			);
+			if(!map_type) {
+				overlay.addOptions({displayInLayerSwitcher: false, isBaseLayer: false});
+			}
+			map.addLayer(overlay);
 		},
 
 		toggleTileLayer: function(tile_url) {
@@ -352,9 +381,6 @@ mxn.register('openlayers', {
 
 		toProprietary: function() {
 			var size, anchor, icon;
-			if(this.proprietary_marker) {
-				return this.proprietary_marker;
-			}
 			if(this.iconSize) {
 				size = new OpenLayers.Size(this.iconSize[0], this.iconSize[1]);
 			}
@@ -419,7 +445,14 @@ mxn.register('openlayers', {
 			}
 
 			if(this.hoverIconUrl) {
-				// TODO
+				icon = this.iconUrl || 'http://openlayers.org/dev/img/marker-gold.png';
+				hovericon = this.hoverIconUrl;
+				marker.events.register("mouseover", marker, function(event) {
+					marker.setUrl(hovericon);
+				});
+				marker.events.register("mouseout", marker, function(event) {
+					marker.setUrl(icon);
+				});
 			}
 
 			if(this.infoDiv){
@@ -479,10 +512,6 @@ mxn.register('openlayers', {
 				fillColor: this.fillColor || "#000000",
 				fillOpacity: this.getAttribute('fillOpacity') || 0.2
 			};
-
-			if (this.proprietary_polyline) {
-				return this.proprietary_polyline;
-			}
 
 			//TODO Handle closed attribute
 
