@@ -44,6 +44,14 @@ if ( !class_exists( 'GeoMashup' ) ) {
  * @static
  */
 class GeoMashup {
+	/**
+	 * Whether to add the click-to-load map script.
+	 *
+	 * @since 1.4
+	 * @access private
+	 * @static
+	 */
+	static $add_loader_script = false;
 
 	/**
 	 * Load Geo Mashup.
@@ -108,8 +116,7 @@ class GeoMashup {
 
 		if (is_admin()) {
 
-			// To upgrade tables
-			register_activation_hook( __FILE__, array( 'GeoMashupDB', 'install' ) );
+			register_activation_hook( __FILE__, array( 'GeoMashup', 'activation_hook' ) );
 
 			// To add Geo Mashup settings page
 			add_action('admin_menu', array('GeoMashup', 'admin_menu'));
@@ -132,6 +139,9 @@ class GeoMashup {
 
 			// To output location meta tags in the page head
 			add_action('wp_head', array('GeoMashup', 'wp_head'));
+
+			// To add footer output (like scripts)
+			add_action( 'wp_footer', array( 'GeoMashup', 'wp_footer' ) );
 
 			// To allow shortcodes in the text widget
 			if ( ! has_filter( 'widget_text', 'do_shortcode' ) ) {
@@ -194,10 +204,7 @@ class GeoMashup {
 			if ( isset($_GET['page']) &&  GEO_MASHUP_PLUGIN_NAME === $_GET['page'] ) {
 				wp_enqueue_script( 'jquery-ui-tabs' );
 			}
-		} else {
-			// The loader script is tiny and handles click-to-load maps that could be on any front end page
-			wp_enqueue_script( 'geo-mashup-loader', GEO_MASHUP_URL_PATH.'/geo-mashup-loader.js', array( 'google-jsapi' ), GEO_MASHUP_VERSION);
-		}
+		} 
 	}
 
 	/**
@@ -219,6 +226,22 @@ class GeoMashup {
 	}
 
 	/**
+	 * Perform one-time activation tasks.
+	 * 
+	 * @since 1.4
+	 * @access private
+	 * @static
+	 */
+	function activation_hook() {
+		// check to see if this plugin will even work
+		if (version_compare("5.0", phpversion(), ">")) {
+			deactivate_plugins(basename(__FILE__)); // Deactivate ourself
+			wp_die( __( 'Sorry, Geo Mashup now requires PHP 5. Ask your host how to do this, or use an earlier version of Geo Mashup.', 'GeoMashup' ) );
+		}
+		GeoMashupDB::install();
+	}
+
+	/**
 	 * Supply an init action for plugins that would like to use Geo Mashup APIs.
 	 * 
 	 * @since 1.4
@@ -228,6 +251,20 @@ class GeoMashup {
 	 */
 	function dependent_init() {
 		do_action( 'geo_mashup_init' );
+	}
+
+	/**
+	 * Add things like scripts to the footer.
+	 * 
+	 * @since 1.4
+	 * @access private
+	 * @static
+	 */
+	function wp_footer() {
+		if ( self::$add_loader_script ) {
+			wp_register_script( 'geo-mashup-loader', path_join( GEO_MASHUP_URL_PATH, 'geo-mashup-loader.js' ), array(), GEO_MASHUP_VERSION, true );
+			wp_print_scripts( 'geo-mashup-loader' );
+		}
 	}
 
 	/**
@@ -906,6 +943,7 @@ class GeoMashup {
 			if ( is_feed() ) {
 				$content .= "<a href=\"{$iframe_src}\">$click_to_load_text</a>";
 			} else {
+				self::$add_loader_script = true;
 				$style = "height:{$map_data['height']}px;width:{$map_data['width']}px;background-color:#ddd;".
 					"background-image:url(".GEO_MASHUP_URL_PATH."/images/wp-gm-pale.png);".
 					"background-repeat:no-repeat;background-position:center;cursor:pointer;";

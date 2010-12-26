@@ -1,23 +1,5 @@
-/*global google, GeoMashupLoader */
+/*global GeoMashupLoader */
 var GeoMashupLoader;
-
-/**
- * Set client location in comment form when appropriate.
- */
-google.setOnLoadCallback( function() {
-	var lat_element;
-	if ( google.loader.ClientLocation ) {
-		lat_element = document.getElementById( 'geo_mashup_lat_input' );
-		if (lat_element) {
-			lat_element.value = google.loader.ClientLocation.latitude;
-			document.getElementById( 'geo_mashup_lng_input' ).value = google.loader.ClientLocation.longitude;
-			document.getElementById( 'geo_mashup_address_input' ).value = google.loader.ClientLocation.address.city +
-				', ' + google.loader.ClientLocation.address.region + ', ' + google.loader.ClientLocation.address.country_code;
-			document.getElementById( 'geo_mashup_country_code_input' ).value = google.loader.ClientLocation.address.country_code;
-			document.getElementById( 'geo_mashup_locality_name_input' ).value = google.loader.ClientLocation.address.city;
-		}
-	}
-} );
 
 /**
  * Geo Mashup Loader object.

@@ -730,6 +730,14 @@ GeoMashupPostUIManager::get_instance();
  */
 class GeoMashupCommentUIManager {
 	/**
+	 * Whether to put the comment form script in the footer.
+	 *
+	 * @since 1.4
+	 * @access private
+	 */
+	private $add_form_script = false;
+
+	/**
 	 * Get the single instance of this class.
 	 * 
 	 * @since 1.3
@@ -781,6 +789,9 @@ class GeoMashupCommentUIManager {
 			// Form generation
 			add_action( 'comment_form', array( &$this, 'print_form' ) );
 
+			// Form script
+			add_action( 'wp_footer', array( &$this, 'wp_footer' ) );
+
 			// Form processing
 			add_action( 'comment_post', array( &$this, 'save_comment'), 10, 2 );
 
@@ -798,25 +809,38 @@ class GeoMashupCommentUIManager {
 	 */
 	function print_form()
 	{
+		$this->add_form_script = true;
+
 		// If there's a logged in user with a location, use that as a default.
 		// The client-side location will override it if available
-		$default_lat = $default_lng = '';
 		$user = wp_get_current_user();
-		if ( $user ) {
-			$location = GeoMashupDB::get_object_location( 'user', $user->ID );
-			if ( $location ) {
-				$default_lat = $location->lat;
-				$default_lng = $location->lng;
-			}
-		}
+		if ( $user ) 
+			$default_location = GeoMashupDB::get_object_location( 'user', $user->ID );
+		if ( !$default_location )
+			$default_location = GeoMashupDB::blank_location();
+		$default_summary = ( empty( $default_location->locality_name ) ? '' : $default_location->locality_name . ', ' ) .
+				( empty( $default_location->admin_code ) ? '' : $default_location->admin_code );
 
 		// Print the form
-		$input_format = '<input id="geo_mashup_%s_input" name="comment_location[%s]" type="hidden" value="%s" />';
-		printf( $input_format, 'lat', 'lat', $default_lat );
-		printf( $input_format, 'lng', 'lng', $default_lng );
-		printf( $input_format, 'country_code', 'country_code', '' );
-		printf( $input_format, 'locality_name', 'locality_name', '' );
-		printf( $input_format, 'address', 'address', '' );
+		printf( '<label id="geo-mashup-summary-label" for="geo-mashup-summary-input" style="display:none;">%s</label>', __( 'Written from (location)', 'GeoMashup' ) );
+		printf( '<input id="geo-mashup-summary-input" style="display:none;" type="text" size="25" value="%s" />', $default_summary );
+		printf( '<img id="geo-mashup-busy-icon" style="display:none;" src="%s" alt="%s" />', path_join( GEO_MASHUP_URL_PATH, 'images/busy_icon.gif' ), __( 'Loading...', 'GeoMashup' ) );
+		$input_format = '<input id="geo-mashup-%s-input" name="comment_location[%s]" type="hidden" value="%s" />';
+		printf( $input_format, 'lat', 'lat', $default_location->lat );
+		printf( $input_format, 'lng', 'lng', $default_location->lng );
+	}
+
+	/**
+	 * Print the form script in the footer if it's needed.
+	 *
+	 * @since 1.4
+	 * @access private
+	 */
+	function wp_footer() {
+		if ( $this->add_form_script ) {
+			wp_register_script( 'geo-mashup-comment-form', path_join( GEO_MASHUP_URL_PATH, 'comment-form.js' ), array( 'jquery' ), GEO_MASHUP_VERSION, true );
+			wp_print_scripts( 'geo-mashup-comment-form' );
+		}
 	}
 
 	/**

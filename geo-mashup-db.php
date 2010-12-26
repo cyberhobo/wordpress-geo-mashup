@@ -1587,7 +1587,7 @@ class GeoMashupDB {
 	 * @param id $object_id Object 
 	 * @param string $output (optional) one of ARRAY_A | ARRAY_N | OBJECT constants.  Return an associative array (column => value, ...), a numerically indexed array (0 => value, ...) or an object ( ->column = value ), respectively.
 id.
-	 * @return object|array Result.
+	 * @return object|array Result or null if not found.
 	 */
 	function get_object_location( $object_name, $object_id, $output = OBJECT ) {
 		global $wpdb;
