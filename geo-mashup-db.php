@@ -167,16 +167,19 @@ class GeoMashupDB {
 					'table' => $wpdb->posts, 
 					'id_column' => 'ID', 
 					'label_column' => 'post_title', 
+					'date_column' => 'post_date',
 					'sort' => 'post_status ASC, geo_date DESC' ),
 				'user' => array( 
 					'table' => $wpdb->users, 
 					'id_column' => 'ID', 
 					'label_column' => 'display_name',
+					'date_column' => 'user_registered',
 			 		'sort' => 'display_name ASC' ),
 				'comment' => array( 
 					'table' => $wpdb->comments, 
 					'id_column' => 'comment_ID', 
 					'label_column' => 'comment_author',
+					'date_column' => 'comment_date',
 			 		'sort' => 'comment_date DESC'	) 
 			);
 		}
@@ -1268,6 +1271,7 @@ class GeoMashupDB {
 
 	/**
 	 * Copy missing geo data to and from the standard location (http://codex.wordpress.org/Geodata)
+	 * for posts, users, and comments.
 	 *
 	 * @since 1.4
 	 * @access private
@@ -1275,20 +1279,41 @@ class GeoMashupDB {
 	 * @return bool True if no more orphan locations can be found.
 	 */
 	function duplicate_geodata() {
-		global $wpdb;
+		GeoMashupDB::duplicate_geodata_type( 'post' );
+		GeoMashupDB::duplicate_geodata_type( 'user' );
+		GeoMashupDB::duplicate_geodata_type( 'comment' );
+	}
 
-		// Copy from postmeta to geo mashup
+	/**
+	 * Copy missing geo data to and from the standard location (http://codex.wordpress.org/Geodata)
+	 * for a specific object type.
+	 *
+	 * @since 1.4
+	 * @access private
+	 * @static
+	 *
+	 * @global object $wpdb
+	 * @param string $meta_type One of the WP meta types, 'post', 'user', 'comment'
+	 * @return bool True if no more orphan locations can be found.
+	 */
+	function duplicate_geodata_type( $meta_type ) {
+		global $wpdb;
+		$object_storage = GeoMashupDB::object_storage( $meta_type );
+		$meta_type = $wpdb->escape( $meta_type );
+		$meta_type_id = $meta_type . '_id';
+		$meta_table = $meta_type . 'meta';
+		// Copy from meta table to geo mashup
 		// NOT EXISTS doesn't work in MySQL 4, use left joins instead
-		$postmeta_select = "SELECT pmlat.post_id, pmlat.meta_value as lat, pmlng.meta_value as lng, pmaddr.meta_value as address, p.post_date
-			FROM {$wpdb->posts} p
-			INNER JOIN {$wpdb->postmeta} pmlat ON pmlat.post_id = p.ID AND pmlat.meta_key = 'geo_latitude'
-			INNER JOIN {$wpdb->postmeta} pmlng ON pmlng.post_id = p.ID AND pmlng.meta_key = 'geo_longitude'
-			LEFT JOIN {$wpdb->postmeta} pmaddr ON pmaddr.post_id = p.ID AND pmaddr.meta_key = 'geo_address'
-			LEFT JOIN {$wpdb->prefix}geo_mashup_location_relationships gmlr ON gmlr.object_id = pmlat.post_id AND gmlr.object_name = 'post'
+		$meta_select = "SELECT pmlat.{$meta_type_id} as object_id, pmlat.meta_value as lat, pmlng.meta_value as lng, pmaddr.meta_value as address, o.{$object_storage['date_column']} as object_date
+			FROM {$object_storage['table']} o
+			INNER JOIN {$wpdb->$meta_table} pmlat ON pmlat.{$meta_type_id} = o.{$object_storage['id_column']} AND pmlat.meta_key = 'geo_latitude'
+			INNER JOIN {$wpdb->$meta_table} pmlng ON pmlng.{$meta_type_id} = o.{$object_storage['id_column']} AND pmlng.meta_key = 'geo_longitude'
+			LEFT JOIN {$wpdb->$meta_table} pmaddr ON pmaddr.{$meta_type_id} = o.{$object_storage['id_column']} AND pmaddr.meta_key = 'geo_address'
+			LEFT JOIN {$wpdb->prefix}geo_mashup_location_relationships gmlr ON gmlr.object_id = o.{$object_storage['id_column']} AND gmlr.object_name = '{$meta_type}'
 			WHERE pmlat.meta_key = 'geo_latitude' 
 			AND gmlr.object_id IS NULL";
 
-		$wpdb->query( $postmeta_select );
+		$wpdb->query( $meta_select );
 
 		if ($wpdb->last_error) {
 			GeoMashupDB::activation_log( $wpdb->last_error );
@@ -1297,33 +1322,33 @@ class GeoMashupDB {
 
 		$unconverted_metadata = $wpdb->last_result;
 		if ( $unconverted_metadata ) {
-			$msg = __( 'Copying geodata from WordPress', 'GeoMashup' );
-			GeoMashupDB::activation_log( date( 'r' ) . ' ' . $msg );
+			$msg = sprintf( __( 'Copying %s geodata from WordPress', 'GeoMashup' ), $meta_type );
+			GeoMashupDB::activation_log( $msg );
 			$start_time = time();
-			foreach ( $unconverted_metadata as $postmeta ) {
-				$post_id = $postmeta->post_id;
-				$location = array( 'lat' => trim( $postmeta->lat ), 'lng' => trim( $postmeta->lng ), 'address' => trim( $postmeta->address ) );
+			foreach ( $unconverted_metadata as $objectmeta ) {
+				$object_id = $objectmeta->object_id;
+				$location = array( 'lat' => trim( $objectmeta->lat ), 'lng' => trim( $objectmeta->lng ), 'address' => trim( $objectmeta->address ) );
 				$do_lookups = ( ( time() - $start_time ) < 10 ) ? true : false;
-				$set_id = GeoMashupDB::set_object_location( 'post', $post_id, $location, $do_lookups, $postmeta->post_date );
+				$set_id = GeoMashupDB::set_object_location( $meta_type, $object_id, $location, $do_lookups, $objectmeta->object_date );
 				if ( $set_id ) {
-					GeoMashupDB::activation_log( 'OK: post_id ' . $post_id );
+					GeoMashupDB::activation_log( 'OK: ' . $meta_type . ' id ' . $object_id );
 				} else {
-					$msg = sprintf( __( 'Failed to duplicate WordPress location (%s). You can %sedit the post%s ' .
+					$msg = sprintf( __( 'Failed to duplicate WordPress location (%s). You can edit %s with id %s ' .
 						'to update the location, and try again.', 'GeoMashup' ),
-						$postmeta->lat . ',' . $postmeta->lng, '<a href="post.php?action=edit&post=' . $post_id . '">', '</a>');
+						$objectmeta->lat . ',' . $objectmeta->lng, $meta_type, $object_id );
 					GeoMashupDB::activation_log( $msg, true );
 				}
 			}
 		}
 
-		// Copy from Geo Mashup to missing postmeta
+		// Copy from Geo Mashup to missing object meta
 		// NOT EXISTS doesn't work in MySQL 4, use left joins instead
-		$geomashup_select = "SELECT gmlr.object_id as post_id, gml.lat, gml.lng, gml.address
+		$geomashup_select = "SELECT gmlr.object_id, gml.lat, gml.lng, gml.address
 			FROM {$wpdb->prefix}geo_mashup_locations gml
 			INNER JOIN {$wpdb->prefix}geo_mashup_location_relationships gmlr ON gmlr.location_id = gml.id
-			LEFT JOIN {$wpdb->postmeta} pmlat ON pmlat.post_id = gmlr.object_id AND pmlat.meta_key = 'geo_latitude'
-			WHERE gmlr.object_name = 'post'
-			AND pmlat.post_id IS NULL";
+			LEFT JOIN {$wpdb->$meta_table} pmlat ON pmlat.{$meta_type_id} = gmlr.object_id AND pmlat.meta_key = 'geo_latitude'
+			WHERE gmlr.object_name = '{$meta_type}'
+			AND pmlat.{$meta_type_id} IS NULL";
 
 		$wpdb->query( $geomashup_select );
 
@@ -1332,27 +1357,27 @@ class GeoMashupDB {
 			return false;
 		}
 
-		$unconverted_geomashup_posts = $wpdb->last_result;
-		if ( $unconverted_geomashup_posts ) {
-			$msg = __( 'Copying geodata from Geo Mashup', 'GeoMashup' );
+		$unconverted_geomashup_objects = $wpdb->last_result;
+		if ( $unconverted_geomashup_objects ) {
+			$msg = sprintf( __( 'Copying %s geodata from Geo Mashup', 'GeoMashup' ), $meta_type );
 			GeoMashupDB::activation_log( date( 'r' ) . ' ' . $msg );
 			$start_time = time();
-			foreach ( $unconverted_geomashup_posts as $location ) {
-				$lat_success = update_post_meta( $location->post_id, 'geo_latitude', $location->lat );
-				$lng_success = update_post_meta( $location->post_id, 'geo_longitude', $location->lng );
+			foreach ( $unconverted_geomashup_objects as $location ) {
+				$lat_success = update_metadata( $meta_type, $location->object_id, 'geo_latitude', $location->lat );
+				$lng_success = update_metadata( $meta_type, $location->object_id, 'geo_longitude', $location->lng );
 				if ( ! empty( $location->address ) ) {
-					update_post_meta( $location->post_id, 'geo_address', $location->address );
+					update_metadata( $meta_type, $location->object_id, 'geo_address', $location->address );
 				}
 				if ( $lat_success and $lng_success ) {
-					GeoMashupDB::activation_log( 'OK: post_id ' . $location->post_id );
+					GeoMashupDB::activation_log( 'OK: ' . $meta_type . ' id ' . $location->object_id );
 				} else {
-					$msg = sprintf( __( 'Failed to duplicate Geo Mashup location for post (%s).', 'GeoMashup' ), $location->post_id );
+					$msg = sprintf( __( 'Failed to duplicate Geo Mashup location for %s (%s).', 'GeoMashup' ), $meta_type, $location->object_id );
 					GeoMashupDB::activation_log( $msg );
 				}
 			}
 		}
 
-		$wpdb->query( $postmeta_select );
+		$wpdb->query( $meta_select );
 
 		return ( empty( $wpdb->last_result ) );
 	}
