@@ -218,12 +218,9 @@ class GeoMashupUIManager {
 			if ( is_wp_error( $error ) ) 
 				return $error;
 
-		} else if ( $object_location = GeoMashupDB::get_object_location( $object_name, $object_id, ARRAY_A ) ) {
-
-			GeoMashupDB::sync_geodata( $object_name, $object_id, $object_location['geo_date'], $object_location );
-
 		}
-
+		// If geodata was manually updated but Geo Mashup location was not,
+		// they may be out of sync now. Allowing that for now.
 		return true;
 	}
 }

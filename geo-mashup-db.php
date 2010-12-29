@@ -27,24 +27,52 @@ class GeoMashupDB {
 	 * @usedby do_action() init
 	 */
 	function init() {
-		// Sync deletions
+		wp_cache_add_global_groups( array( 'geo_mashup_object_locations', 'geo_mashup_locations' ) );
+
+		// Avoid orphans
 		add_action( 'delete_post', array( 'GeoMashupDB', 'delete_post' ) );
 		add_action( 'delete_comment', array( 'GeoMashupDB', 'delete_comment' ) );
 		add_action( 'delete_user', array( 'GeoMashupDB', 'delete_user' ) );
 
-		// Actions to update Geo Mashup location when geodata is added
-		// Note that the separate fields used would make acting on geodata updates very messy
+		GeoMashupDB::add_geodata_sync_hooks();
+	}
+
+	/**
+	 * Add hooks to synchronize Geo Mashup ojbect locations with WordPress geodata.
+	 *
+	 * @since 1.4
+	 * @access public
+	 * @static
+	 */
+	function add_geodata_sync_hooks() {
 		add_action( 'added_post_meta', array( 'GeoMashupDB', 'action_added_post_meta' ), 10, 4 );
 		add_action( 'added_user_meta', array( 'GeoMashupDB', 'action_added_user_meta' ), 10, 4 );
 		add_action( 'added_comment_meta', array( 'GeoMashupDB', 'action_added_comment_meta' ), 10, 4 );
 		// AJAX calls use a slightly different hook - triksy!
 		add_action( 'added_postmeta', array( 'GeoMashupDB', 'action_added_post_meta' ), 10, 4 );
 
-		// Actions to sync geo mashup data with WordPress geodata
-		add_action( 'geo_mashup_added_object_location', array( 'GeoMashupDB', 'sync_geodata' ), 10, 4 );
-		add_action( 'geo_mashup_updated_object_location', array( 'GeoMashupDB', 'sync_geodata' ), 10, 4 );
+		add_action( 'geo_mashup_added_object_location', array( 'GeoMashupDB', 'copy_to_geodata' ), 10, 4 );
+		add_action( 'geo_mashup_updated_object_location', array( 'GeoMashupDB', 'copy_to_geodata' ), 10, 4 );
 	}
 	
+	/**
+	 * Remove hooks to synchronize Geo Mashup ojbect locations with WordPress geodata.
+	 *
+	 * @since 1.4
+	 * @access public
+	 * @static
+	 */
+	function remove_geodata_sync_hooks() {
+		remove_action( 'added_post_meta', array( 'GeoMashupDB', 'action_added_post_meta' ), 10, 4 );
+		remove_action( 'added_user_meta', array( 'GeoMashupDB', 'action_added_user_meta' ), 10, 4 );
+		remove_action( 'added_comment_meta', array( 'GeoMashupDB', 'action_added_comment_meta' ), 10, 4 );
+		// AJAX calls use a slightly different hook - triksy!
+		remove_action( 'added_postmeta', array( 'GeoMashupDB', 'action_added_post_meta' ), 10, 4 );
+
+		remove_action( 'geo_mashup_added_object_location', array( 'GeoMashupDB', 'copy_to_geodata' ), 10, 4 );
+		remove_action( 'geo_mashup_updated_object_location', array( 'GeoMashupDB', 'copy_to_geodata' ), 10, 4 );
+	}
+
 	/**
 	 * WordPress action to update Geo Mashup post location when geodata custom fields are updated.
 	 *
@@ -53,7 +81,7 @@ class GeoMashupDB {
 	 * @static
 	 */
 	function action_added_post_meta( $meta_id, $post_id, $meta_key, $meta_value ) {
-		GeoMashupDB::added_meta( 'post', $meta_id, $post_id, $meta_key, $meta_value );
+		GeoMashupDB::copy_from_geodata( 'post', $meta_id, $post_id, $meta_key, $meta_value );
 	}
 
 	/**
@@ -64,7 +92,7 @@ class GeoMashupDB {
 	 * @static
 	 */
 	function action_added_user_meta( $meta_id, $user_id, $meta_key, $meta_value ) {
-		GeoMashupDB::added_meta( 'user', $meta_id, $user_id, $meta_key, $meta_value );
+		GeoMashupDB::copy_from_geodata( 'user', $meta_id, $user_id, $meta_key, $meta_value );
 	}
 
 	/**
@@ -75,7 +103,7 @@ class GeoMashupDB {
 	 * @static
 	 */
 	function action_added_comment_meta( $meta_id, $comment_id, $meta_key, $meta_value ) {
-		GeoMashupDB::added_meta( 'comment', $meta_id, $comment_id, $meta_key, $meta_value );
+		GeoMashupDB::copy_from_geodata( 'comment', $meta_id, $comment_id, $meta_key, $meta_value );
 	}
 
 	/**
@@ -86,7 +114,7 @@ class GeoMashupDB {
 	 * @static
 	 * @see http://codex.wordpress.org/Geodata
 	 */
-	function added_meta( $meta_type, $meta_id, $object_id, $meta_key, $meta_value ) {
+	function copy_from_geodata( $meta_type, $meta_id, $object_id, $meta_key, $meta_value ) {
 		global $geo_mashup_options, $wpdb;
 
 		// Do nothing if meta_key is not a known location field
@@ -147,7 +175,9 @@ class GeoMashupDB {
 		}
 
 		// Save the location, attempt reverse geocoding
+		GeoMashupDB::remove_geodata_sync_hooks();
 		GeoMashupDB::set_object_location( $meta_type, $object_id, $location, null );
+		GeoMashupDB::add_geodata_sync_hooks();
 		$wpdb->insert_id = $restore_insert_id;
 	}
 
@@ -160,21 +190,22 @@ class GeoMashupDB {
 	 * 
 	 * @param string $meta_type 'post','user','comment'
 	 * @param int $object_id 
-	 * @param array $location The location to synchronize with.
+	 * @param array $location The location to copy from.
 	 */
-	function sync_geodata( $meta_type, $object_id, $geo_date, $location ) {
+	function copy_to_geodata( $meta_type, $object_id, $geo_date, $location_id ) {
 		$geo_latitude = get_metadata( $meta_type, $object_id, 'geo_latitude', true );
 		$geo_longitude = get_metadata( $meta_type, $object_id, 'geo_longitude', true );
 
 		// Do nothing if the geodata already exists
-		if ( $geo_latitude and $geo_longitude ) {
-			$epsilon = 0.00001;
-			if ( abs( $geo_latitude - $location['lat'] ) < $epsilon and abs( $geo_longitude - $location['lng'] ) < $epsilon )
-				return;
-		}
-		update_metadata( $meta_type, $object_id, 'geo_latitude', $location['lat'] );
-		update_metadata( $meta_type, $object_id, 'geo_longitude', $location['lng'] );
-		update_metadata( $meta_type, $object_id, 'geo_address', $location['address'] );
+		if ( $geo_latitude and $geo_longitude ) 
+			return;
+		
+		$location = GeoMashupDB::get_location( $location_id );
+		GeoMashupDB::remove_geodata_sync_hooks();
+		update_metadata( $meta_type, $object_id, 'geo_latitude', $location->lat );
+		update_metadata( $meta_type, $object_id, 'geo_longitude', $location->lng );
+		update_metadata( $meta_type, $object_id, 'geo_address', $location->address );
+		GeoMashupDB::add_geodata_sync_hooks();
 	}
 
 	/**
@@ -1675,8 +1706,9 @@ class GeoMashupDB {
 	 *
 	 * @param string $object_name 'post', 'user', a GeoMashupDB::object_storage() index.
 	 * @param id $object_id Object 
-	 * @param string $output (optional) one of ARRAY_A | ARRAY_N | OBJECT constants.  Return an associative array (column => value, ...), a numerically indexed array (0 => value, ...) or an object ( ->column = value ), respectively.
-id.
+	 * @param string $output (optional) one of ARRAY_A | ARRAY_N | OBJECT constants.  Return an
+	 * 		associative array (column => value, ...), a numerically indexed array (0 => value, ...)
+	 * 		or an object ( ->column = value ), respectively.
 	 * @return object|array Result or null if not found.
 	 */
 	function get_object_location( $object_name, $object_id, $output = OBJECT ) {
@@ -1684,19 +1716,43 @@ id.
 
 		$cache_id = $object_name . '-' . $object_id;
 
-		$location = wp_cache_get( $cache_id, 'locations' );
-		if ( !$location ) {
+		$object_location = wp_cache_get( $cache_id, 'geo_mashup_object_locations' );
+		if ( !$object_location ) {
 			$select_string = "SELECT * 
 				FROM {$wpdb->prefix}geo_mashup_locations gml
 				JOIN {$wpdb->prefix}geo_mashup_location_relationships gmlr ON gmlr.location_id = gml.id " .
 				$wpdb->prepare( 'WHERE gmlr.object_name = %s AND gmlr.object_id = %d', $object_name, $object_id );
 
-			$location = $wpdb->get_row( $select_string );
-			wp_cache_add( $cache_id, $location, 'locations' );
+			$object_location = $wpdb->get_row( $select_string );
+			wp_cache_add( $cache_id, $object_location, 'geo_mashup_object_locations' );
+		}
+		return GeoMashupDB::translate_object( $object_location, $output );
+	}
+	
+	/**
+	 * Get a location by ID.
+	 * 
+	 * @since 1.4
+	 * @access public
+	 * @static 
+	 * 
+	 * @param int $location_id
+	 * @param string $output (optional) one of ARRAY_A | ARRAY_N | OBJECT constants.  Return an 
+	 * 		associative array (column => value, ...), a numerically indexed array (0 => value, ...) 
+	 * 		or an object ( ->column = value ), respectively.
+	 * @return object|array Result or null if not found.
+	 */
+	function get_location( $location_id, $output = OBJECT ) {
+		global $wpdb;
+
+		$location = wp_cache_get( $location_id, 'geo_mashup_locations' );
+		if ( !$location ) {
+			$location = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}geo_mashup_locations WHERE id = %d", $location_id ) );
+			wp_cache_add( $location_id, $location, 'geo_mashup_locations' );
 		}
 		return GeoMashupDB::translate_object( $location, $output );
 	}
-	
+
 	/**
 	 * Get locations of posts.
 	 * 
@@ -1965,13 +2021,13 @@ id.
 			} else { 
 				return new WP_Error( 'db_insert_error', $wpdb->last_error );
 			}
-			do_action( 'geo_mashup_added_object_location', $object_name, $object_id, $geo_date, $location );
+			do_action( 'geo_mashup_added_object_location', $object_name, $object_id, $geo_date, $location_id );
 		} else {
 			$wpdb->update( $relationship_table, compact( 'location_id', 'geo_date' ), compact( 'object_name', 'object_id' ) );
 			if ( $wpdb->last_error ) 
 				return new WP_Error( 'db_update_error', $wpdb->last_error );
 			$set_id = $location_id;
-			do_action( 'geo_mashup_updated_object_location', $object_name, $object_id, $geo_date, $location );
+			do_action( 'geo_mashup_updated_object_location', $object_name, $object_id, $geo_date, $location_id );
 		}
 		return $set_id;
 	}
@@ -2139,7 +2195,7 @@ id.
 		$ids = ( is_array( $ids ) ? $ids : array( $ids ) );
 		$rows_affected = 0;
 		foreach( $ids as $id ) {
-			$location = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}geo_mashup_locations WHERE id = %d", $id ) );
+			$location = GeoMashupDB::get_location( $id );
 			if ( $location ) {
 				$rows_affected += $wpdb->query( $wpdb->prepare( "DELETE FROM {$wpdb->prefix}geo_mashup_locations WHERE id = %d", $id ) );
 				if ( $wpdb->last_error )
