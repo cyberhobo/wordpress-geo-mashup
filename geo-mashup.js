@@ -910,7 +910,7 @@ GeoMashup = {
 	},
 
 	updateVisibleList : function() {
-		var list_element, header_element, list_html;
+		var list_element, header_element, list_html, list_count = 0;
 
 		if (window.name) {
 			header_element = parent.document.getElementById(window.name + "-visible-list-header");
@@ -930,10 +930,12 @@ GeoMashup = {
 					list_html.push('" />');
 					list_html.push(this.objectLinkHtml(object_id));
 					list_html.push('</li>');
+					list_count++;
 				}
 			});
 			list_html.push('</ul>');
 			list_element.innerHTML = list_html.join('');
+			this.doAction( 'updatedVisibleList', this.opts, list_count );
 		}
 	},
 
