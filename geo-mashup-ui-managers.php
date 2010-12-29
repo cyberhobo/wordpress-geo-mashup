@@ -218,7 +218,11 @@ class GeoMashupUIManager {
 			if ( is_wp_error( $error ) ) 
 				return $error;
 
-		} 
+		} else if ( $object_location = GeoMashupDB::get_object_location( $object_name, $object_id, ARRAY_A ) ) {
+
+			GeoMashupDB::sync_geodata( $object_name, $object_id, $object_location['geo_date'], $object_location );
+
+		}
 
 		return true;
 	}

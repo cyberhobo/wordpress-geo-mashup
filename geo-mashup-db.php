@@ -32,23 +32,61 @@ class GeoMashupDB {
 		add_action( 'delete_comment', array( 'GeoMashupDB', 'delete_comment' ) );
 		add_action( 'delete_user', array( 'GeoMashupDB', 'delete_user' ) );
 
-		// Action to update Geo Mashup post location when custom fields are added
-		add_action( 'added_post_meta', array( 'GeoMashupDB', 'added_post_meta' ), 10, 4 );
+		// Actions to update Geo Mashup location when geodata is added
+		// Note that the separate fields used would make acting on geodata updates very messy
+		add_action( 'added_post_meta', array( 'GeoMashupDB', 'action_added_post_meta' ), 10, 4 );
+		add_action( 'added_user_meta', array( 'GeoMashupDB', 'action_added_user_meta' ), 10, 4 );
+		add_action( 'added_comment_meta', array( 'GeoMashupDB', 'action_added_comment_meta' ), 10, 4 );
 		// AJAX calls use a slightly different hook - triksy!
-		add_action( 'added_postmeta', array( 'GeoMashupDB', 'added_post_meta' ), 10, 4 );
+		add_action( 'added_postmeta', array( 'GeoMashupDB', 'action_added_post_meta' ), 10, 4 );
+
+		// Actions to sync geo mashup data with WordPress geodata
+		add_action( 'geo_mashup_added_object_location', array( 'GeoMashupDB', 'sync_geodata' ), 10, 4 );
+		add_action( 'geo_mashup_updated_object_location', array( 'GeoMashupDB', 'sync_geodata' ), 10, 4 );
 	}
 	
 	/**
 	 * WordPress action to update Geo Mashup post location when geodata custom fields are updated.
 	 *
 	 * @since 1.4
-	 * @private
+	 * @access private
+	 * @static
+	 */
+	function action_added_post_meta( $meta_id, $post_id, $meta_key, $meta_value ) {
+		GeoMashupDB::added_meta( 'post', $meta_id, $post_id, $meta_key, $meta_value );
+	}
+
+	/**
+	 * WordPress action to update Geo Mashup user location when geodata custom fields are updated.
+	 *
+	 * @since 1.4
+	 * @access private
+	 * @static
+	 */
+	function action_added_user_meta( $meta_id, $user_id, $meta_key, $meta_value ) {
+		GeoMashupDB::added_meta( 'user', $meta_id, $user_id, $meta_key, $meta_value );
+	}
+
+	/**
+	 * WordPress action to update Geo Mashup comment location when geodata custom fields are updated.
+	 *
+	 * @since 1.4
+	 * @access private
+	 * @static
+	 */
+	function action_added_comment_meta( $meta_id, $comment_id, $meta_key, $meta_value ) {
+		GeoMashupDB::added_meta( 'comment', $meta_id, $comment_id, $meta_key, $meta_value );
+	}
+
+	/**
+	 * Create a Geo Mashup object location from WordPress geodata.
+	 *
+	 * @since 1.4
+	 * @access private
 	 * @static
 	 * @see http://codex.wordpress.org/Geodata
-	 * @usedby do_action() added_post_meta and added_postmeta
-	 * @uses $geo_mashup_options
 	 */
-	function added_post_meta( $meta_id, $post_id, $meta_key, $meta_value ) {
+	function added_meta( $meta_type, $meta_id, $object_id, $meta_key, $meta_value ) {
 		global $geo_mashup_options, $wpdb;
 
 		// Do nothing if meta_key is not a known location field
@@ -59,16 +97,12 @@ class GeoMashupDB {
 			return;
 		}
 
-		// Do nothing if Geo Mashup location already exists
-		$existing_location = GeoMashupDB::get_object_location( 'post', $post_id );
-		if ( ! empty( $existing_location ) ) {
-			return;
-		}
+		$existing_location = GeoMashupDB::get_object_location( $meta_type, $object_id );
 
 		$restore_insert_id = $wpdb->insert_id; // Work around a little WP bug in add_meta #15465
 		$location = array();
 
-		// Do nothing unless both latitude and longitude exist for the post
+		// Do nothing unless both latitude and longitude exist for the object
 		if ( 'geo_lat_lng' == $meta_key ) {
 
 			$lat_lng = preg_split( '/\s*[, ]\s*/', trim( $meta_value ) );
@@ -81,20 +115,18 @@ class GeoMashupDB {
 		} else if ( 'geo_latitude' == $meta_key ) {
 
 			$location['lat'] = $meta_value;
-			$lngs = get_post_custom_values( 'geo_longitude', $post_id );
-			if ( empty( $lngs ) ) {
+			$lng = get_metadata( $meta_type, $object_id, 'geo_longitude', true );
+			if ( empty( $lng ) )
 				return;
-			}
-			$location['lng'] = $lngs[0];
+			$location['lng'] = $lng;
 
 		} else if ( 'geo_longitude' == $meta_key ) {
 
 			$location['lng'] = $meta_value;
-			$lats = get_post_custom_values( 'geo_latitude', $post_id );
-			if ( empty( $lats ) ) {
+			$lat = get_metadata( $meta_type, $object_id, 'geo_latitude', true );
+			if ( empty( $lat ) )
 				return;
-			}
-			$location['lat'] = $lats[0];
+			$location['lat'] = $lat;
 
 		} else if ( $import_custom_key == $meta_key ) {
 
@@ -107,9 +139,42 @@ class GeoMashupDB {
 			}
 		}
 
+		// Do nothing if the location already exists
+		if ( !empty( $existing_location ) ) {
+			$epsilon = 0.00001;
+			if ( abs( $location['lat'] - $existing_location->lat ) < $epsilon and abs( $location['lng'] - $existing_location->lng ) < $epsilon )
+				return;
+		}
+
 		// Save the location, attempt reverse geocoding
-		GeoMashupDB::set_object_location( 'post', $post_id, $location, null );
+		GeoMashupDB::set_object_location( $meta_type, $object_id, $location, null );
 		$wpdb->insert_id = $restore_insert_id;
+	}
+
+	/**
+	 * Update object geodata if needed.
+	 * 
+	 * @since 1.4
+	 * @access public
+	 * @static
+	 * 
+	 * @param string $meta_type 'post','user','comment'
+	 * @param int $object_id 
+	 * @param array $location The location to synchronize with.
+	 */
+	function sync_geodata( $meta_type, $object_id, $geo_date, $location ) {
+		$geo_latitude = get_metadata( $meta_type, $object_id, 'geo_latitude', true );
+		$geo_longitude = get_metadata( $meta_type, $object_id, 'geo_longitude', true );
+
+		// Do nothing if the geodata already exists
+		if ( $geo_latitude and $geo_longitude ) {
+			$epsilon = 0.00001;
+			if ( abs( $geo_latitude - $location['lat'] ) < $epsilon and abs( $geo_longitude - $location['lng'] ) < $epsilon )
+				return;
+		}
+		update_metadata( $meta_type, $object_id, 'geo_latitude', $location['lat'] );
+		update_metadata( $meta_type, $object_id, 'geo_longitude', $location['lng'] );
+		update_metadata( $meta_type, $object_id, 'geo_address', $location['address'] );
 	}
 
 	/**
@@ -1850,6 +1915,10 @@ id.
 	 * @since 1.3
 	 * @access public
 	 * @static
+	 * @uses do_action() Calls 'geo_mashup_added_object_location' with the object name,
+	 * 		 object id, geo date, and location array
+	 * @uses do_action() Calls 'geo_mashup_updated_object_location' with the object name,
+	 * 		 object id, geo date, and location array
 	 *
 	 * @param string $object_name 'post', 'user', a GeoMashupDB::object_storage() index.
 	 * @param id $object_id ID of the object to save the location for.
@@ -1896,11 +1965,13 @@ id.
 			} else { 
 				return new WP_Error( 'db_insert_error', $wpdb->last_error );
 			}
+			do_action( 'geo_mashup_added_object_location', $object_name, $object_id, $geo_date, $location );
 		} else {
 			$wpdb->update( $relationship_table, compact( 'location_id', 'geo_date' ), compact( 'object_name', 'object_id' ) );
 			if ( $wpdb->last_error ) 
 				return new WP_Error( 'db_update_error', $wpdb->last_error );
 			$set_id = $location_id;
+			do_action( 'geo_mashup_updated_object_location', $object_name, $object_id, $geo_date, $location );
 		}
 		return $set_id;
 	}
@@ -1916,6 +1987,8 @@ id.
 	 * @since 1.2
 	 * @access public
 	 * @static
+	 * @uses do_action() Calls 'geo_mashup_added_location' with the location array added
+	 * @uses do_action() Calls 'geo_mashup_updated_location' with the location array updated
 	 *
 	 * @param array $location Location to save, may be modified to match actual saved data.
 	 * @param bool $do_lookups Whether to try to look up address information before saving, defaults to no.
@@ -1991,6 +2064,7 @@ id.
 			} else {
 				return new WP_Error( 'db_insert_error', $wpdb->last_error );
 			}
+			do_action( 'geo_mashup_added_location', $location );
 
 		} else {
 
@@ -2005,6 +2079,7 @@ id.
 					return new WP_Error( 'db_update_error', $wpdb->last_error );
 			}
 			$set_id = $db_location['id'];
+			do_action( 'geo_mashup_updated_location', $location );
 			$location['lat'] = $tmp_lat;
 			$location['lng'] = $tmp_lng;
 
@@ -2021,6 +2096,8 @@ id.
 	 * @since 1.3
 	 * @access public
 	 * @static
+	 * @uses do_action() Calls 'geo_mashup_deleted_object_location' with the object location
+	 * 		object that was deleted.
 	 *
 	 * @param string $object_name 'post', 'user', a GeoMashupDB::object_storage() index.
 	 * @param id|array $object_ids Object ID or array of IDs to remove the locations of.
@@ -2032,11 +2109,15 @@ id.
 		$object_ids = ( is_array( $object_ids ) ? $object_ids : array( $object_ids ) );
 		$rows_affected = 0;
 		foreach( $object_ids as $object_id ) {
-			$delete_string = "DELETE FROM {$wpdb->prefix}geo_mashup_location_relationships " .
-				$wpdb->prepare( 'WHERE object_name = %s AND object_id = %d', $object_name, $object_id );
-			$rows_affected += $wpdb->query( $delete_string );
-			if ( $wpdb->last_error ) 
-				return new WP_Error( 'delete_object_location_error', $wpdb->last_error );
+			$object_location = GeoMashupDB::get_object_location( $object_name, $object_id );
+			if ( $object_location ) {
+				$delete_string = "DELETE FROM {$wpdb->prefix}geo_mashup_location_relationships " .
+					$wpdb->prepare( 'WHERE object_name = %s AND object_id = %d', $object_name, $object_id );
+				$rows_affected += $wpdb->query( $delete_string );
+				if ( $wpdb->last_error )
+					return new WP_Error( 'delete_object_location_error', $wpdb->last_error );
+				do_action( 'geo_mashup_deleted_object_location', $object_location );
+			}
 		}
 
 		return $rows_affected;
@@ -2048,6 +2129,7 @@ id.
 	 * @since 1.2
 	 * @access public
 	 * @static
+	 * @uses do_action() Calls 'geo_mashup_deleted_location' with the location object deleted.
 	 * 
 	 * @param id|array $ids Location ID or array of IDs to delete.
 	 * @return int|WP_Error Rows affected or Wordpress error.
@@ -2057,12 +2139,14 @@ id.
 		$ids = ( is_array( $ids ) ? $ids : array( $ids ) );
 		$rows_affected = 0;
 		foreach( $ids as $id ) {
-			$delete_string = $wpdb->prepare( "DELETE FROM {$wpdb->prefix}geo_mashup_locations WHERE id = %d", $id );
-			$rows_affected += $wpdb->query( $delete_string );
-			if ( $wpdb->last_error ) 
-				return new WP_Error( 'delete_location_error', $wpdb->last_error );
+			$location = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}geo_mashup_locations WHERE id = %d", $id ) );
+			if ( $location ) {
+				$rows_affected += $wpdb->query( $wpdb->prepare( "DELETE FROM {$wpdb->prefix}geo_mashup_locations WHERE id = %d", $id ) );
+				if ( $wpdb->last_error )
+					return new WP_Error( 'delete_location_error', $wpdb->last_error );
+				do_action( 'geo_mashup_deleted_location', $location );
+			}
 		}
-
 		return $rows_affected;
 	}
 
