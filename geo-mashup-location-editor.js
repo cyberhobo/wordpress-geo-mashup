@@ -420,6 +420,8 @@ var
 			latlng_array = $location_input.val().split( ',' );
 			if ( latlng_array.length > 1 ) {
 				latlng = new mxn.LatLonPoint( parseFloat( latlng_array[0] ), parseFloat( latlng_array[1] ) );
+				// Make sure the input coordinates match the parsed ones to start with
+				$location_input.val( latlng.toString() );
 				addSelectedMarker( latlng, {location_id: $location_id_input.val(), name: $location_name_input.val()} );
 			}
 		}
@@ -436,7 +438,7 @@ var
 	 * @param GeoMashupLocation loc The related Geo Mashup location info.
 	 */
 	setInputs = function (latlng, loc) {
-		var latlng_string = latlng.toString().replace( ' ', '' );
+		var latlng_string = latlng.toString();
 		if (($location_id_input.val() !== loc.id) || ($location_input.val() !== latlng_string)) {
 			if ( saved_selector.getSelectedID()!== loc.id ) {
 				saved_selector.selectByID( loc.id );
