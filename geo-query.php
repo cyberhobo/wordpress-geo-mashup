@@ -76,7 +76,10 @@ class GeoMashupQuery {
 				// Don't filter this query through other plugins (e.g. event-calendar)
 				$query_vars['suppress_filters'] = true;
 				// No sticky posts please
-				$query_vars['caller_get_posts'] = true;
+				if ( function_exists( 'get_queried_object' ) )
+					$query_vars['ignore_sticky_posts'] = true;
+				else
+					$query_vars['caller_get_posts'] = true; // Necessary only for WP 3.0 support
 				// Don't limit the number of results
 				$query_vars['posts_per_page'] = -1;
 
