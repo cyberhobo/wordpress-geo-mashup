@@ -27,6 +27,8 @@ class GeoMashupDB {
 	 * @usedby do_action() init
 	 */
 	function init() {
+		global $geo_mashup_options;
+
 		wp_cache_add_global_groups( array( 'geo_mashup_object_locations', 'geo_mashup_locations' ) );
 
 		// Avoid orphans
@@ -34,7 +36,8 @@ class GeoMashupDB {
 		add_action( 'delete_comment', array( 'GeoMashupDB', 'delete_comment' ) );
 		add_action( 'delete_user', array( 'GeoMashupDB', 'delete_user' ) );
 
-		GeoMashupDB::add_geodata_sync_hooks();
+		if ( 'true' == $geo_mashup_options->get( 'overall', 'copy_geodata' ) )
+			GeoMashupDB::add_geodata_sync_hooks();
 	}
 
 	/**
@@ -573,7 +576,7 @@ class GeoMashupDB {
 	 * @static
 	 */
 	function install( ) {
-		global $wpdb;
+		global $wpdb, $geo_mashup_options;
 
 		GeoMashupDB::activation_log( date( 'r' ) . ' ' . __( 'Activating Geo Mashup', 'GeoMashup' ) );
 		$location_table_name = $wpdb->prefix . 'geo_mashup_locations';
@@ -638,7 +641,8 @@ class GeoMashupDB {
 			$wpdb->show_errors( $old_show_errors );
 		}
 		if ( GeoMashupDB::installed_version( ) == GEO_MASHUP_DB_VERSION ) {
-			GeoMashupDB::duplicate_geodata();
+			if ( 'true' == $geo_mashup_options->get( 'overall', 'copy_geodata' ) )
+				GeoMashupDB::duplicate_geodata();
 			GeoMashupDB::activation_log( __( 'Geo Mashup database is up to date.', 'GeoMashup' ), true );
 			return true;
 		} else {
@@ -653,6 +657,7 @@ class GeoMashupDB {
 	 * @since 1.2
 	 * @access private
 	 * @static
+	 * @deprecated Since 1.4, use JSON for web service data.
 	 *
 	 * @param string $tag_name The tag containing the desired value.
 	 * @param string $document The XML.

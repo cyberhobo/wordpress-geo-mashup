@@ -91,8 +91,8 @@ class GeoMashup {
 	 * @static
 	 */
 	function load_dependencies() {
-		include_once( GEO_MASHUP_DIR_PATH . '/geo-mashup-db.php' );
 		include_once( GEO_MASHUP_DIR_PATH . '/geo-mashup-options.php' );
+		include_once( GEO_MASHUP_DIR_PATH . '/geo-mashup-db.php' );
 		include_once( GEO_MASHUP_DIR_PATH . '/geo-mashup-ui-managers.php' );
 		if ( !is_admin() ) {
 			include_once( GEO_MASHUP_DIR_PATH . '/shortcodes.php');
@@ -1108,11 +1108,15 @@ class GeoMashup {
 		global $geo_mashup_options;
 
 		$message = '';
-		$google_key = $geo_mashup_options->get( 'overall', 'google_key' );
-		if ( empty( $google_key ) and current_user_can( 'manage_options' ) ) {
-			if ( ! isset( $_GET['page'] ) or GEO_MASHUP_PLUGIN_NAME != $_GET['page'] ) {
-				// We're not looking at the settings, but it's important to do so
+		if ( ! isset( $_GET['page'] ) or GEO_MASHUP_PLUGIN_NAME != $_GET['page'] ) {
+			// We're not looking at the settings, but it may be important to do so
+			$google_key = $geo_mashup_options->get( 'overall', 'google_key' );
+			if ( empty( $google_key ) and 'google' == $geo_mashup_options->get( 'overall', 'map_api' ) and current_user_can( 'manage_options' ) ) {
 				$message = __( 'Geo Mashup requires a Google API key in the <a href="%s">settings</a> before it will work.', 'GeoMashup' );
+				$message = sprintf( $message, admin_url( 'options-general.php?page=' . GEO_MASHUP_PLUGIN_NAME ) );
+			}
+			if ( GEO_MASHUP_DB_VERSION != GeoMashupDB::installed_version() and current_user_can( 'manage_options' ) ) {
+				$message = __( 'Geo Mashup needs to upgrade its database, visit the <a href="%s">settings</a> to do it now.', 'GeoMashup' );
 				$message = sprintf( $message, admin_url( 'options-general.php?page=' . GEO_MASHUP_PLUGIN_NAME ) );
 			}
 		}

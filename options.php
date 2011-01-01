@@ -14,6 +14,7 @@
 function geo_mashup_options_page() {
 	global $geo_mashup_options;
 
+	$activated_copy_geodata = false;
 	if (isset($_POST['submit'])) {
 		// Process option updates
 		check_admin_referer('geo-mashup-update-options');
@@ -30,10 +31,17 @@ function geo_mashup_options_page() {
 		if ( empty( $_POST['overall']['located_post_types'] ) ) {
 			$_POST['overall']['located_post_types']  = array();
 		}
+		if ( 'true' != $geo_mashup_options->get( 'overall', 'copy_geodata' ) and isset( $_POST['overall']['copy_geodata'] ) )
+			$activated_copy_geodata = true;
 		$geo_mashup_options->set_valid_options ( $_POST );
 		if ($geo_mashup_options->save()) {
 			echo '<div class="updated fade"><p>'.__('Options updated.', 'GeoMashup').'</p></div>';
 		}
+	}
+
+	if ( $activated_copy_geodata ) {
+		GeoMashupDB::duplicate_geodata();
+		echo '<div class="updated fade"><p>' . __( 'Copied existing geodata, see log for details.', 'GeoMashup' ) . '</p></div>';
 	}
 
 	if ( isset( $_POST['bulk_reverse_geocode'] ) ) {
@@ -42,17 +50,16 @@ function geo_mashup_options_page() {
 		echo '<div class="updated fade">' . $log . '</div>';
 	}
 
-	if ( isset( $_POST['upgrade_db'] ) ) {
-		check_admin_referer('geo-mashup-upgrade-db');
-		if ( GeoMashupDB::install( ) ) {
-			echo '<div class="updated fade"><p>'.__('Database upgraded.', 'GeoMashup').'</p></div>';
+	if ( GEO_MASHUP_DB_VERSION != GeoMashupDB::installed_version() ) {
+		if ( GeoMashupDB::install() ) {
+			echo '<div class="updated fade"><p>'.__('Database upgraded, see log for details.', 'GeoMashup').'</p></div>';
 		}
 	}
 
-	if ( isset( $_POST['reactivate'] ) ) {
-		check_admin_referer('geo-mashup-reactivate');
-		if ( GeoMashupDB::install( ) ) {
-			echo '<div class="updated fade"><p>'.__('Activation completed.', 'GeoMashup').'</p></div>';
+	if ( isset( $_POST['delete_log'] ) ) {
+		check_admin_referer('geo-mashup-delete-log');
+		if ( update_option( 'geo_mashup_activation_log', '' ) ) {
+			echo '<div class="updated fade"><p>'.__('Log deleted.', 'GeoMashup').'</p></div>';
 		}
 	}
 
@@ -147,15 +154,6 @@ function geo_mashup_options_page() {
 	</script>
 	<div class="wrap">
 		<h2><?php _e('Geo Mashup Options', 'GeoMashup'); ?></h2>
-		<?php if ( GeoMashupDB::installed_version( ) != GEO_MASHUP_DB_VERSION ) : ?>
-			<div class="updated">
-				<form method="post" id="geo-mashup-upgrade-form" action="<?php echo $_SERVER['REQUEST_URI']; ?>">
-					<?php wp_nonce_field('geo-mashup-upgrade-db'); ?>
-					<label><?php _e( 'The Geo Mashup database is out of date.', 'GeoMashup' ); ?></label>
-					<input type="submit" name="upgrade_db" value="<?php _e('Upgrade Database', 'GeoMashup'); ?>" class="button" />
-				</form>
-			</div>
-		<?php endif; ?>
 		<form method="post" id="geo-mashup-settings-form" action="<?php echo $_SERVER['REQUEST_URI']; ?>">
 			<ul>
 			<li><a href="#geo-mashup-overall-settings"><span><?php _e('Overall', 'GeoMashup'); ?></span></a></li>
@@ -185,6 +183,23 @@ function geo_mashup_options_page() {
 							<?php _e( 'This setting is required for Geo Mashup to work.', 'GeoMashup' ); ?>
 							</p>
 							<?php endif; ?>
+						</td>
+					</tr>
+					<tr>
+						<th width="33%" scope="row"><?php _e('Copy Geodata Meta Fields', 'GeoMashup'); ?></th>
+						<td>
+							<input id="copy_geodata"
+								name="overall[copy_geodata]"
+								type="checkbox"
+								value="true"<?php
+									if ( $geo_mashup_options->get( 'overall', 'copy_geodata' ) == 'true' ) {
+										echo ' checked="checked"';
+									}
+								?> />
+							<span class="setting-description"><?php
+								printf( __( 'Copy coordinates to and from %sgeo meta fields%s. Does not currently sync updates.', 'GeoMashup' ),
+										'<a href="http://codex.wordpress.org/Geodata" title="">', '</a>' );
+							?></span>
 						</td>
 					</tr>
 					<tr>
@@ -916,11 +931,12 @@ function geo_mashup_options_page() {
 		</form>
 		<?php if ( isset( $_GET['view_activation_log'] ) ) : ?>
 		<div class="updated">
-			<p><strong><?php _e( 'Activation Log', 'GeoMashup' ); ?></strong></p>
+			<p><strong><?php _e( 'Update Log', 'GeoMashup' ); ?></strong></p>
 			<pre><?php echo get_option( 'geo_mashup_activation_log' ) ?></pre>
-			<form method="post" id="geo-mashup-activate-form" action="<?php echo $_SERVER['REQUEST_URI']; ?>">
-				<?php wp_nonce_field('geo-mashup-reactivate'); ?>
-				<input type="submit" name="reactivate" value="<?php _e('Reactivate Now', 'GeoMashup'); ?>" class="button" />
+			<form method="post" id="geo-mashup-log-form" action="<?php echo $_SERVER['REQUEST_URI']; ?>">
+				<?php wp_nonce_field('geo-mashup-delete-log'); ?>
+				<input type="submit" name="delete_log" value="<?php _e('Delete Log', 'GeoMashup'); ?>" class="button" />
+				<p><?php _e( 'You can keep this log as a record, future entries will be appended.', 'GeoMashup' ); ?></p>
 			</form>
 		</div>
 		<?php else : ?>
@@ -935,7 +951,7 @@ function geo_mashup_options_page() {
 		Thanks!
 		</p>
 		<script type="text/javascript"> jQuery( function( $ ) { $( '#geo-mashup-credit-input' ).focus( function() { this.select(); } ) } ); </script>
-		<p><a href="<?php echo $_SERVER['REQUEST_URI']; ?>&amp;view_activation_log=1"><?php _e('View Activation Log', 'GeoMashup'); ?></a></p>
+		<p><a href="<?php echo $_SERVER['REQUEST_URI']; ?>&amp;view_activation_log=1"><?php _e('View Update Log', 'GeoMashup'); ?></a></p>
 		<?php endif; ?>
 		<p><a href="http://code.google.com/p/wordpress-geo-mashup/wiki/Documentation"><?php _e('Geo Mashup Documentation', 'GeoMashup'); ?></a></p>
 	</div>

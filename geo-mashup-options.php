@@ -28,6 +28,7 @@ class GeoMashupOptions {
 			'category_link_text' => 'map',
 			'category_zoom' => 'auto',
 			'add_category_links' => 'false',
+			'copy_geodata' => 'false',
 			'theme_stylesheet_with_maps' => 'false',
 			'located_post_types' => array( 'post', 'page' ),
 			'located_object_name' => array( 
@@ -461,6 +462,7 @@ class GeoMashupOptions {
 			case 'add_category_links':
 			case 'add_overview_control':
 			case 'add_google_bar':
+			case 'copy_geodata':
 			case 'enable_scroll_wheel_zoom':
 			case 'marker_select_info_window':
 			case 'marker_select_highlight':
