@@ -138,6 +138,7 @@ function geo_mashup_options_page() {
 
 	$selected_tab = ( empty( $_POST['geo_mashup_selected_tab'] ) ) ? 0 : $_POST['geo_mashup_selected_tab']; 
 	$google_key = $geo_mashup_options->get( 'overall', 'google_key' );
+	$map_api = $geo_mashup_options->get( 'overall', 'map_api' );
 	// Now for the HTML
 ?>
 	<script type="text/javascript"> 
@@ -170,6 +171,26 @@ function geo_mashup_options_page() {
 				<p><?php _e('Overall Geo Mashup Settings', 'GeoMashup'); ?></p>
 				<table width="100%" cellspacing="2" cellpadding="5" class="editform">
 					<tr>
+						<th scope="row">
+							<?php _e('Map Provider', 'GeoMashup'); ?>
+						</th>
+						<td>
+							<select id="map_api" name="overall[map_api]"><?php
+								foreach ( $mapApis as $value => $label ) : ?>
+									<option value="<?php echo $value; ?>"<?php
+										if ( $geo_mashup_options->get( 'overall', 'map_api' ) == $value ) {
+											echo ' selected="selected"';
+										}
+									?>><?php echo esc_html( $label ); ?></option>
+								<?php endforeach; ?>
+							</select>
+							<span class="setting-description"><?php
+								_e( 'Some features still work only with Google v2.', 'GeoMashup' );
+							?></span>
+						</td>
+					</tr>
+					<?php if ( 'google' == $map_api ) : ?>
+					<tr>
 						<th width="33%" scope="row"><?php _e('Google API Key', 'GeoMashup'); ?></th>
 						<td<?php if ( empty( $google_key ) ) echo ' class="error"'; ?>>
 							<input id="google_key" 
@@ -185,23 +206,7 @@ function geo_mashup_options_page() {
 							<?php endif; ?>
 						</td>
 					</tr>
-					<tr>
-						<th width="33%" scope="row"><?php _e('Copy Geodata Meta Fields', 'GeoMashup'); ?></th>
-						<td>
-							<input id="copy_geodata"
-								name="overall[copy_geodata]"
-								type="checkbox"
-								value="true"<?php
-									if ( $geo_mashup_options->get( 'overall', 'copy_geodata' ) == 'true' ) {
-										echo ' checked="checked"';
-									}
-								?> />
-							<span class="setting-description"><?php
-								printf( __( 'Copy coordinates to and from %sgeo meta fields%s. Does not currently sync updates.', 'GeoMashup' ),
-										'<a href="http://codex.wordpress.org/Geodata" title="">', '</a>' );
-							?></span>
-						</td>
-					</tr>
+					<?php endif; ?>
 					<tr>
 						<th scope="row" title="<?php _e('Generated links go here','GeoMashup'); ?>">
 							<?php _e('Global Mashup Page', 'GeoMashup'); ?>
@@ -226,6 +231,82 @@ function geo_mashup_options_page() {
 							?></span>
 						</td>
 					</tr>
+					<tr>
+						<th scope="row"><?php _e('Collect Location For', 'GeoMashup'); ?></th>
+						<td>
+							<?php foreach( get_post_types( array( 'show_ui' => true ), 'objects' ) as $post_type) : ?>
+							<input id="locate_posts" name="overall[located_post_types][]" type="checkbox" value="<?php echo $post_type->name; ?>"<?php
+								if ( in_array( $post_type->name, $geo_mashup_options->get( 'overall', 'located_post_types' ) ) ) {
+									echo ' checked="checked"';
+								}
+							?> /> <?php echo $post_type->labels->name; ?>
+							<?php endforeach; ?>
+							<input id="locate_users" name="overall[located_object_name][user]" type="checkbox" value="true"<?php
+								if ( $geo_mashup_options->get( 'overall', 'located_object_name', 'user' ) == 'true' ) {
+									echo ' checked="checked"';
+								}
+							?> /> <?php _e( 'Users', 'GeoMashup' ); ?>
+							<input id="locate_comments" name="overall[located_object_name][comment]" type="checkbox" value="true"<?php
+								if ($geo_mashup_options->get( 'overall', 'located_object_name', 'comment' ) == 'true' ) {
+									echo ' checked="checked"';
+								}
+							?> /> <?php _e( 'Comments', 'GeoMashup' ); ?>
+						</td>
+					</tr>
+					<tr>
+						<th width="33%" scope="row"><?php _e('Copy Geodata Meta Fields', 'GeoMashup'); ?></th>
+						<td>
+							<input id="copy_geodata"
+								name="overall[copy_geodata]"
+								type="checkbox"
+								value="true"<?php
+									if ( $geo_mashup_options->get( 'overall', 'copy_geodata' ) == 'true' ) {
+										echo ' checked="checked"';
+									}
+								?> />
+							<span class="setting-description"><?php
+								printf( __( 'Copy coordinates to and from %sgeo meta fields%s. Does not currently sync updates.', 'GeoMashup' ),
+										'<a href="http://codex.wordpress.org/Geodata" title="">', '</a>' );
+							?></span>
+						</td>
+					</tr>
+					<tr>
+						<th scope="row"><?php _e('Geocode Custom Field', 'GeoMashup'); ?></th>
+						<td>
+							<input id="import_custom_field"
+								name="overall[import_custom_field]"
+								type="text"
+								size="35"
+								value="<?php echo esc_attr( $geo_mashup_options->get ( 'overall', 'import_custom_field' ) ); ?>" /><br/>
+							<span class="setting-description"><?php
+								_e('Custom fields with this key will be geocoded and the resulting location saved for the post.', 'GeoMashup');
+							?></span>
+						</td>
+					</tr>
+					<tr>
+						<th scope="row"><?php _e('Enable Reverse Geocoding', 'GeoMashup'); ?></th>
+						<td>
+							<input id="enable_reverse_geocoding" name="overall[enable_reverse_geocoding]" type="checkbox" value="true"<?php
+								if ($geo_mashup_options->get ( 'overall', 'enable_reverse_geocoding' ) == 'true' ) {
+									echo ' checked="checked"';
+								}
+							?> />
+							<span class="setting-description"><?php
+								_e('Try to look up missing address fields for new locations.', 'GeoMashup');
+							?></span>
+						</td>
+					</tr>
+					<?php if ( $geo_mashup_options->get( 'overall', 'enable_reverse_geocoding' ) == 'true' ) : ?>
+					<tr>
+						<th scope="row"><?php _e('Bulk Reverse Geocode', 'GeoMashup'); ?></th>
+						<td>
+							<input type="submit" name="bulk_reverse_geocode" value="<?php _e('Start', 'GeoMashup'); ?>" class="button" />
+							<span class="setting-description"><?php
+								_e('Try to look up missing address fields for existing locations. Could be slow.', 'GeoMashup');
+							?></span>
+						</td>
+					</tr>
+					<?php endif; ?>
 					<tr>
 						<th scope="row"><?php _e('Use Theme Style Sheet with Maps', 'GeoMashup'); ?></th>
 						<td>
@@ -290,65 +371,7 @@ function geo_mashup_options_page() {
 							?></span>
 						</td>
 					</tr>
-					<tr>
-						<th scope="row"><?php _e('Collect Location For', 'GeoMashup'); ?></th>
-						<td>
-							<?php foreach( get_post_types( array( 'show_ui' => true ), 'objects' ) as $post_type) : ?>
-							<input id="locate_posts" name="overall[located_post_types][]" type="checkbox" value="<?php echo $post_type->name; ?>"<?php
-								if ( in_array( $post_type->name, $geo_mashup_options->get( 'overall', 'located_post_types' ) ) ) {
-									echo ' checked="checked"';
-								}
-							?> /> <?php echo $post_type->labels->name; ?>
-							<?php endforeach; ?>
-							<input id="locate_users" name="overall[located_object_name][user]" type="checkbox" value="true"<?php 
-								if ( $geo_mashup_options->get( 'overall', 'located_object_name', 'user' ) == 'true' ) {
-									echo ' checked="checked"';
-								}
-							?> /> <?php _e( 'Users', 'GeoMashup' ); ?>
-							<input id="locate_comments" name="overall[located_object_name][comment]" type="checkbox" value="true"<?php 
-								if ($geo_mashup_options->get( 'overall', 'located_object_name', 'comment' ) == 'true' ) {
-									echo ' checked="checked"';
-								}
-							?> /> <?php _e( 'Comments', 'GeoMashup' ); ?>
-						</td>
-					</tr>
-					<tr>
-						<th scope="row"><?php _e('Enable Reverse Geocoding', 'GeoMashup'); ?></th>
-						<td>
-							<input id="enable_reverse_geocoding" name="overall[enable_reverse_geocoding]" type="checkbox" value="true"<?php 
-								if ($geo_mashup_options->get ( 'overall', 'enable_reverse_geocoding' ) == 'true' ) {
-									echo ' checked="checked"';
-								}
-							?> />
-							<span class="setting-description"><?php 
-								_e('Try to look up missing address fields for new locations.', 'GeoMashup'); 
-							?></span>
-						</td>
-					</tr>
-					<?php if ( $geo_mashup_options->get( 'overall', 'enable_reverse_geocoding' ) == 'true' ) : ?>
-					<tr>
-						<th scope="row"><?php _e('Bulk Reverse Geocode', 'GeoMashup'); ?></th>
-						<td>
-							<input type="submit" name="bulk_reverse_geocode" value="<?php _e('Start', 'GeoMashup'); ?>" class="button" />
-							<span class="setting-description"><?php 
-								_e('Try to look up missing address fields for existing locations. Could be slow.', 'GeoMashup'); 
-							?></span>
-						</td>
-					</tr>
-					<?php endif; ?>
-					<tr>
-						<th scope="row"><?php _e('Geocode Custom Field', 'GeoMashup'); ?></th>
-						<td>
-							<input id="import_custom_field"
-								name="overall[import_custom_field]"
-								type="text"
-								size="35"
-								value="<?php echo esc_attr( $geo_mashup_options->get ( 'overall', 'import_custom_field' ) ); ?>" /><br/>
-							<span class="setting-description"><?php
-								_e('Custom fields with this key will be geocoded and the resulting location saved for the post.', 'GeoMashup');
-							?></span>
-						</td>
-					</tr>
+					<?php if ( 'google' == $map_api ) : ?>
 					<tr>
 						<th scope="row"><?php _e('AdSense For Search ID', 'GeoMashup'); ?></th>
 						<td>
@@ -362,25 +385,7 @@ function geo_mashup_options_page() {
 							?></span>
 						</td>
 					</tr>
-					<tr>
-						<th scope="row">
-							<?php _e('Map Provider', 'GeoMashup'); ?>
-						</th>
-						<td>
-							<select id="map_api" name="overall[map_api]"><?php 
-								foreach ( $mapApis as $value => $label ) : ?>
-									<option value="<?php echo $value; ?>"<?php
-										if ( $geo_mashup_options->get( 'overall', 'map_api' ) == $value ) { 
-											echo ' selected="selected"';
-										}
-									?>><?php echo esc_html( $label ); ?></option>
-								<?php endforeach; ?>
-							</select>
-							<span class="setting-description"><?php
-								_e( 'Many features are supported only by Google.', 'GeoMashup' );
-							?></span>
-						</td>
-					</tr>
+					<?php endif; ?>
 				</table>
 				<div class="submit"><input type="submit" name="submit" value="<?php _e('Update Options', 'GeoMashup'); ?>" /></div>
 			</fieldset>
@@ -460,6 +465,7 @@ function geo_mashup_options_page() {
 							}
 						?> /></td>
 					</tr>
+					<?php if ( 'google' == $map_api ) : ?>
 					<tr>
 						<th scope="row"><?php _e('Add Google Bar', 'GeoMashup'); ?></th>
 						<td><input id="in_post_add_google_bar" name="single_map[add_google_bar]" type="checkbox" value="true"<?php 
@@ -468,6 +474,7 @@ function geo_mashup_options_page() {
 							}
 						?> /></td>
 					</tr>
+					<?php endif; ?>
 					<tr>
 						<th scope="row"><?php _e('Enable Scroll Wheel Zoom', 'GeoMashup'); ?></th>
 						<td><input id="in_post_enable_scroll_wheel_zoom" name="single_map[enable_scroll_wheel_zoom]" type="checkbox" value="true"<?php 
@@ -595,6 +602,7 @@ function geo_mashup_options_page() {
 							?> />
 						</td>
 					</tr>
+					<?php if ( 'google' == $map_api ) : ?>
 					<tr>
 						<th scope="row"><?php _e('Add Google Bar', 'GeoMashup'); ?></th>
 						<td>
@@ -605,6 +613,7 @@ function geo_mashup_options_page() {
 							?> />
 						</td>
 					</tr>
+					<?php endif; ?>
 					<tr>
 						<th scope="row"><?php _e('Enable Scroll Wheel Zoom', 'GeoMashup'); ?></th>
 						<td><input id="enable_scroll_wheel_zoom" name="global_map[enable_scroll_wheel_zoom]" type="checkbox" value="true"<?php 
@@ -630,7 +639,7 @@ function geo_mashup_options_page() {
 							?></span>
 						</td>
 					</tr>
-					<?php if ( 'google' == $geo_mashup_options->get( 'overall', 'map_api' ) ) : ?>
+					<?php if ( 'google' == $map_api ) : ?>
 					<tr>
 						<th scope="row"><?php _e('Clustering Library', 'GeoMashup'); ?></th>
 						<td>
@@ -849,6 +858,7 @@ function geo_mashup_options_page() {
 							?> />
 						</td>
 					</tr>
+					<?php if ( 'google' == $map_api ) : ?>
 					<tr>
 						<th scope="row"><?php _e('Add Google Bar', 'GeoMashup'); ?></th>
 						<td>
@@ -857,18 +867,19 @@ function geo_mashup_options_page() {
 								echo ' checked="checked"';
 							}
 						?> />
-					</td>
-				</tr>
-				<tr>
-					<th scope="row"><?php _e('Enable Scroll Wheel Zoom', 'GeoMashup'); ?></th>
-					<td><input id="context_enable_scroll_wheel_zoom" name="context_map[enable_scroll_wheel_zoom]" type="checkbox" value="true"<?php 
-						if ( $geo_mashup_options->get ( 'context_map', 'enable_scroll_wheel_zoom' ) == 'true' ) {
-							echo ' checked="checked"';
-						}
-					?> /></td>
-				</tr>
-				<tr>
-					<th scope="row"><?php _e('Default Zoom Level', 'GeoMashup'); ?></th>
+						</td>
+					</tr>
+					<?php endif; ?>
+					<tr>
+						<th scope="row"><?php _e('Enable Scroll Wheel Zoom', 'GeoMashup'); ?></th>
+						<td><input id="context_enable_scroll_wheel_zoom" name="context_map[enable_scroll_wheel_zoom]" type="checkbox" value="true"<?php
+							if ( $geo_mashup_options->get ( 'context_map', 'enable_scroll_wheel_zoom' ) == 'true' ) {
+								echo ' checked="checked"';
+							}
+						?> /></td>
+					</tr>
+					<tr>
+						<th scope="row"><?php _e('Default Zoom Level', 'GeoMashup'); ?></th>
 						<td>
 							<select id="zoom" name="context_map[zoom]">
 								<?php foreach ( $zoomOptions as $value => $label ) : ?>
