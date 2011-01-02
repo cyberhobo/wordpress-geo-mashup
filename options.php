@@ -265,7 +265,7 @@ function geo_mashup_options_page() {
 									}
 								?> />
 							<span class="setting-description"><?php
-								printf( __( 'Copy coordinates to and from %sgeo meta fields%s. Does not currently sync updates.', 'GeoMashup' ),
+								printf( __( 'Copy coordinates to and from %sgeodata meta fields%s.', 'GeoMashup' ),
 										'<a href="http://codex.wordpress.org/Geodata" title="">', '</a>' );
 							?></span>
 						</td>

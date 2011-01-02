@@ -17,6 +17,25 @@ add_action( 'init', array( 'GeoMashupDB', 'init' ) );
  * @static
  */
 class GeoMashupDB {
+	/**
+	 * Flag for objects that have geodata fields copied to.
+	 * Key $meta_type-$object_id, value true.
+	 * 
+	 * @since 1.4
+	 * @access private
+	 * @static
+	 * @var array  
+	 */
+	private static $copied_to_geodata = array();
+	/**
+	 * Meta keys used to store geodata
+	 *
+	 * @since 1.4
+	 * @access private
+	 * @static
+	 * @var array
+	 */
+	private static $geodata_keys = array( 'geo_latitude', 'geo_longitude', 'geo_address' );
 
 	/**
 	 * At init time set up data-related WordPress hooks.
@@ -48,11 +67,18 @@ class GeoMashupDB {
 	 * @static
 	 */
 	function add_geodata_sync_hooks() {
+		add_filter( 'update_post_metadata', array( 'GeoMashupDB', 'filter_update_post_metadata' ), 10, 5 );
 		add_action( 'added_post_meta', array( 'GeoMashupDB', 'action_added_post_meta' ), 10, 4 );
+		add_action( 'updated_post_meta', array( 'GeoMashupDB', 'action_added_post_meta' ), 10, 4 );
+		add_filter( 'update_user_metadata', array( 'GeoMashupDB', 'filter_update_user_metadata' ), 10, 5 );
 		add_action( 'added_user_meta', array( 'GeoMashupDB', 'action_added_user_meta' ), 10, 4 );
+		add_action( 'updated_user_meta', array( 'GeoMashupDB', 'action_added_user_meta' ), 10, 4 );
+		add_filter( 'update_comment_metadata', array( 'GeoMashupDB', 'filter_update_comment_metadata' ), 10, 5 );
 		add_action( 'added_comment_meta', array( 'GeoMashupDB', 'action_added_comment_meta' ), 10, 4 );
+		add_action( 'updated_comment_meta', array( 'GeoMashupDB', 'action_added_comment_meta' ), 10, 4 );
 		// AJAX calls use a slightly different hook - triksy!
 		add_action( 'added_postmeta', array( 'GeoMashupDB', 'action_added_post_meta' ), 10, 4 );
+		add_action( 'updated_postmeta', array( 'GeoMashupDB', 'action_added_post_meta' ), 10, 4 );
 
 		add_action( 'geo_mashup_added_object_location', array( 'GeoMashupDB', 'copy_to_geodata' ), 10, 4 );
 		add_action( 'geo_mashup_updated_object_location', array( 'GeoMashupDB', 'copy_to_geodata' ), 10, 4 );
@@ -66,11 +92,18 @@ class GeoMashupDB {
 	 * @static
 	 */
 	function remove_geodata_sync_hooks() {
+		remove_filter( 'update_post_metadata', array( 'GeoMashupDB', 'filter_update_post_metadata' ), 10, 5 );
 		remove_action( 'added_post_meta', array( 'GeoMashupDB', 'action_added_post_meta' ), 10, 4 );
+		remove_action( 'updated_post_meta', array( 'GeoMashupDB', 'action_added_post_meta' ), 10, 4 );
+		remove_filter( 'update_user_metadata', array( 'GeoMashupDB', 'filter_update_user_metadata' ), 10, 5 );
 		remove_action( 'added_user_meta', array( 'GeoMashupDB', 'action_added_user_meta' ), 10, 4 );
+		remove_action( 'updated_user_meta', array( 'GeoMashupDB', 'action_added_user_meta' ), 10, 4 );
+		remove_filter( 'update_comment_metadata', array( 'GeoMashupDB', 'filter_update_comment_metadata' ), 10, 5 );
 		remove_action( 'added_comment_meta', array( 'GeoMashupDB', 'action_added_comment_meta' ), 10, 4 );
+		remove_action( 'updated_comment_meta', array( 'GeoMashupDB', 'action_added_comment_meta' ), 10, 4 );
 		// AJAX calls use a slightly different hook - triksy!
 		remove_action( 'added_postmeta', array( 'GeoMashupDB', 'action_added_post_meta' ), 10, 4 );
+		remove_action( 'updated_postmeta', array( 'GeoMashupDB', 'action_added_post_meta' ), 10, 4 );
 
 		remove_action( 'geo_mashup_added_object_location', array( 'GeoMashupDB', 'copy_to_geodata' ), 10, 4 );
 		remove_action( 'geo_mashup_updated_object_location', array( 'GeoMashupDB', 'copy_to_geodata' ), 10, 4 );
@@ -110,6 +143,54 @@ class GeoMashupDB {
 	}
 
 	/**
+	 * WordPress filter to prevent updates to geodata fields we've already updated.
+	 * 
+	 * @since 1.4
+	 * @access private
+	 * @static 
+	 */
+	function filter_update_post_metadata( $ok, $object_id, $meta_key, $meta_value, $prev_value ) {
+		if ( !in_array( $meta_key, GeoMashupDB::$geodata_keys ) )
+			return $ok;
+		if ( isset( GeoMashupDB::$copied_to_geodata['post-' . $object_id] ) )
+			return false;
+		else
+			return $ok;
+	}
+
+	/**
+	 * WordPress filter to prevent updates to geodata fields we've already updated.
+	 *
+	 * @since 1.4
+	 * @access private
+	 * @static
+	 */
+	function filter_update_user_metadata( $ok, $object_id, $meta_key, $meta_value, $prev_value ) {
+		if ( !in_array( $meta_key, GeoMashupDB::$geodata_keys ) )
+			return $ok;
+		if ( isset( GeoMashupDB::$copied_to_geodata['user-' . $object_id] ) )
+			return false;
+		else
+			return $ok;
+	}
+
+	/**
+	 * WordPress filter to prevent updates to geodata fields we've already updated.
+	 *
+	 * @since 1.4
+	 * @access private
+	 * @static
+	 */
+	function filter_update_comment_metadata( $ok, $object_id, $meta_key, $meta_value, $prev_value ) {
+		if ( !in_array( $meta_key, GeoMashupDB::$geodata_keys ) )
+			return $ok;
+		if ( isset( GeoMashupDB::$copied_to_geodata['comment-' . $object_id] ) )
+			return false;
+		else
+			return $ok;
+	}
+
+	/**
 	 * Create a Geo Mashup object location from WordPress geodata.
 	 *
 	 * @since 1.4
@@ -124,9 +205,8 @@ class GeoMashupDB {
 		$location_keys = array( 'geo_latitude', 'geo_longitude', 'geo_lat_lng' );
 		$import_custom_key = $geo_mashup_options->get( 'overall', 'import_custom_field' );
 		$location_keys[] = $import_custom_key;
-		if ( ! in_array( $meta_key, $location_keys ) ) {
+		if ( ! in_array( $meta_key, $location_keys ) ) 
 			return;
-		}
 
 		$existing_location = GeoMashupDB::get_object_location( $meta_type, $object_id );
 
@@ -196,18 +276,23 @@ class GeoMashupDB {
 	 * @param array $location The location to copy from.
 	 */
 	function copy_to_geodata( $meta_type, $object_id, $geo_date, $location_id ) {
+
 		$geo_latitude = get_metadata( $meta_type, $object_id, 'geo_latitude', true );
 		$geo_longitude = get_metadata( $meta_type, $object_id, 'geo_longitude', true );
+		$existing_location = GeoMashupDB::get_location( $location_id );
 
 		// Do nothing if the geodata already exists
-		if ( $geo_latitude and $geo_longitude ) 
-			return;
+		if ( $geo_latitude and $geo_longitude ) {
+			$epsilon = 0.00001;
+			if ( abs( $geo_latitude - $existing_location->lat ) < $epsilon and abs( $geo_longitude - $existing_location->lng ) < $epsilon )
+				return;
+		}
 		
-		$location = GeoMashupDB::get_location( $location_id );
 		GeoMashupDB::remove_geodata_sync_hooks();
-		update_metadata( $meta_type, $object_id, 'geo_latitude', $location->lat );
-		update_metadata( $meta_type, $object_id, 'geo_longitude', $location->lng );
-		update_metadata( $meta_type, $object_id, 'geo_address', $location->address );
+		update_metadata( $meta_type, $object_id, 'geo_latitude', $existing_location->lat );
+		update_metadata( $meta_type, $object_id, 'geo_longitude', $existing_location->lng );
+		update_metadata( $meta_type, $object_id, 'geo_address', $existing_location->address );
+		GeoMashupDB::$copied_to_geodata[$meta_type . '-' . $object_id] = true;
 		GeoMashupDB::add_geodata_sync_hooks();
 	}
 
@@ -1383,6 +1468,7 @@ class GeoMashupDB {
 		GeoMashupDB::duplicate_geodata_type( 'post' );
 		GeoMashupDB::duplicate_geodata_type( 'user' );
 		GeoMashupDB::duplicate_geodata_type( 'comment' );
+		GeoMashupDB::activation_log( __( 'Geodata duplication done.', 'GeoMashup' ), true );
 	}
 
 	/**
@@ -1423,7 +1509,7 @@ class GeoMashupDB {
 
 		$unconverted_metadata = $wpdb->last_result;
 		if ( $unconverted_metadata ) {
-			$msg = sprintf( __( 'Copying %s geodata from WordPress', 'GeoMashup' ), $meta_type );
+			$msg = sprintf( __( 'Copying missing %s geodata from WordPress', 'GeoMashup' ), $meta_type );
 			GeoMashupDB::activation_log( $msg );
 			$start_time = time();
 			foreach ( $unconverted_metadata as $objectmeta ) {
@@ -1460,7 +1546,7 @@ class GeoMashupDB {
 
 		$unconverted_geomashup_objects = $wpdb->last_result;
 		if ( $unconverted_geomashup_objects ) {
-			$msg = sprintf( __( 'Copying %s geodata from Geo Mashup', 'GeoMashup' ), $meta_type );
+			$msg = sprintf( __( 'Copying missing %s geodata from Geo Mashup', 'GeoMashup' ), $meta_type );
 			GeoMashupDB::activation_log( date( 'r' ) . ' ' . $msg );
 			$start_time = time();
 			foreach ( $unconverted_geomashup_objects as $location ) {
@@ -1983,12 +2069,14 @@ class GeoMashupDB {
 	 *
 	 * @param string $object_name 'post', 'user', a GeoMashupDB::object_storage() index.
 	 * @param id $object_id ID of the object to save the location for.
-	 * @param id|array $location If an ID, the location is not modified. If an array of valid location fields, the location is added or updated. If empty, the object location is deleted.
-	 * @param bool $do_lookups Whether to try looking up missing location information, which can take extra time, default is true.
+	 * @param id|array $location If an ID, the location is not modified. If an array of valid location fields,
+	 * 		the location is added or updated. If empty, the object location is deleted.
+	 * @param bool $do_lookups Whether to try looking up missing location information, which can take extra time.
+	 * 		Default is to use the saved option.
 	 * @param string $geo_date Optional geo date to associate with the object.
 	 * @return id|WP_Error The location ID now assiociated with the object.
 	 */
-	function set_object_location( $object_name, $object_id, $location, $do_lookups = true, $geo_date = '' ) {
+	function set_object_location( $object_name, $object_id, $location, $do_lookups = null, $geo_date = '' ) {
 		global $wpdb;
 
 		if ( is_numeric( $location ) ) {
@@ -2052,7 +2140,8 @@ class GeoMashupDB {
 	 * @uses do_action() Calls 'geo_mashup_updated_location' with the location array updated
 	 *
 	 * @param array $location Location to save, may be modified to match actual saved data.
-	 * @param bool $do_lookups Whether to try to look up address information before saving, defaults to no.
+	 * @param bool $do_lookups Whether to try to look up address information before saving,
+	 * 		default is to use the saved option.
 	 * @return id|WP_Error The location ID saved, or a WordPress error.
 	 */
 	function set_location( &$location, $do_lookups = null ) {
