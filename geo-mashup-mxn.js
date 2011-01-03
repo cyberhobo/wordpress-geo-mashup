@@ -75,9 +75,7 @@ GeoMashup.addGlowMarker = function( marker ) {
 		};
 
 	if ( this.glow_marker ) {
-		this.glow_marker.hide();
-		this.map.removeMarker( this.glow_marker );
-		this.glow_marker = null;
+		this.removeGlowMarker();
 	} 
 	this.doAction( 'glowMarkerIcon', this.opts, glow_options );
 	this.glow_marker = new mxn.Marker( point );
@@ -85,7 +83,12 @@ GeoMashup.addGlowMarker = function( marker ) {
 	this.map.addMarker( this.glow_marker );
 };
 
-GeoMashup.removeGlowMarker = function( marker ) {
+GeoMashup.removeGlowMarker = function() {
+	if ( this.glow_marker ) {
+		this.glow_marker.hide();
+		this.map.removeMarker( this.glow_marker );
+		this.glow_marker = null;
+	}
 };
 
 GeoMashup.hideAttachments = function() {
@@ -100,11 +103,12 @@ GeoMashup.hideAttachments = function() {
 };
 
 GeoMashup.showMarkerAttachments = function( marker ) {
-	var i, j, obj, point = marker.location;
+	var i, j, objects, obj;
 
 	this.hideAttachments();
-	for ( i = 0; i < this.locations[point].objects.length; i += 1 ) {
-		obj = this.locations[point].objects[i];
+	objects = this.getObjectsAtLocation( marker.location );
+	for ( i = 0; i < objects.length; i += 1 ) {
+		obj = objects[i];
 		if ( obj.attachment_urls && obj.attachment_urls.length > 0 ) {
 			// There are attachments to load
 			for ( j = 0; j < obj.attachment_urls.length; j += 1 ) {
@@ -151,7 +155,7 @@ GeoMashup.createMarker = function(point,obj) {
 	marker.addData( marker_opts );
 
 	marker.click.addHandler( function() {
-		GeoMashup.selectMarker( marker, point );
+		GeoMashup.selectMarker( marker );
 	} ); 
 
 	this.doAction( 'marker', this.opts, marker );
@@ -180,6 +184,10 @@ GeoMashup.colorIcon = function( color_name ) {
 	icon.image = this.opts.url_path + '/images/mm_20_' + color_name + '.png';
 	return icon;
 };
+
+GeoMashup.getMarkerLatLng = function( marker ) {
+	return marker.location;
+}
 
 GeoMashup.hideMarker = function( marker ) {
 	marker.hide();

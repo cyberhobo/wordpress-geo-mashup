@@ -39,7 +39,7 @@ GeoMashup.loadMaxContent = function( marker, regular_node, info_window_max_url )
 			max_node = document.createElement( 'div' );
 			max_node.innerHTML = info_window_max_request.responseText;
 			GeoMashup.parentizeLinks( max_node );
-			GeoMashup.openMarkerInfoWindow( marker, regular_node, { maxContent : max_node } );
+			GeoMashup.openMarkerInfoWindow( marker, regular_node, {maxContent : max_node} );
 		} // end max readState === 4
 	}; // end max onreadystatechange function
 	info_window_max_request.send( null );
@@ -86,12 +86,12 @@ GeoMashup.openInfoWindow = function( marker ) {
 	} // end object not loaded yet 
 };
 
-GeoMashup.addGlowMarker = function( marker, point ) {
+GeoMashup.addGlowMarker = function( marker ) {
 	var glow_icon;
 
 	if ( this.glow_marker ) {
 		this.map.removeOverlay( this.glow_marker );
-		this.glow_marker.setLatLng( point );
+		this.glow_marker.setLatLng( marker.getLatLng() );
 	} else {
 		glow_icon = new google.maps.Icon( {
 			image : this.opts.url_path + '/images/mm_20_glow.png',
@@ -99,7 +99,7 @@ GeoMashup.addGlowMarker = function( marker, point ) {
 			iconAnchor : new google.maps.Point( 11, 27 ) 
 		} );
 		this.doAction( 'glowMarkerIcon', this.opts, glow_icon );
-		this.glow_marker = new google.maps.Marker( point, {
+		this.glow_marker = new google.maps.Marker( marker.getLatLng(), {
 			clickable : false,
 			icon : glow_icon
 		} );
@@ -120,12 +120,13 @@ GeoMashup.hideAttachments = function() {
 	this.open_attachments = [];
 };
 
-GeoMashup.showMarkerAttachments = function( marker, point ) {
-	var i, j, obj;
+GeoMashup.showMarkerAttachments = function( marker ) {
+	var i, j, objects, obj;
 
 	this.hideAttachments();
-	for ( i = 0; i < this.locations[point].objects.length; i += 1 ) {
-		obj = this.locations[point].objects[i];
+	objects = this.getObjectsAtLocation( marker.getLatLng() );
+	for ( i = 0; i < objects.length; i += 1 ) {
+		obj = objects[i];
 		if ( obj.attachments ) {
 			// Attachment overlays are available
 			for ( j = 0; j < obj.attachments.length; j += 1 ) {
@@ -196,7 +197,7 @@ GeoMashup.createMarker = function( point, obj ) {
 	marker = new google.maps.Marker(point,marker_opts);
 
 	google.maps.Event.addListener(marker, 'click', function() {
-		GeoMashup.selectMarker( marker, point );
+		GeoMashup.selectMarker( marker );
 	}); 
 
 	google.maps.Event.addListener( marker, 'remove', function() {
@@ -233,7 +234,7 @@ GeoMashup.clickObjectMarker = function(object_id, try_count) {
 	if (this.objects[object_id] && try_count < 4) {
 		if (GeoMashup.objects[object_id].marker.isHidden()) {
 			try_count += 1;
-			setTimeout(function () { GeoMashup.clickObjectMarker(object_id, try_count); }, 300);
+			setTimeout(function () {GeoMashup.clickObjectMarker(object_id, try_count);}, 300);
 		} else {
 			google.maps.Event.trigger(GeoMashup.objects[object_id].marker,"click"); 
 		}
@@ -245,6 +246,10 @@ GeoMashup.colorIcon = function( color_name ) {
 	icon.image = this.opts.url_path + '/images/mm_20_' + color_name + '.png';
 	return icon;
 };
+
+GeoMashup.getMarkerLatLng = function( marker ) {
+	return marker.getLatLng();
+}
 
 GeoMashup.hideMarker = function( marker ) {
 	marker.hide();
@@ -333,7 +338,7 @@ GeoMashup.autoZoom = function() {
 	this.setCenterUpToMaxZoom( 
 		this.location_bounds.getCenter(), 
 		zoom,
-		function() { GeoMashup.updateVisibleList(); } 
+		function() {GeoMashup.updateVisibleList();} 
 	);
 };
 
@@ -448,7 +453,7 @@ GeoMashup.createMap = function(container, opts) {
 		backgroundColor : '#' + opts.background_color,
 		mapTypes : [ opts.map_type ],
 		googleBarOptions : { 
-			adsOptions : { client : ( opts.adsense_code ) ? opts.adsense_code : 'pub-5088093001880917' }	
+			adsOptions : {client : ( opts.adsense_code ) ? opts.adsense_code : 'pub-5088093001880917'}	
 		}
 	};
 	this.doAction( 'mapOptions', opts, map_opts );
@@ -489,7 +494,7 @@ GeoMashup.createMap = function(container, opts) {
 			this.doAction( 'clusterOptions', this.opts, clusterer_opts );
 			this.clusterer = new ClusterMarker( this.map, clusterer_opts );
 		} else {
-			clusterer_opts = { maxZoom: parseInt( opts.cluster_max_zoom ) };
+			clusterer_opts = {maxZoom: parseInt( opts.cluster_max_zoom )};
 			this.doAction( 'clusterOptions', this.opts, clusterer_opts );
 			this.clusterer = new MarkerClusterer( this.map, [], clusterer_opts );
 		}

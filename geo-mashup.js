@@ -19,7 +19,6 @@ details.
 /*global GeoMashup */
 /*global customizeGeoMashup, customizeGeoMashupMap, customGeoMashupColorIcon, customGeoMashupCategoryIcon */
 /*global customGeoMashupSinglePostIcon, customGeoMashupMultiplePostImage */
-/*global google */
 
 var GeoMashup, customizeGeoMashup, customizeGeoMashupMap, customGeoMashupColorIcon, customGeoMashupCategoryIcon, 
 	customGeoMashupSinglePostIcon, customGeoMashupMultiplePostImage;
@@ -104,20 +103,6 @@ GeoMashup = {
 		return true;
 	},
 
-	getTagContent : function (container, tag, default_value) {
-		var children;
-
-		if (!default_value) {
-			default_value = '';
-		}
-		children = container.getElementsByTagName(tag);
-		if (children.length > 0 && children[0].firstChild) {
-			return children[0].firstChild.nodeValue;
-		} else {
-			return default_value;
-		}
-	},
-
 	parentScrollToGeoPost : function () {
 		var geo_post = parent.document.getElementById('gm-post');
 		if (geo_post) {
@@ -187,7 +172,7 @@ GeoMashup = {
 			if ( hierarchy.hasOwnProperty( category_id ) && typeof hierarchy[category_id] !== 'function' ) {
 				if (category_id === search_id) {
 					return hierarchy[category_id];
-				} else if (hierarchy[category_id]) {
+				}else if (hierarchy[category_id]) {
 					child_search = this.searchCategoryHierarchy(search_id, hierarchy[category_id]);
 					if (child_search) {
 						return child_search;
@@ -230,7 +215,7 @@ GeoMashup = {
 			category_id = id_match && id_match[0];
 			if (category_id === select_category_id) {
 				tab_element.className = 'gm-tab-active gm-tab-active-' + select_category_id;
-			} else {
+			}else {
 				tab_element.className = 'gm-tab-inactive gm-tab-inactive-' + category_id;
 			}
 		}
@@ -505,7 +490,15 @@ GeoMashup = {
 		return this.locations[point].objects;
 	},
 
-	addGlowMarker : function( marker, point ) {
+	getMarkerObjects : function( marker ) {
+		return this.getObjectsAtLocation( this.getMarkerLatLng( marker ) );
+	},
+
+	getMarkerLatLng : function( marker ) {
+		// Provider override
+	},
+
+	addGlowMarker : function( marker ) {
 		// Provider override
 	},
 
@@ -513,7 +506,7 @@ GeoMashup = {
 		// Provider override
 	},
 
-	removeGlowMarker : function( marker, point ) {
+	removeGlowMarker : function() {
 		// Provider override
 	},
 
@@ -521,7 +514,7 @@ GeoMashup = {
 		// Provider override
 	},
 
-	showMarkerAttachments : function( marker, point ) {
+	showMarkerAttachments : function( marker ) {
 		// Provider override
 	},
 
@@ -529,16 +522,18 @@ GeoMashup = {
 		// jQuery or provider override
 	},
 
-	selectMarker : function( marker, point ) {
+	selectMarker : function( marker ) {
+		var point = this.getMarkerLatLng( marker );
+
 		this.selected_marker = marker;
 		if ( this.opts.marker_select_info_window ) {
 			this.openInfoWindow( marker );
 		}
 		if ( this.opts.marker_select_attachments ) {
-			this.showMarkerAttachments( marker, point );
+			this.showMarkerAttachments( marker );
 		}
 		if ( this.opts.marker_select_highlight ) {
-			this.addGlowMarker( marker, point );
+			this.addGlowMarker( marker );
 		}
 		if ( this.opts.marker_select_center ) {
 			this.centerMarker( marker );
@@ -687,7 +682,7 @@ GeoMashup = {
 	},
 
 	updateMarkerVisibility : function( marker, point ) {
-		var i, j, loc, obj, check_cat_id, options = { visible: false };
+		var i, j, loc, obj, check_cat_id, options = {visible: false};
 
 		loc = this.locations[ point ];
 		for ( i=0; i<loc.objects.length; i+=1 ) {
@@ -783,7 +778,7 @@ GeoMashup = {
 				if (!this.locations[point]) {
 					// There are no other objects yet at this point, create a marker
 					this.extendLocationBounds( point );
-					this.locations[point] = { objects : [ response_data[i] ] };
+					this.locations[point] = {objects : [ response_data[i] ]};
 					this.locations[point].loaded = false;
 					marker = this.createMarker(point, response_data[i]);
 					this.objects[object_id].marker = marker;
