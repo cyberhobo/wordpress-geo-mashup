@@ -297,6 +297,10 @@ mxn.register('openlayers', {
 				{'isBaseLayer': false, 'alwaysInRange': true}
 			);
 			map.addLayer(overlay);
+			if (this.layers.markers) {
+				// Marker layer must be above polylines to be clickable
+				map.setLayerIndex(this.layers.markers, map.getLayerIndex(overlay));
+			}
 			this.setImageOpacity(overlay.div.id, opacity);
 		},
 
@@ -322,6 +326,10 @@ mxn.register('openlayers', {
 				kml.events.register('loadend', kml, setExtent); 
 			}
 			map.addLayer(kml);
+			if (this.layers.markers) {
+				// Marker layer must be above polylines to be clickable
+				map.setLayerIndex(this.layers.markers, map.getLayerIndex(kml));
+			}
 		},
 
 		addTileLayer: function(tile_url, opacity, copyright_text, min_zoom, max_zoom, map_type) {
@@ -337,6 +345,10 @@ mxn.register('openlayers', {
 				overlay.addOptions({displayInLayerSwitcher: false, isBaseLayer: false});
 			}
 			map.addLayer(overlay);
+			if (this.layers.markers) {
+				// Marker layer must be above polylines to be clickable
+				map.setLayerIndex(this.layers.markers, map.getLayerIndex(overlay));
+			}
 		},
 
 		toggleTileLayer: function(tile_url) {
