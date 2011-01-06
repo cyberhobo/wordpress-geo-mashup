@@ -18,6 +18,9 @@
 
 		<h2><a href="<?php the_permalink() ?>" title="<?php the_title_attribute(); ?>"><?php the_title(); ?></a></h2>
 			<p class="meta"><span class="blogdate"><?php the_time('F jS, Y') ?></span> <?php the_category( ', ' ) ?></p>
+			<?php if ( has_post_thumbnail() ) : ?>
+			<?php the_post_thumbnail(); ?>
+			<?php endif; ?>
 
 			<div class="storycontent">
 				<?php the_content(); ?>
