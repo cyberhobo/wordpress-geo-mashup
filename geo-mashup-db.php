@@ -1126,7 +1126,7 @@ class GeoMashupDB {
 			}
 			$status = GeoMashupDB::lookup_status( $response['response']['code'] );
 			$data = json_decode( $response['body'] );
-			if ( empty( $data ) ) {
+			if ( empty( $data ) or !empty( $data->status ) ) {
 				return GeoMashupDB::lookup_status( '404' );
 			}
 			$location['country_code'] = $data->countryCode;
