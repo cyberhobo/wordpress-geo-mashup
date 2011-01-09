@@ -197,14 +197,8 @@ class GeoMashup {
 	function load_scripts() {
 		global $geo_mashup_options;
 
-		// Register scripts that other plugins might use
-		wp_register_script( 'google-jsapi', 'http://www.google.com/jsapi?key='.$geo_mashup_options->get('overall', 'google_key') );
-
-		if (is_admin()) {
-			if ( isset($_GET['page']) &&  GEO_MASHUP_PLUGIN_NAME === $_GET['page'] ) {
-				wp_enqueue_script( 'jquery-ui-tabs' );
-			}
-		} 
+		if ( is_admin() and isset($_GET['page']) and GEO_MASHUP_PLUGIN_NAME === $_GET['page'] )
+			wp_enqueue_script( 'jquery-ui-tabs' );
 	}
 
 	/**

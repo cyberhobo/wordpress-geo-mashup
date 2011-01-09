@@ -796,8 +796,6 @@ class GeoMashupCommentUIManager {
 			// Form processing
 			add_action( 'comment_post', array( &$this, 'save_comment'), 10, 2 );
 
-			// Google JSAPI provides client location by IP
-			wp_enqueue_script( 'google-jsapi' );
 			wp_enqueue_script( 'geo-mashup-loader' );
 		}
 	}
