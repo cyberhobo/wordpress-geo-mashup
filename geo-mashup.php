@@ -70,6 +70,11 @@ class GeoMashup {
 		GeoMashup::load_hooks();
 	}
 
+	function is_options_page() {
+		global $pagenow;
+		return ( is_admin() and isset($_GET['page']) and GEO_MASHUP_PLUGIN_NAME === $_GET['page'] );
+	}
+
 	/**
 	 * init {@link http://codex.wordpress.org/Plugin_API/Action_Reference#Advanced_Actions action},
 	 * called by WordPress.
@@ -195,9 +200,7 @@ class GeoMashup {
 	 * @static
 	 */
 	function load_scripts() {
-		global $geo_mashup_options;
-
-		if ( is_admin() and isset($_GET['page']) and GEO_MASHUP_PLUGIN_NAME === $_GET['page'] )
+		if ( self::is_options_page() )
 			wp_enqueue_script( 'jquery-ui-tabs' );
 	}
 
@@ -209,13 +212,10 @@ class GeoMashup {
 	 * @static
 	 */
 	function load_styles() {
-		if (is_admin()) {
-			if ( isset($_GET['page']) && GEO_MASHUP_PLUGIN_NAME === $_GET['page'] ) {
-				// Queue resources for the options page
-				$tabs_css = trailingslashit( GEO_MASHUP_URL_PATH ) . 'jquery-ui.1.7.smoothness.css';
-				wp_enqueue_style( 'jquery-smoothness', $tabs_css, false, GEO_MASHUP_VERSION, 'screen' );
-				wp_enqueue_script( 'suggest' );
-			}
+		if ( self::is_options_page() ) {
+			self::register_style( 'jquery-smoothness', 'jquery-ui.1.7.smoothness.css', array(), GEO_MASHUP_VERSION, 'screen' );
+			wp_enqueue_style( 'jquery-smoothness' );
+			wp_enqueue_script( 'suggest' );
 		}
 	}
 
@@ -248,6 +248,34 @@ class GeoMashup {
 	}
 
 	/**
+	 * Register the Geo Mashup script appropriate for the request.
+	 * 
+	 * @param string $handle Global tag for the script.
+	 * @param string $src Path to the script from the root directory of Geo Mashup.
+	 * @param array $deps Array of dependency handles.
+	 * @param string $ver Script version.
+	 * @param bool $in_footer Whether the script can be loaded in the footer.
+	 */
+	function register_script( $handle, $src, $deps = array(), $ver = false, $in_footer = false ) {
+		// TODO: choose a dev or minified version
+		wp_register_script( $handle, plugins_url( $src, __FILE__ ), $deps, $ver, $in_footer );
+	}
+
+	/**
+	 * Register the Geo Mashup style appropriate for the request.
+	 *
+	 * @param string $handle Global tag for the style.
+	 * @param string $src Path to the stylesheet from the root directory of Geo Mashup.
+	 * @param array $deps Array of dependency handles.
+	 * @param string $ver Script version.
+	 * @param bool $media Stylesheet media target.
+	 */
+	function register_style( $handle, $src, $deps = array(), $ver = false, $media = 'all' ) {
+		// TODO: choose a dev or minified version
+		wp_register_style( $handle, plugins_url( $src, __FILE__ ), $deps, $ver, $media );
+	}
+
+	/**
 	 * Add things like scripts to the footer.
 	 * 
 	 * @since 1.4
@@ -256,7 +284,7 @@ class GeoMashup {
 	 */
 	function wp_footer() {
 		if ( self::$add_loader_script ) {
-			wp_register_script( 'geo-mashup-loader', path_join( GEO_MASHUP_URL_PATH, 'geo-mashup-loader.js' ), array(), GEO_MASHUP_VERSION, true );
+			self::register_script( 'geo-mashup-loader', 'geo-mashup-loader.js', array(), GEO_MASHUP_VERSION, true );
 			wp_print_scripts( 'geo-mashup-loader' );
 		}
 	}
@@ -1102,7 +1130,7 @@ class GeoMashup {
 		global $geo_mashup_options;
 
 		$message = '';
-		if ( ! isset( $_GET['page'] ) or GEO_MASHUP_PLUGIN_NAME != $_GET['page'] ) {
+		if ( ! self::is_options_page() ) {
 			// We're not looking at the settings, but it may be important to do so
 			$google_key = $geo_mashup_options->get( 'overall', 'google_key' );
 			if ( empty( $google_key ) and 'google' == $geo_mashup_options->get( 'overall', 'map_api' ) and current_user_can( 'manage_options' ) ) {
