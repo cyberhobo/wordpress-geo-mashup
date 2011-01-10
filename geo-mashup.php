@@ -1007,7 +1007,9 @@ class GeoMashup {
 		$for_map = 'gm';
 		if ( !empty( $args['for_map'] ) ) {
 			$for_map = $args['for_map'];
-		}	
+		}
+		// It's nice if click-to-load works in the full post display
+		self::$add_loader_script = true;
 
 		return '<div id="' . $for_map . '-post"></div>';
 	}
