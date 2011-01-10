@@ -64,7 +64,7 @@ class GeoMashup {
 	 */
 	function load() {
 		GeoMashup::load_constants();
-		load_plugin_textdomain('GeoMashup', 'wp-content/plugins/'.GEO_MASHUP_DIRECTORY, GEO_MASHUP_DIRECTORY);
+		load_plugin_textdomain('GeoMashup', '', path_join( GEO_MASHUP_DIRECTORY, 'lang' ) );
 
 		GeoMashup::load_dependencies();
 		GeoMashup::load_hooks();
@@ -178,14 +178,8 @@ class GeoMashup {
 	function load_constants() {
 		define('GEO_MASHUP_PLUGIN_NAME', plugin_basename(__FILE__));
 		define('GEO_MASHUP_DIR_PATH', dirname( __FILE__ ));
-		define('GEO_MASHUP_DIRECTORY', substr(GEO_MASHUP_PLUGIN_NAME, 0, strpos(GEO_MASHUP_PLUGIN_NAME, '/')));
-		if ( defined( 'WPMU_PLUGIN_URL' ) &&  strpos( __FILE__, substr( MUPLUGINDIR, strpos( MUPLUGINDIR, '/' ) ) ) !== false ) {
-			// We are in an mu-plugins directory
-			define('GEO_MASHUP_URL_PATH', WPMU_PLUGIN_URL . '/' . GEO_MASHUP_DIRECTORY);
-		} else {
-			// We're in the usual plugin directory
-			define('GEO_MASHUP_URL_PATH', WP_PLUGIN_URL . '/' . GEO_MASHUP_DIRECTORY);
-		}
+		define('GEO_MASHUP_DIRECTORY', dirname( GEO_MASHUP_PLUGIN_NAME ) );
+		define('GEO_MASHUP_URL_PATH', plugin_dir_url( __FILE__ ) );
 		define('GEO_MASHUP_MAX_ZOOM', 20);
 		// Make numeric versions: -.02 for alpha, -.01 for beta
 		define('GEO_MASHUP_VERSION', '1.3.98.10');
@@ -229,7 +223,7 @@ class GeoMashup {
 	function activation_hook() {
 		// check to see if this plugin will even work
 		if (version_compare("5.0", phpversion(), ">")) {
-			deactivate_plugins(basename(__FILE__)); // Deactivate ourself
+			deactivate_plugins( GEO_MASHUP_PLUGIN_NAME ); // Deactivate ourself
 			wp_die( __( 'Sorry, Geo Mashup now requires PHP 5. Ask your host how to do this, or use an earlier version of Geo Mashup.', 'GeoMashup' ) );
 		}
 		GeoMashupDB::install();
@@ -311,7 +305,11 @@ class GeoMashup {
 	 * name of 'info-window', it will return the first of:
 	 * 	'geo-mashup-info-window.php' in the active theme directory
 	 * 	'info-window.php' in the geo-mashup-custom plugin directory
-	 * 	'info-window-default.php' in the geo-mashup plugin directory
+	 * 	'default-templates/info-window.php' in the geo-mashup plugin directory
+	 *
+	 * @since 1.4
+	 * @access public
+	 * @static
 	 * 
 	 * @param string $template_base The base name of the template.
 	 * @return string The file path of the template found.
@@ -319,14 +317,15 @@ class GeoMashup {
 	function locate_template( $template_base ) {
 		global $geo_mashup_custom;
 		$template = locate_template( array("geo-mashup-$template_base.php") );
-		if ( empty( $template ) && isset( $geo_mashup_custom ) && $geo_mashup_custom->file_url( $template_base . '.php' ) ) {
+		if ( empty( $template ) and isset( $geo_mashup_custom ) and $geo_mashup_custom->file_url( $template_base . '.php' ) ) {
 			$template = path_join( $geo_mashup_custom->dir_path, $template_base . '.php' );
 		}
-		if ( !is_readable( $template ) ) {
-			$template = path_join( GEO_MASHUP_DIR_PATH, $template_base . '-default.php' );
+		if ( empty( $template ) or !is_readable( $template ) ) {
+			$template = path_join( GEO_MASHUP_DIR_PATH, "default-templates/$template_base.php" );
 		}
-		if ( !is_readable( $template ) ) {
-			$template = path_join( GEO_MASHUP_DIR_PATH, 'info-window-default.php' );
+		if ( empty( $template ) or !is_readable( $template ) ) {
+			// If all else fails, just use the default info window template
+			$template = path_join( GEO_MASHUP_DIR_PATH, 'default-templates/info-window.php' );
 		}
 		return $template;
 	}
@@ -1199,7 +1198,7 @@ class GeoMashup {
 	 * @static
 	 */
 	function options_page() {
-		include_once(dirname(__FILE__) . '/options.php');
+		include_once( 'options.php' );
 		geo_mashup_options_page();
 	}
 
