@@ -169,7 +169,7 @@ class GeoMashupRenderMap {
 		}
 
 		// Resolve map style
-		$style_file_path = path_join( get_template_directory(), 'map-style.css' );
+		$style_file_path = path_join( get_stylesheet_directory(), 'map-style.css' );
 		$style_url_path = '';
 		if ( is_readable( $style_file_path ) ) {
 			$style_url_path = path_join( get_stylesheet_directory_uri(), 'map-style.css' );

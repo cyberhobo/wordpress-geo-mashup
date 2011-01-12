@@ -727,7 +727,7 @@ class GeoMashup {
 		$map_data = $query + array(
 			'siteurl' => home_url(), // qTranslate doesn't work with get_option( 'home' )
 			'url_path' => GEO_MASHUP_URL_PATH,
-			'template_url_path' => get_template_directory_uri()
+			'template_url_path' => get_stylesheet_directory_uri()
 		);
 		if ( isset( $geo_mashup_custom ) ) {
 			$map_data['custom_url_path'] = $geo_mashup_custom->url_path;
