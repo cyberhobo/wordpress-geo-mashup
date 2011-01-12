@@ -207,7 +207,7 @@ class GeoMashup {
 	 */
 	function load_styles() {
 		if ( self::is_options_page() ) {
-			self::register_style( 'jquery-smoothness', 'jquery-ui.1.7.smoothness.css', array(), GEO_MASHUP_VERSION, 'screen' );
+			self::register_style( 'jquery-smoothness', 'css/jquery-ui.1.7.smoothness.css', array(), GEO_MASHUP_VERSION, 'screen' );
 			wp_enqueue_style( 'jquery-smoothness' );
 			wp_enqueue_script( 'suggest' );
 		}
@@ -251,7 +251,9 @@ class GeoMashup {
 	 * @param bool $in_footer Whether the script can be loaded in the footer.
 	 */
 	function register_script( $handle, $src, $deps = array(), $ver = false, $in_footer = false ) {
-		// TODO: choose a dev or minified version
+		// Use the .dev version if SCRIPT_DEBUG is set or there is no minified version
+		if ( ( defined( 'SCRIPT_DEBUG' ) and SCRIPT_DEBUG ) or !is_readable( path_join( GEO_MASHUP_DIR_PATH, $src ) ) )
+			$src = preg_replace( '/(\.\w*)$/', '.dev$1', $src );
 		wp_register_script( $handle, plugins_url( $src, __FILE__ ), $deps, $ver, $in_footer );
 	}
 
@@ -265,7 +267,10 @@ class GeoMashup {
 	 * @param bool $media Stylesheet media target.
 	 */
 	function register_style( $handle, $src, $deps = array(), $ver = false, $media = 'all' ) {
-		// TODO: choose a dev or minified version
+		// Use the .dev version if SCRIPT_DEBUG is set or there is no minified version
+		if ( ( defined( 'SCRIPT_DEBUG' ) and SCRIPT_DEBUG ) or !is_readable( path_join( GEO_MASHUP_DIR_PATH, $src ) ) )
+			$src = preg_replace( '/(\.\w*)$/', '.dev$1', $src );
+
 		wp_register_style( $handle, plugins_url( $src, __FILE__ ), $deps, $ver, $media );
 	}
 
@@ -278,7 +283,7 @@ class GeoMashup {
 	 */
 	function wp_footer() {
 		if ( self::$add_loader_script ) {
-			self::register_script( 'geo-mashup-loader', 'geo-mashup-loader.js', array(), GEO_MASHUP_VERSION, true );
+			self::register_script( 'geo-mashup-loader', 'js/loader.js', array(), GEO_MASHUP_VERSION, true );
 			wp_print_scripts( 'geo-mashup-loader' );
 		}
 	}
@@ -1198,7 +1203,7 @@ class GeoMashup {
 	 * @static
 	 */
 	function options_page() {
-		include_once( 'options.php' );
+		include_once( path_join( GEO_MASHUP_DIR_PATH, 'options.php' ) );
 		geo_mashup_options_page();
 	}
 
