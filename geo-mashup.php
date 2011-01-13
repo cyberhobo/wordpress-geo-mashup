@@ -48,10 +48,8 @@ class GeoMashup {
 	 * Whether to add the click-to-load map script.
 	 *
 	 * @since 1.4
-	 * @access private
-	 * @static
 	 */
-	static $add_loader_script = false;
+	private static $add_loader_script = false;
 
 	/**
 	 * Load Geo Mashup.
@@ -59,31 +57,36 @@ class GeoMashup {
 	 * Initializations that can be done before init(). 
 	 *
 	 * @since 1.2
-	 * @access private
-	 * @static
 	 */
-	function load() {
+	public static function load() {
 		GeoMashup::load_constants();
-		load_plugin_textdomain('GeoMashup', '', path_join( GEO_MASHUP_DIRECTORY, 'lang' ) );
+		load_plugin_textdomain( 'GeoMashup', '', path_join( GEO_MASHUP_DIRECTORY, 'lang' ) );
 
 		GeoMashup::load_dependencies();
 		GeoMashup::load_hooks();
 	}
 
-	function is_options_page() {
-		global $pagenow;
+	/**
+	 *	Test to see if the current request is for the Geo Mashup options page.
+	 *
+	 * @since 1.4
+	 *
+	 * @return bool Whether this is a an options page request.
+	 */
+	public static function is_options_page() {
+		// We may need this before $pagenow is set, but maybe this method won't always work?
 		return ( is_admin() and isset($_GET['page']) and GEO_MASHUP_PLUGIN_NAME === $_GET['page'] );
 	}
 
 	/**
+	 * WordPress init action.
+	 *
 	 * init {@link http://codex.wordpress.org/Plugin_API/Action_Reference#Advanced_Actions action},
 	 * called by WordPress.
 	 *
 	 * @since 1.2
-	 * @access private
-	 * @static
 	 */
-	function init() {
+	public static function init() {
 		GeoMashup::load_styles();
 		GeoMashup::load_scripts();
 	}
@@ -92,10 +95,8 @@ class GeoMashup {
 	 * Load relevant dependencies.
 	 * 
 	 * @since 1.2
-	 * @access private
-	 * @static
 	 */
-	function load_dependencies() {
+	private static function load_dependencies() {
 		include_once( GEO_MASHUP_DIR_PATH . '/geo-mashup-options.php' );
 		include_once( GEO_MASHUP_DIR_PATH . '/geo-mashup-db.php' );
 		include_once( GEO_MASHUP_DIR_PATH . '/geo-mashup-ui-managers.php' );
@@ -108,30 +109,30 @@ class GeoMashup {
 	 * Load relevant hooks.
 	 * 
 	 * @since 1.2
-	 * @access private
-	 * @static
 	 */
-	function load_hooks() {
+	private static function load_hooks() {
 		global $geo_mashup_options;
 
-		add_action( 'plugins_loaded', array( 'GeoMashup', 'dependent_init' ), -1 );
-		add_action( 'wp_ajax_geo_mashup_query', array( 'GeoMashup', 'geo_query') );
-		add_action( 'wp_ajax_nopriv_geo_mashup_query', array( 'GeoMashup', 'geo_query') );
+		add_action( 'init', array( __CLASS__, 'init' ) );
+
+		add_action( 'plugins_loaded', array( __CLASS__, 'dependent_init' ), -1 );
+		add_action( 'wp_ajax_geo_mashup_query', array( __CLASS__, 'geo_query') );
+		add_action( 'wp_ajax_nopriv_geo_mashup_query', array( __CLASS__, 'geo_query') );
 		add_action( 'wp_ajax_geo_mashup_suggest_custom_keys', array( 'GeoMashupDB', 'post_meta_key_suggest' ) );
 
 		if (is_admin()) {
 
-			register_activation_hook( __FILE__, array( 'GeoMashup', 'activation_hook' ) );
+			register_activation_hook( __FILE__, array( __CLASS__, 'activation_hook' ) );
 
 			// To add Geo Mashup settings page
-			add_action('admin_menu', array('GeoMashup', 'admin_menu'));
+			add_action('admin_menu', array(__CLASS__, 'admin_menu'));
 
 			// To make important announcements
-			add_action( 'admin_notices', array( 'GeoMashup', 'admin_notices' ) );
+			add_action( 'admin_notices', array( __CLASS__, 'admin_notices' ) );
 
 			// To add plugin listing links
-			add_filter( 'plugin_action_links', array( 'GeoMashup', 'plugin_action_links' ), 10, 2 );
-			add_filter( 'plugin_row_meta', array( 'GeoMashup', 'plugin_row_meta' ), 10, 2 );
+			add_filter( 'plugin_action_links', array( __CLASS__, 'plugin_action_links' ), 10, 2 );
+			add_filter( 'plugin_row_meta', array( __CLASS__, 'plugin_row_meta' ), 10, 2 );
 
 		} else {
 
@@ -139,14 +140,14 @@ class GeoMashup {
 
 			if ($geo_mashup_options->get('overall','add_category_links') == 'true') {
 				// To add map links to a category list - flaky, requires non-empty category description
-				add_filter('list_cats', array('GeoMashup', 'list_cats'), 10, 2);
+				add_filter('list_cats', array(__CLASS__, 'list_cats'), 10, 2);
 			}
 
 			// To output location meta tags in the page head
-			add_action('wp_head', array('GeoMashup', 'wp_head'));
+			add_action('wp_head', array(__CLASS__, 'wp_head'));
 
 			// To add footer output (like scripts)
-			add_action( 'wp_footer', array( 'GeoMashup', 'wp_footer' ) );
+			add_action( 'wp_footer', array( __CLASS__, 'wp_footer' ) );
 
 			// To allow shortcodes in the text widget
 			if ( ! has_filter( 'widget_text', 'do_shortcode' ) ) {
@@ -154,16 +155,16 @@ class GeoMashup {
 			}
 
 			// To add the GeoRSS namespace to feeds (not available for RSS 0.92)
-			add_action('rss2_ns', array('GeoMashup', 'rss_ns'));
-			add_action('atom_ns', array('GeoMashup', 'rss_ns'));
+			add_action('rss2_ns', array(__CLASS__, 'rss_ns'));
+			add_action('atom_ns', array(__CLASS__, 'rss_ns'));
 
 			// To add GeoRSS location to feeds
-			add_action('rss2_item', array('GeoMashup', 'rss_item'));
-			add_action('atom_entry', array('GeoMashup', 'rss_item'));
+			add_action('rss2_item', array(__CLASS__, 'rss_item'));
+			add_action('atom_entry', array(__CLASS__, 'rss_item'));
 
 			// To add custom renderings
-			add_filter( 'query_vars', array( 'GeoMashup', 'query_vars' ) );
-			add_action( 'template_redirect', array( 'GeoMashup', 'template_redirect' ) );
+			add_filter( 'query_vars', array( __CLASS__, 'query_vars' ) );
+			add_action( 'template_redirect', array( __CLASS__, 'template_redirect' ) );
 
 		}
 	}
@@ -172,10 +173,8 @@ class GeoMashup {
 	 * Define Geo Mashup constants. 
 	 * 
 	 * @since 1.2
-	 * @access private
-	 * @static
 	 */
-	function load_constants() {
+	private static function load_constants() {
 		define('GEO_MASHUP_PLUGIN_NAME', plugin_basename(__FILE__));
 		define('GEO_MASHUP_DIR_PATH', dirname( __FILE__ ));
 		define('GEO_MASHUP_DIRECTORY', dirname( GEO_MASHUP_PLUGIN_NAME ) );
@@ -190,10 +189,8 @@ class GeoMashup {
 	 * Load relevant scripts.
 	 * 
 	 * @since 1.2
-	 * @access private
-	 * @static
 	 */
-	function load_scripts() {
+	private static function load_scripts() {
 		if ( self::is_options_page() )
 			wp_enqueue_script( 'jquery-ui-tabs' );
 	}
@@ -202,10 +199,8 @@ class GeoMashup {
 	 * Load relevant styles.
 	 * 
 	 * @since 1.2
-	 * @access private
-	 * @static
 	 */
-	function load_styles() {
+	private static function load_styles() {
 		if ( self::is_options_page() ) {
 			self::register_style( 'jquery-smoothness', 'css/jquery-ui.1.7.smoothness.css', array(), GEO_MASHUP_VERSION, 'screen' );
 			wp_enqueue_style( 'jquery-smoothness' );
@@ -214,35 +209,33 @@ class GeoMashup {
 	}
 
 	/**
-	 * Perform one-time activation tasks.
+	 * WordPress hook to perform one-time activation tasks.
 	 * 
 	 * @since 1.4
-	 * @access private
-	 * @static
 	 */
-	function activation_hook() {
+	public static function activation_hook() {
 		// check to see if this plugin will even work
 		if (version_compare("5.0", phpversion(), ">")) {
 			deactivate_plugins( GEO_MASHUP_PLUGIN_NAME ); // Deactivate ourself
-			wp_die( __( 'Sorry, Geo Mashup now requires PHP 5. Ask your host how to do this, or use an earlier version of Geo Mashup.', 'GeoMashup' ) );
+			wp_die( __( 'Sorry, Geo Mashup now requires PHP 5. Ask your host how to do this, or use an earlier version of Geo Mashup.', __CLASS__ ) );
 		}
 		GeoMashupDB::install();
 	}
 
 	/**
-	 * Supply an init action for plugins that would like to use Geo Mashup APIs.
+	 * WordPress action to supply an init action for plugins that would like to use Geo Mashup APIs.
 	 * 
 	 * @since 1.4
-	 * @access private
-	 * @static
 	 * @uses do_action() geo_mashup_init Fired when Geo Mashup is loaded and ready.
 	 */
-	function dependent_init() {
+	public static function dependent_init() {
 		do_action( 'geo_mashup_init' );
 	}
 
 	/**
 	 * Register the Geo Mashup script appropriate for the request.
+	 *
+	 * @since 1.4
 	 * 
 	 * @param string $handle Global tag for the script.
 	 * @param string $src Path to the script from the root directory of Geo Mashup.
@@ -250,7 +243,7 @@ class GeoMashup {
 	 * @param string $ver Script version.
 	 * @param bool $in_footer Whether the script can be loaded in the footer.
 	 */
-	function register_script( $handle, $src, $deps = array(), $ver = false, $in_footer = false ) {
+	public static function register_script( $handle, $src, $deps = array(), $ver = false, $in_footer = false ) {
 		// Use the .dev version if SCRIPT_DEBUG is set or there is no minified version
 		if ( ( defined( 'SCRIPT_DEBUG' ) and SCRIPT_DEBUG ) or !is_readable( path_join( GEO_MASHUP_DIR_PATH, $src ) ) )
 			$src = preg_replace( '/(\.\w*)$/', '.dev$1', $src );
@@ -260,13 +253,15 @@ class GeoMashup {
 	/**
 	 * Register the Geo Mashup style appropriate for the request.
 	 *
+	 * @since 1.4
+	 *
 	 * @param string $handle Global tag for the style.
 	 * @param string $src Path to the stylesheet from the root directory of Geo Mashup.
 	 * @param array $deps Array of dependency handles.
 	 * @param string $ver Script version.
 	 * @param bool $media Stylesheet media target.
 	 */
-	function register_style( $handle, $src, $deps = array(), $ver = false, $media = 'all' ) {
+	public static function register_style( $handle, $src, $deps = array(), $ver = false, $media = 'all' ) {
 		// Use the .dev version if SCRIPT_DEBUG is set or there is no minified version
 		if ( ( defined( 'SCRIPT_DEBUG' ) and SCRIPT_DEBUG ) or !is_readable( path_join( GEO_MASHUP_DIR_PATH, $src ) ) )
 			$src = preg_replace( '/(\.\w*)$/', '.dev$1', $src );
@@ -275,13 +270,11 @@ class GeoMashup {
 	}
 
 	/**
-	 * Add things like scripts to the footer.
+	 * WordPress action to add things like scripts to the footer.
 	 * 
 	 * @since 1.4
-	 * @access private
-	 * @static
 	 */
-	function wp_footer() {
+	public static function wp_footer() {
 		if ( self::$add_loader_script ) {
 			self::register_script( 'geo-mashup-loader', 'js/loader.js', array(), GEO_MASHUP_VERSION, true );
 			wp_print_scripts( 'geo-mashup-loader' );
@@ -289,16 +282,11 @@ class GeoMashup {
 	}
 
 	/**
-	 * Add Geo Mashup query variables.
-	 *
-	 * query_vars {@link http://codex.wordpress.org/Plugin_API/Filter_Reference#Advanced_WordPress_Filters filter},
-	 * called by WordPress.
+	 * WordPress filter to add Geo Mashup query variables.
 	 *
 	 * @since 1.3
-	 * @access private
-	 * @static
 	 */
-	function query_vars( $public_query_vars ) {
+	public static function query_vars( $public_query_vars ) {
 		$public_query_vars[] = 'geo_mashup_content';
 		return $public_query_vars;
 	}
@@ -313,13 +301,11 @@ class GeoMashup {
 	 * 	'default-templates/info-window.php' in the geo-mashup plugin directory
 	 *
 	 * @since 1.4
-	 * @access public
-	 * @static
 	 * 
 	 * @param string $template_base The base name of the template.
 	 * @return string The file path of the template found.
 	 */
-	function locate_template( $template_base ) {
+	public static function locate_template( $template_base ) {
 		global $geo_mashup_custom;
 		$template = locate_template( array("geo-mashup-$template_base.php") );
 		if ( empty( $template ) and isset( $geo_mashup_custom ) and $geo_mashup_custom->file_url( $template_base . '.php' ) ) {
@@ -336,19 +322,14 @@ class GeoMashup {
 	}
 
 	/**
-	 * Deliver templated Geo Mashup content.
-	 *
-	 * template_redirect {@link http://codex.wordpress.org/Plugin_API/Filter_Reference#Advanced_WordPress_Filters filter},
-	 * called by WordPress.
+	 * WordPress action to deliver templated Geo Mashup content.
 	 *
 	 * @since 1.3
-	 * @access private
-	 * @static
 	 *
 	 * @uses geo_query
 	 * @uses render_map
 	 */
-	function template_redirect() {
+	public static function template_redirect() {
 		$geo_mashup_content = get_query_var( 'geo_mashup_content' );
 		if ( ! empty( $geo_mashup_content ) ) {
 
@@ -358,7 +339,7 @@ class GeoMashup {
 			// Call the function corresponding to the content request
 			// This provides some security, as only implemented methods will be executed
 			$method = str_replace( '-', '_', $geo_mashup_content );
-			call_user_func( array( 'GeoMashup', $method ) );
+			call_user_func( array( __CLASS__, $method ) );
 			exit();
 		}
 	}
@@ -367,11 +348,9 @@ class GeoMashup {
 	 * Process an AJAX geo query.
 	 *
 	 * @since 1.3
-	 * @access private
-	 * @static
 	 * @uses geo-query.php
 	 */
-	function geo_query() {
+	private static function geo_query() {
 		require_once( 'geo-query.php' );
 		exit();
 	}
@@ -380,24 +359,20 @@ class GeoMashup {
 	 * Process an iframe map request.
 	 *
 	 * @since 1.3
-	 * @access private
-	 * @static
 	 * @uses render-map.php
 	 */
-	function render_map() {
+	private static function render_map() {
 		require_once( 'render-map.php' );
 		GeoMashupRenderMap::render_map();
 		exit();
 	}
 
 	/**
-	 * Perform an ajax edit operation and echo results.
+	 * WordPress action to perform an ajax edit operation and echo results.
 	 *
 	 * @since 1.3
-	 * @access private
-	 * @static
 	 */
-	function ajax_edit() {
+	public static function ajax_edit() {
 		check_ajax_referer( 'geo-mashup-edit', 'geo_mashup_nonce' );
 		unset( $_GET['_wpnonce'] );
 
@@ -446,12 +421,10 @@ class GeoMashup {
 	 * Caution - what if a future Geo Mashup incorporates multiple locations per object?
 	 *
 	 * @since 1.3
-	 * @access public
-	 * @static
 	 *
 	 * @param bool $yes_or_no Whether to activate the join or not.
 	 */
-	function join_post_queries( $yes_or_no ) {
+	public static function join_post_queries( $yes_or_no ) {
 		GeoMashupDB::join_post_queries( $yes_or_no );
 	}
 
@@ -459,15 +432,13 @@ class GeoMashup {
 	 * Helper to turn a string of key-value pairs into an associative array.
 	 *
 	 * @since 1.0
-	 * @access public
-	 * @static
 	 *
 	 * @param string $glue1 Pair separator.
 	 * @param string $glue2 Key/value separator.
 	 * @param string $str String to explode. 
 	 * @return array The associative array.
 	 */
-	function explode_assoc($glue1, $glue2, $str) {
+	public static function explode_assoc($glue1, $glue2, $str) {
 		$array2=explode($glue2, $str);
 		foreach($array2 as  $val) {
 			$pos=strpos($val,$glue1);
@@ -481,8 +452,6 @@ class GeoMashup {
 	 * Helper to turn an associative array into a string of key-value pairs.
 	 * 
 	 * @since 1.0
-	 * @access public
-	 * @static
 	 *
 	 * @param string $inner_glue Key/value separator.
 	 * @param string $outer_glue Pair separator.
@@ -491,7 +460,7 @@ class GeoMashup {
 	 * @param mixed $urlencoded Whetern to URL encode the output.
 	 * @return string The imploded string.
 	 */
-	function implode_assoc($inner_glue, $outer_glue, $array, $skip_empty=false, $urlencoded=false) {
+	public static function implode_assoc($inner_glue, $outer_glue, $array, $skip_empty=false, $urlencoded=false) {
 	$output = array();
 		foreach($array as $key=>$item) {
 			if (!$skip_empty || isset($item)) {
@@ -505,57 +474,14 @@ class GeoMashup {
 	}
 
 	/**
-	 * Encode an item as a JSON string.
-	 *
-	 * I believe WP 2.9 will include a function like this.
-	 *
-	 * @since 1.3
-	 * @access public
-	 * @deprecated use WP / PHP json_encode
-	 * @static
-	 *
-	 * @param scalar|array Scalars are quoted, number-indexed arrays become JSON arrays, string-indexed arrays become JSON objects.
-	 * @return string JSON encoded string, empty if not encodable.
-	 */
-	function json_encode( $item ) {
-		$json = '';
-		if ( is_scalar( $item ) ) {
-
-			$json =  '"' . esc_js( trim( (string) $item, '"' ) ) . '"';
-
-		} else if ( is_array( $item ) ) {
-
-			$keys = array_keys( $item );
-			if ( ! empty( $keys ) && is_string( $keys[0] ) ) {
-
-				// String indexes to JSON object
-				$json_properties = array();
-				foreach( $item as $name => $value ) {
-					$json_properties[] = '"' . $name . '":' . GeoMashup::json_encode( $value );
-				}
-				$json = '{' . implode( ',', $json_properties ) . '}';
-
-			} else {
-
-				// Numeric indexes to JSON array
-				$json = '[' . implode( ',', array_map( array( 'GeoMashup', 'json_encode' ), $item ) ) . ']';
-
-			}
-		}
-		return $json;
-	}
-
-	/**
 	 * Get an array of URLs of KML or KMZ attachments for a post.
 	 * 
 	 * @since 1.1
-	 * @access public
-	 * @static
 	 *
 	 * @param id $post_id 
 	 * @return array Array of URL strings.
 	 */
-	function get_kml_attachment_urls($post_id) {
+	public static function get_kml_attachment_urls($post_id) {
 		if ( empty( $post_id ) ) {
 			return array();
 		}
@@ -577,16 +503,14 @@ class GeoMashup {
 	}
 
 	/**
-	 * Add relevant geo meta tags to the document head.
+	 * WordPress action to add relevant geo meta tags to the document head.
 	 * 
 	 * wp_head {@link http://codex.wordpress.org/Plugin_API/Action_Reference#TemplateActions action},
 	 * called by WordPress.
 	 * 
 	 * @since 1.0
-	 * @access private
-	 * @static
 	 */
-	function wp_head() {
+	public static function wp_head() {
 		global $wp_query;
 
 		if (is_single())
@@ -607,8 +531,6 @@ class GeoMashup {
 	 * Offers customization per object location via a filter, geo_mashup_locations_json_object.
 	 * 
 	 * @since 1.2
-	 * @access public
-	 * @static
 	 * @uses GeoMashupDB::get_object_locations()
 	 * @uses apply_filters() the_title Filter post titles.
 	 * @uses apply_filters() geo_mashup_locations_json_object Filter each location associative array before conversion to JSON.
@@ -617,7 +539,7 @@ class GeoMashup {
 	 * @param string $format (optional) 'JSON' (default) or ARRAY_A
 	 * @return string Queried object locations JSON ( { "object" : [...] } ).
 	 */
-	function get_locations_json( $query_args, $format = 'JSON' ) {
+	public static function get_locations_json( $query_args, $format = 'JSON' ) {
 		$default_args = array( 'object_name' => 'post' );
 		$query_args = wp_parse_args( $query_args, $default_args );
 		$json_objects = array();
@@ -639,7 +561,7 @@ class GeoMashup {
 					}
 
 					// Only posts have KML attachments
-					$attachments = GeoMashup::get_kml_attachment_urls( $object->object_id );
+					$attachments = self::get_kml_attachment_urls( $object->object_id );
 
 					// Include post author
 					$author = get_userdata( $object->post_author );
@@ -655,8 +577,7 @@ class GeoMashup {
 					'object_id' => $object->object_id,
 					// We should be able to use real UTF-8 characters in titles
 					// Helps with the spelling-out of entities in tooltips
-					// PHP4 screams about multibyte characters - make it shut up with @
-					'title' => @html_entity_decode( $object->label, ENT_COMPAT, 'UTF-8' ),
+					'title' => html_entity_decode( $object->label, ENT_COMPAT, 'UTF-8' ),
 					'lat' => $object->lat,
 					'lng' => $object->lng,
 					'author_name' => $author_name,
@@ -679,12 +600,10 @@ class GeoMashup {
 	 * Convert depricated attribute names.
 	 *
 	 * @since 1.3
-	 * @access private
-	 * @static
 	 * 
 	 * @param array $atts Attributes to modify.
 	 */
-	function convert_map_attributes( &$atts ) {
+	private static function convert_map_attributes( &$atts ) {
 		$attribute_conversions = array( 
 			'auto_open_info_window' => 'auto_info_open',
 			'open_post_id' => 'open_object_id'
@@ -706,8 +625,6 @@ class GeoMashup {
 	 * eventually pass to the javascript.
 	 *
 	 * @since 1.4
-	 * @access public
-	 * @static
 	 * @uses GeoMashup::get_locations_json()
 	 *
 	 * @global array $geo_mashup_options
@@ -715,7 +632,7 @@ class GeoMashup {
 	 * @param array $query Query parameters
 	 * @return array Map data ready to be rendered.
 	 */
-	function build_map_data( $query ) {
+	public static function build_map_data( $query ) {
 		global $geo_mashup_options, $geo_mashup_custom;
 		$defaults = array(
 			'map_api' => $geo_mashup_options->get( 'overall', 'map_api' )
@@ -746,7 +663,7 @@ class GeoMashup {
 			}
 			$map_data = array_merge ( $options, $map_data );
 			if ( 'post' == $object_name ) {
-				$kml_urls = GeoMashup::get_kml_attachment_urls( $object_id );
+				$kml_urls = self::get_kml_attachment_urls( $object_id );
 				if (count($kml_urls)>0) {
 					$map_data['load_kml'] = array_pop( $kml_urls );
 				}
@@ -776,7 +693,7 @@ class GeoMashup {
 
 			// We have a lot map control parameters that don't effect the locations query,
 			// but only the relevant ones are used
-			$map_data['object_data'] = GeoMashup::get_locations_json( $query, ARRAY_A );
+			$map_data['object_data'] = self::get_locations_json( $query, ARRAY_A );
 
 			// Incorporate parameters from the query and options
 			$map_data = array_merge( $query, $map_data );
@@ -791,8 +708,6 @@ class GeoMashup {
 	 * Returns HTML for a Google map. Must use with echo in a template: echo GeoMashup::map();.
 	 *
 	 * @since 1.0
-	 * @access public
-	 * @static
 	 * @link http://code.google.com/p/wordpress-geo-mashup/wiki/TagReference#Map tag parameter documentation
 	 * @uses $_SERVER['QUERY_STRING'] The first global map on a page uses query string parameters like tag parameters.
 	 * @staticvar $map_number Used to index maps per request.
@@ -800,7 +715,7 @@ class GeoMashup {
 	 * @param string|array $atts Template tag parameters.
 	 * @return string The HTML for the requested map.
 	 */
-	function map( $atts = null ) {
+	public static function map( $atts = null ) {
 		global $wp_query, $in_comment_loop, $geo_mashup_options;
 		static $map_number = 0;
 
@@ -819,7 +734,7 @@ class GeoMashup {
 		}
 		$click_to_load_options = array( 'click_to_load', 'click_to_load_text' );
 
-		GeoMashup::convert_map_attributes( $atts );
+		self::convert_map_attributes( $atts );
 
 		// Default query is for posts
 		$object_name = ( isset( $atts['object_name'] ) ) ? $atts['object_name'] : 'post';
@@ -924,7 +839,7 @@ class GeoMashup {
 			$name = $atts['name'];
 		unset($atts['name']);
 
-		$map_data = GeoMashup::build_map_data( $atts );
+		$map_data = self::build_map_data( $atts );
 		if ( empty( $map_data['object_data']['objects'] ) and !isset( $map_data['load_empty_map'] ) )
 			return '<!-- ' . __( 'Geo Mashup omitted a map with no located objects found.', 'GeoMashup' ) . '-->';
 		unset( $map_data['load_empty_map'] );
@@ -999,14 +914,12 @@ class GeoMashup {
 	 * of the currently selected marker.
 	 *
 	 * @since 1.1
-	 * @access public
-	 * @static
 	 * @link http://code.google.com/p/wordpress-geo-mashup/wiki/TagReference#Full_Post
 	 * 
 	 * @param string|array $args Template tag arguments.
 	 * @return string Placeholder HTML.
 	 */
-	function full_post($args = null) {
+	public static function full_post($args = null) {
 		$args = wp_parse_args($args);
 		$for_map = 'gm';
 		if ( !empty( $args['for_map'] ) ) {
@@ -1024,20 +937,18 @@ class GeoMashup {
 	 * If there is a map_cat parameter, return the name of that category.
 	 *
 	 * @since 1.1
-	 * @access public
-	 * @static
 	 * @link http://code.google.com/p/wordpress-geo-mashup/wiki/TagReference#Category_Name 
 	 * 
 	 * @param string|array $option_args Template tag arguments.
 	 * @return string Category name.
 	 */
-	function category_name($option_args = null) {
+	public static function category_name($option_args = null) {
 		$category_name = '';
 		if (is_string($option_args)) {
 			$option_args = wp_parse_args($option_args);
 		}
 		if (is_page() && isset($_SERVER['QUERY_STRING'])) {
-			$option_args = $option_args + GeoMashup::explode_assoc('=','&amp;',$_SERVER['QUERY_STRING']);
+			$option_args = $option_args + self::explode_assoc('=','&amp;',$_SERVER['QUERY_STRING']);
 		}
 		if (isset($option_args['map_cat'])) {
 			$category_name = get_cat_name($option_args['map_cat']);
@@ -1052,14 +963,12 @@ class GeoMashup {
 	 * categories of the displayed content.
 	 *
 	 * @since 1.1
-	 * @access public
-	 * @static
 	 * @link http://code.google.com/p/wordpress-geo-mashup/wiki/TagReference#Category_Legend
 	 * 
 	 * @param string|array $args Template tag arguments.
 	 * @return string Placeholder HTML.
 	 */
-	function category_legend($args = null) {
+	public static function category_legend($args = null) {
 		$args = wp_parse_args($args);
 		$for_map = 'gm-map-1';
 		if ( !empty( $args['for_map'] ) ) {
@@ -1075,10 +984,8 @@ class GeoMashup {
 	 * called by WordPress.
 	 *
 	 * @since 1.0
-	 * @access private
-	 * @static
 	 */
-	function list_cats($content, $category = null) {
+	public static function list_cats($content, $category = null) {
 		global $geo_mashup_options;
 
 		if ($category) {
@@ -1107,32 +1014,28 @@ class GeoMashup {
 	}
 
 	/**
-	 * Add the Geo Mashup Options settings admin page.
+	 * WordPress action to add the Geo Mashup Options settings admin page.
 	 *
 	 * admin_menu {@link http://codex.wordpress.org/Plugin_API/Action_Reference#Advanced_Actions action}
 	 * called by WordPress.
 	 *
 	 * @since 1.0
-	 * @access private
-	 * @static
 	 */
-	function admin_menu() {
+	public static function admin_menu() {
 		if (function_exists('add_options_page')) {
-			add_options_page(__('Geo Mashup Options','GeoMashup'), __('Geo Mashup','GeoMashup'), 'manage_options', __FILE__, array('GeoMashup', 'options_page'));
+			add_options_page(__('Geo Mashup Options','GeoMashup'), __('Geo Mashup','GeoMashup'), 'manage_options', __FILE__, array( __CLASS__, 'options_page'));
 		}
 	}
 
 	/**
-	 * Display important messages in the admin.
+	 * WordPress action to display important messages in the admin.
 	 * 
 	 * admin_notices {@link http://codex.wordpress.org/Plugin_API/Action_Reference#Advanced_Actions action}
 	 * called by WordPress.
 	 *
 	 * @since 1.3
-	 * @access private
-	 * @static
 	 */
-	function admin_notices() {
+	public static function admin_notices() {
 		global $geo_mashup_options;
 
 		$message = '';
@@ -1155,16 +1058,14 @@ class GeoMashup {
 	}
 
 	/**
-	 * Add custom action links to the plugin listing.
+	 * WordPress action to add custom action links to the plugin listing.
 	 * 
 	 * plugin_action_links {@link http://codex.wordpress.org/Plugin_API/Filter_Reference#Advanced_WordPress_Filters filter},
 	 * called by WordPress.
 	 *
 	 * @since 1.3
-	 * @access private
-	 * @static
 	 */
-	function plugin_action_links( $links, $file ) {
+	public static function plugin_action_links( $links, $file ) {
 		if ( GEO_MASHUP_PLUGIN_NAME == $file ) {
 			$settings_link = '<a href="' . admin_url( 'options-general.php?page=' . GEO_MASHUP_PLUGIN_NAME ) .'">' .
 				__( 'Settings' ) . '</a>';
@@ -1174,16 +1075,14 @@ class GeoMashup {
 	}
 
 	/**
-	 * Add custom meta links to the plugin listing.
+	 * WordPress action to add custom meta links to the plugin listing.
 	 * 
 	 * plugin_row_meta {@link http://codex.wordpress.org/Plugin_API/Filter_Reference#Advanced_WordPress_Filters filter},
 	 * called by WordPress.
 	 *
 	 * @since 1.3
-	 * @access private
-	 * @static
 	 */
-	function plugin_row_meta( $links, $file ) {
+	public static function plugin_row_meta( $links, $file ) {
 		if ( GEO_MASHUP_PLUGIN_NAME == $file ) {
 			$links[] = '<a href="http://code.google.com/p/wordpress-geo-mashup/wiki/Documentation">' .
 				__( 'Documentation', 'GeoMashup' ) . '</a>';
@@ -1194,15 +1093,13 @@ class GeoMashup {
 	}
 
 	/**
-	 * Output the Geo Mashup Options admin page.
+	 * WordPress action to produce the Geo Mashup Options admin page.
 	 *
 	 * Called by the WordPress admin.
 	 * 
 	 * @since 1.0
-	 * @access private
-	 * @static
 	 */
-	function options_page() {
+	public static function options_page() {
 		include_once( path_join( GEO_MASHUP_DIR_PATH, 'options.php' ) );
 		geo_mashup_options_page();
 	}
@@ -1211,13 +1108,11 @@ class GeoMashup {
 	 * Get the location of the current loop object, if any.
 	 *
 	 * @since 1.3
-	 * @access public
-	 * @static
 	 *
 	 * @param string $output ARRAY_A | ARRAY_N | OBJECT
 	 * @return object|bool Location object or false if none.
 	 */
-	function current_location( $output = OBJECT ) {
+	public static function current_location( $output = OBJECT ) {
 		global $in_comment_loop, $in_user_loop, $user;
 
 
@@ -1242,28 +1137,15 @@ class GeoMashup {
 		return $location;
 	}
 
-	/**
-	 * A tag to insert the the onload call needed by IE 
-	 * (and works in Firefox) in the body tag to load the 
-	 * Google map. 
-	 *
-	 * @deprecated 1.0 No longer necessary.
-	 *
-	 */
-	function body_attribute() {
-	}
-
 	/** 
 	 * A template tag to insert location information.
 	 *
 	 * @since 1.3
-	 * @access public 
-	 * @static
 	 *
 	 * @param string|array $args Template tag arguments.
 	 * @return string The information requested, empty string if none.
 	 */
-	function location_info( $args = '' ) {
+	public static function location_info( $args = '' ) {
 		$defaults = array( 
 			'fields' => 'address', 
 			'separator' => ',', 
@@ -1277,7 +1159,7 @@ class GeoMashup {
 		if ( $object_name && $object_id ) {
 			$location = GeoMashupDB::get_object_location( $object_name, $object_id, ARRAY_A );
 		} else {
-			$location = GeoMashup::current_location( ARRAY_A );
+			$location = self::current_location( ARRAY_A );
 		}
 
 		if ( !empty( $location ) ) {
@@ -1320,8 +1202,8 @@ class GeoMashup {
 	 * 
 	 * @see show_on_map_link()
 	 */
-	function post_link($option_args = '') {
-		return GeoMashup::show_on_map_link($option_args);
+	public static function post_link($option_args = '') {
+		return self::show_on_map_link($option_args);
 	}
 
 	/**
@@ -1329,19 +1211,17 @@ class GeoMashup {
 	 * global map page. 
 	 *
 	 * @since 1.3
-	 * @access public
-	 * @static
 	 *
 	 * @return string The URL, empty if no current location is found.
 	 */
-	function show_on_map_link_url( $args = null ) {
+	public static function show_on_map_link_url( $args = null ) {
 		global $geo_mashup_options;
 
 		$defaults = array( 'zoom' => '' );
 		$args = wp_parse_args( $args, $defaults );
 
 		$url = '';
-		$location = GeoMashup::current_location();
+		$location = self::current_location();
 		if ( $location ) {
 			$url = get_page_link($geo_mashup_options->get('overall', 'mashup_page'));
 			if ( !$url ) {
@@ -1370,19 +1250,17 @@ class GeoMashup {
 	 * global map page. 
 	 *
 	 * @since 1.3
-	 * @access public
-	 * @static
 	 *
 	 * @return string The link HTML, empty if no current location is found.
 	 */
-	function show_on_map_link( $args = null ) {
+	public static function show_on_map_link( $args = null ) {
 		$defaults = array( 'text' => __( 'Show on map', 'GeoMashup' ),
 			 'display' => false,
 			 'zoom' => '',
 			 'show_icon' => true );
 		$options = wp_parse_args($args, $defaults);
 		$link = '';
-		$url = GeoMashup::show_on_map_link_url( $args );
+		$url = self::show_on_map_link_url( $args );
 		if ( $url ) {
 			$icon = '';
 			if ($options['show_icon'] && strcmp( $options['show_icon'], 'false' ) != 0) {
@@ -1405,14 +1283,12 @@ class GeoMashup {
 	 * of the currently visible posts.
 	 *
 	 * @since 1.2
-	 * @access public
-	 * @static
 	 * @link http://code.google.com/p/wordpress-geo-mashup/wiki/TagReference#Visible_Posts_List
 	 *
 	 * @param string|array $args Template tag arguments.
 	 * @return string Placeholder HTML.
 	 */
-	function visible_posts_list($args = null) {
+	public static function visible_posts_list($args = null) {
 		$args = wp_parse_args($args);
 
 		$list_html = '';
@@ -1439,14 +1315,12 @@ class GeoMashup {
 	 * Returns an HTML list of all located posts.
 	 *
 	 * @since 1.1
-	 * @access public
-	 * @static
 	 * @link http://code.google.com/p/wordpress-geo-mashup/wiki/TagReference#List_Located_Posts
 	 *
 	 * @param string|array $args Template tag arguments.
 	 * @return string List HTML.
 	 */
-	function list_located_posts( $option_args = null ) {
+	public static function list_located_posts( $option_args = null ) {
 		$option_args = wp_parse_args( $option_args );
 		$option_args['object_name'] = 'post';
 		$list_html = '<ul class="gm-index-posts">';
@@ -1468,14 +1342,12 @@ class GeoMashup {
 	 * this information when absent.
 	 *
 	 * @since 1.2
-	 * @access public
-	 * @static
 	 * @link http://code.google.com/p/wordpress-geo-mashup/wiki/TagReference#List_Located_Posts_By_Area
 	 *
 	 * @param string|array $args Template tag arguments.
 	 * @return string List HTML.
 	 */
-	function list_located_posts_by_area( $args ) {
+	public static function list_located_posts_by_area( $args ) {
 		$args = wp_parse_args( $args );
 		$list_html = '<div class="gm-area-list">';
 		$countries = GeoMashupDB::get_distinct_located_values( 'country_code', array( 'object_name' => 'post' ) );
@@ -1536,15 +1408,13 @@ class GeoMashup {
 	 * Get the coordinates of the current post. 
 	 *
 	 * @since 1.0
-	 * @access public
-	 * @static
 	 * @link http://code.google.com/p/wordpress-geo-mashup/wiki/TagReference#Post_Coordinates
 	 * @deprecated 1.3 Use GeoMashup::current_location()
 	 *
 	 * @param string|array $places Maximum number of decimal places to use.
 	 * @return array Array containing 'lat' and 'lng' keys.
 	 */
-	function post_coordinates($places = 10) {
+	public static function post_coordinates($places = 10) {
 		global $post;
 
 		$location = GeoMashupDB::get_object_location( 'post', $post->ID );
@@ -1567,30 +1437,26 @@ class GeoMashup {
 	}
 
 	/**
-	 * Emit GeoRSS namespace.
+	 * WordPress action to emit GeoRSS namespace.
 	 *
 	 * rss_ns {@link http://codex.wordpress.org/Plugin_API/Action_Reference#Feed_Actions action}
 	 * called by WordPress.
 	 *
 	 * @since 1.0
-	 * @access private
-	 * @static
 	 */
-	function rss_ns() {
+	public static function rss_ns() {
 		echo 'xmlns:georss="http://www.georss.org/georss" ';
 	}
 
 	/**
-	 * Emit GeoRSS tags.
+	 * WordPress action to emit GeoRSS tags.
 	 *
 	 * rss_item {@link http://codex.wordpress.org/Plugin_API/Action_Reference#Feed_Actions action}
 	 * called by WordPress.
 	 *
 	 * @since 1.0
-	 * @access private
-	 * @static
 	 */
-	function rss_item() {
+	public static function rss_item() {
 		global $wp_query;
 
 		// Using Simple GeoRSS for now
@@ -1608,14 +1474,12 @@ class GeoMashup {
 	 * as tabs.
 	 *
 	 * @since 1.2
-	 * @access public
-	 * @static
 	 * @link http://code.google.com/p/wordpress-geo-mashup/wiki/TagReference#Visible_Posts_List
 	 *
 	 * @param string|array $args Template tag arguments.
 	 * @return string Placeholder HTML.
 	 */
-	function tabbed_category_index( $args ) {
+	public static function tabbed_category_index( $args ) {
 		$args = wp_parse_args($args);
 
 		$for_map = 'gm-map-1';
@@ -1628,7 +1492,5 @@ class GeoMashup {
 } // class GeoMashup
 GeoMashup::load();
 } // class exists
-
-add_action( 'init', array('GeoMashup', 'init') );
 
 ?>

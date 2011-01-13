@@ -15,19 +15,23 @@
  */
 class GeoMashupRenderMap {
 	/**
+	 * Map data built for a request. 
+	 * @var array 
+	 */
+	private static $map_data = null;
+
+	/**
 	 * Template tag for the current map script.
 	 *
 	 * @since 1.4
-	 * @access public
-	 * @static
 	 *
 	 * @param string $element_id The DOM id of the map container.
 	 * @return string The script tag to generate the map for this request.
 	 */
-	function map_script( $element_id ) {
+	public static function map_script( $element_id ) {
 		return '<script type="text/javascript">' . "\n" .
 			'GeoMashup.createMap(document.getElementById("' . $element_id . '"), { ' .
-			GeoMashup::implode_assoc( ':', ',', self::map_data() ) . ' });' .
+			GeoMashup::implode_assoc( ':', ',', self::$map_data ) . ' });' .
 			"\n" . '</script>';
 	}
 
@@ -38,12 +42,10 @@ class GeoMashupRenderMap {
 	 * Register local styles with GeoMashup::register_style().
 	 *
 	 * @since 1.4
-	 * @access public
-	 * @static
 	 *
 	 * @param string $handle The handle used to register the style.
 	 */
-	function enqueue_style( $handle ) {
+	public static function enqueue_style( $handle ) {
 		$styles = self::map_property( 'styles' );
 		if ( is_null( $styles ) ) {
 			$styles = array();
@@ -59,12 +61,10 @@ class GeoMashupRenderMap {
 	 * Register local scripts with GeoMashup::register_script().
 	 *
 	 * @since 1.4
-	 * @access public
-	 * @static
 	 *
 	 * @param string $handle The handle used to register the script.
 	 */
-	function enqueue_script( $handle ) {
+	public static function enqueue_script( $handle ) {
 		$scripts = self::map_property( 'scripts' );
 		if ( is_null( $scripts ) ) {
 			$scripts = array();
@@ -80,10 +80,8 @@ class GeoMashupRenderMap {
 	 * map frames.
 	 * 
 	 * @since 1.4
-	 * @access public
-	 * @static
 	 */
-	function head() {
+	public static function head() {
 		$styles = self::map_property( 'styles' );
 		wp_print_styles( $styles );
 		$scripts = self::map_property( 'scripts' );
@@ -96,14 +94,12 @@ class GeoMashupRenderMap {
 	 * Current properties available: height and width for inline map styles.
 	 *
 	 * @since 1.4
-	 * @access public
-	 * @static
 	 *
 	 * @param string $name The name of the property to get.
 	 * @param string $new_value Optional, sets the property if supplied.
 	 * @return string|null The property value or null if not found.
 	 */
-	function map_property( $name, $new_value = null ) {
+	public static function map_property( $name, $new_value = null ) {
 		static $properties = array();
 		if ( !is_null( $new_value ) ) {
 			$properties[$name] = $new_value;
@@ -112,34 +108,14 @@ class GeoMashupRenderMap {
 	}
 
 	/**
-	 * Manage map data in a static variable.
-	 *
-	 * @since 1.4
-	 * @access private
-	 * @static
-	 *
-	 * @param array $set Sets map data if supplied.
-	 * @param array Current map data.
-	 */
-	function map_data( $set = null ) {
-		static $data = null;
-		if ( !is_null( $set ) ) {
-			$data = $set;
-		}
-		return $data;
-	}
-
-	/**
 	 * Make sure a non-javascript item is double-quoted.
 	 *
 	 * @since 1.3
-	 * @access private
-	 * @static
 	 *
 	 * @param mixed $item The value in question, may be modified.
 	 * @param string $key The JSON key.
 	 */
-	function add_double_quotes(&$item,$key) {
+	private static function add_double_quotes(&$item,$key) {
 		$quoted_keys = array ( 'background_color', 'show_future', 'map_control', 'map_content', 'map_type', 'legend_format', 'template' );
 		if ( $key == 'post_data' ) {
 			// don't quote
@@ -156,10 +132,8 @@ class GeoMashupRenderMap {
 	 * Render the requested map.
 	 *
 	 * @since 1.4
-	 * @access private
-	 * @static
 	 */
-	function render_map() {
+	public static function render_map() {
 		global $geo_mashup_options, $geo_mashup_custom;
 
 		// Include theme stylesheet if requested
@@ -328,7 +302,7 @@ class GeoMashupRenderMap {
 		$map_data['category_opts'] = $category_opts;
 
 		// Store the properties for use by the template tag GeoMashupRenderMap::map_script
-		self::map_data( $map_data );
+		self::$map_data = $map_data;
 
 		// Load the template
 		status_header ( 200 );

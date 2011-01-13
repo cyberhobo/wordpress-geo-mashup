@@ -30,7 +30,7 @@ add_shortcode('geo_mashup_location_info', array( 'GeoMashup', 'location_info' ) 
  * @param array $atts Shortcode arguments.
  */
 function geo_mashup_map( $atts ) {
-	GeoMashup::map( $atts );
+	return GeoMashup::map( $atts );
 }
 
 ?>

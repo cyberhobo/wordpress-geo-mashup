@@ -29,13 +29,11 @@ class GeoMashupQuery {
 	 * but we can strip all bracketed content.
 	 *
 	 * @since 1.3
-	 * @access public
-	 * @static
 	 *
 	 * @param string $content Content to strip square brackets from
 	 * @return string Content minus square brackets
 	 */
-	function strip_brackets( $content ) {
+	public static function strip_brackets( $content ) {
 		return preg_replace( '/\[.*?\]/', '', $content );
 	}
 
@@ -43,13 +41,11 @@ class GeoMashupQuery {
 	 * Strip map shortcodes.
 	 * 
 	 * @since 1.3
-	 * @access public
-	 * @static
 	 *
 	 * @param string $content 
 	 * @return string Content without map shortcodes.
 	 */
-	function strip_map_shortcodes( $content ) {
+	public static function strip_map_shortcodes( $content ) {
 		return preg_replace( '/\[geo_mashup_map.*?\]/', '', $content );
 	}
 
@@ -57,10 +53,8 @@ class GeoMashupQuery {
 	 * Use templates to output content for objects.
 	 * 
 	 * @since 1.3
-	 * @access public
-	 * @static
 	 */
-	function generate_object_html( ) {
+	public static function generate_object_html( ) {
 		global $geo_mashup_options, $geo_mashup_custom, $comments, $users;
 
 		$object_ids = $_GET['object_ids'];
@@ -117,12 +111,10 @@ class GeoMashupQuery {
 	 * Not sure why WP 2.7 comment templating requires this for callbacks, but it does.
 	 *
 	 * @since 1.3
-	 * @access public
-	 * @static
 	 *
 	 * @param object $comment The comment object to make global.
 	 */
-	function set_the_comment( $comment ) {
+	public static function set_the_comment( $comment ) {
 		$GLOBALS['comment'] = $comment;
 	}
 
@@ -130,12 +122,10 @@ class GeoMashupQuery {
 	 * Wrap access to comments global.
 	 *
 	 * @since 1.3
-	 * @access public
-	 * @static
 	 *
 	 * @return bool Whether there are any comments to be listed.
 	 */
-	function have_comments( ) {
+	public static function have_comments( ) {
 		global $comments;
 
 		return ( !empty( $comments ) );
@@ -146,13 +136,11 @@ class GeoMashupQuery {
 	 * otherwise a simple comment loop.
 	 *
 	 * @since 1.3
-	 * @access public
-	 * @static
 	 * @see wp_list_comments()
 	 *
 	 * @param string|array $args Formatting options
 	 */
-	function list_comments( $args = '' ) {
+	public static function list_comments( $args = '' ) {
 		global $wp_query, $comments, $in_comment_loop;
 
 		if ( function_exists( 'wp_list_comments' ) ) {
@@ -180,12 +168,10 @@ class GeoMashupQuery {
 	 * Probably only Geo Mashup using it here for a templated list of users.
 	 *
 	 * @since 1.3
-	 * @access public
-	 * @static
 	 *
 	 * @param object $user The user object to make global.
 	 */
-	function set_the_user( $user ) {
+	public static function set_the_user( $user ) {
 		$GLOBALS['user'] = $user;
 	}
 
@@ -195,12 +181,10 @@ class GeoMashupQuery {
 	 * Probably only Geo Mashup using it here for a templated list of users.
 	 *
 	 * @since 1.3
-	 * @access public
-	 * @static
 	 *
 	 * @returns bool Whether there are any users to be listed.
 	 */
-	function have_users( ) {
+	public static function have_users( ) {
 		global $users;
 
 		return ( !empty( $users ) );
@@ -210,12 +194,10 @@ class GeoMashupQuery {
 	 * A simple user loop that takes a callback option for formatting.
 	 *
 	 * @since 1.3
-	 * @access public
-	 * @static
 	 *
 	 * @param string|array $args Formatting options
 	 */
-	function list_users( $args = '' ) {
+	public static function list_users( $args = '' ) {
 		global $wp_query, $users, $in_user_loop;
 
 		if ( empty( $users ) ) {
@@ -240,10 +222,8 @@ class GeoMashupQuery {
 	 * Run a query for object locations from GET parameters and print JSON results.
 	 * 
 	 * @since 1.2
-	 * @access public
-	 * @static
 	 */
-	function generate_location_json( ) {
+	public static function generate_location_json( ) {
 		/* TODO: Try to track modification?
 		if ( !empty( $_SERVER['HTTP_IF_MODIFIED_SINCE'] ) ) {
 			$http_time = strtotime( $_SERVER['HTTP_IF_MODIFIED_SINCE'] );
@@ -268,4 +248,3 @@ class GeoMashupQuery {
 		echo GeoMashup::get_locations_json($_GET);
 	}
 }
-?>
