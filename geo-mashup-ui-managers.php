@@ -775,7 +775,7 @@ class GeoMashupCommentUIManager {
 		if ( $user ) 
 			$default_location = GeoMashupDB::get_object_location( 'user', $user->ID );
 		if ( !$default_location )
-			$default_location = GeoMashupDB::blank_location();
+			$default_location = GeoMashupDB::blank_object_location();
 		$default_summary = ( empty( $default_location->locality_name ) ? '' : $default_location->locality_name . ', ' ) .
 				( empty( $default_location->admin_code ) ? '' : $default_location->admin_code );
 

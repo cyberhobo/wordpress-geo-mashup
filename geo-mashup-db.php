@@ -1568,35 +1568,52 @@ class GeoMashupDB {
 	}
 
 	/**
-	 * Get a blank object location.
-	 * 
-	 * Ambiguous - treated like both a location and object location. 
-	 * @todo Clean up.
+	 * Get a blank location.
+	 *
+	 * Used to return object fields too - use blank_object_location for that if desired.
+	 *
 	 * @since 1.2
 	 * 
-	 * @param constant $format 
-	 * @return array|object Empty object location.
+	 * @param string $format OBJECT or ARRAY_A
+	 * @return array|object Empty location.
 	 */
 	public static function blank_location( $format = OBJECT ) {
-		$blank_location = array(
-			'id' => null,
-			'lat' => null,
-			'lng' => null,
-			'address' => null,
-			'saved_name' => null,
-			'geoname' => null,
-			'postal_code' => null,
-			'country_code' => null,
-			'admin_code' => null,
-			'sub_admin_code' => null,
-			'locality_name' => null,
-		  'object_name' => null,
-		  'object_id' => null,
-		  'geo_date' => null );
+		global $wpdb;
+		$wpdb->query("SELECT * FROM {$wpdb->prefix}geo_mashup_locations WHERE 1=2" );
+		$col_info = $wpdb->get_col_info();
+		$blank_location = array();
+		foreach( $col_info as $col_name ) {
+			$blank_location[$col_name] = null;
+		}
 		if ( $format == OBJECT ) {
 			return (object) $blank_location;
 		} else {
 			return $blank_location;
+		}
+	}
+
+	/**
+	 * Get a blank object location.
+	 *
+	 * @since 1.4
+	 *
+	 * @param string $format OBJECT or ARRAY_A
+	 * @return array|object Empty object location.
+	 */
+	public static function blank_object_location( $format = OBJECT ) {
+		global $wpdb;
+		$wpdb->query("SELECT * FROM {$wpdb->prefix}geo_mashup_locations gml
+				JOIN {$wpdb->prefix}geo_mashup_location_relationships gmlr ON gmlr.location_id = gml.id
+				WHERE 1=2" );
+		$col_info = $wpdb->get_col_info();
+		$blank_object_location = array();
+		foreach( $col_info as $col_name ) {
+			$blank_object_location[$col_name] = null;
+		}
+		if ( $format == OBJECT ) {
+			return (object) $blank_object_location;
+		} else {
+			return $blank_object_location;
 		}
 	}
 
@@ -1908,7 +1925,7 @@ class GeoMashupDB {
 		}
 
 		$no_where_fields = array( 'object_name', 'object_id', 'geo_date' );
-		foreach ( self::blank_location( ARRAY_A ) as $field => $blank ) {
+		foreach ( self::blank_object_location( ARRAY_A ) as $field => $blank ) {
 			if ( !in_array( $field, $no_where_fields) && isset( $query_args[$field] ) ) {
 				$wheres[] = $wpdb->prepare( "gml.$field = %s", $query_args[$field] );
 			}

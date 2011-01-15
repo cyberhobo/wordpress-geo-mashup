@@ -36,7 +36,7 @@ function geo_mashup_edit_form( $object_name, $object_id, $ui_manager = '' ) {
 	// Load any existing location for the object
 	$location = GeoMashupDB::get_object_location( $object_name, $object_id );
 	if ( empty( $location ) ) {
-		$location = GeoMashupDB::blank_location();
+		$location = GeoMashupDB::blank_object_location();
 		$help_class = '';
 		$add_input_style = '';
 		$update_input_style = $delete_input_style = 'style="display:none;"';
