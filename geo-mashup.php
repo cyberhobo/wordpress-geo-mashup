@@ -9,7 +9,7 @@ Author URI: http://www.cyberhobo.net/
 Minimum WordPress Version Required: 3.0
 */
 
-/*  Copyright 2010  Dylan Kuhn  (email : cyberhobo@cyberhobo.net)
+/*  Copyright 2011  Dylan Kuhn  (email : cyberhobo@cyberhobo.net)
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License, version 2, as 
