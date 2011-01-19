@@ -583,23 +583,24 @@ class GeoMashupPostUIManager extends GeoMashupUIManager {
 			$this->inline_location = shortcode_parse_atts( stripslashes( $shortcode_match[$tag_index+1] ) );
 
 			// If lat and lng are missing, try to geocode based on address
-			$status = 200;
+			$success = false;
 			if ( ( empty( $this->inline_location['lat'] ) or empty( $this->inline_location['lng'] ) ) and !empty( $this->inline_location['address'] ) ) {
 				$query = $this->inline_location['address'];
-				$status = GeoMashupDB::geocode( $query, $this->inline_location );
-				// Check for the "too many queries" statuses
-				if ( $status == 604 or $status == 620 ) {
+				$this->inline_location = GeoMashupDB::blank_object_location( ARRAY_A );
+				$success = GeoMashupDB::geocode( $query, $this->inline_location );
+				if ( !$success ) {
 					// Delay and try again
 					sleep( 1 );
-					$status = GeoMashupDB::geocode( $query, $this->inline_location );
+					$success = GeoMashupDB::geocode( $query, $this->inline_location );
 				}
 			}
 
-			if ( 200 == $status ) {
+			if ( $success ) {
 				// Remove the tag
 				$content = '';
 			} else {
-				$content = str_replace( ']', ' geocoding_error="' . $status . '"]', $content );
+				$message = ( is_wp_error( GeoMashupDB::$geocode_error ) ? GeoMashupDB::$geocode_error->get_error_message() : __( 'Address not found - try making it less detailed', 'GeoMashup' ) );
+				$content = str_replace( ']', ' geocoding_error="' . $message . '"]', $content );
 				$this->inline_location = null;
 			}
 		} 
