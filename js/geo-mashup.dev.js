@@ -795,12 +795,13 @@ GeoMashup = {
 			}
 		} // end for each marker
 
-		this.addMarkers( added_markers );
-
 		// Add category lines
 		if (add_category_info) {
 			this.showCategoryInfo();
 		}
+
+		// Openlayers at least only gets clicks on the top layer, so add markers last
+		this.addMarkers( added_markers );
 
 		if (this.firstLoad) {
 			this.firstLoad = false;
