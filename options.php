@@ -151,6 +151,9 @@ function geo_mashup_options_page() {
 			}
 		} );
 		$( '#import_custom_field' ).suggest( ajaxurl + '?action=geo_mashup_suggest_custom_keys' );
+		$( '#map_api' ).change( function() {
+			$( '#overall-submit' ).click();
+		} );
  	} ); 
 	</script>
 	<div class="wrap">
@@ -387,7 +390,7 @@ function geo_mashup_options_page() {
 					</tr>
 					<?php endif; ?>
 				</table>
-				<div class="submit"><input type="submit" name="submit" value="<?php _e('Update Options', 'GeoMashup'); ?>" /></div>
+				<div class="submit"><input id="overall-submit" type="submit" name="submit" value="<?php _e('Update Options', 'GeoMashup'); ?>" /></div>
 			</fieldset>
 			<fieldset id="geo-mashup-single-map-settings">
 				<p><?php _e('Default settings for maps of a single located post.', 'GeoMashup'); ?></p>
@@ -951,8 +954,8 @@ function geo_mashup_options_page() {
 			</form>
 		</div>
 		<?php else : ?>
-		<p>Help keep Geo Mashup alive: <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=11045324">donate</a>, 
-		contribute <a href="http://code.google.com/p/wordpress-geo-mashup/wiki/Tutorials">a tutorial</a>
+		<p>Geo Mashup needs you: <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=11045324">donate</a>,
+		contribute <a href="http://wiki.geo-mashup.org/guides">a guide</a>
 		or <a href="http://code.google.com/p/wordpress-geo-mashup/source/checkout">code</a>,
 		answer a question in the <a href="http://groups.google.com/group/wordpress-geo-mashup-plugin">community support group</a>,
 		or use this HTML to add a link to your site:
