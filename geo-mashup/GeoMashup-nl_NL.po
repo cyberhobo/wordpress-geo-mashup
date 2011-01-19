@@ -1,0 +1,728 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: GeoMashup Dutch 0.1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2010-04-22 07:25-0600\n"
+"PO-Revision-Date: \n"
+"Last-Translator: Kurt Stockman <kurt.stockman@timelab.org>\n"
+"Language-Team: timelab <info@timelab.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-Language: Dutch\n"
+"X-Poedit-Country: BELGIUM\n"
+
+#: comment-default.php:50
+#, php-format
+msgid "<cite class=\"fn\">%s</cite> <span class=\"says\">says:</span>"
+msgstr "<cite class=\"fn\">%s</cite> <span class=\"says\">zegt:</span>"
+
+#: comment-default.php:53
+#, php-format
+msgid "%1$s at %2$s"
+msgstr "%1$s om %2$s"
+
+#: edit-form.php:131
+msgid "Address"
+msgstr "Adres"
+
+#: edit-form.php:132
+msgid "Saved Name"
+msgstr "Bewaarde Naam"
+
+#: edit-form.php:133
+msgid "Geo Date"
+msgstr "Geo Datum"
+
+#: edit-form.php:161
+msgid "Loading Google map. Check Geo Mashup options if the map fails to load."
+msgstr "De Google map wordt geladen. Check de Geo Mashup opties mocht dit niet lukken."
+
+#: edit-form.php:167
+msgid "Location Map Image"
+msgstr "Location Map Image"
+
+#: edit-form.php:173
+msgid "Find a new location:"
+msgstr "Zoek een nieuwe locatie op naam (tik de naam en duw op enter):"
+
+#: edit-form.php:177
+msgid "or select from"
+msgstr "of kies uit"
+
+#: edit-form.php:179
+msgid "[Saved Locations]"
+msgstr "[Bewaarde Locaties]"
+
+#: edit-form.php:204
+msgid "Add Location"
+msgstr "Voeg een locatie toe"
+
+#: edit-form.php:205
+msgid "Delete"
+msgstr "Verwijder"
+
+#: edit-form.php:206
+msgid "Save"
+msgstr "Bewaren"
+
+#: edit-form.php:209
+msgid "help"
+msgstr "help"
+
+#: edit-form.php:212
+msgid "<em>Saved Name</em> is an optional name you may use to add entries to the Saved Locations menu."
+msgstr "<em>Bewaarde Naam</em> is een naam die je kan gebruiken om een locatie toe te voegen aan het  'Bewaarde Locaties' menu."
+
+#: edit-form.php:213
+msgid "<em>Geo Date</em> associates a date (most formats work) and time with a location. Leave the default value if uncertain."
+msgstr "<em> Geo Datum</em> associeert een datum en een tijd bij een locatie. Laat dit veld leeg als je twijfelt."
+
+#: edit-form.php:215
+msgid "Put a green pin at a new location. There are many ways to do it:"
+msgstr "Plaats een groene pin op een nieuwe locatie. Er zijn verschillende manieren om dit te doen:"
+
+#: edit-form.php:217
+msgid "Search for a location name."
+msgstr "Zoek een nieuwe locatie op naam."
+
+#: edit-form.php:218
+msgid "For multiple search results, mouse over pins to see location names, and click a result pin to select that location."
+msgstr "Bij meerdere zoekresultaten: beweeg je muis over de verschillende locatiepins om de details te zien. Klik dan op een pin om die locatie te kiezen."
+
+#: edit-form.php:219
+msgid "Search for a decimal latitude and longitude separated by a comma, like <em>40.123,-105.456</em>. Seven decimal places are stored. Negative latitude is used for the southern hemisphere, and negative longitude for the western hemisphere."
+msgstr "Zoek naar een decimale latitude en longitude, gescheiden door een comma: zoals <em>40.123,-105.456</em>. Een negatieve longitude wordt gebruikt voor de Zuidelijke hemisfeer, een negatieve longitude voor de Westerse hemisfeer."
+
+#: edit-form.php:220
+msgid "Search for a street address, like <em>123 main st, anytown, acity</em>."
+msgstr "Zoek een straatadres op, zoals  <em>82 destraat, destad, hetland</em>."
+
+#: edit-form.php:221
+msgid "Click on the location. Zoom in if necessary so you can refine the location by dragging it or clicking a new location."
+msgstr "Klik op een locatie. Zoom in als dat nodig is om de locatie te verslepen of om een andere locatie aan te klikken."
+
+#: edit-form.php:223
+msgid "To execute a search, type search text into the Find Location box and hit the enter key. If you type a name next to \"Save As\", the location will be saved under that name and added to the Saved Locations dropdown list."
+msgstr "Om een locatie op te slaan vul je een naam in in het 'Bewaarde Naam' veld en klik op 'Bewaren'. Die locatie wordt dan bij je 'Bewaarde Locaties' toegevoegd."
+
+#: edit-form.php:224
+msgid "To remove the location (green pin), clear the search box and hit the enter key."
+msgstr "Om een locatie (groene pin) te verwijderen maak je het zoekveld leeg en duw je op enter."
+
+#: edit-form.php:225
+msgid "When you are satisfied with the location, save or update."
+msgstr "Als je tevreden bent met je locatie, vergeet je bericht dan niet op te slaan of bij te werken."
+
+#: edit-form.php:229
+msgid "To add or update location choose a saved location, or find a new location using one of these formats:"
+msgstr "Om een locatie toe te voegen of bij te werken kies je een 'Bewaarde Locatie' of zoek je een nieuwe via deze formats:"
+
+#: edit-form.php:231
+msgid "A place name like <em>Yellowstone National Park</em>"
+msgstr "Een plaatsnaam zoals <em>Yellowstone National Park</em>"
+
+#: edit-form.php:232
+msgid "A decimal latitude and longitude, like <em>40.123,-105.456</em>."
+msgstr "Een latitude en logitude, zoals <em>40.123,-105.456</em>."
+
+#: edit-form.php:233
+msgid "A full or partial street address, like <em>123 main st, anytown, acity 12345 USA</em>."
+msgstr "Een volledig of gedeeltelijk adres,  zoals <em>82 destraat, destad, hetland</em>."
+
+#: edit-form.php:235
+msgid "When you save or update, the closest match available will be saved as the location."
+msgstr "Bij het bewaren of bijwerken wordt de dichtste locatie gekozen."
+
+#: geo-mashup-db.php:752
+msgid "No locations found with missing address fields."
+msgstr "Geen locatie gevonden. Probeer alle velden in te vullen."
+
+#: geo-mashup-db.php:755
+msgid "Locations to geocode: "
+msgstr "Te geocoderen locaties:"
+
+#: geo-mashup-db.php:763
+msgid "Time limit: "
+msgstr "Tijdslimiet:"
+
+#: geo-mashup-db.php:774
+msgid "Too many requests, increasing delay to"
+msgstr "Er zijn te veel verzoeken. De limiet wordt verhoogd naar"
+
+#: geo-mashup-db.php:777
+msgid "address"
+msgstr "adres"
+
+#: geo-mashup-db.php:778
+msgid "postal code"
+msgstr "postcode"
+
+#: geo-mashup-db.php:781
+msgid "No address info found, status"
+msgstr "Er werd geen informatie over dit adres terug gevonden."
+
+#: geo-mashup-db.php:785
+msgid "Time limit exceeded, retry to continue."
+msgstr "Tijdslimiet overschreden. Probeer opnieuw."
+
+#: geo-mashup-db.php:860
+msgid "Converting old locations"
+msgstr "Oude locaties aan het omzetten."
+
+#: geo-mashup-db.php:877
+#, php-format
+msgid "Failed to convert location (%s). You can %sedit the post%s "
+msgstr "Het omzetten van de locatie mislukte (%s). Je kan %shet bericht bewerken%s "
+
+#: geo-mashup-db.php:878
+msgid "to update the location, and try again."
+msgstr "Om de locatie bij te werken en opnieuw te proberen."
+
+#: geo-mashup-db.php:891
+msgid "Converting saved locations"
+msgstr "Bewaarde locaties aan het omzetten"
+
+#: geo-mashup-db.php:901
+msgid "OK: "
+msgstr "OK: "
+
+#: geo-mashup-db.php:906
+#, php-format
+msgid "Failed to convert saved location (%s). "
+msgstr "Het omzetten van de bewaarde locatie mislukte (%s). "
+
+#: geo-mashup-db.php:907
+msgid "You'll have to save it again, sorry."
+msgstr "Je moet opnieuw bewaren, sorry."
+
+#: geo-mashup-db.php:931
+msgid "Failed to initialize geo dates from post dates: "
+msgstr "Geo-datums initialiseren vertrekkende van de berichtdatums mislukte:"
+
+#: geo-mashup-db.php:934
+#, php-format
+msgid "Initialized %d geo dates from corresponding post dates."
+msgstr "initialiseerde %d geo-datums van de corresponderende berichtdatums."
+
+#: geo-mashup-db.php:1392
+msgid "A location must have an ID or coordinates to be saved."
+msgstr "Een locatie moet een ID of coördinaten hebben om opgeslagen te kunnen worden."
+
+#: geo-mashup-options.php:362
+#: geo-mashup-options.php:370
+#: geo-mashup-options.php:376
+#: geo-mashup-options.php:386
+#: geo-mashup-options.php:402
+#: geo-mashup-options.php:407
+#: geo-mashup-options.php:420
+#: geo-mashup-options.php:452
+#: geo-mashup-options.php:467
+#: geo-mashup-options.php:480
+msgid "is invalid for"
+msgstr "is niet geldig voor"
+
+#: geo-mashup-options.php:363
+#: geo-mashup-options.php:377
+msgid ", which must be a valid map type (see documentation)"
+msgstr ", dat een geldig kaarttype moet zijn (zie de documentatie)"
+
+#: geo-mashup-options.php:371
+msgid ", which must be an array of valid map types (see documentation)"
+msgstr ", dat een array van geldig kaarttypes moet zijn (zie de documentatie)"
+
+#: geo-mashup-options.php:387
+msgid ", which must be a valid map control (see documentation)"
+msgstr ", dat een geldige kaart controle moet zijn (zie documentatie)"
+
+#: geo-mashup-options.php:403
+msgid ", which must be a string"
+msgstr ", dat een string moet zijn"
+
+#: geo-mashup-options.php:408
+msgid ", which must not contain XML tags."
+msgstr ", dat geen XML tags mag bevatten."
+
+#: geo-mashup-options.php:421
+msgid ", which must be a number"
+msgstr ", dat een getal moet zijn"
+
+#: geo-mashup-options.php:453
+msgid ", which must be \"true\" or \"false\""
+msgstr ", dat \"waar\" of  \"vals\" moet zijn"
+
+#: geo-mashup-options.php:468
+msgid ", which must be an array"
+msgstr ", dat een array moet zijn"
+
+#: geo-mashup-options.php:481
+msgid ", which must be a number from 0 to "
+msgstr ", dat een nummer moet zijn van 0 tot"
+
+#: geo-mashup-ui-managers.php:123
+msgid "Object location not saved - invalid request."
+msgstr "Object locatie niet bewaard - ongeldig verzoek."
+
+#: geo-mashup-ui-managers.php:269
+#: geo-mashup-ui-managers.php:431
+#: geo-mashup-ui-managers.php:432
+msgid "Location"
+msgstr "Locatie"
+
+#: geo-mashup.php:298
+msgid "No object id posted."
+msgstr "Geen object id geplaatst"
+
+#: geo-mashup.php:315
+msgid "Location updated."
+msgstr "Locatie bijgewerkt."
+
+#: geo-mashup.php:317
+msgid "Location deleted."
+msgstr "Locatie verwijdert."
+
+#: geo-mashup.php:319
+msgid "Location added."
+msgstr "Locatie bijgevoegd."
+
+#: geo-mashup.php:666
+msgid "Geo Mashup found no objects to map in this context"
+msgstr "Geo Mashup vond geen objecten om op de kaart te plaatsen in deze context"
+
+#: geo-mashup.php:690
+msgid "Geo Mashup found no current object to map"
+msgstr "Geo Mashup vond geen object om op de kaart te plaatsen"
+
+#: geo-mashup.php:694
+msgid "Geo Mashup ommitted a map for an object with no location"
+msgstr "Geo Mashup verwijderde een kaart voor een object zonder locatie"
+
+#: geo-mashup.php:880
+msgid "You must add a description to this category to use this Geo Mashup feature."
+msgstr "Je moet een beschrijving bij deze categorie toevoegen om deze feature van Geo Mashup te kunnen gebruiken."
+
+#: geo-mashup.php:910
+#: options.php:127
+msgid "Geo Mashup Options"
+msgstr "Geo Mashup Opties"
+
+#: geo-mashup.php:910
+msgid "Geo Mashup"
+msgstr "Geo Mashup"
+
+#: geo-mashup.php:932
+#, php-format
+msgid "Geo Mashup requires a Google API key in the <a href=\"%s\">settings</a> before it will work."
+msgstr "Je moet een  Google API key in de <a href=\"%s\">instellingen</a> toevoegen vooraleer Geo Mashup werkt."
+
+#: geo-mashup.php:955
+msgid "Settings"
+msgstr "Instellingen"
+
+#: geo-mashup.php:974
+msgid "Documentation"
+msgstr "Documentatie"
+
+#: geo-mashup.php:976
+msgid "Donate"
+msgstr "Doneer"
+
+#: geo-mashup.php:1154
+msgid "Show on map"
+msgstr "Toon op kaart"
+
+#: geo-mashup.php:1165
+msgid "Geotag Icon"
+msgstr "Geotag Icon"
+
+#: options.php:32
+msgid "Options updated."
+msgstr "Opties bijgewerkt."
+
+#: options.php:45
+msgid "Database upgraded."
+msgstr "Database bijgewerkt."
+
+#: options.php:51
+msgid "Saved options may be corrupted, try updating again. Corrupt values: "
+msgstr "De bewaarde opties zijn mogelijk gecorumpeerd, probeer nog eens bij te werken. Gecorumpeerde waarden:"
+
+#: options.php:59
+msgid "Some invalid options will not be used. If you've just upgraded, do an update to initialize new options."
+msgstr "Sommige ongeldige opties zullen niet gebruikt worden. Als je net een upgrade gedaan hebt, probeer dan bij te werken om de nieuwe opties te initialiseren."
+
+#: options.php:88
+msgid "Roadmap"
+msgstr "Kaart"
+
+#: options.php:89
+msgid "Satellite"
+msgstr "Satelliet"
+
+#: options.php:90
+msgid "Hybrid"
+msgstr "Hybride"
+
+#: options.php:91
+msgid "Terrain"
+msgstr "Terrein"
+
+#: options.php:92
+msgid "Earth Plugin"
+msgstr "Earth Plugin"
+
+#: options.php:95
+msgid "Small Zoom"
+msgstr "Kleine Zoom"
+
+#: options.php:96
+msgid "Small Zoom 3D"
+msgstr "Kleine Zoom 3D"
+
+#: options.php:97
+msgid "Small Pan/Zoom"
+msgstr "Kleine Pan/Zoom"
+
+#: options.php:98
+msgid "Large Pan/Zoom"
+msgstr "Grote Pan/Zoom"
+
+#: options.php:99
+msgid "Large Pan/Zoom 3D"
+msgstr "Grote Pan/Zoom 3D"
+
+#: options.php:102
+msgid "Yes"
+msgstr "Ja"
+
+#: options.php:103
+msgid "No"
+msgstr "Nee"
+
+#: options.php:104
+msgid "Only"
+msgstr "Alleen"
+
+#: options.php:106
+msgid "auto"
+msgstr "automatisch"
+
+#: options.php:132
+msgid "The Geo Mashup database is out of date."
+msgstr "De Geo Mashup database is out of date."
+
+#: options.php:133
+msgid "Upgrade Database"
+msgstr "Upgrade de Database"
+
+#: options.php:139
+msgid "Overall"
+msgstr "Algemeen"
+
+#: options.php:140
+msgid "Global Maps"
+msgstr "Globale kaarten"
+
+#: options.php:141
+msgid "Single Maps"
+msgstr "Enkelvoudige kaarten"
+
+#: options.php:142
+msgid "Contextual Maps"
+msgstr "Contextuele kaarten"
+
+#: options.php:150
+msgid "Overall Geo Mashup Settings"
+msgstr "Algemene Geo Mashup instellingen"
+
+#: options.php:153
+msgid "Google API Key"
+msgstr "Google API Key"
+
+#: options.php:160
+msgid "Get yours here"
+msgstr "Haal er één hier."
+
+#: options.php:163
+msgid "This setting is required for Geo Mashup to work."
+msgstr "Deze instelling is nodig om Geo Mashup te doen werken."
+
+#: options.php:169
+msgid "Generated links go here"
+msgstr "Gegenereerde links komen hier"
+
+#: options.php:170
+msgid "Global Mashup Page"
+msgstr "Algemene  Kaart Pagina"
+
+#: options.php:184
+msgid "No pages available."
+msgstr "Geen beschikbare paginas."
+
+#: options.php:188
+msgid "Geo Mashup will use this page for generated location links"
+msgstr "Geo Mashup gebruikt deze pagina om een kaart te tonen met alle gegenereerde locaties."
+
+#: options.php:193
+msgid "Use Theme Style Sheet with Maps"
+msgstr "Gebruik het Theme Style Sheet met je kaarten"
+
+#: options.php:206
+msgid "Add Category Links"
+msgstr "Voeg categorie links toe"
+
+#: options.php:214
+msgid "Add map links to category lists. Categories must have descriptions for this to work."
+msgstr "Maak kaart-links voor categorie-links. Categoriën moeten een beschrijving hebben om dit te doen werken."
+
+#: options.php:219
+msgid "Category Link Separator"
+msgstr "Categorie-links scheidingsteken"
+
+#: options.php:230
+msgid "Category Link Text"
+msgstr "Categorie-links tekst"
+
+#: options.php:240
+msgid "Category Link Zoom Level"
+msgstr "Categorie-links zoom level"
+
+#: options.php:252
+#: options.php:421
+#: options.php:558
+#: options.php:793
+msgid "0 is zoomed all the way out."
+msgstr "0 is helemaal uitgezoomd."
+
+#: options.php:257
+msgid "Collect Location For"
+msgstr "Verzamel locaties voor"
+
+#: options.php:263
+msgid "posts and pages"
+msgstr "berichten en pagina's"
+
+#: options.php:268
+msgid "users"
+msgstr "gebruikers"
+
+#: options.php:273
+msgid "comments"
+msgstr "reacties"
+
+#: options.php:277
+msgid "Enable Reverse Geocoding"
+msgstr "Maak omgekeerd Geocoderen mogelijk"
+
+#: options.php:285
+msgid "Try to look up missing address fields for new locations."
+msgstr "Probeer ontbrekende adresgegevens op te zoeken voor nieuwe locaties."
+
+#: options.php:291
+msgid "Bulk Reverse Geocode"
+msgstr "Bulk omgekeerd geocoderen"
+
+#: options.php:293
+msgid "Start"
+msgstr "Start"
+
+#: options.php:295
+msgid "Try to look up missing address fields for existing locations. Could be slow."
+msgstr "Probeer ontbrekende adresgegevens op te zoeken voor bestaande locaties. Kan lang duren."
+
+#: options.php:301
+msgid "AdSense For Search ID"
+msgstr "AdSense For Search ID"
+
+#: options.php:309
+msgid "Your client ID, used with the Google Bar. Leave the default value to use Geo Mashup's :)."
+msgstr "Je client ID voor de Goole Bar. Laat de standaard waarde staan om die van Geo Mashup te gebruiken. :)"
+
+#: options.php:314
+#: options.php:446
+#: options.php:450
+#: options.php:682
+#: options.php:839
+msgid "Update Options"
+msgstr "Opties bijwerken"
+
+#: options.php:317
+msgid "Default settings for maps of a single located post."
+msgstr "Standaard instellingen voor kaarten die bij één bericht, pagina, comment of gebruiker zichtbaar zijn."
+
+#: options.php:320
+#: options.php:453
+#: options.php:688
+msgid "Map Width"
+msgstr "Breedte"
+
+#: options.php:327
+#: options.php:460
+#: options.php:695
+msgid "Pixels, or append %."
+msgstr "pixels, of voeg % toe voor een relatieve breedte."
+
+#: options.php:331
+#: options.php:464
+#: options.php:699
+msgid "Map Height"
+msgstr "Hoogte"
+
+#: options.php:338
+#: options.php:471
+#: options.php:706
+msgid "px"
+msgstr "pixels"
+
+#: options.php:342
+#: options.php:475
+#: options.php:710
+msgid "Map Control"
+msgstr "Kaart navigatie"
+
+#: options.php:356
+#: options.php:489
+#: options.php:724
+msgid "Default Map Type"
+msgstr "Standaard kaartweergave"
+
+#: options.php:370
+#: options.php:503
+#: options.php:738
+msgid "Add Map Type Control"
+msgstr "Voeg opties voor kaartweergave toe"
+
+#: options.php:385
+#: options.php:518
+#: options.php:753
+msgid "Add Overview Control"
+msgstr "Voeg overzichtscontrole toe"
+
+#: options.php:393
+#: options.php:528
+#: options.php:763
+msgid "Add Google Bar"
+msgstr "Voeg Google Bar toe"
+
+#: options.php:401
+#: options.php:538
+#: options.php:773
+msgid "Enable Scroll Wheel Zoom"
+msgstr "Enable Scroll Wheel Zoom"
+
+#: options.php:409
+#: options.php:546
+#: options.php:781
+msgid "Default Zoom Level"
+msgstr "Standaard zoom level"
+
+#: options.php:426
+#: options.php:633
+#: options.php:819
+msgid "Click To Load"
+msgstr "Klik om de kaart te laden"
+
+#: options.php:436
+#: options.php:643
+#: options.php:829
+msgid "Click To Load Text"
+msgstr "\"Klik om de kaart te laden\" tekst"
+
+#: options.php:449
+msgid "Default settings for global maps of located items."
+msgstr "Standaard instellingen voor overzichtskaarten van gelocaliseerde content."
+
+#: options.php:563
+msgid "Cluster Markers Until Zoom Level"
+msgstr "Markers (pins) groeperen tot zoom level"
+
+#: options.php:571
+msgid "Highest zoom level to cluster markers, or blank for no clustering."
+msgstr "Hoogste zoom level om markers (pins) te groeperen. Laat dit blanco om nooit te groeperen."
+
+#: options.php:576
+#: options.php:798
+msgid "Marker Selection Behaviors"
+msgstr "Marker (pin) interactie"
+
+#: options.php:581
+#: options.php:803
+msgid "Open info window"
+msgstr "Open info venster"
+
+#: options.php:585
+#: options.php:807
+msgid "Highlight"
+msgstr "Markeer"
+
+#: options.php:589
+#: options.php:811
+msgid "Center"
+msgstr "Centreer"
+
+#: options.php:593
+#: options.php:815
+msgid "Show Geo Attachments"
+msgstr "Toon Geo attachments"
+
+#: options.php:597
+msgid "Automatic Selection"
+msgstr "Automatische selectie"
+
+#: options.php:605
+msgid "Selects the linked or most recent item when the map loads."
+msgstr "Selecteert de gelinkte of meest recente items als de kaart geladen wordt."
+
+#: options.php:610
+msgid "Show Only Most Recent Items"
+msgstr "Toon alleen de meest recente items"
+
+#: options.php:617
+msgid "Number of items to show, leave blank for all"
+msgstr "Aantal items om te tonen. Laat dit leeg om alles te tonen."
+
+#: options.php:621
+msgid "Show Future Posts"
+msgstr "Toon \"Future Posts\""
+
+#: options.php:654
+msgid "Category"
+msgstr "Categorie"
+
+#: options.php:654
+msgid "Color"
+msgstr "Kleur"
+
+#: options.php:655
+msgid "Show Connecting Line Until Zoom Level (0-20 or none)"
+msgstr "Toon verbindingslijn tot zoom level (0-20 of geen)"
+
+#: options.php:685
+msgid "Default settings for contextual maps, which include just the items shown on a page, for example."
+msgstr "Standaard instellingen voor contextuele kaarten. "
+
+#: options.php:844
+msgid "Activation Log"
+msgstr "Activatie log"
+
+#: options.php:848
+msgid "View Activation Log"
+msgstr "Bekijk het activatie log"
+
+#: options.php:850
+msgid "Geo Mashup Documentation"
+msgstr "Geo Mashup Documentatie (Engels)"
+
+#: render-map.php:218
+msgid "This map requires JavaScript. You may have to enable it in your settings."
+msgstr "Deze kaart vereist JavaScript. Schakel JavaScript in in uw browser instellingen."
+
+#: user-default.php:40
+msgid "Display Name"
+msgstr "Toon naam"
+
+#: user-default.php:45
+msgid "Website"
+msgstr "Website"
+
