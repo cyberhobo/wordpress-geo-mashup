@@ -644,25 +644,9 @@ function geo_mashup_options_page() {
 					</tr>
 					<?php if ( 'google' == $map_api ) : ?>
 					<tr>
-						<th scope="row"><?php _e('Clustering Library', 'GeoMashup'); ?></th>
-						<td>
-							<select id="zoom" name="global_map[cluster_lib]">
-								<?php foreach ( $clusterOptions as $value => $label ) : ?>
-								<option value="<?php echo esc_attr( $value ); ?>"<?php
-									if ( strcmp( $value, $geo_mashup_options->get( 'global_map', 'cluster_lib' ) ) == 0 ) {
-										echo ' selected="selected"';
-									}
-								?>><?php echo esc_html( $label ); ?></option>
-								<?php endforeach; ?>
-							</select>
-							<span class="setting-description"><?php 
-								_e( 'Cluster Marker is the first library Geo Mashup used. Marker Clusterer may be faster.', 'GeoMashup' ); 
-							?></span>
-						</td>
-					</tr>
-					<tr>
 						<th scope="row"><?php _e('Cluster Markers Until Zoom Level', 'GeoMashup'); ?></th>
 						<td>
+							<input id="cluster_library" name="global_map[cluster_lib]" type="hidden" value="clustermarker" />
 							<input id="cluster_max_zoom" 
 								name="global_map[cluster_max_zoom]" 
 								type="text" 
