@@ -342,7 +342,7 @@ GeoMashup.createMap = function(container, opts) {
 		opts.object_name = 'post';
 	}
 	this.opts = opts;
-	this.geo_query_url = opts.siteurl + '?geo_mashup_content=geo-query&_wpnonce=' + opts.nonce;
+	this.geo_query_url = opts.siteurl + '/?geo_mashup_content=geo-query&_wpnonce=' + opts.nonce;
 
 
 	// TODO: Try to deleselect markers with clicks? Need to make sure we don't get other object's clicks.

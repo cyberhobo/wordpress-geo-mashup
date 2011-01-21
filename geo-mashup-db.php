@@ -1482,12 +1482,12 @@ class GeoMashupDB {
 		if ( ! empty( $query_args['radius_mi'] ) ) {
 			$query_args['radius_km'] = 1.609344 * floatval( $query_args['radius_mi'] );
 		}
-		if ( ! empty( $query_args['radius_km'] ) and ! empty( $query_args['near_lat'] ) and ! empty( $query_args['near_lng'] ) ) {
+		if ( ! empty( $query_args['radius_km'] ) and is_numeric( $query_args['near_lat'] ) and is_numeric( $query_args['near_lng'] ) ) {
 			// Earth radius = 6371 km, 3959 mi
 			$near_lat = floatval( $query_args['near_lat'] );
 			$near_lng = floatval( $query_args['near_lng'] );
 			$radius_km = floatval( $query_args['radius_km'] );
-			$field_string .= ", 6371 * 2 * ASIN( SQRT( POWER( SIN( ( $near_lat - ABS( gml.lat ) ) * PI() / 180 / 2 ), 2 ) + COS( $near_lat * PI() / 180 ) * COS( ABS( gml.lat ) * PI() / 180 ) * POWER( SIN( ( $near_lng - gml.lng ) * PI() / 180 / 2 ), 2 ) ) ) as distance_km";
+			$field_string .= ", 6371 * 2 * ASIN( SQRT( POWER( SIN( RADIANS( $near_lat - gml.lat ) / 2 ), 2 ) + COS( RADIANS( $near_lat ) ) * COS( RADIANS( gml.lat ) ) * POWER( SIN( RADIANS( $near_lng - gml.lng ) / 2 ), 2 ) ) ) as distance_km";
 			$having = "HAVING distance_km < $radius_km";
 			// approx 111 km per degree latitude
 			$query_args['min_lat'] = $near_lat - ( $radius_km / 111 );

@@ -489,14 +489,22 @@ class GeoMashup {
 			'post_type' => 'attachment',
 			'numberposts' => null,
 			'post_status' => null,
-			'post_mime_type' => 'application/vnd.google-earth.kml+xml,application/vnd.google-earth.kmz',
+			'post_mime_type' => array(
+				'application/vnd.google-earth.kml+xml',
+				'application/vnd.google-earth.kmz',
+				'application/octet-stream'
+			),
 			'post_parent' => $post_id
 			); 
 		$attachments = get_posts($args);
 		$urls = array();
 		if ($attachments) {
 			foreach ($attachments as $attachment) {
-				array_push( $urls, wp_get_attachment_url( $attachment->ID ) );
+				$url = wp_get_attachment_url( $attachment->ID ); 
+				// Backwards compatibility: include KML attachments with the incorrect octet-stream mime type
+				if ( 'application/octet-stream' != $attachment->post_mime_type or 'kml' == substr( $url, -3 ) ) {
+					array_push( $urls, $url );
+				}
 			}
 		}
 		return $urls;

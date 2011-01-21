@@ -475,7 +475,7 @@ GeoMashup.createMap = function(container, opts) {
 		opts.object_name = 'post';
 	}
 	this.opts = opts;
-	this.geo_query_url = opts.siteurl + '?geo_mashup_content=geo-query';
+	this.geo_query_url = opts.siteurl + '/?geo_mashup_content=geo-query';
 	if ( opts.hasOwnProperty( 'lang' ) ) {
 		this.geo_query_url += '&lang=' + opts.lang;
 	}
