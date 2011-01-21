@@ -134,7 +134,7 @@ var
 			} else {
 				return val;
 			}
-		}
+		};
 
 		this.subValue = function(obj, keys, default_value) {
 			var key;
@@ -456,8 +456,8 @@ var
 			$locality_name_input.val( loc.locality_name );
 
 			// Update the display
-			$address_display.text( loc.address )
-			$coordinate_display.text( latlng.toString() )
+			$address_display.text( loc.address );
+			$coordinate_display.text( latlng.toString() );
 			$info_display.addClass( 'ui-state-highlight' );
 			geo_mashup_location_editor.setHaveUnsavedChanges();
 		}
@@ -547,7 +547,7 @@ var
 	 * Create a marker for a loaded KML object.
 	 */
 	addKml = function() {
-		if ( kml && kml.hasLoaded() && $location_input.val().length == 0 ) {
+		if ( kml && kml.hasLoaded() && $location_input.val().length === 0 ) {
 
 			// There are no coordinates in the location input,
 			// so use KML center 
@@ -647,7 +647,7 @@ var
 
 		} else {
 
-			if (search_text.match(/^[-\d\.\s]*,[-\d\.\s]*$/)) {
+			if (search_text.match(/^[\-\d\.\s]*,[\-\d\.\s]*$/)) {
 				// For coorinates, add the selected marker at the exact location
 				latlng_array = search_text.split(',');
 				latlng = new mxn.LatLonPoint( parseFloat( latlng_array[0] ), parseFloat( latlng_array[1] ) );
@@ -743,7 +743,7 @@ var
 			latlngs.push( selected_marker.location );
 		}
 		return latlngs;
-	}
+	};
 
 	geo_mashup_location_editor.setHaveUnsavedChanges = function() {
 		have_unsaved_changes = true;

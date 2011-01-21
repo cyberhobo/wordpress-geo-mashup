@@ -50,7 +50,7 @@ Mapstraction: {
 				var idleListener = google.maps.event.addListener(map, 'idle', function() {
 					me.changeZoom.fire();
 					google.maps.event.removeListener( idleListener );
-				})
+				});
 			});
 			// deal with map movement
 			google.maps.event.addListener(map, 'dragend', function(){

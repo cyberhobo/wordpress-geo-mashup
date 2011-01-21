@@ -249,7 +249,7 @@ GeoMashup.colorIcon = function( color_name ) {
 
 GeoMashup.getMarkerLatLng = function( marker ) {
 	return marker.getLatLng();
-}
+};
 
 GeoMashup.hideMarker = function( marker ) {
 	marker.hide();
@@ -304,30 +304,30 @@ GeoMashup.makeMarkerMultiple = function( marker ) {
 };
 
 GeoMashup.setCenterUpToMaxZoom = function( latlng, zoom, callback ) {
-		var map_type = this.map.getCurrentMapType();
-		if ( map_type == google.maps.SATELLITE_MAP || map_type == google.maps.HYBRID_MAP ) {
-			map_type.getMaxZoomAtLatLng( latlng, function( response ) {
-				if ( response && response['status'] === google.maps.GEO_SUCCESS ) {
-					if ( response['zoom'] < zoom ) {
-						zoom = response['zoom'];
-					}
+	var map_type = this.map.getCurrentMapType();
+	if ( map_type == google.maps.SATELLITE_MAP || map_type == google.maps.HYBRID_MAP ) {
+		map_type.getMaxZoomAtLatLng( latlng, function( response ) {
+			if ( response && response.status === google.maps.GEO_SUCCESS ) {
+				if ( response.zoom < zoom ) {
+					zoom = response.zoom;
 				}
-				GeoMashup.map.setCenter( latlng, zoom );
-				if ( typeof callback === 'function' ) {
-					callback( zoom );
-				}
-			}, zoom );
-		} else {
-			// Current map type doesn't have getMaxZoomAtLatLng
-			if ( map_type.getMaximumResolution() < zoom ) {
-				zoom = map_type.getMaximumResolution();
 			}
-			this.map.setCenter( latlng, zoom );
+			GeoMashup.map.setCenter( latlng, zoom );
 			if ( typeof callback === 'function' ) {
 				callback( zoom );
 			}
+		}, zoom );
+	} else {
+		// Current map type doesn't have getMaxZoomAtLatLng
+		if ( map_type.getMaximumResolution() < zoom ) {
+			zoom = map_type.getMaximumResolution();
 		}
-	},
+		this.map.setCenter( latlng, zoom );
+		if ( typeof callback === 'function' ) {
+			callback( zoom );
+		}
+	}
+};
 
 GeoMashup.autoZoom = function() {
 	var zoom = this.map.getBoundsZoomLevel( this.location_bounds );
@@ -494,7 +494,7 @@ GeoMashup.createMap = function(container, opts) {
 			this.doAction( 'clusterOptions', this.opts, clusterer_opts );
 			this.clusterer = new ClusterMarker( this.map, clusterer_opts );
 		} else {
-			clusterer_opts = {maxZoom: parseInt( opts.cluster_max_zoom )};
+			clusterer_opts = {maxZoom: parseInt( opts.cluster_max_zoom, 10 )};
 			this.doAction( 'clusterOptions', this.opts, clusterer_opts );
 			this.clusterer = new MarkerClusterer( this.map, [], clusterer_opts );
 		}

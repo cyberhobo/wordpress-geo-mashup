@@ -32,7 +32,7 @@ jQuery( function( $ ) {
 
 	var loadSearchResult = function( data ) {
 		$busy_icon.hide();
-		if ( data.totalResultsCount == 0 ) {
+		if ( data.totalResultsCount === 0 ) {
 			$summary_input.val( '' );
 		} else {
 			$lat_input.val( data.geonames[0].lat );

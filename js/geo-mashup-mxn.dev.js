@@ -187,7 +187,7 @@ GeoMashup.colorIcon = function( color_name ) {
 
 GeoMashup.getMarkerLatLng = function( marker ) {
 	return marker.location;
-}
+};
 
 GeoMashup.hideMarker = function( marker ) {
 	marker.hide();
@@ -313,13 +313,13 @@ GeoMashup.createMap = function(container, opts) {
 		} else {
 			type_num = parseInt(opts.map_type, 10);
 			if ( isNaN(type_num) || type_num > 2 ) {
-				opts.map_type = map_types['G_NORMAL_MAP'];
+				opts.map_type = map_types.G_NORMAL_MAP;
 			} else {
 				opts.map_type = type_num;
 			}
 		}
 	} else if (typeof opts.map_type === 'undefined') {
-		opts.map_type = map_types['G_NORMAL_MAP'];
+		opts.map_type = map_types.G_NORMAL_MAP;
 	}
 	this.map = new mxn.Mapstraction( this.container, opts.map_api );
 	map_opts = {enableScrollWheelZoom: true, enableDragging: true};
@@ -376,7 +376,7 @@ GeoMashup.createMap = function(container, opts) {
 
 	try {
 		this.map.setMapType( opts.map_type );
-	} catch (e) {
+	} catch ( map_type_ex) {
 		// Probably not implemented
 	}
 	if ( initial_zoom === 'auto' ) {

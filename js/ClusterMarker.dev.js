@@ -16,6 +16,7 @@
 */
 
 function ClusterMarker($map, $options){
+	var $opt;
 	this._map=$map;
 	this._mapMarkers=[];
 	this._iconBounds=[];
@@ -78,7 +79,9 @@ ClusterMarker.prototype.addMarkers=function($markers){
 		//	assume $markers is an associative array and convert to a numerically indexed array
 		var $numArray=[];
 		for(i in $markers){
-			$numArray.push($markers[i]);
+			if ( $markers.hasOwnProperty(i) ) {
+				$numArray.push($markers[i]);
+			}
 		}
 		$markers=$numArray;
 	}
@@ -97,7 +100,8 @@ ClusterMarker.prototype.clusterMarkerIcon=function($count){
 		return this.clusterMarkerIconCache[$count];
 	}else{
 		// create the required icon, cache it and return it from this method
-		var $count=$count.toString(), $icon, $iconOptions=this.iconOptions; 
+		var $icon, $iconOptions=this.iconOptions;
+		$count = $count.toString();
 		if ( ! $iconOptions.labelPadding ) { 
 			$iconOptions.labelPadding = 10;
 		}
@@ -343,7 +347,7 @@ ClusterMarker.prototype.triggerClick=function($index){
 				}
 			}
 			
-		};
+		}
 		this._map.setCenter($marker.getLatLng(), $mapZoomLevel);
 		this.triggerClick($index);
 	}else{

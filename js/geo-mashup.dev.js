@@ -64,7 +64,7 @@ GeoMashup = {
 	clone : function( obj ) {
 		var ClonedObject = function(){};
 		ClonedObject.prototype = obj;
-		return new ClonedObject;
+		return new ClonedObject();
 	},
 
 	forEach : function( obj, callback ) {
@@ -819,7 +819,7 @@ GeoMashup = {
 				this.autoZoom();
 			} else {
 				if ( this.opts.context_object_id && this.objects[ this.opts.context_object_id ] ) {
-					this.centerMarker( this.objects[ this.opts.context_object_id ].marker, parseInt( this.opts.zoom ) );
+					this.centerMarker( this.objects[ this.opts.context_object_id ].marker, parseInt( this.opts.zoom, 10 ) );
 				}
 				this.updateVisibleList();
 			}
