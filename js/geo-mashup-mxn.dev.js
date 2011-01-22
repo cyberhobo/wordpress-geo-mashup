@@ -323,6 +323,9 @@ GeoMashup.createMap = function(container, opts) {
 	}
 	this.map = new mxn.Mapstraction( this.container, opts.map_api );
 	map_opts = {enableScrollWheelZoom: true, enableDragging: true};
+	if ( 'enableGeoMashupExtras' in this.map ) {
+		this.map.enableGeoMashupExtras();
+	}
 	this.doAction( 'mapOptions', opts, map_opts );
 	this.map.setOptions( map_opts );
 	this.map.setCenterAndZoom(new mxn.LatLonPoint(0,0), 0);

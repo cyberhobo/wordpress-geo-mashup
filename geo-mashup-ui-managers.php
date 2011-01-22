@@ -79,7 +79,8 @@ class GeoMashupUIManager {
 			wp_register_script( 'openlayers', 'http://openlayers.org/api/OpenLayers.js', null, 'latest' );
 			wp_register_script( 'openstreetmap', 'http://www.openstreetmap.org/openlayers/OpenStreetMap.js', array( 'openlayers' ), 'latest' );
 			GeoMashup::register_script( 'mxn-openlayers', 'js/mxn/mxn.openlayers.core.js', array( 'mxn-core', 'openstreetmap' ), GEO_MASHUP_VERSION );
-			$required_scripts[] = 'mxn-openlayers';
+			GeoMashup::register_script( 'mxn-openlayers-gm', 'js/mxn/mxn.openlayers.geo-mashup.js', array( 'mxn-openlayers' ), GEO_MASHUP_VERSION );
+			$required_scripts[] = 'mxn-openlayers-gm';
 		}
 
 		GeoMashup::register_script( 'geo-mashup-location-editor', 'js/location-editor.js', $required_scripts, GEO_MASHUP_VERSION );

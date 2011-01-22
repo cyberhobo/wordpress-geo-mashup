@@ -222,7 +222,8 @@ class GeoMashupRenderMap {
 			wp_register_script( 'openlayers', 'http://openlayers.org/api/OpenLayers.js', null, 'latest' );
 			wp_register_script( 'openstreetmap', 'http://www.openstreetmap.org/openlayers/OpenStreetMap.js', array( 'openlayers' ), 'latest' );
 			GeoMashup::register_script( 'mxn-openlayers', 'js/mxn/mxn.openlayers.core.js', array( 'mxn-core', 'openstreetmap' ), GEO_MASHUP_VERSION );
-			$mashup_dependencies[] = 'mxn-openlayers';
+			GeoMashup::register_script( 'mxn-openlayers-gm', 'js/mxn/mxn.openlayers.geo-mashup.js', array( 'mxn-openlayers' ), GEO_MASHUP_VERSION );
+			$mashup_dependencies[] = 'mxn-openlayers-gm';
 		} else if ( 'googlev3' == $map_data['map_api'] ) {
 			$google_3_url = 'http://maps.google.com/maps/api/js?sensor=false';
 			if ( ! empty( $language_code ) ) {
