@@ -485,10 +485,7 @@ var
 		marker.click.addHandler( function () {selectMarker( marker );} );
 		if ( !selected_marker ) {
 			marker_opts.icon = green_icon.image;
-			if ( 'enableGeoMashupExtras' in map ) {
-				// Only some APIs have draggable markers with events
-				marker_opts.draggable = true;
-			}
+			marker_opts.draggable = true;
 			marker.addData( marker_opts );
 			selected_marker = marker;
 			map.setCenter( latlng );
@@ -502,7 +499,7 @@ var
 		geo_mashup_location_editor.markerCreated.fire( filter );
 
 		map.addMarker( filter.marker );
-		if ( filter.marker.draggable ) {
+		if ( 'dragend' in filter.marker ) {
 			// Drag handling must be set after the marker is added to a map
 			filter.marker.dragend.addHandler( function( name, source, args) {
 				// Dragging will create a new location under the hood
