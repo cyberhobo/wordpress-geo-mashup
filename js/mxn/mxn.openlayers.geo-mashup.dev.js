@@ -14,7 +14,7 @@ mxn.register( 'openlayers', {
 						map.setLayerIndex( me.layers.markers, new_layer_index );
 					} 
 				}
-			})
+			} );
 		}
 	}
 });
