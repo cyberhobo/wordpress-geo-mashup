@@ -8,7 +8,7 @@
  * or map-frame.php in the Geo Mashup Custom plugin directory, if you have that
  * installed. Those files take precedence over this one.
  *
- * For styling of map elements, see map-style-default.css.
+ * For styling of map elements, see map-style-default.dev.css.
  *
  * Individual registered scripts can be added with code like
  *
