@@ -599,8 +599,8 @@ var
 		} else {
 
 			// Do a GeoNames search as backup
-			geonames_request_url = 'http://ws.geonames.org/search?type=json&maxRows=20&style=full&callback=?&name=' + 
-				encodeURIComponent( $( '#geo_mashup_search' ).val() );
+			geonames_request_url = 'http://api.geonames.org/search?type=json&maxRows=20&style=full&callback=?&username=' +
+				geo_mashup_location_editor_settings.geonames_username + '&name=' + encodeURIComponent( $( '#geo_mashup_search' ).val() );
 			jQuery.getJSON( geonames_request_url, showGeoNames );
 			geo_mashup_location_editor.showBusyIcon();
 
@@ -691,11 +691,11 @@ var
 
 				// Do a GeoNames search 
 				if ( latlng ) {
-					geonames_request_url = 'http://ws.geonames.org/findNearbyJSON?radius=50&style=full&callback=?&lat=' +
-						latlng.lat + '&lng=' + latlng.lng;
+					geonames_request_url = 'http://api.geonames.org/findNearbyJSON?radius=50&style=full&callback=?&username=' +
+							geo_mashup_location_editor_settings.geonames_username + '&lat=' + latlng.lat + '&lng=' + latlng.lng;
 				} else {
-					geonames_request_url = 'http://ws.geonames.org/search?type=json&maxRows=20&style=full&callback=?&q=' + 
-						encodeURIComponent( $( '#geo_mashup_search' ).val() );
+					geonames_request_url = 'http://api.geonames.org/search?type=json&maxRows=20&style=full&callback=?&username=' +
+							geo_mashup_location_editor_settings.geonames_username + '&q=' + encodeURIComponent( $( '#geo_mashup_search' ).val() );
 				}
 				jQuery.getJSON( geonames_request_url, showGeoNames );
 				geo_mashup_location_editor.showBusyIcon();

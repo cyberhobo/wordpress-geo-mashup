@@ -96,16 +96,22 @@ abstract class GeoMashupHttpGeocoder {
  * @since 1.4
  */
 class GeoMashupGeonamesGeocoder extends GeoMashupHttpGeocoder {
+	/**
+	 * The application username to include in geonames API requests.
+	 * @var string 
+	 */
+	private $geonames_username;
 
 	public function  __construct( $args = array() ) {
+		global $geo_mashup_options;
 		parent::__construct( $args );
+		$this->geonames_username = $geo_mashup_options->get( 'overall', 'geonames_username' );
 	}
 
 	public function geocode( $query ) {
-
-		$url = 'http://ws.geonames.org/searchJSON?username=cyberhobo&maxRows=' .
-				$this->max_results . '&q=' .
-				urlencode( utf8_encode( $query ) ) . '&lang=' . $this->language;
+		$url = 'http://api.geonames.org/searchJSON?username=' . $this->geonames_username .
+				'&maxRows=' .  $this->max_results . '&q=' .  urlencode( utf8_encode( $query ) ) .
+				'&lang=' . $this->language;
 
 		$response = $this->http->get( $url, $this->request_params );
 		if ( is_wp_error( $response ) )
@@ -137,13 +143,14 @@ class GeoMashupGeonamesGeocoder extends GeoMashupHttpGeocoder {
 	}
 
 	public function reverse_geocode( $lat, $lng ) {
+		global $geo_mashup_options;
 
 		if ( !is_numeric( $lat ) or !is_numeric( $lng ) ) // Bad Request
 			return new WP_Error( 'bad_reverse_geocode_request', __( 'Reverse geocoding requires numeric coordinates.', 'GeoMashup' ) );
 
 		$status = null;
-		$url = 'http://ws.geonames.org/countrySubdivisionJSON?style=FULL&lat=' . urlencode( $lat ) .
-			'&lng=' . urlencode( $lng );
+		$url = 'http://api.geonames.org/countrySubdivisionJSON?style=FULL&username=' . $this->geonames_username . 
+				'&lat=' . urlencode( $lat ) .  '&lng=' . urlencode( $lng );
 		$response = $this->http->get( $url, $this->request_params );
 		if ( is_wp_error( $response ) )
 			return $response;
@@ -162,8 +169,8 @@ class GeoMashupGeonamesGeocoder extends GeoMashupHttpGeocoder {
 		
 		// Look up more things, postal code, locality or address in US
 		if ( 'US' == $location->country_code and GeoMashupDB::are_any_location_fields_empty( $location, array( 'address', 'locality_name', 'postal_code' ) ) ) {
-			$url = 'http://ws.geonames.org/findNearestAddressJSON?style=FULL&lat=' . urlencode( $lat ) .
-				'&lng=' . urlencode( $lat );
+			$url = 'http://api.geonames.org/findNearestAddressJSON?style=FULL&username=' . $this->geonames_username . 
+					'&lat=' . urlencode( $lat ) .  '&lng=' . urlencode( $lat );
 			$response = $this->http->get( $url, $this->request_params );
 
 			if ( !is_wp_error( $response ) ) {
@@ -190,8 +197,8 @@ class GeoMashupGeonamesGeocoder extends GeoMashupHttpGeocoder {
 		}
 		if (  GeoMashupDB::are_any_location_fields_empty( $location, array( 'address', 'locality_name', 'postal_code' ) ) ) {
 			// Just look for a postal code
-			$url = 'http://ws.geonames.org/findNearbyPostalCodesJSON?maxRows=1&lat=' . urlencode( $lat ) .
-				'&lng=' . urlencode( $lng );
+			$url = 'http://api.geonames.org/findNearbyPostalCodesJSON?username=' . $this->geonames_username . 
+					'&maxRows=1&lat=' . urlencode( $lat ) .  '&lng=' . urlencode( $lng );
 			$response = $this->http->get( $url, $this->request_params );
 
 			if ( !is_wp_error( $response ) ) {
@@ -224,8 +231,8 @@ class GeoMashupGeonamesGeocoder extends GeoMashupHttpGeocoder {
 
 		if ( empty( $admin_code ) ) {
 			// Look up a country name
-			$country_info_url = 'http://ws.geonames.org/countryInfoJSON?country=' . urlencode( $country_code ) .
-				'&lang=' . urlencode( $this->language );
+			$country_info_url = 'http://api.geonames.org/countryInfoJSON?username=' . $this->geonames_username .
+					'&country=' . urlencode( $country_code ) .  '&lang=' . urlencode( $this->language );
 			$country_info_response = $this->http->get( $country_info_url, $this->request_params );
 			if ( is_wp_error( $country_info_response ) )
 				return $country_info_response;
@@ -244,8 +251,8 @@ class GeoMashupGeonamesGeocoder extends GeoMashupHttpGeocoder {
 			return $country_name;
 		} else {
 			// Look up an admin name
-			$admin_search_url = 'http://ws.geonames.org/searchJSON?maxRows=1&style=SHORT&featureCode=ADM1&country=' .
-				urlencode( $country_code ) . '&adminCode1=' . urlencode( $admin_code );
+			$admin_search_url = 'http://api.geonames.org/searchJSON?maxRows=1&style=SHORT&featureCode=ADM1&username=' . $this->geonames_username . 
+					'country=' .  urlencode( $country_code ) . '&adminCode1=' . urlencode( $admin_code );
 			$admin_search_response = $this->http->get( $admin_search_url, $this->request_params );
 			if ( is_wp_error( $admin_search_response ) )
 				return $admin_search_response;

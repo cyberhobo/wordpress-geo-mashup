@@ -994,7 +994,7 @@ class GeoMashupDB {
 	 * @param string $geoname_id 
 	 * @return int Rows affected.
 	 */
-	private static function cache_administrative_name( $country_code, $admin_code, $isolanguage, $name, $geoname_id = null ) {
+	public static function cache_administrative_name( $country_code, $admin_code, $isolanguage, $name, $geoname_id = null ) {
 		global $wpdb;
 
 		$table_name = $wpdb->prefix . 'geo_mashup_administrative_names';

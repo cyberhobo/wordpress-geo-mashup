@@ -1,5 +1,5 @@
 /* Handle Geo Mashup location collection for comments. */
-/*global google, jQuery */
+/*global google, jQuery, geo_mashup_comment_form_settings */
 
 /**
  * Add location collection to the comment form.
@@ -21,7 +21,8 @@ jQuery( function( $ ) {
 		};
 
 	var summarizeLocation = function( query_data ) {
-		var query_url = 'http://ws.geonames.org/findNearbyPostalCodesJSON?maxRows=1&callback=?';
+		var query_url = 'http://api.geonames.org/findNearbyPostalCodesJSON?maxRows=1&callback=?&username=' +
+				geo_mashup_comment_form_settings.geonames_username;
 		$lat_input.val( query_data.lat );
 		$lng_input.val( query_data.lng );
 		$busy_icon.hide();
@@ -43,7 +44,8 @@ jQuery( function( $ ) {
 	};
 
 	var search = function() {
-		var query_url = 'http://ws.geonames.org/searchJSON?maxRows=1&callback=?';
+		var query_url = 'http://api.geonames.org/searchJSON?maxRows=1&callback=?&username=' +
+				geo_mashup_comment_form_settings.geonames_username;
 		var query_data = {q: $summary_input.val()};
 		if ( search_input_changed ) {
 			$lat_input.val('');

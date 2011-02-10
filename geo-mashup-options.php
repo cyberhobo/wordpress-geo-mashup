@@ -36,6 +36,7 @@ class GeoMashupOptions {
 				'comment' => 'false' ),
 			'enable_reverse_geocoding' => 'true',
 			'adsense_code' => 'partner-pub-5088093001880917',
+			'geonames_username' => 'geomashup',
 	 		'map_api' => 'google',
 			'import_custom_field' => '' ),
 		'global_map' => array (
@@ -405,7 +406,11 @@ class GeoMashupOptions {
 
 			// strings without HTML
 			case 'adsense_code':
-				if ( empty( $value ) ) $value = 'partner-pub-5088093001880917';
+				if ( empty( $value ) )
+					$value = 'partner-pub-5088093001880917';
+			case 'geonames_user':
+				if ( empty( $value ) )
+					$value = 'geomashup';
 			case 'category_link_separator':
 			case 'category_link_text':
 			case 'click_to_load_text':
