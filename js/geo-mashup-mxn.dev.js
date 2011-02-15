@@ -11,24 +11,35 @@
 /*global mxn */
 
 GeoMashup.loadFullPost = function( point ) {
-	var i, url, post_request, object_ids;
+	var i, request, objects, object_ids;
 
 	this.getShowPostElement().innerHTML = '<div align="center"><img src="' +
 		this.opts.url_path + '/images/busy_icon.gif" alt="Loading..." /></div>';
 	object_ids = [];
-	for(i=0; i<this.locations[point].objects.length; i += 1) {
-		object_ids.push( this.locations[point].objects[i].object_id );
+	objects = this.getObjectsAtLocation( point );
+	for( i = 0; i < objects.length; i += 1 ) {
+		object_ids.push( objects[i].object_id );
 	}
-	url = this.geo_query_url + '&object_name=' + this.opts.object_name +
-		'&object_ids=' + object_ids.join( ',' ) + '&template=full-post';
-	jQuery( this.getShowPostElement() ).load( url );
+	request = {
+		url: this.geo_query_url + '&object_name=' + this.opts.object_name +
+			'&object_ids=' + object_ids.join( ',' ) + '&template=full-post'
+	};
+	this.doAction( 'fullPostRequest', objects, request );
+	jQuery.get( request.url, function( content ) {
+		var filter = {content: content};
+		GeoMashup.doAction( 'fullPostLoad', objects, filter );
+		jQuery( GeoMashup.getShowPostElement() ).html( filter.content );
+		GeoMashup.doAction( 'fullPostChanged' );
+	} );
 };
 
 GeoMashup.createCategoryLine = function ( category ) {
 	// Polylines are close, but the openlayers implementation at least cannot hide or remove a polyline
+	var options = {color: category.color, width: 5, opacity: 0.5};
 	category.line = new mxn.Polyline(category.points);
 	this.doAction( 'categoryLine', this.opts, category.line );
-	this.map.addPolylineWithData( category.line, {color: category.color, width: 5, opacity: 0.5} );
+	this.doAction( 'categoryLineOptions', this.opts, options );
+	this.map.addPolylineWithData( category.line, options );
 	if (this.map.getZoom() > category.max_line_zoom) {
 		try {
 			category.line.hide();
@@ -40,7 +51,7 @@ GeoMashup.createCategoryLine = function ( category ) {
 };
 
 GeoMashup.openInfoWindow = function( marker ) {
-	var object_ids = [], i, object_element, point = marker.location;
+	var objects, request, object_ids = [], i, object_element, point = marker.location;
 
 	if ( this.locations[point].loaded ) {
 		marker.openBubble();
@@ -49,16 +60,23 @@ GeoMashup.openInfoWindow = function( marker ) {
 			'/images/busy_icon.gif" alt="Loading..." /></div>' );
 		marker.openBubble();
 		// Collect object ids
-		for( i = 0; i < this.locations[point].objects.length; i += 1 ) {
-			object_ids.push( this.locations[point].objects[i].object_id );
+		objects = this.getObjectsAtLocation( point );
+		for( i = 0; i < objects.length; i += 1 ) {
+			object_ids.push( objects[i].object_id );
 		}
 		// Do an AJAX query to get content for these objects
+		request = {
+			url: this.geo_query_url + '&object_name=' + this.opts.object_name +
+				'&object_ids=' + object_ids.join( ',' ) + '&template=info-window'
+		};
+		this.doAction( 'markerInfoWindowRequest', marker, request );
 		jQuery.get( 
-			this.geo_query_url, 
-			{object_name: this.opts.object_name, object_ids: object_ids.join(',')},
+			request.url,
 			function( content ) {
+				var filter = {content: content};
 				marker.closeBubble();
-				marker.setInfoBubble( GeoMashup.parentizeLinksMarkup( content ) );
+				GeoMashup.doAction( 'markerInfoWindowLoad', marker, filter );
+				marker.setInfoBubble( GeoMashup.parentizeLinksMarkup( filter.content ) );
 				marker.openBubble();
 			}
 		); 
@@ -274,7 +292,7 @@ GeoMashup.centerMarker = function( marker, zoom ) {
 
 GeoMashup.createMap = function(container, opts) {
 	var i, type_num, center_latlng, map_opts, map_types, request, url, objects, point, marker_opts, 
-		clusterer_opts, single_marker, ov, credit_div, initial_zoom = 1, controls = {};
+		clusterer_opts, single_marker, ov, credit_div, initial_zoom = 1, controls = {}, filter = {};
 
 	this.container = container;
 	this.base_color_icon = {};
@@ -345,8 +363,12 @@ GeoMashup.createMap = function(container, opts) {
 		opts.object_name = 'post';
 	}
 	this.opts = opts;
-	this.geo_query_url = opts.siteurl + '/?geo_mashup_content=geo-query&_wpnonce=' + opts.nonce;
-
+	filter.url = opts.siteurl + '/?geo_mashup_content=geo-query&map_name=' + encodeURIComponent( opts.name );
+	if ( 'lang' in opts ) {
+		filter.url += '&lang=' + encodeURIComponent( opts.lang );
+	}
+	this.doAction( 'geoQueryUrl', this.opts, filter );
+	this.geo_query_url = filter.url;
 
 	// TODO: Try to deleselect markers with clicks? Need to make sure we don't get other object's clicks.
 	this.map.changeZoom.addHandler( function( old_zoom, new_zoom ) {
@@ -366,9 +388,9 @@ GeoMashup.createMap = function(container, opts) {
 	if (opts.load_kml) {
 		try {
 			if ( initial_zoom === 'auto' ) {
-				this.map.addOverlay( this.kml, true );
+				this.map.addOverlay( opts.load_kml, true );
 			} else {
-				this.map.addOverlay( this.kml );
+				this.map.addOverlay( opts.load_kml );
 			}
 		} catch (e) {
 			// Probably not implemented
