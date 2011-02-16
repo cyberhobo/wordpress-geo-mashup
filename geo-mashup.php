@@ -178,7 +178,7 @@ class GeoMashup {
 		define('GEO_MASHUP_PLUGIN_NAME', plugin_basename(__FILE__));
 		define('GEO_MASHUP_DIR_PATH', dirname( __FILE__ ));
 		define('GEO_MASHUP_DIRECTORY', dirname( GEO_MASHUP_PLUGIN_NAME ) );
-		define('GEO_MASHUP_URL_PATH', plugin_dir_url( __FILE__ ) );
+		define('GEO_MASHUP_URL_PATH', trim( plugin_dir_url( __FILE__ ), '/' ) );
 		define('GEO_MASHUP_MAX_ZOOM', 20);
 		// Make numeric versions: -.02 for alpha, -.01 for beta
 		define('GEO_MASHUP_VERSION', '1.3.99.1');
