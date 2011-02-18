@@ -560,7 +560,7 @@ class GeoMashup {
 				if ( 'post' == $query_args['object_name'] ) {
 
 					// Filter the title
-					$object->label = apply_filters( 'the_title', $object->label, $object->object_id );
+					$object->label = sanitize_text_field( apply_filters( 'the_title', $object->label, $object->object_id ) );
 
 					// Only know about post categories now, but could abstract to objects
 					$categories = get_the_category( $object->object_id );
