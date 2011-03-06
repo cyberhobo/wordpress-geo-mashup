@@ -121,20 +121,20 @@ GeoMashup.hideAttachments = function() {
 };
 
 GeoMashup.showMarkerAttachments = function( marker ) {
-	var i, j, objects, obj;
+	var i, j, objects, object_ids=[], ajax_params = { action: 'geo_mashup_kml_attachments' };
 
-	this.hideAttachments();
+	this.hideAttachments(); // check support
 	objects = this.getObjectsAtLocation( marker.location );
 	for ( i = 0; i < objects.length; i += 1 ) {
-		obj = objects[i];
-		if ( obj.attachment_urls && obj.attachment_urls.length > 0 ) {
-			// There are attachments to load
-			for ( j = 0; j < obj.attachment_urls.length; j += 1 ) {
-				this.open_attachments.push( obj.attachment_urls[j] );
-				this.map.addOverlay( obj.attachment_urls[j] );
-			}
-		}
+		object_ids.push( objects[i].object_id );
 	}
+	ajax_params.post_ids = object_ids.join( ',' );
+	jQuery.getJSON( this.opts.ajaxurl + '?callback=?', ajax_params, function( data ) {
+		jQuery.each( data, function( i, url ) {
+			GeoMashup.open_attachments.push( url );
+			GeoMashup.map.addOverlay( url );
+		} );
+	} );
 };
 
 GeoMashup.addObjectIcon = function( obj ) {

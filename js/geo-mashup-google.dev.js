@@ -131,7 +131,7 @@ GeoMashup.hideAttachments = function() {
 };
 
 GeoMashup.showMarkerAttachments = function( marker ) {
-	var i, j, objects, obj;
+	var i, j, objects, ajax_params = { action: 'geo_mashup_kml_attachments' };
 
 	this.hideAttachments();
 	objects = this.getObjectsAtLocation( marker.getLatLng() );
@@ -143,14 +143,18 @@ GeoMashup.showMarkerAttachments = function( marker ) {
 				this.open_attachments.push( obj.attachments[j] );
 				this.map.addOverlay( obj.attachments[j] );
 			}
-		} else if ( obj.attachment_urls && obj.attachment_urls.length > 0 ) {
-			// There are attachments to load
+		} else {
+			// Look for attachments
 			obj.attachments = [];
-			for ( j = 0; j < obj.attachment_urls.length; j += 1 ) {
-				obj.attachments[j] = new google.maps.GeoXml( obj.attachment_urls[j] );
-				this.open_attachments.push( obj.attachments[j] );
-				this.map.addOverlay( obj.attachments[j] );
-			}
+			ajax_params.post_ids = obj.object_id;
+			jQuery.getJSON( this.opts.ajaxurl + '?callback=?', ajax_params, function( data ) {
+				jQuery.each( data, function( i, url ) {
+					var geoxml = new google.maps.GeoXml( url );
+					obj.attachments.push( geoxml );
+					GeoMashup.open_attachments.push( geoxml );
+					GeoMashup.map.addOverlay( geoxml );
+				} );
+			} );
 		}
 	}
 };

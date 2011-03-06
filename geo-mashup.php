@@ -118,6 +118,8 @@ class GeoMashup {
 		add_action( 'plugins_loaded', array( __CLASS__, 'dependent_init' ), -1 );
 		add_action( 'wp_ajax_geo_mashup_query', array( __CLASS__, 'geo_query') );
 		add_action( 'wp_ajax_nopriv_geo_mashup_query', array( __CLASS__, 'geo_query') );
+		add_action( 'wp_ajax_geo_mashup_kml_attachments', array( __CLASS__, 'ajax_kml_attachments') );
+		add_action( 'wp_ajax_nopriv_geo_mashup_kml_attachments', array( __CLASS__, 'ajax_kml_attachments') );
 		add_action( 'wp_ajax_geo_mashup_suggest_custom_keys', array( 'GeoMashupDB', 'post_meta_key_suggest' ) );
 
 		if (is_admin()) {
@@ -350,7 +352,7 @@ class GeoMashup {
 	 * @since 1.3
 	 * @uses geo-query.php
 	 */
-	private static function geo_query() {
+	public static function geo_query() {
 		require_once( 'geo-query.php' );
 		exit();
 	}
@@ -511,33 +513,53 @@ class GeoMashup {
 	}
 
 	/**
-	 * WordPress action to add relevant geo meta tags to the document head.
-	 * 
-	 * wp_head {@link http://codex.wordpress.org/Plugin_API/Action_Reference#TemplateActions action},
-	 * called by WordPress.
-	 * 
-	 * @since 1.0
+	 * Echo a JSONP array of URLs of KML or KMZ attachments for posts.
+	 *
+	 * since 1.4
 	 */
-	public static function wp_head() {
-		global $wp_query;
-
-		if (is_single())
-		{
-			$loc = GeoMashupDB::get_object_location( 'post', $wp_query->post->ID );
-			if (!empty($loc)) {
-				$title = esc_html(convert_chars(strip_tags(get_bloginfo('name'))." - ".$wp_query->post->post_title));
-				echo '<meta name="ICBM" content="' . esc_attr( $loc->lat . ', ' . $loc->lng ) . '" />' . "\n";
-				echo '<meta name="DC.title" content="' . esc_attr( $title ) . '" />' . "\n";
-				echo '<meta name="geo.position" content="' .  esc_attr( $loc->lat . ';' . $loc->lng ) . '" />' . "\n";
+	public static function ajax_kml_attachments() {
+		$urls = array(); 
+		if ( !empty( $_REQUEST['post_ids'] ) ) {
+			$post_ids = array_map( 'intval', explode( ',', $_REQUEST['post_ids'] ) );
+			foreach( $post_ids as $post_id ) {
+				$urls = array_merge( $urls, self::get_kml_attachment_urls( $post_id ) );
 			}
 		}
+		$json = json_encode( $urls );
+		if ( isset( $_REQUEST['callback'] ) )
+			$json = $_REQUEST['callback'] . '(' . $json . ')';
+		echo $json;
+		exit();
 	}
 
-	/**
-	 * Query object locations and return JSON.
-	 *
-	 * Offers customization per object location via a filter, geo_mashup_locations_json_object.
-	 * 
+/**
+ * WordPress action to add relevant geo meta tags to the document head.
+ *
+ * wp_head {@link http://codex.wordpress.org/Plugin_API/Action_Reference#TemplateActions action},
+ * called by WordPress.
+ *
+ * @since 1.0
+ */
+public static function wp_head() {
+	global $wp_query;
+
+	if (is_single())
+	{
+		$loc = GeoMashupDB::get_object_location( 'post', $wp_query->post->ID );
+		if (!empty($loc)) {
+			$title = esc_html(convert_chars(strip_tags(get_bloginfo('name'))." - ".$wp_query->post->post_title));
+			echo '<meta name="ICBM" content="' . esc_attr( $loc->lat . ', ' . $loc->lng ) . '" />' . "\n";
+			echo '<meta name="DC.title" content="' . esc_attr( $title ) . '" />' . "\n";
+			echo '<meta name="geo.position" content="' .  esc_attr( $loc->lat . ';' . $loc->lng ) . '" />' . "\n";
+		}
+	}
+}
+
+/**
+ * Query object locations and return JSON.
+ *
+ * Offers customization per object location via a filter, geo_mashup_locations_json_object.
+ *
 	 * @since 1.2
 	 * @uses GeoMashupDB::get_object_locations()
 	 * @uses apply_filters() the_title Filter post titles.
@@ -563,13 +585,8 @@ class GeoMashup {
 					$object->label = sanitize_text_field( apply_filters( 'the_title', $object->label, $object->object_id ) );
 
 					// Only know about post categories now, but could abstract to objects
-					$categories = get_the_category( $object->object_id );
-					foreach ($categories as $category) {
-						$category_ids[] = $category->cat_ID;
-					}
-
-					// Only posts have KML attachments
-					$attachments = self::get_kml_attachment_urls( $object->object_id );
+					if ( !defined( 'GEO_MASHUP_DISABLE_CATEGORIES' ) )
+						$category_ids = wp_get_object_terms( $object->object_id, 'category', array( 'fields' => 'ids' ) );
 
 					// Include post author
 					$author = get_userdata( $object->post_author );
@@ -589,8 +606,7 @@ class GeoMashup {
 					'lat' => $object->lat,
 					'lng' => $object->lng,
 					'author_name' => $author_name,
-					'categories' => $category_ids,
-					'attachment_urls' => $attachments
+					'categories' => $category_ids
 				);
 
 				// Allow companion plugins to add data
@@ -650,6 +666,7 @@ class GeoMashup {
 		unset( $query['object_id'] );
 
 		$map_data = $query + array(
+			'ajaxurl' => admin_url( 'admin-ajax.php' ),
 			'siteurl' => home_url(), // qTranslate doesn't work with get_option( 'home' )
 			'url_path' => GEO_MASHUP_URL_PATH,
 			'template_url_path' => get_stylesheet_directory_uri()
