@@ -6,7 +6,7 @@
  * @package GeoMashup
  */
 
-if ( empty( $_GET['object_ids'] ) ) {
+if ( ( isset( $_GET['output'] ) and 'json' == $_GET['output'] ) or empty( $_GET['object_ids'] ) ) {
 	GeoMashupQuery::generate_location_json( );
 } else {
 	GeoMashupQuery::generate_object_html( );
@@ -245,6 +245,9 @@ class GeoMashupQuery {
 		header('Cache-Control: no-cache;', true);
 		header('Expires: -1;', true);
 
-		echo GeoMashup::get_locations_json($_GET);
+		$json = GeoMashup::get_locations_json($_REQUEST);
+		if ( isset( $_REQUEST['callback'] ) )
+			$json = $_REQUEST['callback'] . '(' . $json . ')';
+		echo $json;
 	}
 }
