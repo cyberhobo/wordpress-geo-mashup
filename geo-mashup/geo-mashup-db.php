@@ -1235,16 +1235,28 @@ id.
 				}
 			} 
 
-			$table_string .= " JOIN $wpdb->term_relationships tr ON tr.object_id = gmlr.object_id " .
-				"JOIN $wpdb->term_taxonomy tt ON tt.term_taxonomy_id = tr.term_taxonomy_id " .
-				"AND tt.taxonomy = 'category'";
+			$table_string .= " JOIN $wpdb->term_relationships tr ON tr.object_id = gmlr.object_id ";
 
 			if ( ! empty( $escaped_include_ids ) ) {
-				$wheres[] = 'tt.term_id IN (' . implode( ',', $escaped_include_ids ) . ')';
+				$term_tax_ids = $wpdb->get_col(
+						"SELECT term_taxonomy_id FROM $wpdb->term_taxonomy " .
+						"WHERE taxonomy = 'category' AND term_id IN (" .
+						implode( ',', $escaped_include_ids ) . ')'
+				);
+				$wheres[] = 'tr.term_taxonomy_id IN (' . implode( ',', $term_tax_ids ) . ')';
 			}
 
 			if ( ! empty( $escaped_exclude_ids ) ) {
-				$wheres[] = 'tt.term_id NOT IN (' . implode( ',', $escaped_exclude_ids ) . ')';
+				$term_tax_ids = $wpdb->get_col(
+						"SELECT term_taxonomy_id FROM $wpdb->term_taxonomy " .
+						"WHERE taxonomy = 'category' AND term_id IN (" .
+						implode( ',', $escaped_exclude_ids ) . ')'
+				);
+				$wheres[] = "o.ID NOT IN ( " .
+						"SELECT object_id " .
+						"FROM $wpdb->term_relationships " .
+						"WHERE term_taxonomy_id IN ( " .
+						implode( ',', $term_tax_ids ) . ') )';
 			}
 
 			$groupby = 'GROUP BY gmlr.object_id';
