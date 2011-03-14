@@ -53,12 +53,16 @@ GeoMashup.createCategoryLine = function ( category ) {
 GeoMashup.openInfoWindow = function( marker ) {
 	var objects, request, object_ids = [], i, object_element, point = marker.location;
 
+	if ( this.open_window_marker && !this.opts.multiple_info_windows ) {
+		this.open_window_marker.closeBubble();
+	}
 	if ( this.locations[point].loaded ) {
 		marker.openBubble();
 	} else {
 		marker.setInfoBubble( '<div align="center"><img src="' + this.opts.url_path + 
 			'/images/busy_icon.gif" alt="Loading..." /></div>' );
 		marker.openBubble();
+		this.open_window_marker = marker;
 		// Collect object ids
 		objects = this.getObjectsAtLocation( point );
 		for( i = 0; i < objects.length; i += 1 ) {
@@ -297,7 +301,7 @@ GeoMashup.createMap = function(container, opts) {
 	this.container = container;
 	this.base_color_icon = {};
 	this.base_color_icon.image = opts.url_path + '/images/mm_20_black.png';
-	this.base_color_icon.shadow = opts.url_path + '/images/mm_20_shadow.png';
+	this.base_color_icon.iconShadow = opts.url_path + '/images/mm_20_shadow.png';
 	this.base_color_icon.iconSize = [12, 20];
 	this.base_color_icon.shadowSize =  [22, 20];
 	this.base_color_icon.iconAnchor = [6, 20];
