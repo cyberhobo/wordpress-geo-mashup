@@ -131,32 +131,30 @@ GeoMashup.hideAttachments = function() {
 };
 
 GeoMashup.showMarkerAttachments = function( marker ) {
-	var i, j, objects, ajax_params = { action: 'geo_mashup_kml_attachments' };
-
 	this.hideAttachments();
 	objects = this.getObjectsAtLocation( marker.getLatLng() );
-	for ( i = 0; i < objects.length; i += 1 ) {
-		obj = objects[i];
+	this.forEach( objects, function( i, obj ) {
+		var ajax_params = { action: 'geo_mashup_kml_attachments' };
 		if ( obj.attachments ) {
 			// Attachment overlays are available
-			for ( j = 0; j < obj.attachments.length; j += 1 ) {
-				this.open_attachments.push( obj.attachments[j] );
-				this.map.addOverlay( obj.attachments[j] );
-			}
+			this.forEach( obj.attachments, function( j, attachment ) {
+				this.open_attachments.push( attachment );
+				this.map.addOverlay( attachment );
+			} );
 		} else {
 			// Look for attachments
 			obj.attachments = [];
 			ajax_params.post_ids = obj.object_id;
 			jQuery.getJSON( this.opts.ajaxurl + '?callback=?', ajax_params, function( data ) {
-				jQuery.each( data, function( i, url ) {
+				GeoMashup.forEach( data, function( j, url ) {
 					var geoxml = new google.maps.GeoXml( url );
 					obj.attachments.push( geoxml );
-					GeoMashup.open_attachments.push( geoxml );
-					GeoMashup.map.addOverlay( geoxml );
+					this.open_attachments.push( geoxml );
+					this.map.addOverlay( geoxml );
 				} );
 			} );
 		}
-	}
+	} );
 };
 
 GeoMashup.loadFullPost = function( point ) {
@@ -540,31 +538,31 @@ GeoMashup.createMap = function(container, opts) {
 
 	this.buildCategoryHierarchy();
 
-	if ( initial_zoom === 'auto' ) {
-		// Wait to center and zoom after loading
-	} else if (opts.center_lat && opts.center_lng) {
-		// Use the center from options
-		this.map.setCenter(new google.maps.LatLng(opts.center_lat, opts.center_lng), initial_zoom, opts.map_type);
-	} else if (this.kml) {
-		this.map.setCenter(this.kml.getDefaultCenter, initial_zoom, opts.map_type);
-	} else if (opts.object_data && opts.object_data.objects[0]) {
-		center_latlng = new google.maps.LatLng(opts.object_data.objects[0].lat, opts.object_data.objects[0].lng);
-		this.map.setCenter(center_latlng, initial_zoom, opts.map_type);
-	} else {
-		// Center on the most recent located object
-		request = google.maps.XmlHttp.create();
-		url = this.geo_query_url + '&limit=1';
-		if (opts.map_cat) {
-			url += '&cat='+opts.map_cat;
-		}
-		request.open("GET", url, false);
-		request.send(null);
-		objects = window['eval']( '(' + request.responseText + ')' );
-		if (objects.length>0) {
-			point = new google.maps.LatLng(objects[0].lat,objects[0].lng);
-			this.map.setCenter(point,initial_zoom,opts.map_type);
+	if ( initial_zoom !== 'auto' ) {
+		if (opts.center_lat && opts.center_lng) {
+			// Use the center from options
+			this.map.setCenter(new google.maps.LatLng(opts.center_lat, opts.center_lng), initial_zoom, opts.map_type);
+		} else if (this.kml) {
+			this.map.setCenter(this.kml.getDefaultCenter, initial_zoom, opts.map_type);
+		} else if (opts.object_data && opts.object_data.objects[0]) {
+			center_latlng = new google.maps.LatLng(opts.object_data.objects[0].lat, opts.object_data.objects[0].lng);
+			this.map.setCenter(center_latlng, initial_zoom, opts.map_type);
 		} else {
-			this.map.setCenter(new google.maps.LatLng(0,0),initial_zoom,opts.map_type);
+			// Center on the most recent located object
+			request = google.maps.XmlHttp.create();
+			url = this.geo_query_url + '&limit=1';
+			if (opts.map_cat) {
+				url += '&cat='+opts.map_cat;
+			}
+			request.open("GET", url, false);
+			request.send(null);
+			objects = window['eval']( '(' + request.responseText + ')' );
+			if (objects.length>0) {
+				point = new google.maps.LatLng(objects[0].lat,objects[0].lng);
+				this.map.setCenter(point,initial_zoom,opts.map_type);
+			} else {
+				this.map.setCenter(new google.maps.LatLng(0,0),initial_zoom,opts.map_type);
+			}
 		}
 	}
 
