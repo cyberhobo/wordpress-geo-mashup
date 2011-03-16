@@ -337,7 +337,6 @@ GeoMashup = {
 
 	showCategoryInfo : function() {
 		var legend_element = null,
-			index_element = null,
 			legend_html,
 			category_id,
 			label,
@@ -348,13 +347,9 @@ GeoMashup = {
 			id;
 		if (window.name) {
 			legend_element = parent.document.getElementById(window.name + "-legend");
-			index_element = parent.document.getElementById(window.name + "-tabbed-index");
 		}
 		if (!legend_element) {
 			legend_element = parent.document.getElementById("gm-cat-legend");
-		}
-		if (!index_element) {
-			index_element = parent.document.getElementById("gm-tabbed-index");
 		}
 		if (this.opts.legend_format && 'dl' === this.opts.legend_format) {
 			list_tag = 'dl';
@@ -424,6 +419,13 @@ GeoMashup = {
 		legend_html.push('</' + list_tag + '>');
 		if (legend_element) {
 			legend_element.innerHTML = legend_html.join('');
+		}
+	},
+
+	initializeTabbedIndex : function() {
+		var index_element = parent.document.getElementById(window.name + "-tabbed-index");
+		if (!index_element) {
+			index_element = parent.document.getElementById("gm-tabbed-index");
 		}
 		if (index_element) {
 			if (this.opts.start_tab_category_id) {
@@ -802,6 +804,9 @@ GeoMashup = {
 
 		// Openlayers at least only gets clicks on the top layer, so add markers last
 		this.addMarkers( added_markers );
+
+		// Tabbed index may hide markers
+		this.initializeTabbedIndex();
 
 		if (this.firstLoad) {
 			this.firstLoad = false;
