@@ -1585,9 +1585,9 @@ class GeoMashupDB {
 			}
 		} 
 
-		if ( isset( $query_args['object_id'] ) ) {
+		if ( ! empty( $query_args['object_id'] ) ) {
 			$wheres[] = 'gmlr.object_id = ' . $wpdb->escape( $query_args['object_id'] );
-		} else if ( isset( $query_args['object_ids'] ) ) {
+		} else if ( ! empty( $query_args['object_ids'] ) ) {
 			$wheres[] = 'gmlr.object_id in ( ' . $wpdb->escape( $query_args['object_ids'] ) .' )';
 		}
 
