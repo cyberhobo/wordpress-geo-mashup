@@ -8,6 +8,9 @@
  * installed. Those files take precedence over these default styles.
  */
 
+ /* Maps fill the frame, makes percentage height maps a bit easier */
+ html, body { height: 100%; }
+
 /* Post date and tags/categories */
 .meta { font-size:60%; }
 .meta .blogdate { font-style: italic; }
