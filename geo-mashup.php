@@ -1013,7 +1013,7 @@ public static function wp_head() {
 	public static function list_cats($content, $category = null) {
 		global $geo_mashup_options;
 
-		if ($category) {
+		if ( $category and 'category' == $category->taxonomy ) {
 			$count = GeoMashupDB::category_located_post_count( $category->cat_ID );
 			// Add map link only if there are geo-located posts to see
 			if ($count) {
