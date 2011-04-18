@@ -37,7 +37,7 @@ class GeoMashupOptions {
 			'enable_reverse_geocoding' => 'true',
 			'adsense_code' => 'partner-pub-5088093001880917',
 			'geonames_username' => 'geomashup',
-	 		'map_api' => 'google',
+	 		'map_api' => 'googlev3',
 			'import_custom_field' => '' ),
 		'global_map' => array (
 			'width' => '400',
