@@ -67,12 +67,12 @@ class GeoMashupUIManager {
 		$required_scripts = array( 'jquery');
 		if ( 'google' == $map_api ) {
 			wp_register_script( 'google-maps-2', 'http://maps.google.com/maps?file=api&amp;v=2&amp;sensor=false&amp;key=' . 
-				$geo_mashup_options->get( 'overall', 'google_key' ) );
+				$geo_mashup_options->get( 'overall', 'google_key' ) . '&amp;hl=' . GeoMashup::get_language_code() );
 			GeoMashup::register_script( 'mxn-google-2', 'js/mxn/mxn.google.core.js', array( 'mxn-core', 'google-maps-2' ), GEO_MASHUP_VERSION );
 			GeoMashup::register_script( 'mxn-google-2-gm', 'js/mxn/mxn.google.geo-mashup.js', array( 'mxn-google-2' ), GEO_MASHUP_VERSION );
 			$required_scripts[] = 'mxn-google-2-gm';
 		} else if ( 'googlev3' == $map_api ) {
-			wp_register_script( 'google-maps-3', 'http://maps.google.com/maps/api/js?sensor=false' );
+			wp_register_script( 'google-maps-3', 'http://maps.google.com/maps/api/js?sensor=false&amp;language=' . GeoMashup::get_language_code() );
 			GeoMashup::register_script( 'mxn-google-3', 'js/mxn/mxn.googlev3.core.js', array( 'mxn-core', 'google-maps-3' ), GEO_MASHUP_VERSION );
 			GeoMashup::register_script( 'mxn-google-3-gm', 'js/mxn/mxn.googlev3.geo-mashup.js', array( 'mxn-google-3' ), GEO_MASHUP_VERSION );
 			$required_scripts[] = 'mxn-google-3-gm';

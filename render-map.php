@@ -175,17 +175,7 @@ class GeoMashupRenderMap {
 
 		// Queue scripts
 		$mashup_dependencies = array( 'jquery' );
-		$language_code = '';
-		if ( isset( $_GET['lang'] ) ) {
-			$language_code = $_GET['lang'];
-		} else if ( function_exists( 'qtrans_getLanguage' ) ) {
-			// qTranslate integration
-			$language_code = qtrans_getLanguage();
-		} else if ( defined( 'ICL_LANGUAGE_CODE' ) ) {
-			// WPML integration
-			$language_code = ICL_LANGUAGE_CODE;
-		}
-
+		$language_code = GeoMashup::get_language_code();
 		if ( 'google' == $map_data['map_api'] ) {
 			// Google v2 base
 			$google_2_url = 'http://maps.google.com/maps?file=api&amp;v=2&amp;sensor=false&amp;key=' .

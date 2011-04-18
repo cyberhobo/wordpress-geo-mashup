@@ -7,12 +7,13 @@ Version: 1.4beta2
 Author: Dylan Kuhn
 Author URI: http://www.cyberhobo.net/
 Minimum WordPress Version Required: 3.0
+License: GPL2+
 */
 
 /*  Copyright 2011  Dylan Kuhn  (email : cyberhobo@cyberhobo.net)
 
     This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License, version 2, as 
+    it under the terms of the GNU General Public License, version 2 or later, as
     published by the Free Software Foundation.
 
     This program is distributed in the hope that it will be useful,
@@ -473,6 +474,32 @@ class GeoMashup {
 			}
 		}
 		return implode($outer_glue, $output);
+	}
+
+	/**
+	 * Guess the best language code for the current context.
+	 * 
+	 * Takes some plugins and common practices into account.
+	 * 
+	 * @since 1.4
+	 * 
+	 * @return string Language code.
+	 */
+	public static function get_language_code() {
+		$language_code = '';
+		if ( isset( $_GET['lang'] ) ) {
+			// A language override technique is to use this querystring parameter
+			$language_code = $_GET['lang'];
+		} else if ( function_exists( 'qtrans_getLanguage' ) ) {
+			// qTranslate integration
+			$language_code = qtrans_getLanguage();
+		} else if ( defined( 'ICL_LANGUAGE_CODE' ) ) {
+			// WPML integration
+			$language_code = ICL_LANGUAGE_CODE;
+		} else {
+			$language_code = get_locale();
+		}
+		return $language_code;
 	}
 
 	/**
