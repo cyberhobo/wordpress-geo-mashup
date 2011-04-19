@@ -268,26 +268,26 @@ class GeoMashupOptions {
 		if ( is_null ( $key2 ) ) {
 			// Getting first dimension options
 			if ( is_array ( $key1 ) ) {
-				foreach ( $key1 as $key ) $subset[$key] = $this->options[$key];
+				foreach ( $key1 as $key ) $subset[$key] = isset( $this->options[$key] ) ? $this->options[$key] : null;
 				return $subset;
 			} else {
-				return $this->options[$key1];
+				return isset( $this->options[$key1] ) ? $this->options[$key1] : null;
 			}
 		} else if ( is_null ( $key3 ) ) {
 			// Getting second dimension options
 			if ( is_array ( $key2 ) ) {
-				foreach ( $key2 as $key ) $subset[$key] = $this->options[$key1][$key];
+				foreach ( $key2 as $key ) $subset[$key] = isset( $this->options[$key1][$key] ) ? $this->options[$key1][$key] : null;
 				return $subset;
 			} else {
-				return $this->options[$key1][$key2];
+				return isset( $this->options[$key1][$key2] ) ? $this->options[$key1][$key2] : null;
 			} 
 		} else {
 			// Getting third dimension options
 			if ( is_array ( $key3 ) ) {
-				foreach ( $key3 as $key ) $subset[$key] = $this->options[$key1][$key2][$key];
+				foreach ( $key3 as $key ) $subset[$key] = isset( $this->options[$key1][$key2][$key] ) ? $this->options[$key1][$key2][$key] : null;
 				return $subset;
 			} else {
-				return $this->options[$key1][$key2][$key3];
+				return isset( $this->options[$key1][$key2][$key3] ) ? $this->options[$key1][$key2][$key3] : null;
 			}
 		}
 	}
