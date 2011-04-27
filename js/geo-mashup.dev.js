@@ -423,7 +423,8 @@ GeoMashup = {
 	},
 
 	initializeTabbedIndex : function() {
-		var index_element = parent.document.getElementById(window.name + "-tabbed-index");
+		var category_id,
+			index_element = parent.document.getElementById(window.name + "-tabbed-index");
 		if (!index_element) {
 			index_element = parent.document.getElementById("gm-tabbed-index");
 		}
