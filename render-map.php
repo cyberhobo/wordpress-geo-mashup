@@ -233,7 +233,11 @@ class GeoMashupRenderMap {
 		// Custom javascript
 		$custom_js_url_path = '';
 		if ( isset( $geo_mashup_custom ) ) {
-			$custom_js_url_path = $geo_mashup_custom->file_url( 'custom.js' );
+			$custom_js_url_path = $geo_mashup_custom->file_url( 'custom-' . $map_data['map_api'] . '.js' );
+			if ( !$custom_js_url_path and 'google' != $map_data['map_api'] )
+				$custom_js_url_path = $geo_mashup_custom->file_url( 'custom-mxn.js' );
+			if ( !$custom_js_url_path )
+				$custom_js_url_path = $geo_mashup_custom->file_url( 'custom.js' );
 		} else if ( is_readable( 'custom.js' ) ) {
 			$custom_js_url_path = path_join( GEO_MASHUP_URL_PATH, 'custom.js' );
 		}
