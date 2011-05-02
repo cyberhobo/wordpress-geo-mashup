@@ -1627,9 +1627,9 @@ class GeoMashupDB {
 	 * 
 	 * @since 1.3
 	 * @uses do_action() Calls 'geo_mashup_added_object_location' with the object name,
-	 * 		 object id, geo date, and location array
+	 *       object id, geo date, and location array
 	 * @uses do_action() Calls 'geo_mashup_updated_object_location' with the object name,
-	 * 		 object id, geo date, and location array
+	 *       object id, geo date, and location array
 	 *
 	 * @param string $object_name 'post', 'user', a GeoMashupDB::object_storage() index.
 	 * @param id $object_id ID of the object to save the location for.
