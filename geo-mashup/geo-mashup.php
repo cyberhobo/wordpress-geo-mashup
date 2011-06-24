@@ -670,18 +670,20 @@ class GeoMashup {
 			case 'single':
 				$url_params['map_content'] = 'single';
 				$url_params += $geo_mashup_options->get ( 'single_map', $single_option_keys );
-				if ( 'post' == $object_name ) {
-					$url_params['object_id'] = $wp_query->post->ID;
-				} else if ( 'user' == $object_name ) {
-					$url_params['object_id'] = $wp_query->post->post_author;
-				} else if ( 'comment' == $object_name ) {
-					$url_params['object_id'] = get_comment_ID();
-					if ( empty( $url_params['object_id'] ) ) { 
-						return '<!-- ' . __( 'Geo Mashup found no current object to map', 'GeoMashup' ) . '-->';
-					}
-					$location = GeoMashupDB::get_object_location( $object_name, $object_id ); 
-					if ( empty( $location ) ) {
-						return '<!-- ' . __( 'Geo Mashup ommitted a map for an object with no location', 'GeoMashup' ) . '-->';
+				if ( empty( $atts['object_id'] ) ) {
+					if ( 'post' == $object_name ) {
+						$url_params['object_id'] = $wp_query->post->ID;
+					} else if ( 'user' == $object_name ) {
+						$url_params['object_id'] = $wp_query->post->post_author;
+					} else if ( 'comment' == $object_name ) {
+						$url_params['object_id'] = get_comment_ID();
+						if ( empty( $url_params['object_id'] ) ) {
+							return '<!-- ' . __( 'Geo Mashup found no current object to map', 'GeoMashup' ) . '-->';
+						}
+						$location = GeoMashupDB::get_object_location( $object_name, $object_id );
+						if ( empty( $location ) ) {
+							return '<!-- ' . __( 'Geo Mashup ommitted a map for an object with no location', 'GeoMashup' ) . '-->';
+						}
 					}
 				}
 				break;
