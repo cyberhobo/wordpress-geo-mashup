@@ -111,7 +111,7 @@ MapIconMaker.createMarkerIcon = function (opts) {
     (9 / 16) * width, (5 / 8) * height
   ];
   for (var i = 0; i < icon.imageMap.length; i++) {
-    icon.imageMap[i] = parseInt(icon.imageMap[i]);
+    icon.imageMap[i] = parseInt(icon.imageMap[i], 10);
   }
 
   return icon;
@@ -163,7 +163,7 @@ MapIconMaker.createFlatIcon = function (opts) {
       var aRad = polySideLength * a * (Math.PI / 180);
       var pixelX = polyRadius + polyRadius * Math.cos(aRad);
       var pixelY = polyRadius + polyRadius * Math.sin(aRad);
-      icon.imageMap.push(parseInt(pixelX), parseInt(pixelY));
+      icon.imageMap.push(parseInt(pixelX,10), parseInt(pixelY,10));
     }
   }
 
