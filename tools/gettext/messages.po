@@ -1,0 +1,848 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid   ""
+msgstr  "Project-Id-Version: PACKAGE VERSION\n"
+        "Report-Msgid-Bugs-To: \n"
+        "POT-Creation-Date: 2011-01-21 15:49-0700\n"
+        "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+        "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+        "Language-Team: LANGUAGE <LL@li.org>\n"
+        "MIME-Version: 1.0\n"
+        "Content-Type: text/plain; charset=CHARSET\n"
+        "Content-Transfer-Encoding: 8bit\n"
+
+#: ../../geo-mashup/geo-mashup-options.php:506
+msgid   ", which is a deprecated option"
+msgstr  ""
+
+#: ../../geo-mashup/geo-mashup-options.php:468
+msgid   ", which must be \"true\" or \"false\""
+msgstr  ""
+
+#: ../../geo-mashup/geo-mashup-options.php:436
+msgid   ", which must be a number"
+msgstr  ""
+
+#: ../../geo-mashup/geo-mashup-options.php:497
+msgid   ", which must be a number from 0 to "
+msgstr  ""
+
+#: ../../geo-mashup/geo-mashup-options.php:418
+msgid   ", which must be a string"
+msgstr  ""
+
+#: ../../geo-mashup/geo-mashup-options.php:401
+msgid   ", which must be a valid clustering library."
+msgstr  ""
+
+#: ../../geo-mashup/geo-mashup-options.php:383
+msgid   ", which must be a valid map control (see documentation)"
+msgstr  ""
+
+#: ../../geo-mashup/geo-mashup-options.php:392
+msgid   ", which must be a valid map provider."
+msgstr  ""
+
+#: ../../geo-mashup/geo-mashup-options.php:359
+#: ../../geo-mashup/geo-mashup-options.php:373
+msgid   ", which must be a valid map type (see documentation)"
+msgstr  ""
+
+#: ../../geo-mashup/geo-mashup-options.php:484
+msgid   ", which must be an array"
+msgstr  ""
+
+#: ../../geo-mashup/geo-mashup-options.php:367
+msgid   ", which must be an array of valid map types (see documentation)"
+msgstr  ""
+
+#: ../../geo-mashup/geo-mashup-options.php:423
+msgid   ", which must not contain XML tags."
+msgstr  ""
+
+#: ../../geo-mashup/options.php:373 ../../geo-mashup/options.php:502
+#: ../../geo-mashup/options.php:641 ../../geo-mashup/options.php:881
+msgid   "0 is zoomed all the way out."
+msgstr  ""
+
+#: ../../geo-mashup/edit-form.php:207
+msgid   "<em>Geo Date</em> associates a date (most formats work) and time "
+        "with a location. Leave the default value if uncertain."
+msgstr  ""
+
+#: ../../geo-mashup/edit-form.php:206
+msgid   "<em>Saved Name</em> is an optional name you may use to add entries "
+        "to the Saved Locations menu."
+msgstr  ""
+
+#: ../../geo-mashup/edit-form.php:226
+msgid   "A decimal latitude and longitude, like <em>40.123,-105.456</em>."
+msgstr  ""
+
+#: ../../geo-mashup/edit-form.php:227
+msgid   "A full or partial street address, like <em>123 main st, anytown, "
+        "acity 12345 USA</em>."
+msgstr  ""
+
+#: ../../geo-mashup/geo-mashup-db.php:1728
+msgid   "A location must have an ID or coordinates to be saved."
+msgstr  ""
+
+#: ../../geo-mashup/edit-form.php:225
+msgid   "A place name like <em>Yellowstone National Park</em>"
+msgstr  ""
+
+#: ../../geo-mashup/geo-mashup-db.php:617
+msgid   "Activating Geo Mashup"
+msgstr  ""
+
+#: ../../geo-mashup/options.php:379
+msgid   "AdSense For Search ID"
+msgstr  ""
+
+#: ../../geo-mashup/options.php:327
+msgid   "Add Category Links"
+msgstr  ""
+
+#: ../../geo-mashup/options.php:473 ../../geo-mashup/options.php:610
+#: ../../geo-mashup/options.php:850
+msgid   "Add Google Bar"
+msgstr  ""
+
+#: ../../geo-mashup/edit-form.php:198
+msgid   "Add Location"
+msgstr  ""
+
+#: ../../geo-mashup/options.php:449 ../../geo-mashup/options.php:584
+#: ../../geo-mashup/options.php:824
+msgid   "Add Map Type Control"
+msgstr  ""
+
+#: ../../geo-mashup/options.php:464 ../../geo-mashup/options.php:599
+#: ../../geo-mashup/options.php:839
+msgid   "Add Overview Control"
+msgstr  ""
+
+#: ../../geo-mashup/options.php:335
+msgid   "Add map links to category lists. Categories must have descriptions "
+        "for this to work."
+msgstr  ""
+
+#: ../../geo-mashup/edit-form.php:127
+msgid   "Address"
+msgstr  ""
+
+#: ../../geo-mashup/geo-mashup-ui-managers.php:602
+msgid   "Address not found - try making it less detailed"
+msgstr  ""
+
+#: ../../geo-mashup/options.php:683
+msgid   "Automatic Selection"
+msgstr  ""
+
+#: ../../geo-mashup/options.php:304
+msgid   "Bulk Reverse Geocode"
+msgstr  ""
+
+#: ../../geo-mashup/options.php:740
+msgid   "Category"
+msgstr  ""
+
+#: ../../geo-mashup/options.php:340
+msgid   "Category Link Separator"
+msgstr  ""
+
+#: ../../geo-mashup/options.php:351
+msgid   "Category Link Text"
+msgstr  ""
+
+#: ../../geo-mashup/options.php:361
+msgid   "Category Link Zoom Level"
+msgstr  ""
+
+#: ../../geo-mashup/options.php:675 ../../geo-mashup/options.php:899
+msgid   "Center"
+msgstr  ""
+
+#: ../../geo-mashup/options.php:507 ../../geo-mashup/options.php:719
+#: ../../geo-mashup/options.php:907
+msgid   "Click To Load"
+msgstr  ""
+
+#: ../../geo-mashup/options.php:517 ../../geo-mashup/options.php:729
+#: ../../geo-mashup/options.php:917
+msgid   "Click To Load Text"
+msgstr  ""
+
+#: ../../geo-mashup/edit-form.php:215
+msgid   "Click on the location. Zoom in if necessary so you can refine the "
+        "location by dragging it or clicking a new location."
+msgstr  ""
+
+#: ../../geo-mashup/options.php:135
+msgid   "Cluster Marker"
+msgstr  ""
+
+#: ../../geo-mashup/options.php:647
+msgid   "Cluster Markers Until Zoom Level"
+msgstr  ""
+
+#: ../../geo-mashup/options.php:238
+msgid   "Collect Location For"
+msgstr  ""
+
+#: ../../geo-mashup/options.php:740
+msgid   "Color"
+msgstr  ""
+
+#: ../../geo-mashup/options.php:256
+msgid   "Comments"
+msgstr  ""
+
+#: ../../geo-mashup/options.php:166
+msgid   "Contextual Maps"
+msgstr  ""
+
+#: ../../geo-mashup/geo-mashup-db.php:1151
+msgid   "Converting old locations"
+msgstr  ""
+
+#: ../../geo-mashup/geo-mashup-db.php:1174
+msgid   "Converting saved locations"
+msgstr  ""
+
+#: ../../geo-mashup/options.php:44
+msgid   "Copied existing geodata, see log for details."
+msgstr  ""
+
+#: ../../geo-mashup/options.php:260
+msgid   "Copy Geodata Meta Fields"
+msgstr  ""
+
+#: ../../geo-mashup/options.php:271
+#, php-format
+msgid   "Copy coordinates to and from %sgeodata meta fields%s."
+msgstr  ""
+
+#: ../../geo-mashup/geo-mashup-db.php:1098
+#, php-format
+msgid   "Copying missing %s geodata from Geo Mashup"
+msgstr  ""
+
+#: ../../geo-mashup/geo-mashup-db.php:1061
+#, php-format
+msgid   "Copying missing %s geodata from WordPress"
+msgstr  ""
+
+#: ../../geo-mashup/options.php:285
+msgid   "Custom fields with this key will be geocoded and the resulting "
+        "location saved for the post."
+msgstr  ""
+
+#: ../../geo-mashup/options.php:55
+msgid   "Database upgraded, see log for details."
+msgstr  ""
+
+#: ../../geo-mashup/options.php:435 ../../geo-mashup/options.php:570
+#: ../../geo-mashup/options.php:810
+msgid   "Default Map Type"
+msgstr  ""
+
+#: ../../geo-mashup/options.php:490 ../../geo-mashup/options.php:629
+#: ../../geo-mashup/options.php:869
+msgid   "Default Zoom Level"
+msgstr  ""
+
+#: ../../geo-mashup/options.php:771
+msgid   "Default settings for contextual maps, which include just the items "
+        "shown on a page, for example."
+msgstr  ""
+
+#: ../../geo-mashup/options.php:530
+msgid   "Default settings for global maps of located items."
+msgstr  ""
+
+#: ../../geo-mashup/options.php:396
+msgid   "Default settings for maps of a single located post."
+msgstr  ""
+
+#: ../../geo-mashup/edit-form.php:199
+msgid   "Delete"
+msgstr  ""
+
+#: ../../geo-mashup/options.php:936
+msgid   "Delete Log"
+msgstr  ""
+
+#: ../../geo-mashup/geo-mashup.php:1096
+msgid   "Documentation"
+msgstr  ""
+
+#: ../../geo-mashup/geo-mashup.php:1098
+msgid   "Donate"
+msgstr  ""
+
+#: ../../geo-mashup/options.php:109
+msgid   "Earth Plugin"
+msgstr  ""
+
+#: ../../geo-mashup/options.php:290
+msgid   "Enable Reverse Geocoding"
+msgstr  ""
+
+#: ../../geo-mashup/options.php:482 ../../geo-mashup/options.php:621
+#: ../../geo-mashup/options.php:861
+msgid   "Enable Scroll Wheel Zoom"
+msgstr  ""
+
+#: ../../geo-mashup/geo-mashup-db.php:1164
+#, php-format
+msgid   "Failed to convert location (%s). You can %sedit the post%s to update "
+        "the location, and try again."
+msgstr  ""
+
+#: ../../geo-mashup/geo-mashup-db.php:1187
+#, php-format
+msgid   "Failed to convert saved location (%s). You'll have to save it again, "
+        "sorry."
+msgstr  ""
+
+#: ../../geo-mashup/geo-mashup-db.php:1110
+#, php-format
+msgid   "Failed to duplicate Geo Mashup location for %s (%s)."
+msgstr  ""
+
+#: ../../geo-mashup/geo-mashup-db.php:1072
+#, php-format
+msgid   "Failed to duplicate WordPress location (%s). You can edit %s with id "
+        "%s to update the location, and try again."
+msgstr  ""
+
+#: ../../geo-mashup/geo-mashup-db.php:1206
+msgid   "Failed to initialize geo dates from post dates: "
+msgstr  ""
+
+#: ../../geo-mashup/edit-form.php:169
+msgid   "Find a new location:"
+msgstr  ""
+
+#: ../../geo-mashup/edit-form.php:212
+msgid   "For multiple search results, mouse over pins to see location names, "
+        "and click a result pin to select that location."
+msgstr  ""
+
+#: ../../geo-mashup/options.php:214
+msgid   "Generated links go here"
+msgstr  ""
+
+#: ../../geo-mashup/edit-form.php:129
+msgid   "Geo Date"
+msgstr  ""
+
+#: ../../geo-mashup/geo-mashup.php:1034
+msgid   "Geo Mashup"
+msgstr  ""
+
+#: ../../geo-mashup/options.php:954
+msgid   "Geo Mashup Documentation"
+msgstr  ""
+
+#: ../../geo-mashup/geo-mashup.php:1034 ../../geo-mashup/options.php:160
+msgid   "Geo Mashup Options"
+msgstr  ""
+
+#: ../../geo-mashup/geo-mashup-db.php:682
+msgid   "Geo Mashup database is up to date."
+msgstr  ""
+
+#: ../../geo-mashup/geo-mashup-db.php:685
+msgid   "Geo Mashup database upgrade failed."
+msgstr  ""
+
+#: ../../geo-mashup/geo-mashup.php:817
+msgid   "Geo Mashup found no current object to map"
+msgstr  ""
+
+#: ../../geo-mashup/geo-mashup.php:799
+msgid   "Geo Mashup found no objects to map in this context"
+msgstr  ""
+
+#: ../../geo-mashup/geo-mashup.php:827
+msgid   "Geo Mashup map omitted to avoid nesting maps"
+msgstr  ""
+
+#: ../../geo-mashup/geo-mashup.php:1058
+#, php-format
+msgid   "Geo Mashup needs to upgrade its database, visit the <a href=\"%s"
+        "\">settings</a> to do it now."
+msgstr  ""
+
+#: ../../geo-mashup/geo-mashup.php:820
+msgid   "Geo Mashup omitted a map for an object with no location"
+msgstr  ""
+
+#: ../../geo-mashup/geo-mashup.php:852
+msgid   "Geo Mashup omitted a map with no located objects found."
+msgstr  ""
+
+#: ../../geo-mashup/geo-mashup.php:1054
+#, php-format
+msgid   "Geo Mashup requires a Google API key in the <a href=\"%s\">settings</"
+        "a> before it will work."
+msgstr  ""
+
+#: ../../geo-mashup/options.php:233
+msgid   "Geo Mashup will use this page for generated location links"
+msgstr  ""
+
+#: ../../geo-mashup/options.php:277
+msgid   "Geocode Custom Field"
+msgstr  ""
+
+#: ../../geo-mashup/geo-mashup-db.php:1022
+msgid   "Geodata duplication done."
+msgstr  ""
+
+#: ../../geo-mashup/geo-mashup.php:1276
+msgid   "Geotag Icon"
+msgstr  ""
+
+#: ../../geo-mashup/options.php:204
+msgid   "Get yours here"
+msgstr  ""
+
+#: ../../geo-mashup/options.php:165
+msgid   "Global Maps"
+msgstr  ""
+
+#: ../../geo-mashup/options.php:215
+msgid   "Global Mashup Page"
+msgstr  ""
+
+#: ../../geo-mashup/options.php:197
+msgid   "Google API Key"
+msgstr  ""
+
+#: ../../geo-mashup/options.php:124
+msgid   "Google v2"
+msgstr  ""
+
+#: ../../geo-mashup/options.php:125
+msgid   "Google v3"
+msgstr  ""
+
+#: ../../geo-mashup/options.php:656
+msgid   "Highest zoom level to cluster markers, or blank for no clustering."
+msgstr  ""
+
+#: ../../geo-mashup/options.php:671 ../../geo-mashup/options.php:895
+msgid   "Highlight"
+msgstr  ""
+
+#: ../../geo-mashup/options.php:107
+msgid   "Hybrid"
+msgstr  ""
+
+#: ../../geo-mashup/geo-mashup-db.php:965
+msgid   "Increasing delay to"
+msgstr  ""
+
+#: ../../geo-mashup/geo-mashup-db.php:1209
+#, php-format
+msgid   "Initialized %d geo dates from corresponding post dates."
+msgstr  ""
+
+#: ../../geo-mashup/options.php:115
+msgid   "Large Pan/Zoom"
+msgstr  ""
+
+#: ../../geo-mashup/options.php:116
+msgid   "Large Pan/Zoom 3D"
+msgstr  ""
+
+#: ../../geo-mashup/edit-form.php:157
+msgid   "Loading Google map. Check Geo Mashup options if the map fails to "
+        "load."
+msgstr  ""
+
+#: ../../geo-mashup/geo-mashup-ui-managers.php:786
+msgid   "Loading..."
+msgstr  ""
+
+#: ../../geo-mashup/geo-mashup-ui-managers.php:301
+#: ../../geo-mashup/geo-mashup-ui-managers.php:487
+msgid   "Location"
+msgstr  ""
+
+#: ../../geo-mashup/edit-form.php:163
+msgid   "Location Map Image"
+msgstr  ""
+
+#: ../../geo-mashup/geo-mashup.php:405
+msgid   "Location added."
+msgstr  ""
+
+#: ../../geo-mashup/geo-mashup.php:403
+msgid   "Location deleted."
+msgstr  ""
+
+#: ../../geo-mashup/geo-mashup.php:401
+msgid   "Location updated."
+msgstr  ""
+
+#: ../../geo-mashup/geo-mashup-db.php:945
+msgid   "Locations to geocode: "
+msgstr  ""
+
+#: ../../geo-mashup/options.php:62
+msgid   "Log deleted."
+msgstr  ""
+
+#: ../../geo-mashup/geo-mashup-db.php:964
+msgid   "Lookup error:"
+msgstr  ""
+
+#: ../../geo-mashup/options.php:421 ../../geo-mashup/options.php:556
+#: ../../geo-mashup/options.php:796
+msgid   "Map Control"
+msgstr  ""
+
+#: ../../geo-mashup/options.php:410 ../../geo-mashup/options.php:545
+#: ../../geo-mashup/options.php:785
+msgid   "Map Height"
+msgstr  ""
+
+#: ../../geo-mashup/options.php:178
+msgid   "Map Provider"
+msgstr  ""
+
+#: ../../geo-mashup/options.php:399 ../../geo-mashup/options.php:534
+#: ../../geo-mashup/options.php:774
+msgid   "Map Width"
+msgstr  ""
+
+#: ../../geo-mashup/options.php:136
+msgid   "Marker Clusterer"
+msgstr  ""
+
+#: ../../geo-mashup/options.php:662 ../../geo-mashup/options.php:886
+msgid   "Marker Selection Behaviors"
+msgstr  ""
+
+#: ../../geo-mashup/options.php:120
+msgid   "No"
+msgstr  ""
+
+#: ../../geo-mashup/geo-mashup-db.php:974
+msgid   "No address info found."
+msgstr  ""
+
+#: ../../geo-mashup/geo-mashup-db.php:942
+msgid   "No locations found with missing address fields."
+msgstr  ""
+
+#: ../../geo-mashup/geo-mashup.php:384
+msgid   "No object id posted."
+msgstr  ""
+
+#: ../../geo-mashup/options.php:229
+msgid   "No pages available."
+msgstr  ""
+
+#: ../../geo-mashup/options.php:703
+msgid   "Number of items to show, leave blank for all"
+msgstr  ""
+
+#: ../../geo-mashup/geo-mashup-db.php:1183
+msgid   "OK: "
+msgstr  ""
+
+#: ../../geo-mashup/geo-mashup-ui-managers.php:154
+msgid   "Object location not saved - invalid request."
+msgstr  ""
+
+#: ../../geo-mashup/options.php:121
+msgid   "Only"
+msgstr  ""
+
+#: ../../geo-mashup/options.php:667 ../../geo-mashup/options.php:891
+msgid   "Open info window"
+msgstr  ""
+
+#: ../../geo-mashup/options.php:126
+msgid   "OpenLayers"
+msgstr  ""
+
+#: ../../geo-mashup/options.php:38
+msgid   "Options updated."
+msgstr  ""
+
+#: ../../geo-mashup/options.php:163
+msgid   "Overall"
+msgstr  ""
+
+#: ../../geo-mashup/options.php:174
+msgid   "Overall Geo Mashup Settings"
+msgstr  ""
+
+#: ../../geo-mashup/options.php:406 ../../geo-mashup/options.php:541
+#: ../../geo-mashup/options.php:781
+msgid   "Pixels, or append %."
+msgstr  ""
+
+#: ../../geo-mashup/edit-form.php:209
+msgid   "Put a green pin at a new location. There are many ways to do it:"
+msgstr  ""
+
+#: ../../geo-mashup/geo-mashup-geocoders.php:142
+#: ../../geo-mashup/geo-mashup-geocoders.php:344
+#: ../../geo-mashup/geo-mashup-geocoders.php:407
+msgid   "Reverse geocoding requires numeric coordinates."
+msgstr  ""
+
+#: ../../geo-mashup/options.php:105
+msgid   "Roadmap"
+msgstr  ""
+
+#: ../../geo-mashup/options.php:106
+msgid   "Satellite"
+msgstr  ""
+
+#: ../../geo-mashup/edit-form.php:200
+msgid   "Save"
+msgstr  ""
+
+#: ../../geo-mashup/edit-form.php:128
+msgid   "Saved Name"
+msgstr  ""
+
+#: ../../geo-mashup/options.php:68
+msgid   "Saved options may be corrupted, try updating again. Corrupt values: "
+msgstr  ""
+
+#: ../../geo-mashup/edit-form.php:213
+msgid   "Search for a decimal latitude and longitude separated by a comma, "
+        "like <em>40.123,-105.456</em>. Seven decimal places are stored. "
+        "Negative latitude is used for the southern hemisphere, and negative "
+        "longitude for the western hemisphere."
+msgstr  ""
+
+#: ../../geo-mashup/edit-form.php:211
+msgid   "Search for a location name."
+msgstr  ""
+
+#: ../../geo-mashup/edit-form.php:214
+msgid   "Search for a street address, like <em>123 main st, anytown, acity</"
+        "em>."
+msgstr  ""
+
+#: ../../geo-mashup/options.php:691
+msgid   "Selects the linked or most recent item when the map loads."
+msgstr  ""
+
+#: ../../geo-mashup/geo-mashup.php:1079
+msgid   "Settings"
+msgstr  ""
+
+#: ../../geo-mashup/options.php:741
+msgid   "Show Connecting Line Until Zoom Level (0-20 or none)"
+msgstr  ""
+
+#: ../../geo-mashup/options.php:707
+msgid   "Show Future Posts"
+msgstr  ""
+
+#: ../../geo-mashup/options.php:679 ../../geo-mashup/options.php:903
+msgid   "Show Geo Attachments"
+msgstr  ""
+
+#: ../../geo-mashup/options.php:696
+msgid   "Show Only Most Recent Items"
+msgstr  ""
+
+#: ../../geo-mashup/geo-mashup.php:1265
+msgid   "Show on map"
+msgstr  ""
+
+#: ../../geo-mashup/options.php:164
+msgid   "Single Maps"
+msgstr  ""
+
+#: ../../geo-mashup/options.php:114
+msgid   "Small Pan/Zoom"
+msgstr  ""
+
+#: ../../geo-mashup/options.php:112
+msgid   "Small Zoom"
+msgstr  ""
+
+#: ../../geo-mashup/options.php:113
+msgid   "Small Zoom 3D"
+msgstr  ""
+
+#: ../../geo-mashup/options.php:191
+msgid   "Some features still work only with Google v2."
+msgstr  ""
+
+#: ../../geo-mashup/options.php:76
+msgid   "Some invalid options will not be used. If you've just upgraded, do "
+        "an update to initialize new options."
+msgstr  ""
+
+#: ../../geo-mashup/geo-mashup.php:220
+msgid   "Sorry, Geo Mashup now requires PHP 5. Ask your host how to do this, "
+        "or use an earlier version of Geo Mashup."
+msgstr  ""
+
+#: ../../geo-mashup/options.php:306
+msgid   "Start"
+msgstr  ""
+
+#: ../../geo-mashup/options.php:108
+msgid   "Terrain"
+msgstr  ""
+
+#: ../../geo-mashup/geo-mashup-geocoders.php:306
+#, php-format
+msgid   "The geocoding request failed with status %s."
+msgstr  ""
+
+#: ../../geo-mashup/options.php:207
+msgid   "This setting is required for Geo Mashup to work."
+msgstr  ""
+
+#: ../../geo-mashup/geo-mashup-db.php:977
+msgid   "Time limit exceeded, retry to continue."
+msgstr  ""
+
+#: ../../geo-mashup/geo-mashup-db.php:953
+msgid   "Time limit: "
+msgstr  ""
+
+#: ../../geo-mashup/edit-form.php:223
+msgid   "To add or update location choose a saved location, or find a new "
+        "location using one of these formats:"
+msgstr  ""
+
+#: ../../geo-mashup/edit-form.php:217
+msgid   "To execute a search, type search text into the Find Location box and "
+        "hit the enter key. If you type a name next to \"Save As\", the "
+        "location will be saved under that name and added to the Saved "
+        "Locations dropdown list."
+msgstr  ""
+
+#: ../../geo-mashup/edit-form.php:218
+msgid   "To remove the location (green pin), clear the search box and hit the "
+        "enter key."
+msgstr  ""
+
+#: ../../geo-mashup/options.php:308
+msgid   "Try to look up missing address fields for existing locations. Could "
+        "be slow."
+msgstr  ""
+
+#: ../../geo-mashup/options.php:298
+msgid   "Try to look up missing address fields for new locations."
+msgstr  ""
+
+#: ../../geo-mashup/options.php:932
+msgid   "Update Log"
+msgstr  ""
+
+#: ../../geo-mashup/options.php:393 ../../geo-mashup/options.php:527
+#: ../../geo-mashup/options.php:531 ../../geo-mashup/options.php:768
+#: ../../geo-mashup/options.php:927
+msgid   "Update Options"
+msgstr  ""
+
+#: ../../geo-mashup/options.php:314
+msgid   "Use Theme Style Sheet with Maps"
+msgstr  ""
+
+#: ../../geo-mashup/options.php:251
+msgid   "Users"
+msgstr  ""
+
+#: ../../geo-mashup/options.php:952
+msgid   "View Update Log"
+msgstr  ""
+
+#: ../../geo-mashup/edit-form.php:219
+msgid   "When you are satisfied with the location, save or update."
+msgstr  ""
+
+#: ../../geo-mashup/edit-form.php:229
+msgid   "When you save or update, the closest match available will be saved "
+        "as the location."
+msgstr  ""
+
+#: ../../geo-mashup/geo-mashup-ui-managers.php:784
+msgid   "Written from (location)"
+msgstr  ""
+
+#: ../../geo-mashup/options.php:119
+msgid   "Yes"
+msgstr  ""
+
+#: ../../geo-mashup/options.php:937
+msgid   "You can keep this log as a record, future entries will be appended."
+msgstr  ""
+
+#: ../../geo-mashup/geo-mashup.php:1006
+msgid   "You must add a description to this category to use this Geo Mashup "
+        "feature."
+msgstr  ""
+
+#: ../../geo-mashup/options.php:387
+msgid   "Your client ID, used with the Google Bar. Leave the default value to "
+        "use Geo Mashup's :)."
+msgstr  ""
+
+#: ../../geo-mashup/edit-form.php:175
+msgid   "[Saved Locations]"
+msgstr  ""
+
+#: ../../geo-mashup/geo-mashup-db.php:968
+msgid   "address"
+msgstr  ""
+
+#: ../../geo-mashup/options.php:129
+msgid   "auto"
+msgstr  ""
+
+#: ../../geo-mashup/edit-form.php:203
+msgid   "help"
+msgstr  ""
+
+#: ../../geo-mashup/geo-mashup-options.php:358
+#: ../../geo-mashup/geo-mashup-options.php:366
+#: ../../geo-mashup/geo-mashup-options.php:372
+#: ../../geo-mashup/geo-mashup-options.php:382
+#: ../../geo-mashup/geo-mashup-options.php:391
+#: ../../geo-mashup/geo-mashup-options.php:400
+#: ../../geo-mashup/geo-mashup-options.php:417
+#: ../../geo-mashup/geo-mashup-options.php:422
+#: ../../geo-mashup/geo-mashup-options.php:435
+#: ../../geo-mashup/geo-mashup-options.php:467
+#: ../../geo-mashup/geo-mashup-options.php:483
+#: ../../geo-mashup/geo-mashup-options.php:496
+#: ../../geo-mashup/geo-mashup-options.php:505
+msgid   "is invalid for"
+msgstr  ""
+
+#: ../../geo-mashup/edit-form.php:173
+msgid   "or select from"
+msgstr  ""
+
+#: ../../geo-mashup/geo-mashup-db.php:970
+msgid   "postal code"
+msgstr  ""
+
+#: ../../geo-mashup/options.php:417 ../../geo-mashup/options.php:552
+#: ../../geo-mashup/options.php:792
+msgid   "px"
+msgstr  ""

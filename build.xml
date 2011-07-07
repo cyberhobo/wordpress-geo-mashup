@@ -1,0 +1,127 @@
+<?xml version="1.0"?>
+
+<!-- Apache Ant build. If Ant is installed, running 'ant' in this directory should execute the build. -->
+<!-- What does it do? Runs jslint on javascript, compresses javascript and CSS, and makes a ZIP archive ready to install in WordPress. -->
+<!-- Source can be installed 'raw', not from a build archive, and should work using uncompressed resources. -->
+
+<project name="geo-mashup" default="build">
+	<taskdef resource="net/sf/antcontrib/antlib.xml">
+		<classpath>
+			<pathelement location="tools/ant-contrib/ant-contrib-1.0b3.jar"/>
+		</classpath>
+	</taskdef>
+	
+	<!-- set global properties for this build -->
+	<property name="source" location="geo-mashup"/>
+	<property name="build.base" location="build"/>
+	<property name="build.major" value="1"/>
+	<property name="build.minor" value="3.99"/>
+	
+	<target name="build">
+		<!-- generate build number -->
+		<buildnumber/>
+		<tstamp>
+			<format property="YEAR" pattern="yyyy"/>
+		</tstamp>
+		<property name="build.ver" value="${build.major}.${build.minor}.${build.number}"/>
+		<property name="build.ver.dir" location="${build.base}/${build.ver}"/>
+		<property name="build.dir" location="${build.ver.dir}/geo-mashup"/>
+		
+		<!-- make our build directory -->
+		<mkdir dir="${build.dir}"/>
+		
+		<!-- copy our sources in -->
+		<echo>--- COPY SOURCES ---</echo>
+		<copy todir="${build.dir}">
+			<fileset dir="${source}">
+				<exclude name="*checklist.txt*"/>
+			</fileset>
+		</copy>
+		
+		<!-- lint our javascripts -->
+		<echo>--- LINT ---</echo>
+		
+		<for param="file">
+			<path>
+				<fileset dir="${build.dir}/js" includes="**/*.dev.js">
+					<exclude name="*datepicker.dev.js"/>
+					<exclude name="*markerclusterer.dev.js"/>
+				</fileset>
+			</path>
+			<sequential>
+				<echo>Linting @{file}</echo>
+				<java jar="tools/rhino/js.jar" fork="true" failonerror="true">
+					<arg value="tools/jslint/jslint.js"/>
+					<arg value="@{file}"/>
+				</java>
+			</sequential>
+		</for>
+
+	
+		<!-- minify our sources -->
+		<echo>--- MIN ---</echo>
+		<for param="file">
+			<path>
+				<fileset dir="${build.dir}/js" includes="**/*.dev.js"/>
+			</path>
+			<sequential>
+				<propertyregex override="yes" property="minfile" input="@{file}" regexp="(.*)\.dev\.js" replace="\1.js"/>
+				<java jar="tools/yui-compressor/yuicompressor-2.4.2.jar" fork="true" failonerror="true">
+					<arg value="-o"/>
+					<arg value="${minfile}"/>
+					<arg value="@{file}"/>
+				</java>
+			</sequential>
+		</for>		
+		<for param="file">
+			<path>
+				<fileset dir="${build.dir}/css" includes="**/*.dev.css"/>
+			</path>
+			<sequential>
+				<propertyregex override="yes" property="minfile" input="@{file}" regexp="(.*)\.dev\.css" replace="\1.css"/>
+				<java jar="tools/yui-compressor/yuicompressor-2.4.2.jar" fork="true" failonerror="true">
+					<arg value="-o"/>
+					<arg value="${minfile}"/>
+					<arg value="@{file}"/>
+				</java>
+			</sequential>
+		</for>		
+
+		<echo>--- MXN LICENSE ---</echo>
+		<for param="file">
+			<path>
+				<fileset dir="${build.dir}/js/mxn" includes="*.js">
+					<exclude name="*.dev.js"/>
+					<exclude name="license.js"/>
+				</fileset>
+			</path>
+			<sequential>
+				<concat destfile="${build.dir}/js/mxn/temp.t">
+					<header file="${build.dir}/js/mxn/license.js"/>
+					<fileset file="@{file}"/>
+					<filterchain>
+						<expandproperties/>
+					</filterchain>
+				</concat>
+				<move file="${build.dir}/js/mxn/temp.t" tofile="@{file}" overwrite="true"/>
+			</sequential>
+		</for>
+		
+		<zip destfile="${build.base}/geo-mashup-${build.ver}.zip" basedir="${build.ver.dir}"/>
+		
+	</target>
+
+	<target name="docs">
+		<!-- document our sources -->
+		<echo>--- DOC ---</echo>
+		<java jar="tools/jsdoc-toolkit/jsrun.jar" fork="true" failonerror="true">
+			<arg value="tools/jsdoc-toolkit/app/run.js"/>
+			<arg value="${build.dir}/mxn.js"/>
+			<arg value="${build.dir}/mxn.core.js"/>
+			<arg value="${build.dir}/mxn.geocoder.js"/>
+			<arg value="-c=tools/jsdoc-toolkit/mxn.conf"/>
+			<arg value="-d=${build.dir}/docs"/>
+		</java>
+	</target>
+	
+</project>
