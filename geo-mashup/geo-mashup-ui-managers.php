@@ -598,6 +598,9 @@ class GeoMashupPostUIManager extends GeoMashupUIManager {
 					sleep( 1 );
 					$success = GeoMashupDB::geocode( $query, $this->inline_location );
 				}
+			} else if ( is_numeric ( $this->inline_location['lat'] ) and is_numeric( $this->inline_location['lng'] ) ) {
+				// lat and lng were supplied
+				$success = true;
 			}
 
 			if ( $success ) {
