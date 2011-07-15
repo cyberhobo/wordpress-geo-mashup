@@ -21,7 +21,6 @@ If any step fails, fix before continuing, repeating any necessary prior steps.
 	  1. Empty beta wiki docs.
 	1. Tag the new release in the Google code repository.
 	1. Upload ZIP to Google code.
-	1. Check current WordPress tag.
 	1. File merge code with WordPress repo code.
 	1. Edit WP readme.txt (remember stable tag and changelog!)
 		1. Edit project site home page.
