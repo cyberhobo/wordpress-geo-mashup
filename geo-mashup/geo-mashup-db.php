@@ -671,11 +671,9 @@ class GeoMashupDB {
 			if ( $errors && $have_bad_errors ) {
 				// Any errors other than duplicate or multiple primary key could be trouble
 				self::activation_log( $errors, true );
-				die( $errors );
 			} else {
-				if ( self::convert_prior_locations( ) ) {
-					self::set_installed_version( GEO_MASHUP_DB_VERSION );
-				}
+				self::convert_prior_locations();
+				self::set_installed_version( GEO_MASHUP_DB_VERSION );
 			}
 			$wpdb->show_errors( $old_show_errors );
 		}
@@ -1069,12 +1067,13 @@ class GeoMashupDB {
 				$location = array( 'lat' => trim( $objectmeta->lat ), 'lng' => trim( $objectmeta->lng ), 'address' => trim( $objectmeta->address ) );
 				$do_lookups = ( ( time() - $start_time ) < 10 ) ? true : false;
 				$set_id = self::set_object_location( $meta_type, $object_id, $location, $do_lookups, $objectmeta->object_date );
-				if ( $set_id ) {
+				if ( !is_wp_error( $set_id ) ) {
 					self::activation_log( 'OK: ' . $meta_type . ' id ' . $object_id );
 				} else {
 					$msg = sprintf( __( 'Failed to duplicate WordPress location (%s). You can edit %s with id %s ' .
 						'to update the location, and try again.', 'GeoMashup' ),
 						$objectmeta->lat . ',' . $objectmeta->lng, $meta_type, $object_id );
+					$msg .= ' (' . $set_id->get_error_message() . ')';
 					self::activation_log( $msg, true );
 				}
 			}
@@ -1138,7 +1137,8 @@ class GeoMashupDB {
 			LEFT JOIN {$wpdb->prefix}geo_mashup_location_relationships gmlr ON gmlr.object_id = pm.post_id
 			AND gmlr.object_name = 'post'
 			WHERE pm.meta_key = '_geo_location' 
-			AND length( pm.meta_value ) > 1
+			AND length( pm.meta_value ) > 3
+			AND pm.meta_value LIKE '%,%'
 			AND lpm.post_id IS NULL 
 			AND gmlr.object_id IS NULL";
 
@@ -1160,13 +1160,14 @@ class GeoMashupDB {
 				$location = array( 'lat' => trim( $lat ), 'lng' => trim( $lng ) );
 				$do_lookups = ( ( time() - $start_time ) < 10 ) ? true : false;
 				$set_id = self::set_object_location( 'post', $post_id, $location, $do_lookups );
-				if ( $set_id ) {
+				if ( !is_wp_error( $set_id ) ) {
 					add_post_meta( $post_id, '_geo_converted', $wpdb->prefix . 'geo_mashup_locations.id = ' . $set_id );
 					self::activation_log( 'OK: post_id ' . $post_id );
 				} else {
 					$msg = sprintf( __( 'Failed to convert location (%s). You can %sedit the post%s ' .
 						'to update the location, and try again.', 'GeoMashup' ),
 						$postmeta->meta_value, '<a href="post.php?action=edit&post=' . $post_id . '">', '</a>');
+					$msg .= ' (' . $set_id->get_error_message() . ')';
 					self::activation_log( $msg );
 				}
 			}
@@ -1194,7 +1195,7 @@ class GeoMashupDB {
 					self::activation_log( $msg );
 				}
 			}
-			update_option( 'geo_locations', $geo_locations );
+			delete_option( 'geo_locations', $geo_locations );
 		}
 
 		$geo_date_update = "UPDATE {$wpdb->prefix}geo_mashup_location_relationships gmlr, $wpdb->posts p " .
