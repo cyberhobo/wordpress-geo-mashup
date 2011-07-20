@@ -55,8 +55,19 @@ class GeoMashupUIManager {
 		GeoMashup::register_style( 'geo-mashup-edit-form', 'css/location-editor.css', false, GEO_MASHUP_VERSION, 'screen' );
 		wp_enqueue_style( 'geo-mashup-edit-form' );
 
-		GeoMashup::register_script( 'mxn', 'js/mxn/mxn.js', null, GEO_MASHUP_VERSION );
-		GeoMashup::register_script( 'mxn-core', 'js/mxn/mxn.core.js', array( 'mxn' ), GEO_MASHUP_VERSION );
+		GeoMashup::register_script( 
+				'mxn', 
+				'js/mxn/mxn.js', 
+				null, 
+				GEO_MASHUP_VERSION , 
+				true);
+				
+		GeoMashup::register_script( 
+				'mxn-core', 
+				'js/mxn/mxn.core.js', 
+				array( 'mxn' ), 
+				GEO_MASHUP_VERSION, 
+				true );
 
 		$map_api = $geo_mashup_options->get( 'overall', 'map_api' );
 		$geonames_username = $geo_mashup_options->get( 'overall', 'geonames_username' );
@@ -66,34 +77,110 @@ class GeoMashupUIManager {
 		wp_localize_script( 'mxn-core', 'geo_mashup_location_editor_settings', compact( 'map_api', 'ajax_url', 'geo_mashup_url_path', 'geonames_username' ) );
 		$required_scripts = array( 'jquery');
 		if ( 'google' == $map_api ) {
-			wp_register_script( 'google-maps-2', 'http://maps.google.com/maps?file=api&amp;v=2&amp;sensor=false&amp;key=' . 
-				$geo_mashup_options->get( 'overall', 'google_key' ) . '&amp;hl=' . GeoMashup::get_language_code() );
-			GeoMashup::register_script( 'mxn-google-2', 'js/mxn/mxn.google.core.js', array( 'mxn-core', 'google-maps-2' ), GEO_MASHUP_VERSION );
-			GeoMashup::register_script( 'mxn-google-2-gm', 'js/mxn/mxn.google.geo-mashup.js', array( 'mxn-google-2' ), GEO_MASHUP_VERSION );
+			wp_register_script( 
+			  'google-maps-2', 
+			  'http://maps.google.com/maps?file=api&amp;v=2&amp;sensor=false&amp;key=' . $geo_mashup_options->get( 'overall', 'google_key' ) . '&amp;hl=' . GeoMashup::get_language_code(),
+			  null, 
+			  '', 
+			  true );
+			 
+			GeoMashup::register_script( 
+				'mxn-google-2', 
+				'js/mxn/mxn.google.core.js', 
+				array( 'mxn-core', 'google-maps-2' ), 
+				GEO_MASHUP_VERSION, 
+				true );
+				
+			GeoMashup::register_script( 
+				'mxn-google-2-gm', 
+				'js/mxn/mxn.google.geo-mashup.js', 
+				array( 'mxn-google-2' ), 
+				GEO_MASHUP_VERSION, 
+				true );
+				
 			$required_scripts[] = 'mxn-google-2-gm';
 		} else if ( 'googlev3' == $map_api ) {
-			wp_register_script( 'google-maps-3', 'http://maps.google.com/maps/api/js?sensor=false&amp;language=' . GeoMashup::get_language_code() );
-			GeoMashup::register_script( 'mxn-google-3', 'js/mxn/mxn.googlev3.core.js', array( 'mxn-core', 'google-maps-3' ), GEO_MASHUP_VERSION );
-			GeoMashup::register_script( 'mxn-google-3-gm', 'js/mxn/mxn.googlev3.geo-mashup.js', array( 'mxn-google-3' ), GEO_MASHUP_VERSION );
+			wp_register_script( 
+					'google-maps-3',
+					'http://maps.google.com/maps/api/js?sensor=false&amp;language=' . GeoMashup::get_language_code(), 
+					null, 
+					'', 
+					true );
+					
+			GeoMashup::register_script( 
+					'mxn-google-3', 
+					'js/mxn/mxn.googlev3.core.js', 
+					array( 'mxn-core', 'google-maps-3' ), 
+					GEO_MASHUP_VERSION, 
+					true );
+					
+			GeoMashup::register_script( 
+					'mxn-google-3-gm', 
+					'js/mxn/mxn.googlev3.geo-mashup.js', 
+					array( 'mxn-google-3' ), 
+					GEO_MASHUP_VERSION, 
+					true );
+							
 			$required_scripts[] = 'mxn-google-3-gm';
 		} else if ( 'openlayers' == $map_api ) {
-			wp_register_script( 'openlayers', 'http://openlayers.org/api/OpenLayers.js', null, 'latest' );
-			wp_register_script( 'openstreetmap', 'http://www.openstreetmap.org/openlayers/OpenStreetMap.js', array( 'openlayers' ), 'latest' );
-			GeoMashup::register_script( 'mxn-openlayers', 'js/mxn/mxn.openlayers.core.js', array( 'mxn-core', 'openstreetmap' ), GEO_MASHUP_VERSION );
-			GeoMashup::register_script( 'mxn-openlayers-gm', 'js/mxn/mxn.openlayers.geo-mashup.js', array( 'mxn-openlayers' ), GEO_MASHUP_VERSION );
+			wp_register_script( 
+					'openlayers', 
+					'http://openlayers.org/api/OpenLayers.js', 
+					null, 
+					'latest', 
+					true );
+					
+			wp_register_script( 
+					'openstreetmap', 
+					'http://www.openstreetmap.org/openlayers/OpenStreetMap.js',
+					 array( 'openlayers' ),
+					'latest',
+					 true );
+					 
+			GeoMashup::register_script( 
+					'mxn-openlayers',
+					'js/mxn/mxn.openlayers.core.js', 
+					array( 'mxn-core', 'openstreetmap' ), 
+					GEO_MASHUP_VERSION, 
+					true );
+					
+			GeoMashup::register_script( 
+					'mxn-openlayers-gm', 
+					'js/mxn/mxn.openlayers.geo-mashup.js', 
+					array( 'mxn-openlayers' ), 
+					GEO_MASHUP_VERSION, 
+					true );
+					
 			$required_scripts[] = 'mxn-openlayers-gm';
 		}
 
-		GeoMashup::register_script( 'geo-mashup-location-editor', 'js/location-editor.js', $required_scripts, GEO_MASHUP_VERSION );
+		GeoMashup::register_script( 
+				'geo-mashup-location-editor', 
+				'js/location-editor.js', 
+				$required_scripts, 
+				GEO_MASHUP_VERSION, 
+				true );
+				
 		wp_enqueue_script( 'geo-mashup-location-editor' );
 
-		GeoMashup::register_script( 'jquery-ui-datepicker', 'js/jquery-ui.1.7.3.datepicker.js', array( 'jquery', 'jquery-ui-core'), '1.7.3' );
+		GeoMashup::register_script( 
+				'jquery-ui-datepicker', 
+				'js/jquery-ui.1.7.3.datepicker.js', 
+				array( 'jquery', 'jquery-ui-core'), 
+				'1.7.3', 
+				true );
+				
 		wp_enqueue_script( 'jquery-ui-datepicker' );
 
 		if ( isset( $geo_mashup_custom ) ) {
 			$custom_url = $geo_mashup_custom->file_url( 'location-editor.js' );
 			if ( ! empty( $custom_url ) ) {
-				wp_enqueue_script( 'geo-mashup-location-editor-custom', $custom_url, array( 'geo-mashup-location-editor' ) );
+				wp_enqueue_script( 
+					'geo-mashup-location-editor-custom', 
+					$custom_url, 
+					array( 'geo-mashup-location-editor' ),
+					null,
+					true );
 			}
 		}
 	}
@@ -805,7 +892,13 @@ class GeoMashupCommentUIManager {
 	public function wp_footer() {
 		global $geo_mashup_options;
 		if ( $this->add_form_script ) {
-			GeoMashup::register_script( 'geo-mashup-comment-form', 'js/comment-form.js', array( 'jquery' ), GEO_MASHUP_VERSION, true );
+			GeoMashup::register_script( 
+					'geo-mashup-comment-form', 
+					'js/comment-form.js', 
+					array( 'jquery' ), 
+					GEO_MASHUP_VERSION, 
+					true );
+					
 			wp_localize_script( 'geo-mashup-comment-form', 'geo_mashup_comment_form_settings', array( 'geonames_username' => $geo_mashup_options->get( 'overall', 'geonames_username' ) ) );
 			wp_print_scripts( 'geo-mashup-comment-form' );
 		}

@@ -258,7 +258,12 @@ class GeoMashup {
 		// Use the .dev version if SCRIPT_DEBUG is set or there is no minified version
 		if ( ( defined( 'SCRIPT_DEBUG' ) and SCRIPT_DEBUG ) or !is_readable( path_join( GEO_MASHUP_DIR_PATH, $src ) ) )
 			$src = preg_replace( '/(\.\w*)$/', '.dev$1', $src );
-		wp_register_script( $handle, plugins_url( $src, __FILE__ ), $deps, $ver, $in_footer );
+		wp_register_script( 
+				$handle, 
+				plugins_url( $src, __FILE__ ), 
+				$deps, 
+				$ver, 
+				$in_footer );
 	}
 
 	/**
@@ -287,7 +292,13 @@ class GeoMashup {
 	 */
 	public static function wp_footer() {
 		if ( self::$add_loader_script ) {
-			self::register_script( 'geo-mashup-loader', 'js/loader.js', array(), GEO_MASHUP_VERSION, true );
+			self::register_script( 
+				'geo-mashup-loader', 
+				'js/loader.js', 
+				array(), 
+				GEO_MASHUP_VERSION, 
+				true );
+				
 			wp_print_scripts( 'geo-mashup-loader' );
 		}
 	}
