@@ -15,7 +15,7 @@
 	<property name="source" location="geo-mashup"/>
 	<property name="build.base" location="build"/>
 	<property name="build.major" value="1"/>
-	<property name="build.minor" value="4.0"/>
+	<property name="build.minor" value="4.1"/>
 	
 	<target name="build">
 		<!-- generate build number -->
