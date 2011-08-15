@@ -409,7 +409,7 @@ class GeoMashupOptions {
 			case 'adsense_code':
 				if ( empty( $value ) )
 					$value = 'partner-pub-5088093001880917';
-			case 'geonames_user':
+			case 'geonames_username':
 				if ( empty( $value ) )
 					$value = 'geomashup';
 			case 'category_link_separator':
