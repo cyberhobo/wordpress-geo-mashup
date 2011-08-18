@@ -1,8 +1,23 @@
 /**
  * Mapstraction implementation for Geo Mashup maps.
+ * @fileOverview
+ */
+
+/**
+ * @name AjaxRequestOptions
+ * @class This type represents options used for an AJAX request.
+ * It has no constructor, but is instantiated as an object literal.
  *
- * @package GeoMashup
- * @subpackage Client
+ * @property {String} url The AJAX request URL.
+ */
+
+/**
+ * @name ContentFilter
+ * @class This type represents objects used to filter content.
+ * It has no constructor, but is instantiated as an object literal.
+ * 
+ * @name ContentFilter#content
+ * @property {String} content HTML content to filter.
  */
 
 /*global GeoMashup */
@@ -24,11 +39,30 @@ GeoMashup.loadFullPost = function( point ) {
 		url: this.geo_query_url + '&object_name=' + this.opts.object_name +
 			'&object_ids=' + object_ids.join( ',' ) + '&template=full-post'
 	};
+	/**
+	 * Requesting full post content.
+	 * @name GeoMashup#fullPostRequest
+	 * @event
+	 * @param {Array} objects Objects included in the request
+	 * @param {AjaxRequestOptions} options
+	 */
 	this.doAction( 'fullPostRequest', objects, request );
 	jQuery.get( request.url, function( content ) {
 		var filter = {content: content};
+		/**
+		 * Loading full post content.
+		 * @name GeoMashup#fullPostLoad
+		 * @event
+		 * @param {Array} objects Objects included in the request
+		 * @param {ContentFilter} filter 
+		 */
 		GeoMashup.doAction( 'fullPostLoad', objects, filter );
 		jQuery( GeoMashup.getShowPostElement() ).html( filter.content );
+		/**
+		 * The full post display has changed.
+		 * @name GeoMashup#fullPostChanged
+		 * @event
+		 */
 		GeoMashup.doAction( 'fullPostChanged' );
 	} );
 };
@@ -37,7 +71,22 @@ GeoMashup.createCategoryLine = function ( category ) {
 	// Polylines are close, but the openlayers implementation at least cannot hide or remove a polyline
 	var options = {color: category.color, width: 5, opacity: 0.5};
 	category.line = new mxn.Polyline(category.points);
+	/**
+	 * A category line was created.
+	 * @name GeoMashup#categoryLine
+	 * @event
+	 * @param {GeoMashupOptions} properties Geo Mashup configuration data
+	 * @param {Polyline} line
+	 */
 	this.doAction( 'categoryLine', this.opts, category.line );
+	/**
+	 * A category will be added with the given options.
+	 * @name GeoMashup#categoryLineOptions
+	 * @event
+	 * @param {GeoMashupOptions} properties Geo Mashup configuration data
+	 * @param {Object} options Modifiable <a href="http://mapstraction.github.com/mxn/build/latest/docs/symbols/mxn.Polyline.html#addData">Mapstraction</a>
+	 *   or <a href="http://code.google.com/apis/maps/documentation/javascript/v2/reference.html#GPolylineOptions">Google</a> Polyline options
+	 */
 	this.doAction( 'categoryLineOptions', this.opts, options );
 	this.map.addPolylineWithData( category.line, options );
 	if (this.map.getZoom() > category.max_line_zoom) {
@@ -73,12 +122,26 @@ GeoMashup.openInfoWindow = function( marker ) {
 			url: this.geo_query_url + '&object_name=' + this.opts.object_name +
 				'&object_ids=' + object_ids.join( ',' ) 
 		};
+		/** 
+		 * A marker's info window content is being requested.
+		 * @name GeoMashup#markerInfoWindowRequest
+		 * @event
+		 * @param {Marker} marker
+		 * @param {AjaxRequestOptions} request Modifiable property: url
+		 */
 		this.doAction( 'markerInfoWindowRequest', marker, request );
 		jQuery.get( 
 			request.url,
 			function( content ) {
 				var filter = {content: content};
 				marker.closeBubble();
+				/**
+				 * A marker info window content is being loaded.
+				 * @name GeoMashup#markerInfoWindowLoad
+				 * @event
+				 * @param {Marker} marker
+				 * @param {ContentFilter} filter Modifiable property: content
+				 */
 				GeoMashup.doAction( 'markerInfoWindowLoad', marker, filter );
 				marker.setInfoBubble( GeoMashup.parentizeLinksMarkup( filter.content ) );
 				marker.openBubble();
@@ -103,6 +166,14 @@ GeoMashup.addGlowMarker = function( marker ) {
 	if ( this.glow_marker ) {
 		this.removeGlowMarker();
 	} 
+	/** 
+	 * A highlight "glow" marker is being created.
+	 * @name GeoMashup#glowMarkerIcon
+	 * @event
+	 * @param {GeoMashupOptions} properties Geo Mashup configuration data
+	 * @param {Object} glow_options Modifiable <a href="http://mapstraction.github.com/mxn/build/latest/docs/symbols/mxn.Marker.html#addData">Mapstraction</a> 
+	 *   or <a href="http://code.google.com/apis/maps/documentation/javascript/v2/reference.html#GMarkerOptions">Google</a> marker options
+	 */
 	this.doAction( 'glowMarkerIcon', this.opts, glow_options );
 	this.glow_marker = new mxn.Marker( point );
 	this.glow_marker.addData( glow_options );
@@ -160,6 +231,13 @@ GeoMashup.addObjectIcon = function( obj ) {
 		} else {
 			obj.icon = this.colorIcon( 'red' );
 		} 
+		/**
+		 * An icon is being assigned to an object.
+		 * @name GeoMashup#objectIcon
+		 * @event
+		 * @param {GeoMashupOptions} properties Geo Mashup configuration data
+		 * @param {GeoMashupObject} object 
+		 */
 		this.doAction( 'objectIcon', this.opts, obj );
 	}
 };
@@ -179,6 +257,15 @@ GeoMashup.createMarker = function(point,obj) {
 		iconShadowSize: obj.icon.shadowSize,
 		visible: true
 	};
+	/**
+	 * A marker is being created for an object.
+	 * @name GeoMashup#objectMarkerOptions
+	 * @event
+	 * @param {GeoMashupOptions} properties Geo Mashup configuration data
+	 * @param {Object} glow_options Modifiable <a href="http://mapstraction.github.com/mxn/build/latest/docs/symbols/mxn.Marker.html#addData">Mapstraction</a> 
+	 *   or <a href="http://code.google.com/apis/maps/documentation/javascript/v2/reference.html#GMarkerOptions">Google</a> marker options
+	 * @param {GeoMashupObject} object
+	 */
 	this.doAction( 'objectMarkerOptions', this.opts, marker_opts, obj );
 	marker = new mxn.Marker( point );
 	marker.addData( marker_opts );
@@ -192,6 +279,13 @@ GeoMashup.createMarker = function(point,obj) {
 		}
 	} ); 
 
+	/**
+	 * A marker was created.
+	 * @name GeoMashup#marker
+	 * @event
+	 * @param {GeoMashupOptions} properties Geo Mashup configuration data
+	 * @param {Marker} marker
+	 */
 	this.doAction( 'marker', this.opts, marker );
 
 	return marker;
@@ -277,7 +371,21 @@ GeoMashup.makeMarkerMultiple = function( marker ) {
 		plus_image = this.opts.url_path + '/images/mm_20_plus.png';
 	}
 	marker.setIcon( plus_image );
+	/** 
+	 * A marker representing multiple objects was created.
+	 * @name GeoMashup#multiObjectMarker
+	 * @event
+	 * @param {GeoMashupOptions} properties Geo Mashup configuration data
+	 * @param {Marker} marker
+	 */
 	this.doAction( 'multiObjectMarker', this.opts, marker );
+	/** 
+	 * A marker representing multiple objects was created with this icon.
+	 * @name GeoMashup#multiObjectIcon
+	 * @event
+	 * @param {GeoMashupOptions} properties Geo Mashup configuration data
+	 * @param {String} plus_image Icon URL
+	 */
 	this.doAction( 'multiObjectIcon', this.opts, plus_image );
 };
 
@@ -371,10 +479,25 @@ GeoMashup.createMap = function(container, opts) {
 	if ( 'enableGeoMashupExtras' in this.map ) {
 		this.map.enableGeoMashupExtras();
 	}
+	/**
+	 * The map options are being set.
+	 * @name GeoMashup#mapOptions
+	 * @event
+	 * @param {GeoMashupOptions} properties Geo Mashup configuration data
+	 * @param {Object} map_opts Modifiable <a href="http://mapstraction.github.com/mxn/build/latest/docs/symbols/mxn.Mapstraction.html#options">Mapstraction</a> 
+	 *   or <a href="http://code.google.com/apis/maps/documentation/javascript/v2/reference.html#GMapOptions">Google</a> map options
+	 */
 	this.doAction( 'mapOptions', opts, map_opts );
 	this.map.setOptions( map_opts );
 	this.map.setCenterAndZoom(new mxn.LatLonPoint(0,0), 0);
 
+	/**
+	 * The map was created.
+	 * @name GeoMashup#newMap
+	 * @event
+	 * @param {GeoMashupOptions} properties Geo Mashup configuration data
+	 * @param {Map} map
+	 */
 	this.doAction( 'newMap', opts, this.map );
 
 	// Create the loading spinner icon and show it
@@ -394,6 +517,13 @@ GeoMashup.createMap = function(container, opts) {
 	if ( 'lang' in opts ) {
 		filter.url += '&lang=' + encodeURIComponent( opts.lang );
 	}
+	/**
+	 * The base URL used for geo queries is being set.
+	 * @name GeoMashup#geoQueryUrl
+	 * @event
+	 * @param {GeoMashupOptions} properties Geo Mashup configuration data
+	 * @param {Object} filter Mofiable property: url
+	 */
 	this.doAction( 'geoQueryUrl', this.opts, filter );
 	this.geo_query_url = filter.url;
 
@@ -467,11 +597,25 @@ GeoMashup.createMap = function(container, opts) {
 				marker_opts = this.colorIcon( 'red' );
 				marker_opts.icon = marker_opts.image;
 			}
+			/**
+			 * A single map marker is being created with these options
+			 * @name GeoMashup#singleMarkerOptions
+			 * @event
+			 * @param {GeoMashupOptions} properties Geo Mashup configuration data
+			 * @param {Object} marker_opts Mofifiable Mapstraction or Google marker options
+			 */
 			this.doAction( 'singleMarkerOptions', this.opts, marker_opts );
 			single_marker = new mxn.Marker(
 				new mxn.LatLonPoint( parseFloat( this.opts.center_lat ), parseFloat( this.opts.center_lng ) )
 			);
 			this.map.addMarkerWithData( single_marker, marker_opts );
+			/**
+			 * A single map marker was added to the map.
+			 * @name GeoMashup#singleMarker
+			 * @event
+			 * @param {GeoMashupOptions} properties Geo Mashup configuration data
+			 * @param {Marker} single_marker
+			 */
 			this.doAction( 'singleMarker', this.opts, single_marker );
 		}
 	} else if (opts.object_data) {
@@ -510,6 +654,13 @@ GeoMashup.createMap = function(container, opts) {
 	if (typeof customizeGeoMashup === 'function') {
 		customizeGeoMashup(this);
 	}
+	/**
+	 * The map has loaded.
+	 * @name GeoMashup#loadedMap
+	 * @event
+	 * @param {GeoMashupOptions} properties Geo Mashup configuration data
+	 * @param {Map} map
+	 */
 	this.doAction( 'loadedMap', this.opts, this.map );
 
 };

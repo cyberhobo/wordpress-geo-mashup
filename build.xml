@@ -111,16 +111,17 @@
 		
 	</target>
 
-	<target name="docs">
+	<target name="jsdoc">
 		<!-- document our sources -->
-		<echo>--- DOC ---</echo>
+		<echo>--- JSDOC ---</echo>
+		<property name="docs.dir" location="${build.base}/jsdocs-${build.major}.${build.minor}"/>
 		<java jar="tools/jsdoc-toolkit/jsrun.jar" fork="true" failonerror="true">
 			<arg value="tools/jsdoc-toolkit/app/run.js"/>
-			<arg value="${build.dir}/mxn.js"/>
-			<arg value="${build.dir}/mxn.core.js"/>
-			<arg value="${build.dir}/mxn.geocoder.js"/>
-			<arg value="-c=tools/jsdoc-toolkit/mxn.conf"/>
-			<arg value="-d=${build.dir}/docs"/>
+			<arg value="${source}/js/geo-mashup.dev.js"/>
+			<arg value="${source}/js/geo-mashup-google.dev.js"/>
+			<arg value="${source}/js/geo-mashup-mxn.dev.js"/>
+			<arg value="-t=tools/jsdoc-toolkit/templates/jsdoc"/>
+			<arg value="-d=${docs.dir}"/>
 		</java>
 	</target>
 	

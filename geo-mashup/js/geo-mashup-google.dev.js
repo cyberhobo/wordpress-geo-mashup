@@ -1,8 +1,6 @@
 /**
- * Google API implementation for Geo Mashup maps.
- *
- * @package GeoMashup
- * @subpackage Client
+ * Google API v2 implementation for Geo Mashup maps.
+ * @fileOverview
  */
 
 /*global GeoMashup */
@@ -33,12 +31,26 @@ GeoMashup.openMarkerInfoWindow = function( marker, content_node, window_opts ) {
 GeoMashup.loadMaxContent = function( marker, regular_node, info_window_max_url ) {
 	var info_window_max_request = new google.maps.XmlHttp.create();
 	var request_options = {url: info_window_max_url};
+	/** 
+	 * A marker's maximized info window content is being requested.
+	 * @name GeoMashup#markerInfoWindowMaxRequest
+	 * @event
+	 * @param {Marker} marker
+	 * @param {AjaxRequestOptions} request_options 
+	 */
 	this.doAction( 'markerInfoWindowMaxRequest', marker, request_options );
 	info_window_max_request.open( 'GET', request_options.url, true );
 	info_window_max_request.onreadystatechange = function() {
 		var max_node, max_options, filter;
 		if (info_window_max_request.readyState === 4 && info_window_max_request.status === 200 ) {
 			filter = {content: info_window_max_request.responseText};
+			/**
+			 * A marker's maximized info window content is being loaded.
+			 * @name GeoMashup#markerInfoWindowMaxLoad
+			 * @event
+			 * @param {Marker} marker
+			 * @param {ContentFilter} filter 
+			 */
 			GeoMashup.doAction( 'markerInfoWindowMaxLoad', marker, filter );
 			max_node = document.createElement( 'div' );
 			max_node.innerHTML = filter.content;
@@ -524,6 +536,14 @@ GeoMashup.createMap = function(container, opts) {
 				'clusterMarkerTitle' : '%count',
 				'intersectPadding' : 3	
 			};
+			/**
+			 * Clusterer options are being set.
+			 * @name GeoMashup#clusterOptions
+			 * @event
+			 * @param {GeoMashupOptions} properties Geo Mashup configuration data
+			 * @param {Object} clusterer_opts Modifiable clusterer options for 
+			 *   <a href="http://googlemapsapi.martinpearman.co.uk/readarticle.php?article_id=4">ClusterMarker</a>.
+			 */
 			this.doAction( 'clusterOptions', this.opts, clusterer_opts );
 			this.clusterer = new ClusterMarker( this.map, clusterer_opts );
 		} else {
