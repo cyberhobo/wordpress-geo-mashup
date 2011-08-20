@@ -26,45 +26,50 @@
 /*global mxn */
 
 GeoMashup.loadFullPost = function( point ) {
-	var i, request, objects, object_ids;
+	var i, request, cache, objects, object_ids;
 
-	this.getShowPostElement().innerHTML = '<div align="center"><img src="' +
-		this.opts.url_path + '/images/busy_icon.gif" alt="Loading..." /></div>';
-	object_ids = [];
-	objects = this.getObjectsAtLocation( point );
-	for( i = 0; i < objects.length; i += 1 ) {
-		object_ids.push( objects[i].object_id );
-	}
-	request = {
-		url: this.geo_query_url + '&object_name=' + this.opts.object_name +
-			'&object_ids=' + object_ids.join( ',' ) + '&template=full-post'
-	};
-	/**
-	 * Requesting full post content.
-	 * @name GeoMashup#fullPostRequest
-	 * @event
-	 * @param {Array} objects Objects included in the request
-	 * @param {AjaxRequestOptions} options
-	 */
-	this.doAction( 'fullPostRequest', objects, request );
-	jQuery.get( request.url, function( content ) {
-		var filter = {content: content};
+	object_ids = this.getOnObjectIDs( this.getObjectsAtLocation( point ) );
+	cache = this.locationCache( point, 'full-post-' + object_ids.join(',') );
+	if ( cache.html ) {
+
+		this.getShowPostElement().innerHTML = cache.html;
+
+	} else {
+
+		this.getShowPostElement().innerHTML = '<div align="center"><img src="' +
+			this.opts.url_path + '/images/busy_icon.gif" alt="Loading..." /></div>';
+		request = {
+			url: this.geo_query_url + '&object_name=' + this.opts.object_name +
+				'&object_ids=' + object_ids.join( ',' ) + '&template=full-post'
+		};
 		/**
-		 * Loading full post content.
-		 * @name GeoMashup#fullPostLoad
+		 * Requesting full post content.
+		 * @name GeoMashup#fullPostRequest
 		 * @event
 		 * @param {Array} objects Objects included in the request
-		 * @param {ContentFilter} filter 
+		 * @param {AjaxRequestOptions} options
 		 */
-		GeoMashup.doAction( 'fullPostLoad', objects, filter );
-		jQuery( GeoMashup.getShowPostElement() ).html( filter.content );
-		/**
-		 * The full post display has changed.
-		 * @name GeoMashup#fullPostChanged
-		 * @event
-		 */
-		GeoMashup.doAction( 'fullPostChanged' );
-	} );
+		this.doAction( 'fullPostRequest', objects, request );
+		jQuery.get( request.url, function( content ) {
+			var filter = {content: content};
+			/**
+			 * Loading full post content.
+			 * @name GeoMashup#fullPostLoad
+			 * @event
+			 * @param {Array} objects Objects included in the request
+			 * @param {ContentFilter} filter
+			 */
+			GeoMashup.doAction( 'fullPostLoad', objects, filter );
+			cache.html = filter.content;
+			jQuery( GeoMashup.getShowPostElement() ).html( filter.content );
+			/**
+			 * The full post display has changed.
+			 * @name GeoMashup#fullPostChanged
+			 * @event
+			 */
+			GeoMashup.doAction( 'fullPostChanged' );
+		} );
+	}
 };
 
 GeoMashup.createCategoryLine = function ( category ) {
@@ -100,12 +105,15 @@ GeoMashup.createCategoryLine = function ( category ) {
 };
 
 GeoMashup.openInfoWindow = function( marker ) {
-	var objects, request, object_ids = [], i, object_element, point = marker.location;
+	var request, cache, object_ids, i, object_element, point = marker.location;
 
 	if ( this.open_window_marker && !this.opts.multiple_info_windows ) {
 		this.open_window_marker.closeBubble();
 	}
-	if ( this.locations[point].loaded ) {
+	object_ids = this.getOnObjectIDs( this.getObjectsAtLocation( point ) );
+	cache = this.locationCache( point, 'info-window-' + object_ids.join(',') );
+	if ( cache.html ) {
+		marker.setInfoBubble( cache.html );
 		marker.openBubble();
 	} else {
 		marker.setInfoBubble( '<div align="center"><img src="' + this.opts.url_path + 
@@ -113,10 +121,6 @@ GeoMashup.openInfoWindow = function( marker ) {
 		marker.openBubble();
 		this.open_window_marker = marker;
 		// Collect object ids
-		objects = this.getObjectsAtLocation( point );
-		for( i = 0; i < objects.length; i += 1 ) {
-			object_ids.push( objects[i].object_id );
-		}
 		// Do an AJAX query to get content for these objects
 		request = {
 			url: this.geo_query_url + '&object_name=' + this.opts.object_name +
@@ -143,7 +147,8 @@ GeoMashup.openInfoWindow = function( marker ) {
 				 * @param {ContentFilter} filter Modifiable property: content
 				 */
 				GeoMashup.doAction( 'markerInfoWindowLoad', marker, filter );
-				marker.setInfoBubble( GeoMashup.parentizeLinksMarkup( filter.content ) );
+				cache.html = GeoMashup.parentizeLinksMarkup( filter.content );
+				marker.setInfoBubble( cache.html );
 				marker.openBubble();
 			}
 		); 
@@ -203,18 +208,35 @@ GeoMashup.hideAttachments = function() {
 };
 
 GeoMashup.showMarkerAttachments = function( marker ) {
-	var i, j, objects, object_ids=[], ajax_params = {action: 'geo_mashup_kml_attachments'};
+	var object_ids, uncached_ids = [];
 
 	this.hideAttachments(); // check support
-	objects = this.getObjectsAtLocation( marker.location );
-	for ( i = 0; i < objects.length; i += 1 ) {
-		object_ids.push( objects[i].object_id );
-	}
-	ajax_params.post_ids = object_ids.join( ',' );
-	jQuery.getJSON( this.opts.ajaxurl + '?callback=?', ajax_params, function( data ) {
-		jQuery.each( data, function( i, url ) {
-			GeoMashup.open_attachments.push( url );
-			GeoMashup.map.addOverlay( url );
+	object_ids = this.getOnObjectIDs( this.getMarkerObjects( marker ) );
+	jQuery.each( object_ids, function( i, id ) {
+		var cached_attachments = GeoMashup.locationCache( marker.location, 'attachments-' + id );
+		if ( cached_attachments.urls ) {
+			jQuery.each( cached_attachments.urls, function( j, url ) {
+				GeoMashup.open_attachments.push( url );
+				GeoMashup.map.addOverlay( url );
+			} );
+		} else {
+			uncached_ids.push( id );
+		}
+	} );
+	// Request any uncached attachments
+	jQuery.each( uncached_ids, function( i, id ) {
+		var ajax_params = {action: 'geo_mashup_kml_attachments'};
+		ajax_params.post_ids = id;
+		jQuery.getJSON( GeoMashup.opts.ajaxurl + '?callback=?', ajax_params, function( data ) {
+			var cached_attachments = GeoMashup.locationCache( marker.location, 'attachments-' + id );
+			if ( !cached_attachments.urls ) {
+				cached_attachments.urls = [];
+			}
+			jQuery.each( data, function( j, url ) {
+				cached_attachments.urls.push( url );
+				GeoMashup.open_attachments.push( url );
+				GeoMashup.map.addOverlay( url );
+			} );
 		} );
 	} );
 };
@@ -236,7 +258,7 @@ GeoMashup.addObjectIcon = function( obj ) {
 		 * @name GeoMashup#objectIcon
 		 * @event
 		 * @param {GeoMashupOptions} properties Geo Mashup configuration data
-		 * @param {GeoMashupObject} object 
+		 * @param {GeoMashupObject} object Object whose icon property was set.
 		 */
 		this.doAction( 'objectIcon', this.opts, obj );
 	}
@@ -387,6 +409,18 @@ GeoMashup.makeMarkerMultiple = function( marker ) {
 	 * @param {String} plus_image Icon URL
 	 */
 	this.doAction( 'multiObjectIcon', this.opts, plus_image );
+	if ( marker.onmap ) {
+		this.map.removeMarker( marker );
+		this.map.addMarker( marker );
+	}
+};
+
+GeoMashup.makeMarkerSingle = function( marker, object ) {
+	marker.setIcon( object.icon.image );
+	if ( marker.onmap ) {
+		this.map.removeMarker( marker );
+		this.map.addMarker( marker );
+	}
 };
 
 GeoMashup.autoZoom = function() {

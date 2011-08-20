@@ -64,6 +64,15 @@ var GeoMashup, customizeGeoMashup, customizeGeoMashupMap, customGeoMashupColorIc
  */
 
 /**
+ * @name VisibilityFilter
+ * @class This type represents objects used to filter object visibility.
+ * It has no constructor, but is instantiated as an object literal.
+ *
+ * @name ContentFilter#visible
+ * @property {Boolean} visible Whether the object is currently visible
+ */
+
+/**
  * @namespace Used more as a singleton than a namespace for data and methods for a single Geo Mashup map.
  *
  * <p>Violates the convention that capitalized objects are designed to be used with the 
@@ -119,6 +128,19 @@ GeoMashup = {
 				callback.apply( this, [key, obj[key]] );
 			}
 		}
+	},
+
+	locationCache : function( latlng, key ) {
+		if ( !( latlng in this.locations ) ) {
+			return false;
+		}
+		if ( ! this.locations[latlng].cache ) {
+			this.locations[latlng].cache = {};
+		}
+		if ( !( key in this.locations[latlng].cache ) ) {
+			this.locations[latlng].cache[key] = {};
+		}
+		return this.locations[latlng].cache[key];
 	},
 
 	/**
@@ -710,11 +732,7 @@ GeoMashup = {
 			this.centerMarker( marker );
 		}
 		if ('full-post' !== this.opts.template && this.getShowPostElement()) {
-			if ( this.locations[point].post_html ) {
-				this.getShowPostElement().innerHTML = this.locations[point].post_html;
-			} else {
-				this.loadFullPost( point );
-			}
+			this.loadFullPost( point );
 		}
 		/**
 		 * A marker was selected.
@@ -850,6 +868,10 @@ GeoMashup = {
 		// Provider override
 	},
 
+	makeMarkerSingle : function( ) {
+		// Provider override
+	},
+
 	/**
 	 * Zoom the map to loaded content.
 	 */
@@ -933,44 +955,81 @@ GeoMashup = {
 	},
 
 	updateMarkerVisibility : function( marker, point ) {
-		var i, j, loc, obj, check_cat_id, options = {visible: false};
-
-		loc = this.locations[ point ];
-		for ( i=0; i<loc.objects.length; i+=1 ) {
-			obj = loc.objects[i];
-			for ( j=0; j<obj.categories.length; j+=1 ) {
-				check_cat_id = obj.categories[j];
-				if ( this.categories[check_cat_id] && this.categories[check_cat_id].visible ) {
-					options.visible = true;
-				}
-			}
-			/**
-			 * Visbility is being tested for an object.
-			 * @name GeoMashup#objectVisibilityOptions
-			 * @event
-			 * @param {GeoMashupOptions} properties Geo Mashup configuration data
-			 * @param {Object} options A container allowing the boolean options.visiblity to be updated
-			 * @param {Object} object The object being tested
-			 * @param {Map} map The map for context
-			 */
-			this.doAction( 'objectVisibilityOptions', this.opts, options, obj, this.map );
-		}
-		/**
-		 * Visbility is being tested for a marker.
-		 * @name GeoMashup#markerVisibilityOptions
-		 * @event
-		 * @param {GeoMashupOptions} properties Geo Mashup configuration data
-		 * @param {Object} options A container allowing the boolean options.visiblity to be updated
-		 * @param {Marker} marker The marker being tested
-		 * @param {Map} map The map for context
-		 */
-		this.doAction( 'markerVisibilityOptions', this.opts, options, loc.marker, this.map );
-
-		if ( options.visible ) {
+		if ( this.isMarkerOn( marker ) ) {
 			this.showMarker( marker );
 		} else {
 			this.hideMarker( marker );
 		}
+	},
+
+	isMarkerOn : function( marker ) {
+		var i, objects, visible_object_indices = [], filter = {visible: false};
+
+		objects = this.getMarkerObjects( marker );
+		for ( i = 0; i < objects.length; i += 1 ) {
+			if ( this.isObjectOn( objects[i] ) ) {
+				filter.visible = true;
+				visible_object_indices.push( i );
+			}
+		}
+		if ( filter.visible && objects.length > 1 ) {
+			if ( visible_object_indices.length === 1 ) {
+				this.makeMarkerSingle( marker, objects[visible_object_indices[0]] );
+			} else {
+				this.makeMarkerMultiple( marker );
+			}
+		}
+		/**
+		 * Visibility is being tested for a marker.
+		 * @name GeoMashup#markerVisibilityOptions
+		 * @event
+		 * @param {GeoMashupOptions} properties Geo Mashup configuration data
+		 * @param {VisibilityFilter} filter Test and set filter.visible
+		 * @param {Marker} marker The marker being tested
+		 * @param {Map} map The map for context
+		 */
+		this.doAction( 'markerVisibilityOptions', this.opts, filter, marker, this.map );
+
+		return filter.visible;
+	},
+
+	isObjectOn : function( obj ) {
+		var i, check_cat_id, filter = {visible: false};
+
+		for ( i = 0; i < obj.categories.length; i += 1 ) {
+			check_cat_id = obj.categories[i];
+			if ( this.categories[check_cat_id] && this.categories[check_cat_id].visible ) {
+				filter.visible = true;
+			}
+		}
+		/**
+		 * Visibility is being tested for an object.
+		 * @name GeoMashup#objectVisibilityOptions
+		 * @event
+		 * @param {GeoMashupOptions} properties Geo Mashup configuration data
+		 * @param {VisibilityFilter} filter Test and set filter.visible
+		 * @param {Object} object The object being tested
+		 * @param {Map} map The map for context
+		 */
+		this.doAction( 'objectVisibilityOptions', this.opts, filter, obj, this.map );
+
+		return filter.visible;
+	},
+
+	/**
+	 * Extract the IDs of objects that are "on" (not filtered by a control).
+	 * @since 1.4.2
+	 * @param {Array} objects The objects to check
+	 * @returns {Array} The IDs of the "on" objects
+	 */
+	getOnObjectIDs : function( objects ) {
+		var i, object_ids = [];
+		for( i = 0; i < objects.length; i += 1 ) {
+			if ( this.isObjectOn( objects[i] ) ) {
+				object_ids.push( objects[i].object_id );
+			}
+		}
+		return object_ids;
 	},
 
 	/**
@@ -1061,8 +1120,7 @@ GeoMashup = {
 				if (!this.locations[point]) {
 					// There are no other objects yet at this point, create a marker
 					this.extendLocationBounds( point );
-					this.locations[point] = {objects : [ response_data[i] ]};
-					this.locations[point].loaded = false;
+					this.locations[point] = {objects : [ response_data[i] ], loaded_content: {}};
 					marker = this.createMarker(point, response_data[i]);
 					this.objects[object_id].marker = marker;
 					this.locations[point].marker = marker;
