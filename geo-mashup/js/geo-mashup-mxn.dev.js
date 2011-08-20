@@ -385,13 +385,14 @@ GeoMashup.addMarkers = function( markers ) {
 };
 
 GeoMashup.makeMarkerMultiple = function( marker ) {
-	var plus_image;
+	var plus_image, original_image;
 	if (typeof customGeoMashupMultiplePostImage === 'function') {
 		plus_image = customGeoMashupMultiplePostImage(this.opts, marker);
 	}
 	if (!plus_image) {
 		plus_image = this.opts.url_path + '/images/mm_20_plus.png';
 	}
+	original_image = marker.iconUrl;
 	marker.setIcon( plus_image );
 	/** 
 	 * A marker representing multiple objects was created.
@@ -409,17 +410,19 @@ GeoMashup.makeMarkerMultiple = function( marker ) {
 	 * @param {String} plus_image Icon URL
 	 */
 	this.doAction( 'multiObjectIcon', this.opts, plus_image );
-	if ( marker.onmap ) {
+	if ( marker.onmap && marker.iconUrl !== original_image ) {
 		this.map.removeMarker( marker );
 		this.map.addMarker( marker );
 	}
 };
 
 GeoMashup.makeMarkerSingle = function( marker, object ) {
-	marker.setIcon( object.icon.image );
-	if ( marker.onmap ) {
-		this.map.removeMarker( marker );
-		this.map.addMarker( marker );
+	if ( marker.iconUrl !== object.icon.image ) {
+		marker.setIcon( object.icon.image );
+		if ( marker.onmap ) {
+			this.map.removeMarker( marker );
+			this.map.addMarker( marker );
+		}
 	}
 };
 

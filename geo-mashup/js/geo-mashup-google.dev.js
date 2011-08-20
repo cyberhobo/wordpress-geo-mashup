@@ -329,16 +329,21 @@ GeoMashup.makeMarkerMultiple = function( marker ) {
 	if (!plus_image) {
 		plus_image = this.opts.url_path + '/images/mm_20_plus.png';
 	}
-	marker.setImage( plus_image );
-	// marker.setImage doesn't survive clustering - still true?
-	marker.getIcon().image = plus_image;
+	if ( marker.getIcon().image !== plus_image ) {
+		// User testing gave best results when both methods of
+		// changing the marker image are used in this order
+		marker.setImage( plus_image );
+		marker.getIcon().image = plus_image;
+	}
 	this.doAction( 'multiObjectMarker', this.opts, marker );
 	this.doAction( 'multiObjectIcon', this.opts, marker.getIcon() );
 };
 
 GeoMashup.makeMarkerSingle = function( marker, object ) {
-	marker.setImage( object.icon.image );
-	marker.getIcon().image = object.icon.image;
+	if ( marker.getIcon().image !== object.icon.image ) {
+		marker.setImage( object.icon.image );
+		marker.getIcon().image = object.icon.image;
+	}
 };
 
 GeoMashup.setCenterUpToMaxZoom = function( latlng, zoom, callback ) {
