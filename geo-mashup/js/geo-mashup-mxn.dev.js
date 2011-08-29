@@ -624,7 +624,7 @@ GeoMashup.createMap = function(container, opts) {
 
 	if (opts.map_content === 'single')
 	{
-		if (opts.center_lat && opts.center_lng && !opts.load_kml)
+		if (opts.object_data && opts.object_data.objects.length && !opts.load_kml)
 		{
 			marker_opts = {visible: true};
 			if (typeof customGeoMashupSinglePostIcon === 'function') {
@@ -643,7 +643,7 @@ GeoMashup.createMap = function(container, opts) {
 			 */
 			this.doAction( 'singleMarkerOptions', this.opts, marker_opts );
 			single_marker = new mxn.Marker(
-				new mxn.LatLonPoint( parseFloat( this.opts.center_lat ), parseFloat( this.opts.center_lng ) )
+				new mxn.LatLonPoint( parseFloat( opts.object_data.objects[0].lat ), parseFloat( opts.object_data.objects[0].lng ) )
 			);
 			this.map.addMarkerWithData( single_marker, marker_opts );
 			/**

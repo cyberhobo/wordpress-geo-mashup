@@ -727,11 +727,8 @@ public static function wp_head() {
 		if ( $map_content == 'single') {
 			$location = GeoMashupDB::get_object_location( $object_name, $object_id, ARRAY_A );
 			$options = $geo_mashup_options->get( 'single_map' );
-			if ( !empty( $location ) ) {
+			if ( !empty( $location ) ) 
 				$map_data['object_data'] = array( 'objects' => array( $location ) );
-				$map_data['center_lat'] = $location['lat'];
-				$map_data['center_lng'] = $location['lng'];
-			}
 			$map_data = array_merge ( $options, $map_data );
 			if ( 'post' == $object_name ) {
 				$kml_urls = self::get_kml_attachment_urls( $object_id );

@@ -609,7 +609,7 @@ GeoMashup.createMap = function(container, opts) {
 
 	if (opts.map_content === 'single')
 	{
-		if (opts.center_lat && opts.center_lng && !this.kml)
+		if (opts.object_data && opts.object_data.objects.length && !this.kml)
 		{
 			marker_opts = {};
 			if (typeof customGeoMashupSinglePostIcon === 'function') {
@@ -620,7 +620,7 @@ GeoMashup.createMap = function(container, opts) {
 			}
 			this.doAction( 'singleMarkerOptions', this.opts, marker_opts );
 			single_marker = new google.maps.Marker(
-				new google.maps.LatLng( this.opts.center_lat, this.opts.center_lng ), marker_opts );
+				new google.maps.LatLng( opts.object_data.objects[0].lat, opts.object_data.objects[0].lng ), marker_opts );
 			this.map.addOverlay( single_marker );
 			this.doAction( 'singleMarker', this.opts, single_marker );
 		}
