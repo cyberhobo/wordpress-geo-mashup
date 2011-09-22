@@ -864,11 +864,11 @@ GeoMashup = {
 		// Provider override
 	},
 
-	makeMarkerMultiple : function( ) {
+	makeMarkerMultiple : function( marker ) {
 		// Provider override
 	},
 
-	makeMarkerSingle : function( ) {
+	setMarkerImage : function( marker, image_url ) {
 		// Provider override
 	},
 
@@ -972,11 +972,25 @@ GeoMashup = {
 				visible_object_indices.push( i );
 			}
 		}
-		if ( filter.visible && objects.length > 1 ) {
-			if ( visible_object_indices.length === 1 ) {
-				this.makeMarkerSingle( marker, objects[visible_object_indices[0]] );
-			} else {
-				this.makeMarkerMultiple( marker );
+
+		// Adjust marker icon based on current visible contents
+		if ( filter.visible ) {
+
+			if ( objects.length > 1 ) {
+
+				if ( visible_object_indices.length === 1 ) {
+					this.setMarkerImage( marker, objects[visible_object_indices[0]].icon.image );
+				} else {
+					this.makeMarkerMultiple( marker );
+				}
+
+			} else if ( objects[0].categories.length > 1 ) {
+
+				if ( objects[0].visible_categories.length === 1 ) {
+					this.setMarkerImage( marker, this.categories[objects[0].visible_categories[0]].icon.image );
+				} else {
+					this.setMarkerImage( marker, objects[0].icon.image );
+				}
 			}
 		}
 		/**
@@ -996,9 +1010,11 @@ GeoMashup = {
 	isObjectOn : function( obj ) {
 		var i, check_cat_id, filter = {visible: false};
 
+		obj.visible_categories = [];
 		for ( i = 0; i < obj.categories.length; i += 1 ) {
 			check_cat_id = obj.categories[i];
 			if ( this.categories[check_cat_id] && this.categories[check_cat_id].visible ) {
+				obj.visible_categories.push( check_cat_id );
 				filter.visible = true;
 			}
 		}

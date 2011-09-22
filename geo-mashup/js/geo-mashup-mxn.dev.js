@@ -250,7 +250,7 @@ GeoMashup.addObjectIcon = function( obj ) {
 			obj.icon = this.clone(this.multiple_category_icon);
 		} else if (obj.categories.length === 1) {
 			obj.icon = this.clone(this.categories[obj.categories[0]].icon);
-		} else {
+		}else {
 			obj.icon = this.colorIcon( 'red' );
 		} 
 		/**
@@ -416,9 +416,9 @@ GeoMashup.makeMarkerMultiple = function( marker ) {
 	}
 };
 
-GeoMashup.makeMarkerSingle = function( marker, object ) {
-	if ( marker.iconUrl !== object.icon.image ) {
-		marker.setIcon( object.icon.image );
+GeoMashup.setMarkerImage = function( marker, image_url ) {
+	if ( marker.iconUrl !== image_url ) {
+		marker.setIcon( image_url );
 		if ( marker.onmap ) {
 			this.map.removeMarker( marker );
 			this.map.addMarker( marker );
@@ -512,7 +512,7 @@ GeoMashup.createMap = function(container, opts) {
 		opts.map_type = map_types.G_NORMAL_MAP;
 	}
 	this.map = new mxn.Mapstraction( this.container, opts.map_api );
-	map_opts = { enableDragging: true };
+	map_opts = {enableDragging: true};
 	map_opts.enableScrollWheelZoom = ( opts.enable_scroll_wheel_zoom ? true : false );
 	if ( opts.enable_scroll_wheel_zoom )
 	if ( 'enableGeoMashupExtras' in this.map ) {

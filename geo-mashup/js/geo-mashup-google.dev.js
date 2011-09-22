@@ -339,10 +339,10 @@ GeoMashup.makeMarkerMultiple = function( marker ) {
 	this.doAction( 'multiObjectIcon', this.opts, marker.getIcon() );
 };
 
-GeoMashup.makeMarkerSingle = function( marker, object ) {
-	if ( marker.getIcon().image !== object.icon.image ) {
-		marker.setImage( object.icon.image );
-		marker.getIcon().image = object.icon.image;
+GeoMashup.setMarkerImage = function( marker, image_url ) {
+	if ( marker.getIcon().image !== image_url ) {
+		marker.setImage( image_url );
+		marker.getIcon().image = image_url;
 	}
 };
 
