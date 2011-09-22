@@ -1272,17 +1272,25 @@ public static function wp_head() {
 	 * global map page. 
 	 *
 	 * @since 1.3
+	 * @todo What would happen if the global map is not a post map?
 	 *
 	 * @return string The URL, empty if no current location is found.
 	 */
 	public static function show_on_map_link_url( $args = null ) {
-		global $geo_mashup_options;
+		global $geo_mashup_options, $post;
 
 		$defaults = array( 'zoom' => '' );
 		$args = wp_parse_args( $args, $defaults );
 
 		$url = '';
 		$location = self::current_location();
+
+		if ( !$location and $post ) {
+
+			// Could be in a WP_Query loop that set the global post
+			$location = GeoMashupDb::get_post_location( $post->ID );
+		}
+
 		if ( $location ) {
 			$url = get_page_link($geo_mashup_options->get('overall', 'mashup_page'));
 			if ( !$url ) {
