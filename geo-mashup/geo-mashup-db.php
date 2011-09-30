@@ -61,7 +61,7 @@ class GeoMashupDB {
 		add_action( 'delete_comment', array( 'GeoMashupDB', 'delete_comment' ) );
 		add_action( 'delete_user', array( 'GeoMashupDB', 'delete_user' ) );
 
-		if ( 'true' == $geo_mashup_options->get( 'overall', 'copy_geodata' ) )
+		if ( 'true' == $geo_mashup_options->get( 'overall', 'copy_geodata' ) or '' != $geo_mashup_options->get( 'overall', 'import_custom_field' ) )
 			self::add_geodata_sync_hooks();
 	}
 
@@ -191,7 +191,9 @@ class GeoMashupDB {
 		global $geo_mashup_options, $wpdb;
 
 		// Do nothing if meta_key is not a known location field
-		$location_keys = array( 'geo_latitude', 'geo_longitude', 'geo_lat_lng' );
+		$location_keys = array();
+		if ( 'true' == $geo_mashup_options->get( 'overall', 'copy_geodata' ) )
+			$location_keys = array_merge( $location_keys, array( 'geo_latitude', 'geo_longitude', 'geo_lat_lng' ) );
 		$import_custom_key = $geo_mashup_options->get( 'overall', 'import_custom_field' );
 		$location_keys[] = $import_custom_key;
 		if ( ! in_array( $meta_key, $location_keys ) ) 
