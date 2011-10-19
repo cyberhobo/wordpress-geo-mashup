@@ -1012,13 +1012,24 @@ GeoMashup = {
 		var i, check_cat_id, filter = {visible: false};
 
 		obj.visible_categories = [];
-		for ( i = 0; i < obj.categories.length; i += 1 ) {
-			check_cat_id = obj.categories[i];
-			if ( this.categories[check_cat_id] && this.categories[check_cat_id].visible ) {
-				obj.visible_categories.push( check_cat_id );
-				filter.visible = true;
+		if ( 0 === obj.categories.length ) {
+
+			// Objects without categories are visible by default
+			filter.visible = true;
+
+		} else {
+
+			// Check category visibility
+			for ( i = 0; i < obj.categories.length; i += 1 ) {
+				check_cat_id = obj.categories[i];
+				if ( this.categories[check_cat_id] && this.categories[check_cat_id].visible ) {
+					obj.visible_categories.push( check_cat_id );
+					filter.visible = true;
+				}
 			}
+
 		}
+
 		/**
 		 * Visibility is being tested for an object.
 		 * @name GeoMashup#objectVisibilityOptions
