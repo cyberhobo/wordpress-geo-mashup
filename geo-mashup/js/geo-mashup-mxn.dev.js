@@ -514,7 +514,7 @@ GeoMashup.createMap = function(container, opts) {
 	this.map = new mxn.Mapstraction( this.container, opts.map_api );
 	map_opts = {enableDragging: true};
 	map_opts.enableScrollWheelZoom = ( opts.enable_scroll_wheel_zoom ? true : false );
-	if ( opts.enable_scroll_wheel_zoom )
+	
 	if ( 'enableGeoMashupExtras' in this.map ) {
 		this.map.enableGeoMashupExtras();
 	}
