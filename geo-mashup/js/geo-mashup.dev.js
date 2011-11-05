@@ -1304,7 +1304,7 @@ GeoMashup = {
 		if (list_element) {
 			list_html = ['<ul class="gm-visible-list">'];
 			this.forEach( this.objects, function (object_id, obj) {
-				if ( this.isMarkerVisible( obj.marker ) ) {
+				if ( this.isObjectOn( obj ) && this.isMarkerVisible( obj.marker ) ) {
 					list_html.push('<li><img src="');
 					list_html.push(obj.icon.image);
 					list_html.push('" alt="');
