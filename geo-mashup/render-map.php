@@ -181,7 +181,7 @@ class GeoMashupRenderMap {
 			$google_2_url = 'http://maps.google.com/maps?file=api&amp;v=2&amp;sensor=false&amp;key=' .
 				$geo_mashup_options->get( 'overall', 'google_key' );
 			if ( ! empty( $language_code ) ) {
-				$google_2_url .= '&amp;hl=' . $language_code;
+				$google_2_url .= '&amp;hl=' . substr( $language_code, 0, 2 );
 			}
 			wp_register_script( 
 					'google-maps-2', 
@@ -277,7 +277,7 @@ class GeoMashupRenderMap {
 		} else if ( 'googlev3' == $map_data['map_api'] ) {
 			$google_3_url = 'http://maps.google.com/maps/api/js?sensor=false';
 			if ( ! empty( $language_code ) ) {
-				$google_3_url .= '&amp;language=' . $language_code;
+				$google_3_url .= '&amp;language=' . substr( $language_code, 0, 2 );
 			}
 			wp_register_script( 
 					'google-maps-3', 
