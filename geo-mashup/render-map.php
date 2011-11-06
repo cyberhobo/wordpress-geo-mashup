@@ -345,6 +345,12 @@ class GeoMashupRenderMap {
 		unset( $map_data['height'] );
 		self::map_property( 'height', $height );
 
+		// Add background color if specified
+		if ( !empty( $map_data['background_color'] ) ) {
+			self::map_property( 'background_color', '#' . $map_data['background_color'] );
+			unset( $map_data['background_color'] );
+		}
+
 		if ( isset( $map_data['object_data'] ) and is_array( $map_data['object_data'] ) )
 			$map_data['object_data'] = json_encode( $map_data['object_data'] );
 		array_walk( $map_data, array( 'GeoMashupRenderMap', 'add_double_quotes' ) );

@@ -42,6 +42,9 @@
 			#geo-mashup {
 				width:<?php echo GeoMashupRenderMap::map_property( 'width' ); ?>;
 				height:<?php echo GeoMashupRenderMap::map_property( 'height' ); ?>;
+				<?php if ( GeoMashupRenderMap::map_property( 'background_color' ) ) : ?>
+				background-color: <?php echo GeoMashupRenderMap::map_property( 'background_color' ); ?>;
+				<?php endif; ?>
 			}
 		</style>
 	</head>
