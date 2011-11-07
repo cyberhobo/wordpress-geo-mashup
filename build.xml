@@ -14,8 +14,10 @@
 	<!-- set global properties for this build -->
 	<property name="source" location="geo-mashup"/>
 	<property name="build.base" location="build"/>
-	<property name="build.major" value="1"/>
-	<property name="build.minor" value="4.1"/>
+	<exec executable="bash" outputproperty="version">
+		<arg value="-c"/>
+		<arg value="grep 'Version:' geo-mashup/geo-mashup.php | sed -E 's/^.*Version: (.*)$/\1/'"/>
+	</exec>
 	
 	<target name="build">
 		<!-- generate build number -->
@@ -23,7 +25,7 @@
 		<tstamp>
 			<format property="YEAR" pattern="yyyy"/>
 		</tstamp>
-		<property name="build.ver" value="${build.major}.${build.minor}.${build.number}"/>
+		<property name="build.ver" value="${version}.${build.number}"/>
 		<property name="build.ver.dir" location="${build.base}/${build.ver}"/>
 		<property name="build.dir" location="${build.ver.dir}/geo-mashup"/>
 		
@@ -114,7 +116,7 @@
 	<target name="jsdoc">
 		<!-- document our sources -->
 		<echo>--- JSDOC ---</echo>
-		<property name="docs.dir" location="${build.base}/jsdocs-${build.major}.${build.minor}"/>
+		<property name="docs.dir" location="${build.base}/jsdocs-${version}"/>
 		<java jar="tools/jsdoc-toolkit/jsrun.jar" fork="true" failonerror="true">
 			<arg value="tools/jsdoc-toolkit/app/run.js"/>
 			<arg value="${source}/js/geo-mashup.dev.js"/>
