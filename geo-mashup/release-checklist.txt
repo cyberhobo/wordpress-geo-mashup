@@ -11,8 +11,10 @@ If any step fails, fix before continuing, repeating any necessary prior steps.
 
 	1. Bump versions in source.
 	  1. Make a new POT file.
+	1. Edit WP readme.txt (remember stable tag and changelog!)
+		1. Edit project site home page.
 	1. Commit.
-	1. Build a ZIP archive.
+	1. Build a ZIP archive (ant).
 	1. Install and test on testbed.
 	1. Install and test on cyberhobo.net.
 	  1. Make an archive copy of current wiki docs.
@@ -20,11 +22,8 @@ If any step fails, fix before continuing, repeating any necessary prior steps.
 	  1. Update PHP docs link in wiki.
 	  1. Merge current and beta wiki docs.
 	  1. Empty beta wiki docs.
-	1. Tag the new release in the Google code repository.
+	1. Tag the new release in the Google code repository (geo-mashup-tag-google.sh).
 	1. Upload ZIP to Google code.
-	1. File merge code with WordPress repo code.
-	1. Edit WP readme.txt (remember stable tag and changelog!)
-		1. Edit project site home page.
-	1. Commit WP copy.
-	1. Tag WP copy.
+	1. Deploy to WordPress SVN (cd build/x.x.x/geo-mashup; plugin-deploy.sh).
+	1. Tag WP copy (geo-mashup-tag-wp.sh).
 	1. Prune issues.

@@ -100,6 +100,11 @@ for the best way to keep your custom files safe moving forward.
 
 == Change Log ==
 
+Features are generally added in one-dot releases, while two-dot releases contain fixes and small updates.
+
+= 1.4.3 =
+[milestone 1.4.3 changes](http://code.google.com/p/wordpress-geo-mashup/issues/list?can=1&q=Milestone%3D1.4.3)
+
 = 1.4.2 =
 [milestone 1.4.2 changes](http://code.google.com/p/wordpress-geo-mashup/issues/list?can=1&q=Milestone%3D1.4.2)
 
