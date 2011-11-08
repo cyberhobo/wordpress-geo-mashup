@@ -1,4 +1,5 @@
-/*global GeoMashupLoader */
+/*global GeoMashupLoader: true */
+/*jslint sloppy: true */
 var GeoMashupLoader;
 
 /**
