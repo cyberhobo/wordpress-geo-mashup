@@ -48,12 +48,15 @@
 				<fileset dir="${build.dir}/js" includes="**/*.dev.js">
 					<exclude name="*datepicker.dev.js"/>
 					<exclude name="*markerclusterer.dev.js"/>
+					<exclude name="*ClusterMarker.dev.js"/>
 				</fileset>
 			</path>
 			<sequential>
 				<echo>Linting @{file}</echo>
-				<java jar="tools/rhino/js.jar" fork="true" failonerror="true">
-					<arg value="tools/jslint/jslint.js"/>
+				<java jar="tools/jslint/jslint4java-2.0.1.jar" fork="true" failonerror="true">
+					<arg value="--white"/>
+					<arg value="--sloppy"/>
+					<arg value="--vars"/>
 					<arg value="@{file}"/>
 				</java>
 			</sequential>
