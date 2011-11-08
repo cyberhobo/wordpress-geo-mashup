@@ -22,13 +22,15 @@
 
 /*global GeoMashup */
 /*global customizeGeoMashup, customizeGeoMashupMap, customGeoMashupColorIcon, customGeoMashupCategoryIcon */
-/*glboal customGeoMashupSinglePostIcon, customGeoMashupMultiplePostImage */
-/*global mxn */
+/*global customGeoMashupSinglePostIcon, customGeoMashupMultiplePostImage */
+/*global jQuery, mxn */
+/*jslint browser: true, white: true, sloppy: true */
 
 GeoMashup.loadFullPost = function( point ) {
 	var i, request, cache, objects, object_ids;
 
-	object_ids = this.getOnObjectIDs( this.getObjectsAtLocation( point ) );
+	objects = this.getObjectsAtLocation( point );
+	object_ids = this.getOnObjectIDs( objects );
 	cache = this.locationCache( point, 'full-post-' + object_ids.join(',') );
 	if ( cache.html ) {
 
@@ -294,7 +296,7 @@ GeoMashup.createMarker = function(point,obj) {
 
 	marker.click.addHandler( function() {
 		// Toggle marker selection
-		if ( marker == GeoMashup.selected_marker ) {
+		if ( marker === GeoMashup.selected_marker ) {
 			GeoMashup.deselectMarker();
 		} else {
 			GeoMashup.selectMarker( marker );
@@ -340,7 +342,7 @@ GeoMashup.getMarkerLatLng = function( marker ) {
 };
 
 GeoMashup.hideMarker = function( marker ) {
-	if ( marker == this.selected_marker ) {
+	if ( marker === this.selected_marker ) {
 		this.deselectMarker();
 	}
 	marker.hide();
@@ -515,7 +517,7 @@ GeoMashup.createMap = function(container, opts) {
 	map_opts = {enableDragging: true};
 	map_opts.enableScrollWheelZoom = ( opts.enable_scroll_wheel_zoom ? true : false );
 	
-	if ( 'enableGeoMashupExtras' in this.map ) {
+	if ( typeof this.map.enableGeoMashupExtras === 'function' ) {
 		this.map.enableGeoMashupExtras();
 	}
 	/**
@@ -553,7 +555,7 @@ GeoMashup.createMap = function(container, opts) {
 	}
 	this.opts = opts;
 	filter.url = opts.siteurl + '/?geo_mashup_content=geo-query&map_name=' + encodeURIComponent( opts.name );
-	if ( 'lang' in opts ) {
+	if ( opts.lang ) {
 		filter.url += '&lang=' + encodeURIComponent( opts.lang );
 	}
 	/**
@@ -600,26 +602,26 @@ GeoMashup.createMap = function(container, opts) {
 	} catch ( map_type_ex) {
 		// Probably not implemented
 	}
-	if ( initial_zoom === 'auto' ) {
-		// Wait to center and zoom after loading
-	} else if (opts.center_lat && opts.center_lng) {
-		// Use the center from options
-		this.map.setCenterAndZoom(new mxn.LatLonPoint( parseFloat( opts.center_lat ), parseFloat( opts.center_lng ) ), initial_zoom );
-	} else if (opts.object_data && opts.object_data.objects[0]) {
-		center_latlng = new mxn.LatLonPoint( parseFloat( opts.object_data.objects[0].lat ), parseFloat( opts.object_data.objects[0].lng ) );
-		this.map.setCenterAndZoom( center_latlng, initial_zoom );
-	} else {
-		// Center on the most recent located object
-		url = this.geo_query_url + '&limit=1';
-		if (opts.map_cat) {
-			url += '&map_cat='+opts.map_cat;
+	if ( initial_zoom !== 'auto' ) {
+		if (opts.center_lat && opts.center_lng) {
+			// Use the center from options
+			this.map.setCenterAndZoom(new mxn.LatLonPoint( parseFloat( opts.center_lat ), parseFloat( opts.center_lng ) ), initial_zoom );
+		} else if (opts.object_data && opts.object_data.objects[0]) {
+			center_latlng = new mxn.LatLonPoint( parseFloat( opts.object_data.objects[0].lat ), parseFloat( opts.object_data.objects[0].lng ) );
+			this.map.setCenterAndZoom( center_latlng, initial_zoom );
+		} else {
+			// Center on the most recent located object
+			url = this.geo_query_url + '&limit=1';
+			if (opts.map_cat) {
+				url += '&map_cat='+opts.map_cat;
+			}
+			jQuery.getJSON( url, function( objects ) {
+				if (objects.length>0) {
+					center_latlng = new mxn.LatLonPoint( parseFloat( objects[0].lat ), parseFloat( objects[0].lng ) );
+					this.map.setCenterAndZoom( center_latlng, initial_zoom );
+				}
+			} );
 		}
-		jQuery.getJSON( url, function( objects ) {
-			if (objects.length>0) {
-				center_latlng = new mxn.LatLonPoint( parseFloat( objects[0].lat ), parseFloat( objects[0].lng ) );
-				this.map.setCenterAndZoom( center_latlng, initial_zoom );
-			} 
-		} );
 	}
 
 	this.location_bounds = null;

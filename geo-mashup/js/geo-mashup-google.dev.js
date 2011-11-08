@@ -5,8 +5,9 @@
 
 /*global GeoMashup */
 /*global customizeGeoMashup, customizeGeoMashupMap, customGeoMashupColorIcon, customGeoMashupCategoryIcon */
-/*glboal customGeoMashupSinglePostIcon, customGeoMashupMultiplePostImage */
-/*global mxn */
+/*global customGeoMashupSinglePostIcon, customGeoMashupMultiplePostImage */
+/*global jQuery, google, G_DEFAULT_ICON, mxn, ClusterMarker, MarkerClusterer */
+/*jslint browser:true, white: true, vars: true, sloppy: true, evil: true */
 
 GeoMashup.createCategoryLine = function ( category ) {
 	category.line = new google.maps.Polyline(category.points, category.color);
@@ -91,7 +92,7 @@ GeoMashup.openInfoWindow = function( marker ) {
 				node.innerHTML = filter.content;
 				GeoMashup.parentizeLinks( node );
 				cache.info_node = node;
-				if ( 'post' == GeoMashup.opts.object_name ) {
+				if ( 'post' === GeoMashup.opts.object_name ) {
 					GeoMashup.loadMaxContent( marker, node, request_options.url + '&template=info-window-max', cache );
 				} else {
 					cache.info_window_options = {};
@@ -139,6 +140,8 @@ GeoMashup.hideAttachments = function() {
 };
 
 GeoMashup.showMarkerAttachments = function( marker ) {
+	var objects;
+
 	this.hideAttachments();
 	objects = this.getObjectsAtLocation( marker.getLatLng() );
 	this.forEach( objects, function( i, obj ) {
@@ -166,9 +169,10 @@ GeoMashup.showMarkerAttachments = function( marker ) {
 };
 
 GeoMashup.loadFullPost = function( point ) {
-	var i, url, cache, post_request, object_ids, request_options;
+	var i, url, cache, post_request, objects, object_ids, request_options;
 
-	object_ids = this.getOnObjectIDs( this.getObjectsAtLocation( point ) );
+	objects = this.getObjectsAtLocation( point );
+	object_ids = this.getOnObjectIDs( objects );
 	cache = this.locationCache( point, 'full-post-' + object_ids.join(',') );
 	if ( cache.post_html ) {
 		this.getShowPostElement().innerHTML = cache.post_html;
@@ -282,7 +286,7 @@ GeoMashup.getMarkerLatLng = function( marker ) {
 };
 
 GeoMashup.hideMarker = function( marker ) {
-	if ( marker == this.selected_marker ) {
+	if ( marker === this.selected_marker ) {
 		this.deselectMarker();
 	}
 	marker.hide();
@@ -348,7 +352,7 @@ GeoMashup.setMarkerImage = function( marker, image_url ) {
 
 GeoMashup.setCenterUpToMaxZoom = function( latlng, zoom, callback ) {
 	var map_type = this.map.getCurrentMapType();
-	if ( map_type == google.maps.SATELLITE_MAP || map_type == google.maps.HYBRID_MAP ) {
+	if ( map_type === google.maps.SATELLITE_MAP || map_type === google.maps.HYBRID_MAP ) {
 		map_type.getMaxZoomAtLatLng( latlng, function( response ) {
 			if ( response && response.status === google.maps.GEO_SUCCESS ) {
 				if ( response.zoom < zoom ) {
@@ -433,7 +437,7 @@ GeoMashup.isMarkerVisible = function( marker ) {
 
 GeoMashup.recluster = function( ) {
 	if (this.clusterer) { 
-		if ( 'clustermarker' == this.opts.cluster_lib ) {
+		if ( 'clustermarker' === this.opts.cluster_lib ) {
 			this.clusterer.refresh();
 		} else {
 			this.clusterer.resetViewport();
@@ -504,7 +508,7 @@ GeoMashup.createMap = function(container, opts) {
 		backgroundColor : '#' + opts.background_color,
 		mapTypes : [ opts.map_type ],
 		googleBarOptions : { 
-			adsOptions : {client : ( opts.adsense_code ) ? opts.adsense_code : 'pub-5088093001880917'}	
+			adsOptions : {client : opts.adsense_code || 'pub-5088093001880917'}
 		}
 	};
 	this.doAction( 'mapOptions', opts, map_opts );
@@ -527,7 +531,7 @@ GeoMashup.createMap = function(container, opts) {
 	}
 	this.opts = opts;
 	filter.url = opts.siteurl + '/?geo_mashup_content=geo-query&map_name=' + encodeURIComponent( opts.name );
-	if ( 'lang' in opts ) {
+	if ( opts.lang ) {
 		filter.url += '&lang=' + encodeURIComponent( opts.lang );
 	}
 	this.doAction( 'geoQueryUrl', this.opts, filter );
@@ -649,7 +653,7 @@ GeoMashup.createMap = function(container, opts) {
 	if (opts.add_map_type_control ) {
 		if ( typeof opts.add_map_type_control === 'string' ) {
 			opts.add_map_type_control = opts.add_map_type_control.split(/\s*,\s*/);
-			if ( typeof map_types[opts.add_map_type_control[0]] == 'undefined' ) {
+			if ( typeof map_types[opts.add_map_type_control[0]] === 'undefined' ) {
 				// Convert the old boolean value to a default array
 				opts.add_map_type_control = [ 'G_NORMAL_MAP', 'G_SATELLITE_MAP', 'G_PHYSICAL_MAP' ];
 			}

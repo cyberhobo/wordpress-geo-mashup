@@ -1,5 +1,6 @@
 /* Handle Geo Mashup location collection for comments. */
-/*global google, jQuery, geo_mashup_comment_form_settings */
+/*global navigator, google, jQuery, geo_mashup_comment_form_settings */
+/*jslint vars: true, white: true, sloppy: true */
 
 /**
  * Add location collection to the comment form.

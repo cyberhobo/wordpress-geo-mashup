@@ -20,10 +20,11 @@ details.
  * The base Geo Mashup code that is independent of mapping API.
  */
 
-/*global GeoMashup */
+/*global GeoMashup: true */
 // These globals are retained for backward custom javascript compatibility
 /*global customizeGeoMashup, customizeGeoMashupMap, customGeoMashupColorIcon, customGeoMashupCategoryIcon */
 /*global customGeoMashupSinglePostIcon, customGeoMashupMultiplePostImage */
+/*jslint browser: true, white: true, sloppy: true */
 
 var GeoMashup, customizeGeoMashup, customizeGeoMashupMap, customGeoMashupColorIcon, customGeoMashupCategoryIcon, 
 	customGeoMashupSinglePostIcon, customGeoMashupMultiplePostImage;
@@ -132,13 +133,13 @@ GeoMashup = {
 	},
 
 	locationCache : function( latlng, key ) {
-		if ( !( latlng in this.locations ) ) {
+		if ( !this.locations.hasOwnProperty( latlng ) ) {
 			return false;
 		}
-		if ( ! this.locations[latlng].cache ) {
+		if ( !this.locations[latlng].cache ) {
 			this.locations[latlng].cache = {};
 		}
-		if ( !( key in this.locations[latlng].cache ) ) {
+		if ( !this.locations[latlng].cache.hasOwnProperty( key ) ) {
 			this.locations[latlng].cache[key] = {};
 		}
 		return this.locations[latlng].cache[key];
@@ -203,11 +204,13 @@ GeoMashup = {
 	buildCategoryHierarchy : function(category_id) {
 		var children, child_count, cat_id, child_id;
 		if (category_id) {
+			category_id = category_id.toString();
 			children = {};
 			child_count = 0;
 			for (child_id in this.opts.category_opts) {
-				if (this.opts.category_opts[child_id].parent_id && 
-					this.opts.category_opts[child_id].parent_id == category_id) {
+				if (this.opts.category_opts.hasOwnProperty( child_id ) &&
+					this.opts.category_opts[child_id].parent_id &&
+					this.opts.category_opts[child_id].parent_id === category_id) {
 						children[child_id] = this.buildCategoryHierarchy(child_id);
 						child_count += 1;
 				}
@@ -216,7 +219,8 @@ GeoMashup = {
 		} else {
 			this.category_hierarchy = {};
 			for (cat_id in this.opts.category_opts) {
-				if (!this.opts.category_opts[cat_id].parent_id) {
+				if ( this.opts.category_opts.hasOwnProperty( cat_id ) &&
+					!this.opts.category_opts[cat_id].parent_id) {
 					this.category_hierarchy[cat_id] = this.buildCategoryHierarchy(cat_id);
 				}
 			}
@@ -233,8 +237,10 @@ GeoMashup = {
 	 * @param {String} child_id The category ID of the potential child
 	 */
 	isCategoryAncestor : function(ancestor_id, child_id) {
+		ancestor_id = ancestor_id.toString();
+		child_id = child_id.toString();
 		if (this.opts.category_opts[child_id].parent_id) {
-			if (this.opts.category_opts[child_id].parent_id == ancestor_id) {
+			if (this.opts.category_opts[child_id].parent_id === ancestor_id) {
 				return true;
 			} else {
 				return this.isCategoryAncestor(ancestor_id, this.opts.category_opts[child_id].parent_id);
@@ -251,7 +257,7 @@ GeoMashup = {
 			return true;
 		}
 		for (child_id in hierarchy) {
-			if (this.hasLocatedChildren(child_id, hierarchy[child_id])) {
+			if ( hierarchy.hasOwnProperty( child_id ) && this.hasLocatedChildren(child_id, hierarchy[child_id]) ) {
 				return true;
 			}
 		}
@@ -366,7 +372,7 @@ GeoMashup = {
 		html_array.push(this.opts.name);
 		html_array.push('-tab-index"><ul class="gm-tabs-nav">');
 		for (category_id in hierarchy) {
-			if (this.hasLocatedChildren(category_id, hierarchy[category_id])) {
+			if ( hierarchy.hasOwnProperty( category_id ) && this.hasLocatedChildren(category_id, hierarchy[category_id]) ) {
 				html_array = html_array.concat([
 					'<li class="gm-tab-inactive gm-tab-inactive-',
 					category_id,
@@ -1209,7 +1215,7 @@ GeoMashup = {
 		var point;
 
 		for (point in this.locations) {
-			if ( this.locations[point].marker ) {
+			if ( this.locations.hasOwnProperty( point ) && this.locations[point].marker ) {
 				this.hideMarker( this.locations[point].marker );
 			}
 		}
@@ -1218,14 +1224,14 @@ GeoMashup = {
 	},
 
 	/**
- 	 * Show all markers.
+	 * Show all markers.
 	 */
 	showMarkers : function() {
 		var i, category_id, point;
 
 		for (category_id in this.categories) {
-			if (this.categories[category_id].visible) {
-				for (i=0; i<this.categories[category_id].points.length; i++) {
+			if ( this.categories.hasOwnProperty( category_id ) && this.categories[category_id].visible ) {
+				for ( i = 0; i < this.categories[category_id].points.length; i += 1 ) {
 					point = this.categories[category_id].points[i];
 					this.showMarker( this.locations[point].marker );
 				}
@@ -1242,17 +1248,19 @@ GeoMashup = {
 		old_level = this.last_zoom_level;
 
 		for (category_id in this.categories) {
-			if (old_level <= this.categories[category_id].max_line_zoom &&
-			  new_level > this.categories[category_id].max_line_zoom) {
-				this.hideLine( this.categories[category_id].line );
-			} else if (this.categories[category_id].visible &&
-				old_level > this.categories[category_id].max_line_zoom &&
-			  new_level <= this.categories[category_id].max_line_zoom) {
-				this.showLine( this.categories[category_id].line );
+			if ( this.categories.hasOwnProperty( category_id ) ) {
+				if (old_level <= this.categories[category_id].max_line_zoom &&
+				  new_level > this.categories[category_id].max_line_zoom) {
+					this.hideLine( this.categories[category_id].line );
+				} else if (this.categories[category_id].visible &&
+					old_level > this.categories[category_id].max_line_zoom &&
+				  new_level <= this.categories[category_id].max_line_zoom) {
+					this.showLine( this.categories[category_id].line );
+				}
 			}
 		}
 
-		if ( this.clusterer && 'markercluster' == this.opts.cluster_lib ) {
+		if ( this.clusterer && 'markercluster' === this.opts.cluster_lib ) {
 			if ( old_level <= this.opts.cluster_max_zoom && 
 					new_level > this.opts.cluster_max_zoom ) {
 				this.clusterer.clusteringEnabled = false;
@@ -1312,7 +1320,7 @@ GeoMashup = {
 					list_html.push('" />');
 					list_html.push(this.objectLinkHtml(object_id));
 					list_html.push('</li>');
-					list_count++;
+					list_count += 1;
 				}
 			});
 			list_html.push('</ul>');
