@@ -704,7 +704,7 @@ class GeoMashupDB {
 	 * @param string $language Language code, defaults to the WordPress locale language.
 	 * @return string|null Place name in the appropriate language, or if not available in the default language.
 	 */
-	public function get_administrative_name( $country_code, $admin_code = null, $language = '' ) {
+	public static function get_administrative_name( $country_code, $admin_code = null, $language = '' ) {
 		$language = self::primary_language_code( $language );
 		$name = GeoMashupDB::get_cached_administrative_name( $country_code, $admin_code, $language );
 		if ( empty( $name ) ) {
