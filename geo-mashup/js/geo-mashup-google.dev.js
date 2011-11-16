@@ -505,12 +505,14 @@ GeoMashup.createMap = function(container, opts) {
 		opts.map_type = google.maps.NORMAL_MAP;
 	}
 	map_opts = {
-		backgroundColor : '#' + opts.background_color,
 		mapTypes : [ opts.map_type ],
 		googleBarOptions : { 
 			adsOptions : {client : opts.adsense_code || 'pub-5088093001880917'}
 		}
 	};
+	if ( opts.background_color ) {
+		map_opts.backgroundColor = opts.background_color;
+	}
 	this.doAction( 'mapOptions', opts, map_opts );
 	this.map = new google.maps.Map2( this.container, map_opts );
 	this.map.setCenter(new google.maps.LatLng(0,0), 0);
