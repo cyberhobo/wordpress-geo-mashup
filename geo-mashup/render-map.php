@@ -348,7 +348,9 @@ class GeoMashupRenderMap {
 		// Add background color if specified
 		if ( !empty( $map_data['background_color'] ) ) {
 			self::map_property( 'background_color', '#' . $map_data['background_color'] );
-			unset( $map_data['background_color'] );
+			// Only google v2 maps need the parameter
+			if ( 'google' != $map_data['map_api'] )
+				unset( $map_data['background_color'] );
 		}
 
 		if ( isset( $map_data['object_data'] ) and is_array( $map_data['object_data'] ) )
