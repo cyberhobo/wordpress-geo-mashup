@@ -55,7 +55,7 @@ GeoMashup.loadMaxContent = function( marker, regular_node, info_window_max_url, 
 			max_node.innerHTML = filter.content;
 			GeoMashup.parentizeLinks( max_node );
 			cache.info_window_options = {maxContent: max_node};
-			GeoMashup.openMarkerInfoWindow( marker, regular_node, {maxContent : max_node} );
+			GeoMashup.openMarkerInfoWindow( marker, regular_node, cache.info_window_options );
 		} // end max readState === 4
 	}; // end max onreadystatechange function
 	info_window_max_request.send( null );
@@ -96,7 +96,7 @@ GeoMashup.openInfoWindow = function( marker ) {
 					GeoMashup.loadMaxContent( marker, node, request_options.url + '&template=info-window-max', cache );
 				} else {
 					cache.info_window_options = {};
-					GeoMashup.openMarkerInfoWindow( marker, node, {} );
+					GeoMashup.openMarkerInfoWindow( marker, node, cache.info_window_options );
 					GeoMashup.doAction( 'loadedInfoWindow' );
 				}
 			} // end readystate === 4
