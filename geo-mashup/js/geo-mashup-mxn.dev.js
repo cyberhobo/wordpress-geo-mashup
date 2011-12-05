@@ -282,7 +282,10 @@ GeoMashup.createMarker = function(point,obj) {
 		visible: true
 	};
 	/**
-	 * A marker is being created for an object.
+	 * A marker is being created for an object. Use this to change marker 
+	 * options, but if you just want to assign an icon to an object, use the 
+	 * objectIcon action.
+	 * 
 	 * @name GeoMashup#objectMarkerOptions
 	 * @event
 	 * @param {GeoMashupOptions} properties Geo Mashup configuration data
