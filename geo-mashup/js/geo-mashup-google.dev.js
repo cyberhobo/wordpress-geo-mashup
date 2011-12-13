@@ -588,7 +588,9 @@ GeoMashup.createMap = function(container, opts) {
 			// Use the center from options
 			this.map.setCenter(new google.maps.LatLng(opts.center_lat, opts.center_lng), initial_zoom, opts.map_type);
 		} else if (this.kml) {
-			this.map.setCenter(this.kml.getDefaultCenter, initial_zoom, opts.map_type);
+			google.maps.Event.addListener( this.kml, 'load', function() {
+				GeoMashup.map.setCenter( GeoMashup.kml.getDefaultCenter(), initial_zoom, opts.map_type );
+			} );
 		} else if (opts.object_data && opts.object_data.objects[0]) {
 			center_latlng = new google.maps.LatLng(opts.object_data.objects[0].lat, opts.object_data.objects[0].lng);
 			this.map.setCenter(center_latlng, initial_zoom, opts.map_type);
