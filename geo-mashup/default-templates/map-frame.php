@@ -10,6 +10,8 @@
  *
  * For styling of map elements, see map-style-default.dev.css.
  *
+ * Map properties include height, width, and name (see the style tag for example).
+ * 
  * Individual registered scripts can be added with code like
  *
  * <code>GeoMashupRenderMap::enqueue_script( 'colorbox' );</code>

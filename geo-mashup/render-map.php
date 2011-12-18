@@ -330,7 +330,8 @@ class GeoMashupRenderMap {
 			self::enqueue_script( 'geo-mashup-custom' );
 		}
 
-		// Set height and width properties for the template
+		// Set properties for the template
+		self::map_property( 'name', $map_data['name'] );
 		$width = $map_data['width'];
 		if ( substr( $width, -1 ) != '%' ) {
 			$width .= 'px';
