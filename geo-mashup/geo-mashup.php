@@ -3,7 +3,7 @@
 Plugin Name: Geo Mashup
 Plugin URI: http://code.google.com/p/wordpress-geo-mashup/ 
 Description: Save location for posts and pages, or even users and comments. Display these locations on Google maps. Make WordPress into your GeoCMS.
-Version: 1.4.4
+Version: 1.4.4+
 Author: Dylan Kuhn
 Author URI: http://www.cyberhobo.net/
 Minimum WordPress Version Required: 3.0
@@ -522,6 +522,24 @@ class GeoMashup {
 	}
 
 	/**
+	 * Get post types available for location searches.
+	 * 
+	 * This includes post types included via the located_post_types option,
+	 * as well as post types registered with exclude_from_search set to 
+	 * <em>false</em>.
+	 * 
+	 * @since 1.4.5
+	 * 
+	 * @return array Array of post type strings.
+	 */
+	public static function get_searchable_post_types() {
+		global $geo_mashup_options;
+		$located_types = $geo_mashup_options->get( 'overall', 'located_post_types' );
+		$searchable_types = get_post_types( array('exclude_from_search' => false) );
+		return array_merge( $located_types, $searchable_types );
+	}
+
+	/**
 	 * Get an array of URLs of KML or KMZ attachments for a post.
 	 * 
 	 * @since 1.1
@@ -578,34 +596,34 @@ class GeoMashup {
 		exit();
 	}
 
-/**
- * WordPress action to add relevant geo meta tags to the document head.
- *
- * wp_head {@link http://codex.wordpress.org/Plugin_API/Action_Reference#TemplateActions action},
- * called by WordPress.
- *
- * @since 1.0
- */
-public static function wp_head() {
-	global $wp_query;
+	/**
+	 * WordPress action to add relevant geo meta tags to the document head.
+	 *
+	 * wp_head {@link http://codex.wordpress.org/Plugin_API/Action_Reference#TemplateActions action},
+	 * called by WordPress.
+	 *
+	 * @since 1.0
+	 */
+	public static function wp_head() {
+		global $wp_query;
 
-	if (is_single())
-	{
-		$loc = GeoMashupDB::get_object_location( 'post', $wp_query->post->ID );
-		if (!empty($loc)) {
-			$title = esc_html(convert_chars(strip_tags(get_bloginfo('name'))." - ".$wp_query->post->post_title));
-			echo '<meta name="ICBM" content="' . esc_attr( $loc->lat . ', ' . $loc->lng ) . '" />' . "\n";
-			echo '<meta name="DC.title" content="' . esc_attr( $title ) . '" />' . "\n";
-			echo '<meta name="geo.position" content="' .  esc_attr( $loc->lat . ';' . $loc->lng ) . '" />' . "\n";
+		if (is_single())
+		{
+			$loc = GeoMashupDB::get_object_location( 'post', $wp_query->post->ID );
+			if (!empty($loc)) {
+				$title = esc_html(convert_chars(strip_tags(get_bloginfo('name'))." - ".$wp_query->post->post_title));
+				echo '<meta name="ICBM" content="' . esc_attr( $loc->lat . ', ' . $loc->lng ) . '" />' . "\n";
+				echo '<meta name="DC.title" content="' . esc_attr( $title ) . '" />' . "\n";
+				echo '<meta name="geo.position" content="' .  esc_attr( $loc->lat . ';' . $loc->lng ) . '" />' . "\n";
+			}
 		}
 	}
-}
 
-/**
- * Query object locations and return JSON.
- *
- * Offers customization per object location via a filter, geo_mashup_locations_json_object.
- *
+	/**
+	 * Query object locations and return JSON.
+	 *
+	 * Offers customization per object location via a filter, geo_mashup_locations_json_object.
+	 *
 	 * @since 1.2
 	 * @uses GeoMashupDB::get_object_locations()
 	 * @uses apply_filters() the_title Filter post titles.

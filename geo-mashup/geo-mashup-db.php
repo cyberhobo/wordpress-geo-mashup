@@ -1578,13 +1578,13 @@ class GeoMashupDB {
 		if ( 'post' == $object_name ) {
 			// Handle inclusion and exclusion of post types
 			if ( 'any' == $query_args['map_post_type'] ) {
-				$exclude_post_types = '';
-				$in_search_post_types = get_post_types( array('exclude_from_search' => false) );
+				$include_post_types = '';
+				$searchable_post_types = GeoMashup::get_searchable_post_types();
 
-				if ( ! empty( $in_search_post_types ) )
-					$exclude_post_types .= $wpdb->prepare("o.post_type IN ('" . join("', '", $in_search_post_types ) . "')");
+				if ( ! empty( $searchable_post_types ) )
+					$include_post_types .= $wpdb->prepare("o.post_type IN ('" . join("', '", $searchable_post_types ) . "')");
 
-				$wheres[] = $exclude_post_types;
+				$wheres[] = $include_post_types;
 			} else {
 				$post_types = preg_split( '/[,\s]+/', $query_args['map_post_type'] );
 				$wheres[] = "o.post_type IN ('" . join("', '", $post_types) . "')";

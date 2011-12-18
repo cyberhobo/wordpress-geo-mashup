@@ -66,7 +66,11 @@ class GeoMashupQuery {
 
 		switch ( $object_name ) {
 			case 'post':
-				$query_vars = array( 'post__in' => $object_ids, 'post_type' => 'any', 'post_status' => 'publish,future' );
+				$query_vars = array( 
+					'post__in' => $object_ids, 
+					'post_type' => GeoMashup::get_searchable_post_types(), 
+					'post_status' => 'publish,future' 
+				);
 				// Don't filter this query through other plugins (e.g. event-calendar)
 				$query_vars['suppress_filters'] = true;
 				// No sticky posts please
