@@ -393,7 +393,7 @@ GeoMashup.centerMarker = function( marker, zoom ) {
 	if ( typeof zoom === 'number' ) {
 		this.map.setCenter( marker.getLatLng(), zoom );
 	} else {
-		this.map.panTo( marker.getLatLng() );
+		this.map.setCenter( marker.getLatLng() );
 	}
 };
 
