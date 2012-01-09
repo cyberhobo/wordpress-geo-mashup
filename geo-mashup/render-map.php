@@ -132,8 +132,7 @@ class GeoMashupRenderMap {
 	 * Render the requested map.
 	 *
 	 * @since 1.4
-	 * @uses do_action() geo_mashup_render_map_enqueue_styles Fired when styles have been queued for a map. 
-	 * @uses do_action() geo_mashup_render_map_enqueue_styles Fired when styles have been queued for a map. The mashup script (google v2 or mxn) is sent as a parameter.
+	 * @uses do_action() geo_mashup_render_map Customize things (like scripts and styles) before the template is loaded. The mashup script (google v2 or mxn) is sent as a parameter.
 	 */
 	public static function render_map() {
 		global $geo_mashup_options, $geo_mashup_custom;
@@ -159,8 +158,6 @@ class GeoMashupRenderMap {
 		}
 		wp_enqueue_style( 'geo-mashup-map-style' );
 		self::enqueue_style( 'geo-mashup-map-style' );
-
-		do_action( 'geo_mashup_render_map_enqueue_styles' );
 
 		if ( isset( $_GET['map_data_key'] ) ) {
 			// Map data is cached in a transient
@@ -318,8 +315,6 @@ class GeoMashupRenderMap {
 		wp_enqueue_script( $mashup_script );
 		self::enqueue_script( $mashup_script );
 
-		do_action( 'geo_mashup_render_map_enqueue_scripts', $mashup_script );
-
 		// Custom javascript
 		$custom_js_url_path = '';
 		if ( isset( $geo_mashup_custom ) ) {
@@ -397,6 +392,9 @@ class GeoMashupRenderMap {
 
 		// Store the properties for use by the template tag GeoMashupRenderMap::map_script
 		self::$map_data = $map_data;
+
+		// A general hook for rendering customizations
+		do_action( 'geo_mashup_render_map', $mashup_script );
 
 		// Load the template
 		status_header ( 200 );
