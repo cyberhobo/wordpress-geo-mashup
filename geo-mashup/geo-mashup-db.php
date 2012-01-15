@@ -1734,6 +1734,7 @@ class GeoMashupDB {
 		if ( (string) 1.1 != '1.1' ) {
 			$original_locale = setlocale( constant( 'LC_NUMERIC' ), null );
 			setlocale( constant( 'LC_NUMERIC' ), 'en_US' );
+			$changed_locale = true;
 		}
 
 		if ( isset( $location['id'] ) && is_numeric( $location['id'] ) ) {
