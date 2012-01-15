@@ -1482,6 +1482,8 @@ class GeoMashupDB {
 			} else {
 				$wheres[] = 'post_status = \'publish\'';
 			}
+		} else if ( 'comment' == $object_name ) {
+			$wheres[] = 'comment_approved = \'1\'';
 		}
 
 		// Check for a radius query
