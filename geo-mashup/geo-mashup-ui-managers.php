@@ -279,6 +279,8 @@ class GeoMashupUIManager {
 					$post_location['admin_code'] = $_POST['geo_mashup_admin_code'];
 					$post_location['sub_admin_code'] = $_POST['geo_mashup_sub_admin_code'];
 					$post_location['locality_name'] = $_POST['geo_mashup_locality_name'];
+					if ( !empty( $_POST['geo_mashup_null_fields'] ) )
+						$post_location['set_null'] = $_POST['geo_mashup_null_fields'];
 				}
 			}
 			

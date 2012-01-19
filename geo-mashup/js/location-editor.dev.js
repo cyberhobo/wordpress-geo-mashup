@@ -103,6 +103,7 @@ var
 	$admin_name_input = $( '#geo_mashup_admin_name' ),
 	$sub_admin_code_input = $( '#geo_mashup_sub_admin_code' ),
 	$sub_admin_name_input = $( '#geo_mashup_sub_admin_name' ),
+	$null_fields_input = $( '#geo_mashup_null_fields' ),
 	$kml_url_input = $( '#geo_mashup_kml_url' ),
 	$locality_name_input = $( '#geo_mashup_locality_name' ),
 	$display = $( '#geo_mashup_display' ),
@@ -878,6 +879,11 @@ var
 	$update_button.click( function() {
 		var post_data = $( '#geo_mashup_location_editor input' ).serialize() + 
 			'&geo_mashup_update_location=true&action=geo_mashup_edit';
+
+		if ( '' === $location_name_input.val() && $saved_name_ui.hasClass( 'ui-state-highlight' ) ) {
+			// The saved name has been cleared
+			post_data += '&geo_mashup_null_fields=saved_name';
+		}
 		$ajax_message.hide();
 		$.post( ajax_url, post_data, function( data ) {
 			$ajax_message.html( data.status.message ).fadeIn( 'slow' );

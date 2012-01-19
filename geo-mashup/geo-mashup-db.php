@@ -1772,7 +1772,7 @@ class GeoMashupDB {
 			self::reverse_geocode_location( $location );
 		}
 
-		// Don't set blank entries
+		// Don't set blank entries (use the set_null pseudo field)
 		foreach ( $location as $name => $value ) {
 			if ( !is_numeric( $value ) && empty( $value ) ) {
 				unset( $location[$name] );
@@ -1806,6 +1806,17 @@ class GeoMashupDB {
 			unset( $location['lat'] );
 			unset( $location['lng'] );
 			if ( !empty ( $location ) ) {
+
+				if ( isset( $location['set_null'] ) ) {
+					// WP doesn't yet have a mechanism for setting NULLs, https://core.trac.wordpress.org/ticket/15158
+					$null_fields = $location['set_null'];
+					if ( !is_array( $null_fields ) ) 
+						$null_fields = explode( ',', $null_fields );
+					$null_fields = array_map( create_function( '$field', 'return $field . "=NULL";' ), $null_fields );
+					$wpdb->query( $wpdb->prepare( "UPDATE $location_table SET " . implode( ',', $null_fields) . " WHERE id=%d", $db_location['id'] ) );
+					unset( $location['set_null'] );
+				}
+
 				$wpdb->update( $location_table, $location, array( 'id' => $db_location['id'] ) );
 				if ( $wpdb->last_error ) {
 					if ( $changed_locale )
