@@ -115,6 +115,7 @@ class GeoMashup {
 		global $geo_mashup_options;
 
 		add_action( 'init', array( __CLASS__, 'init' ) );
+		add_action( 'wp_scheduled_delete', array( __CLASS__, 'action_wp_scheduled_delete' ) );
 
 		add_action( 'plugins_loaded', array( __CLASS__, 'dependent_init' ), -1 );
 		add_action( 'wp_ajax_geo_mashup_query', array( __CLASS__, 'geo_query') );
@@ -241,6 +242,29 @@ class GeoMashup {
 	 */
 	public static function dependent_init() {
 		do_action( 'geo_mashup_init' );
+	}
+
+	/**
+	 * WordPress action to remove expired Geo Mashup transients.
+	 * 
+	 * @since 1.4.6
+	 * @uses apply_filter() geo_mashup_disable_scheduled_delete A way to disable the scheduled delete.
+	 */
+	public static function action_wp_scheduled_delete() {
+		global $wpdb, $_wp_using_ext_object_cache;
+
+		
+		if ( $_wp_using_ext_object_cache || apply_filters( 'geo_mashup_disable_scheduled_delete', false ) || defined( 'GEO_MASHUP_DISABLE_SCHEDULED_DELETE' ) )
+			return;
+
+		$time = time();
+		$expired = $wpdb->get_col( "SELECT option_name FROM {$wpdb->options} WHERE option_name LIKE '_transient_timeout_gm%' AND option_value < {$time};" );
+
+		foreach( $expired as $transient ) {
+			$key = str_replace('_transient_timeout_', '', $transient);
+			delete_transient($key);
+		}
+		$wpdb->query( "OPTIMIZE TABLE {$wpdb->options}" );
 	}
 
 	/**
