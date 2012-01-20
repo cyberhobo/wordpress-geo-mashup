@@ -1588,8 +1588,9 @@ class GeoMashupDB {
 
 				$wheres[] = $include_post_types;
 			} else {
-				$post_types = preg_split( '/[,\s]+/', $query_args['map_post_type'] );
-				$wheres[] = "o.post_type IN ('" . join("', '", $post_types) . "')";
+				if ( !is_array( $query_args['map_post_type'] ) ) 
+					$query_args['map_post_type'] = preg_split( '/[,\s]+/', $query_args['map_post_type'] );
+				$wheres[] = "o.post_type IN ('" . join("', '", $query_args['map_post_type']) . "')";
 			}
 		} 
 
