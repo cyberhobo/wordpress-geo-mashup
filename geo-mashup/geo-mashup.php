@@ -987,7 +987,9 @@ class GeoMashup {
 		set_transient( 'gmm' . $atts_md5, $map_data, 20 );
 		set_transient( 'gmp' . $atts_md5, $atts, 60*60*24 );
 
-		$iframe_src =  home_url( '?geo_mashup_content=render-map&amp;map_data_key=' . $atts_md5 );
+		// Sending no path to home_url() provides compatbility with WPML, which may change the domain this way
+		$iframe_src =  path_join( home_url(), '?geo_mashup_content=render-map&amp;map_data_key=' . $atts_md5 );
+
 		if ( !empty( $atts['lang'] ) )
 			$iframe_src .= '&amp;lang=' . $atts['lang'];
 			
