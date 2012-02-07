@@ -705,7 +705,7 @@ class GeoMashupPostUIManager extends GeoMashupUIManager {
 	}
 
 	/**
-	 * Add Flash-uploaded KML to the location editor map.
+	 * Add AJAX uploaded KML to the location editor map.
 	 *
 	 * media_meta {@link http://codex.wordpress.org/Plugin_API/Filter_Reference filter}
 	 * called by WordPress.
@@ -713,11 +713,14 @@ class GeoMashupPostUIManager extends GeoMashupUIManager {
 	 * @since 1.3
 	 */
 	public function media_meta( $content, $post ) {
-		// Only chance to run some javascript after a flash upload?
-		if (strlen($post->guid) > 0) {
-			$content .= '<script type="text/javascript"> ' .
-				'if (\'GeoMashupLocationEditor\' in parent) parent.GeoMashupLocationEditor.loadKml(\''.$post->guid.'\');' .
-				'</script>';
+		// Only chance to run some javascript after an ajax upload?
+		if ( 'attachment' == $post->post_type ) {
+			$url = wp_get_attachment_url( $post->ID );
+			if ( '.km' == substr( $url, -4, 3 ) ) {
+				$content .= '<script type="text/javascript"> ' .
+					'if (\'GeoMashupLocationEditor\' in parent) parent.GeoMashupLocationEditor.loadKml(\''.$url.'\');' .
+					'</script>';
+			}
 		}
 		return $content;
 	}
@@ -769,7 +772,6 @@ class GeoMashupPostUIManager extends GeoMashupUIManager {
 	 * @since 1.3
 	 */
 	public function wp_handle_upload( $args ) {
-		// TODO: use transient API instead of option
 		delete_transient( 'gm_uploaded_kml_url' );
 		if ( is_array( $args ) && isset( $args['file'] ) ) {
 			if ( stripos( $args['file'], '.km' ) == strlen( $args['file'] ) - 4 ) {
