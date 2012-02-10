@@ -1260,7 +1260,7 @@ GeoMashup = {
 			}
 		}
 
-		if ( this.clusterer && 'markercluster' === this.opts.cluster_lib ) {
+		if ( this.clusterer && 'clustermarker' === this.opts.cluster_lib ) {
 			if ( old_level <= this.opts.cluster_max_zoom && 
 					new_level > this.opts.cluster_max_zoom ) {
 				this.clusterer.clusteringEnabled = false;
