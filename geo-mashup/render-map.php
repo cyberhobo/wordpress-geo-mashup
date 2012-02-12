@@ -294,7 +294,13 @@ class GeoMashupRenderMap {
 					GEO_MASHUP_VERSION, 
 					true );
 					
-			$mashup_dependencies[] = 'mxn-googlev3';
+			GeoMashup::register_script( 
+					'mxn-googlev3-gm', 
+					'js/mxn/mxn.googlev3.geo-mashup.js', 
+					array( 'mxn-googlev3' ), 
+					GEO_MASHUP_VERSION, 
+					true );
+			$mashup_dependencies[] = 'mxn-googlev3-gm';
 		}
 
 		// Geo Mashup scripts

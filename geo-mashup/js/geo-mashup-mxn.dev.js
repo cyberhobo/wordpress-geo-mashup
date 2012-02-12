@@ -691,6 +691,22 @@ GeoMashup.createMap = function(container, opts) {
 	}
 	this.map.addControls( controls );
 
+	if (opts.add_map_type_control && typeof this.map.setMapTypes === 'function' ) {
+		if ( typeof opts.add_map_type_control === 'string' ) {
+			opts.add_map_type_control = opts.add_map_type_control.split(/\s*,\s*/);
+			if ( typeof map_types[opts.add_map_type_control[0]] === 'undefined' ) {
+				// Convert the old boolean value to a default array
+				opts.add_map_type_control = [ 'G_NORMAL_MAP', 'G_SATELLITE_MAP', 'G_PHYSICAL_MAP' ];
+			}
+		}
+		// Convert to mapstraction types
+		opts.mxn_map_type_control = [];
+		for ( i = 0; i < opts.add_map_type_control.length; i += 1 ) {
+			opts.mxn_map_type_control.push( map_types[ opts.add_map_type_control[i] ] );
+		}
+		this.map.setMapTypes( opts.mxn_map_type_control );
+	}
+
 	this.map.load.addHandler( function() {GeoMashup.updateVisibleList();} );
 	if (typeof customizeGeoMashupMap === 'function') {
 		customizeGeoMashupMap(this.opts, this.map);
