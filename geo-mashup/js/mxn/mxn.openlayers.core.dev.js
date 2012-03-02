@@ -11,7 +11,7 @@ mxn.register('openlayers', {
 					maxExtent: new OpenLayers.Bounds(-20037508.34,-20037508.34,20037508.34,20037508.34),
 					maxResolution: 156543,
 					numZoomLevels: 18,
-					units: 'meters',
+					units: 'm',
 					projection: 'EPSG:900913'
 				}
 			);
@@ -19,10 +19,37 @@ mxn.register('openlayers', {
 			// initialize layers map (this was previously in mxn.core.js)
 			this.layers = {};
 
-			this.layers.osmmapnik = new OpenLayers.Layer.OSM.Mapnik( 'OSM Mapnik' );
-			
-
-
+			this.layers.osm = new OpenLayers.Layer.TMS(
+				'OpenStreetMap',
+				[
+					"http://a.tile.openstreetmap.org/",
+					"http://b.tile.openstreetmap.org/",
+					"http://c.tile.openstreetmap.org/"
+				],
+				{
+					type:'png',
+					getURL: function (bounds) {
+						var res = this.map.getResolution();
+						var x = Math.round ((bounds.left - this.maxExtent.left) / (res * this.tileSize.w));
+						var y = Math.round ((this.maxExtent.top - bounds.top) / (res * this.tileSize.h));
+						var z = this.map.getZoom();
+						var limit = Math.pow(2, z);
+						if (y < 0 || y >= limit) {
+							return null;
+						} else {
+							x = ((x % limit) + limit) % limit;
+							var path = z + "/" + x + "/" + y + "." + this.type;
+							var url = this.url;
+							if (url instanceof Array) {
+								url = this.selectUrl(path, url);
+							}
+							return url + path;
+						}
+					},
+					displayOutsideMaxExtent: true
+				}
+			);
+						
 			// deal with click
 			map.events.register('click', map, function(evt){
 				var lonlat = map.getLonLatFromViewPortPx(evt.xy);
@@ -56,7 +83,8 @@ mxn.register('openlayers', {
 				}
 			}
 			
-			map.addLayer(this.layers.osmmapnik);
+			map.addLayer(this.layers.osm);
+			this.tileLayers.push(["http://a.tile.openstreetmap.org/", this.layers.osm, true]);
 			this.maps[api] = map;
 			this.loaded[api] = true;
 		},
@@ -113,6 +141,9 @@ mxn.register('openlayers', {
 			}
 			if ( args.map_type ) {
 				map.addControl(new OpenLayers.Control.LayerSwitcher());
+			}
+			if ( args.scale ) {
+				map.addControl(new OpenLayers.Control.ScaleLine());
 			}
 		},
 
@@ -223,7 +254,21 @@ mxn.register('openlayers', {
 
 		getZoomLevelForBoundingBox: function( bbox ) {
 			var map = this.maps[this.api];
-			// throw 'Not implemented';
+
+			var sw = bbox.getSouthWest();
+			var ne = bbox.getNorthEast();
+
+			if(sw.lon > ne.lon) {
+				sw.lon -= 360;
+			}
+
+			var obounds = new OpenLayers.Bounds();
+			
+			obounds.extend(new mxn.LatLonPoint(sw.lat,sw.lon).toProprietary(this.api));
+			obounds.extend(new mxn.LatLonPoint(ne.lat,ne.lon).toProprietary(this.api));
+			
+			var zoom = map.getZoomForExtent(obounds);
+			
 			return zoom;
 		},
 
@@ -336,22 +381,28 @@ mxn.register('openlayers', {
 
 		addTileLayer: function(tile_url, opacity, copyright_text, min_zoom, max_zoom, map_type) {
 			var map = this.maps[this.api];
-			tile_url = tile_url.replace(/\{Z\}/g,'${z}');
-			tile_url = tile_url.replace(/\{X\}/g,'${x}');
-			tile_url = tile_url.replace(/\{Y\}/g,'${y}');
+			var new_tile_url = tile_url.replace(/\{Z\}/g,'${z}');
+			new_tile_url = new_tile_url.replace(/\{X\}/g,'${x}');
+			new_tile_url = new_tile_url.replace(/\{Y\}/g,'${y}');
 			var overlay = new OpenLayers.Layer.XYZ(copyright_text,
-				tile_url,
+				new_tile_url,
 				{sphericalMercator: false, opacity: opacity}
 			);
 			if(!map_type) {
 				overlay.addOptions({displayInLayerSwitcher: false, isBaseLayer: false});
 			}
 			map.addLayer(overlay);
+			this.tileLayers.push( [tile_url, overlay, false] );			
 		},
 
 		toggleTileLayer: function(tile_url) {
 			var map = this.maps[this.api];
-
+			for (var f=this.tileLayers.length-1; f>=0; f--) {
+				if(this.tileLayers[f][0] == tile_url) {
+					this.tileLayers[f][2] = !this.tileLayers[f][2];
+					this.tileLayers[f][1].setVisibility(this.tileLayers[f][2]);
+				}
+			}	   
 			// TODO: Add provider code
 		},
 
@@ -363,8 +414,17 @@ mxn.register('openlayers', {
 
 		mousePosition: function(element) {
 			var map = this.maps[this.api];
-
-			// TODO: Add provider code	
+			var locDisp = document.getElementById(element);
+			if (locDisp !== null) {
+				map.events.register('mousemove', map, function (evt) {
+					var lonlat = map.getLonLatFromViewPortPx(evt.xy);
+					var point = new mxn.LatLonPoint();
+					point.fromProprietary('openlayers', lonlat);
+					var loc = point.lat.toFixed(4) + ' / ' + point.lon.toFixed(4);
+					locDisp.innerHTML = loc;
+				});
+			}
+			locDisp.innerHTML = '0.0000 / 0.0000';
 		}
 	},
 
@@ -390,7 +450,7 @@ mxn.register('openlayers', {
 	Marker: {
 
 		toProprietary: function() {
-			var size, anchor, icon;
+			var size, anchor, popup;
 			if(this.iconSize) {
 				size = new OpenLayers.Size(this.iconSize[0], this.iconSize[1]);
 			}
@@ -399,10 +459,9 @@ mxn.register('openlayers', {
 			}
 
 			if(this.iconAnchor) {
-				anchor = new OpenLayers.Pixel( -this.iconAnchor[0], -this.iconAnchor[1]);
+				anchor = new OpenLayers.Pixel(-this.iconAnchor[0], -this.iconAnchor[1]);
 			}
 			else {
-				// FIXME: hard-coding the anchor point
 				anchor = new OpenLayers.Pixel(-(size.w/2), -size.h);
 			}
 
@@ -414,12 +473,8 @@ mxn.register('openlayers', {
 			}
 			var marker = new OpenLayers.Marker(this.location.toProprietary("openlayers"), this.icon);
 
-			marker.events.register("click", marker, function(event) {
-				this.mapstraction_marker.click.fire( event );
-			});
-
 			if(this.infoBubble) {
-				var popup = new OpenLayers.Popup.FramedCloud(null,
+				popup = new OpenLayers.Popup.FramedCloud(null,
 					this.location.toProprietary("openlayers"),
 					new OpenLayers.Size(100,100),
 					this.infoBubble,
@@ -453,6 +508,11 @@ mxn.register('openlayers', {
 				}
 				this.popup = popup;
 			}
+			
+			//fire click event for marker
+			marker.events.register("click",marker,function(event) {
+				marker.mapstraction_marker.click.fire();
+			});
 
 			if(this.hoverIconUrl) {
 				icon = this.iconUrl || 'http://openlayers.org/dev/img/marker-gold.png';

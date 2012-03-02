@@ -60,7 +60,7 @@ Mapstraction: {
 			
 			google.maps.event.addListener(map, 'idle', function() {
 				var fireListCount = fireOnNextIdle.length;
-				if(fireListCount > 0) {
+				if (fireListCount > 0) {
 					var fireList = fireOnNextIdle.splice(0, fireListCount);
 					var handler;
 					while((handler = fireList.shift())){
@@ -87,7 +87,7 @@ Mapstraction: {
 			});
 
 			// deal with map movement
-			google.maps.event.addListener(map, 'center_changed', function(){
+			google.maps.event.addListener(map, 'dragend', function(){
 				me.moveendHandler(me);
 				me.endPan.fire();
 			});
@@ -235,7 +235,7 @@ Mapstraction: {
 	setCenter: function(point, options) {
 		var map = this.maps[this.api];
 		var pt = point.toProprietary(this.api);
-		if(options && options.pan) { 
+		if (options && options.pan) { 
 			map.panTo(pt);
 		}
 		else { 
@@ -361,7 +361,7 @@ Mapstraction: {
 			name: copyright_text
 		};
 		var tileLayerOverlay = new google.maps.ImageMapType(tilelayers[0]);
-		if(map_type) {
+		if (map_type) {
 			map.mapTypes.set('tile' + z_index, tileLayerOverlay);
 			var mapTypeIds = [
 				google.maps.MapTypeId.ROADMAP,
@@ -374,7 +374,8 @@ Mapstraction: {
 			}
 			var optionsUpdate = {mapTypeControlOptions: {mapTypeIds: mapTypeIds}};
 			map.setOptions(optionsUpdate);
-		} else {
+		} 
+		else {
 			map.overlayMapTypes.insertAt(z_index, tileLayerOverlay);
 		}
 		this.tileLayers.push( [tile_url, tileLayerOverlay, true, z_index] );
@@ -449,7 +450,7 @@ Marker: {
  			options.icon = new google.maps.MarkerImage(
 				this.iconUrl,
 				new google.maps.Size(this.iconSize[0], this.iconSize[1]),
-				new google.maps.Point(0,0),
+				new google.maps.Point(0, 0),
 				gAnchorPoint
 			);
 
@@ -470,13 +471,13 @@ Marker: {
 				}
 			}
 		}
-		if (this.draggable){
+		if (this.draggable) {
 			options.draggable = this.draggable;
 		}
-		if (this.labelText){
+		if (this.labelText) {
 			options.title =  this.labelText;
 		}
-		if (this.imageMap){
+		if (this.imageMap) {
 			options.shape = {
 				coord: this.imageMap,
 				type: 'poly'
@@ -488,7 +489,7 @@ Marker: {
 
 		var marker = new google.maps.Marker(options);
 
-		if (this.infoBubble){
+		if (this.infoBubble) {
 			var event_action = "click";
 			if (this.hover) {
 				event_action = "mouseover";
@@ -498,7 +499,7 @@ Marker: {
 			});
 		}
 
-		if (this.hoverIconUrl){
+		if (this.hoverIconUrl) {
 			var gSize = new google.maps.Size(this.iconSize[0], this.iconSize[1]);
 			var zerozero = new google.maps.Point(0,0);
  			var hIcon = new google.maps.MarkerImage(
@@ -535,30 +536,37 @@ Marker: {
 	},
 
 	openBubble: function() {
-		var infowindow = new google.maps.InfoWindow({
-	   		content: this.infoBubble
-		});
-		google.maps.event.addListener(infowindow, 'closeclick', function(closedWindow) {
-			// TODO: set proprietary_infowindow to null, fire closeInfoBubble
-		});
-		this.openInfoBubble.fire({'marker': this});
-		infowindow.open(this.map,this.proprietary_marker);
+		var infowindow, marker = this;
+		if (!this.hasOwnProperty('proprietary_infowindow') || this.proprietary_infowindow === null) {
+			infowindow = new google.maps.InfoWindow({
+				content: this.infoBubble
+			});
+			google.maps.event.addListener(infowindow, 'closeclick', function(closedWindow) {
+				marker.closeBubble();
+			});
+		}
+		else {
+			infowindow = this.proprietary_infowindow;
+		}
+		this.openInfoBubble.fire( { 'marker': this } );
+		infowindow.open(this.map, this.proprietary_marker);
 		this.proprietary_infowindow = infowindow; // Save so we can close it later
 	},
-	
+
 	closeBubble: function() {
-		if (this.hasOwnProperty('proprietary_infowindow')) {
+		if (this.hasOwnProperty('proprietary_infowindow') && this.proprietary_infowindow !== null) {
 			this.proprietary_infowindow.close();
-			this.closeInfoBubble.fire({'marker': this});
+			this.proprietary_infowindow = null;
+			this.closeInfoBubble.fire( { 'marker': this } );
 		}
 	},
 
 	hide: function() {
-		this.proprietary_marker.setOptions({visible:false});
+		this.proprietary_marker.setOptions( { visible: false } );
 	},
 
 	show: function() {
-		this.proprietary_marker.setOptions({visible:true});
+		this.proprietary_marker.setOptions( { visible: true } );
 	},
 
 	update: function() {
@@ -573,7 +581,7 @@ Polyline: {
 
 	toProprietary: function() {
 		var points = [];
-		for(var i =0, length = this.points.length; i < length; i++) {
+		for (var i = 0, length = this.points.length; i < length; i++) {
 			points.push(this.points[i].toProprietary('googlev3'));
 		}
 		
@@ -583,18 +591,24 @@ Polyline: {
 			strokeOpacity: this.opacity || 1.0, 
 			strokeWeight: this.width || 3
 		};
-
-		var polyline = new google.maps.Polyline(polyOptions);
-
-		return polyline;
+		
+		if (this.closed) {
+			polyOptions.fillColor = this.fillColor || '#000000';
+			polyOptions.fillOpacity = polyOptions.strokeOpacity;
+			
+			return new google.maps.Polygon(polyOptions);
+		}
+		else {
+			return new google.maps.Polyline(polyOptions);
+		}
 	},
 	
 	show: function() {
-			throw 'Not implemented';
+		throw 'Not implemented';
 	},
 
 	hide: function() {
-			throw 'Not implemented';
+		throw 'Not implemented';
 	}
 	
 }
