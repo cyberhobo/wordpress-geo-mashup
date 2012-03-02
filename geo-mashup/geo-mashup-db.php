@@ -623,6 +623,14 @@ class GeoMashupDB {
 		$location_table_name = $wpdb->prefix . 'geo_mashup_locations';
 		$relationships_table_name = $wpdb->prefix . 'geo_mashup_location_relationships';
 		$administrative_names_table_name = $wpdb->prefix . 'geo_mashup_administrative_names';
+
+		$charset_collate = '';
+
+		if ( ! empty($wpdb->charset) )
+			$charset_collate = "DEFAULT CHARACTER SET $wpdb->charset";
+		if ( ! empty($wpdb->collate) )
+			$charset_collate .= " COLLATE $wpdb->collate";
+
 		if ( self::installed_version() != GEO_MASHUP_DB_VERSION ) {
 			$sql = "
 				CREATE TABLE $location_table_name (
@@ -642,7 +650,7 @@ class GeoMashupDB {
 					UNIQUE KEY latlng ( lat, lng ),
 					KEY lat ( lat ),
 					KEY lng ( lng )
-				);
+				) $charset_collate;
 				CREATE TABLE $relationships_table_name (
 					object_name VARCHAR( 80 ) NOT NULL,
 					object_id BIGINT( 20 ) NOT NULL,
@@ -651,7 +659,7 @@ class GeoMashupDB {
 					PRIMARY KEY  ( object_name, object_id, location_id ),
 					KEY object_name ( object_name, object_id ),
 					KEY object_date_key ( object_name, geo_date )
-				);
+				) $charset_collate;
 				CREATE TABLE $administrative_names_table_name (
 					country_code VARCHAR( 2 ) NOT NULL,
 					admin_code VARCHAR( 20 ) NOT NULL,
@@ -659,7 +667,7 @@ class GeoMashupDB {
 					geoname_id MEDIUMINT( 9 ) NULL,
 					name VARCHAR( 200 ) NOT NULL,
 					PRIMARY KEY admin_id ( country_code, admin_code, isolanguage )
-				);";
+				) $charset_collate;";
 			require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
 			// Capture error messages - some are ok
 			$old_show_errors = $wpdb->show_errors( true );
