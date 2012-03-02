@@ -31,6 +31,7 @@ class GeoMashupOptions {
 			'copy_geodata' => 'false',
 			'theme_stylesheet_with_maps' => 'false',
 			'located_post_types' => array( 'post', 'page' ),
+			'include_taxonomies' => array( 'category' ),
 			'located_object_name' => array( 
 				'post' => 'deprecated',
 				'user' => 'false',
@@ -142,7 +143,7 @@ class GeoMashupOptions {
 	 * @since 1.2
 	 * @var array
 	 */
-	private $freeform_option_keys = array ( 'category_color', 'category_line_zoom', 'add_map_type_control', 'located_post_types' );
+	private $freeform_option_keys = array ( 'category_color', 'category_line_zoom', 'add_map_type_control', 'located_post_types', 'include_taxonomies' );
 
 	/**
 	 * Valid map types.
@@ -485,6 +486,7 @@ class GeoMashupOptions {
 			case 'category_color':
 			case 'category_line_zoom':
 			case 'located_post_types':
+			case 'include_taxonomies':
 			case 'located_object_name':
 				if ( !is_array ( $value ) ) {
 					array_push ( $this->validation_errors, '"'. $value . '" ' . __('is invalid for', 'GeoMashup') . ' ' . $key .

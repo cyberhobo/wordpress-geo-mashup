@@ -19,18 +19,21 @@ function geo_mashup_options_page() {
 		// Process option updates
 		check_admin_referer('geo-mashup-update-options');
 		// Missing add_map_type_control means empty array
-		if ( empty( $_POST['global_map']['add_map_type_control'] ) ) {
+		if ( empty( $_POST['global_map']['add_map_type_control'] ) ) 
 			$_POST['global_map']['add_map_type_control']  = array();
-		}
-		if ( empty( $_POST['single_map']['add_map_type_control'] ) ) {
+		
+		if ( empty( $_POST['single_map']['add_map_type_control'] ) ) 
 			$_POST['single_map']['add_map_type_control']  = array();
-		}
-		if ( empty( $_POST['context_map']['add_map_type_control'] ) ) {
+		
+		if ( empty( $_POST['context_map']['add_map_type_control'] ) ) 
 			$_POST['context_map']['add_map_type_control']  = array();
-		}
-		if ( empty( $_POST['overall']['located_post_types'] ) ) {
+		
+		if ( empty( $_POST['overall']['located_post_types'] ) ) 
 			$_POST['overall']['located_post_types']  = array();
-		}
+		
+		if ( empty( $_POST['overall']['include_taxonomies'] ) ) 
+			$_POST['overall']['include_taxonomies']  = array();
+
 		if ( 'true' != $geo_mashup_options->get( 'overall', 'copy_geodata' ) and isset( $_POST['overall']['copy_geodata'] ) )
 			$activated_copy_geodata = true;
 		$geo_mashup_options->set_valid_options ( $_POST );
@@ -254,6 +257,18 @@ function geo_mashup_options_page() {
 									echo ' checked="checked"';
 								}
 							?> /> <?php _e( 'Comments', 'GeoMashup' ); ?>
+						</td>
+					</tr>
+					<tr>
+						<th scope="row"><?php _e('Include Taxonomies', 'GeoMashup'); ?></th>
+						<td>
+							<?php foreach( get_taxonomies( array( 'show_ui' => true, ), 'objects' ) as $taxonomy ) : ?>
+							<input id="locate_posts" name="overall[include_taxonomies][]" type="checkbox" value="<?php echo $taxonomy->name; ?>"<?php
+								if ( in_array( $taxonomy->name, $geo_mashup_options->get( 'overall', 'include_taxonomies' ) ) ) {
+									echo ' checked="checked"';
+								}
+							?> /> <?php echo $taxonomy->labels->name; ?>
+							<?php endforeach; ?>
 						</td>
 					</tr>
 					<tr>
