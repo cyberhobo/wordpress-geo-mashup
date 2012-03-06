@@ -122,7 +122,11 @@ class GeoMashupRenderMap {
 		} else if ( !is_numeric( $item ) && empty ( $item ) ) {
 			$item = '""';
 		} else if ( is_array( $item ) && isset( $item[0] ) ) {
-			$item = '["' . implode( '","', $item ) . '"]';
+			// As of 1.5 need to accomodate nested array parameters like tax_query
+			if ( is_array( $item[0] ) )
+				$item = json_encode( $item );
+			else
+				$item = '["' . implode( '","', $item ) . '"]';
 		} else if ( is_string( $item ) && $item[0] != '{' && $item[0] != '[' ) {
 			$item = '"'.$item.'"';
 		}
@@ -365,6 +369,7 @@ class GeoMashupRenderMap {
 			$map_data['object_data'] = json_encode( $map_data['object_data'] );
 		array_walk( $map_data, array( 'GeoMashupRenderMap', 'add_double_quotes' ) );
 
+		// Working on include_taxonomies. Term options first, eyiyi!
 		if ( 'single' == $map_data['map_content'] ) {
 			$category_opts = '{}';
 		} else {

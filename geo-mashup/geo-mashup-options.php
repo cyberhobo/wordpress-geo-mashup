@@ -47,8 +47,7 @@ class GeoMashupOptions {
 			'map_type' => 'G_NORMAL_MAP',
 			'zoom' => 'auto',
 			'background_color' => 'c0c0c0',
-			'category_color' => array ( ),
-			'category_line_zoom' => array ( ),
+			'term_options' => array(),
 			'map_control' => 'GSmallZoomControl3D',
 			'add_map_type_control' => array(),
 			'add_overview_control' => 'false',
@@ -143,7 +142,7 @@ class GeoMashupOptions {
 	 * @since 1.2
 	 * @var array
 	 */
-	private $freeform_option_keys = array ( 'category_color', 'category_line_zoom', 'add_map_type_control', 'located_post_types', 'include_taxonomies' );
+	private $freeform_option_keys = array ( 'term_options', 'add_map_type_control', 'located_post_types', 'include_taxonomies' );
 
 	/**
 	 * Valid map types.
@@ -220,10 +219,22 @@ class GeoMashupOptions {
 				unset ( $settings[$old_key] );
 			}
 		}
+
+		// In 1.4 different post types can be located, not just posts
 		if ( isset( $settings['overall']['located_object_name']['post']) and 'true' == $settings['overall']['located_object_name']['post'] ) {
 			$settings['overall']['located_object_name']['post'] = 'deprecated';
 			if ( empty( $settings['overall']['located_post_types']['post'] ) )
 				$settings['overall']['located_post_types'] = array( 'post', 'page' );
+		}
+
+		// In 1.5 we set options for any taxonomy, not just category
+		if ( isset( $settings['global_map']['category_color'] ) ) { 
+			$settings['global_map']['term_options']['category']['color'] = $settings['global_map']['category_color']; 
+			unset( $settings['global_map']['category_color'] );
+		}
+		if ( isset( $settings['global_map']['category_line_zoom'] ) ) {
+			$settings['global_map']['term_options']['category']['line_zoom'] = $settings['global_map']['category_line_zoom']; 
+			unset( $settings['global_map']['category_line_zoom'] );
 		}
 		return $settings;
 	}
@@ -483,8 +494,7 @@ class GeoMashupOptions {
 			case 'global_map':
 			case 'single_map':
 			case 'context_map':
-			case 'category_color':
-			case 'category_line_zoom':
+			case 'term_options':
 			case 'located_post_types':
 			case 'include_taxonomies':
 			case 'located_object_name':

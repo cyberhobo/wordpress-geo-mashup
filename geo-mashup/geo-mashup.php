@@ -652,19 +652,22 @@ class GeoMashup {
 	 * @uses GeoMashupDB::get_object_locations()
 	 * @uses apply_filters() the_title Filter post titles.
 	 * @uses apply_filters() geo_mashup_locations_json_object Filter each location associative array before conversion to JSON.
+	 * @global array $geo_mashup_options
 	 *
 	 * @param string|array $query_args Query variables for GeoMashupDB::get_object_locations().
 	 * @param string $format (optional) 'JSON' (default) or ARRAY_A
 	 * @return string Queried object locations JSON ( { "object" : [...] } ).
 	 */
 	public static function get_locations_json( $query_args, $format = 'JSON' ) {
+		global $geo_mashup_options;
+
 		$default_args = array( 'object_name' => 'post' );
 		$query_args = wp_parse_args( $query_args, $default_args );
 		$json_objects = array();
 		$objects = GeoMashupDB::get_object_locations( $query_args );
 		if ( $objects ) {
 			foreach ($objects as $object) {
-				$category_ids = array();
+				$term_ids_by_taxonomy = array();
 				$author_name = '';
 				$attachments = array();
 				if ( 'post' == $query_args['object_name'] ) {
@@ -672,9 +675,17 @@ class GeoMashup {
 					// Filter the title
 					$object->label = sanitize_text_field( apply_filters( 'the_title', $object->label, $object->object_id ) );
 
-					// Only know about post categories now, but could abstract to objects
-					if ( !defined( 'GEO_MASHUP_DISABLE_CATEGORIES' ) )
-						$category_ids = wp_get_object_terms( $object->object_id, 'category', array( 'fields' => 'ids' ) );
+					// Add terms
+					if ( defined( 'GEO_MASHUP_DISABLE_CATEGORIES' ) and GEO_MASHUP_DISABLE_CATEGORIES ) 
+						$include_taxonomies = array();
+					else
+						$include_taxonomies = $geo_mashup_options->get( 'ovarall', 'include_taxonomies' );
+					
+					foreach( $include_taxonomies as $include_taxonomy ) {
+						// Not using wp_get_object_terms(), which doesn't allow for persistent caching
+						$tax_terms = get_the_terms( $object->object_id, $include_taxonomy );
+						$term_ids_by_taxonomy[$include_taxonomy] = empty( $tax_terms ) ? array() : wp_list_pluck( $tax_terms, 'term_id' );
+					}
 
 					// Include post author
 					$author = get_userdata( $object->post_author );
@@ -694,7 +705,7 @@ class GeoMashup {
 					'lat' => $object->lat,
 					'lng' => $object->lng,
 					'author_name' => $author_name,
-					'categories' => $category_ids
+					'terms' => $term_ids_by_taxonomy,
 				);
 
 				// Allow companion plugins to add data

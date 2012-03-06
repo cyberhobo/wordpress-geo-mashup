@@ -142,6 +142,7 @@ function geo_mashup_options_page() {
 	$selected_tab = ( empty( $_POST['geo_mashup_selected_tab'] ) ) ? 0 : $_POST['geo_mashup_selected_tab']; 
 	$google_key = $geo_mashup_options->get( 'overall', 'google_key' );
 	$map_api = $geo_mashup_options->get( 'overall', 'map_api' );
+	$include_taxonomies = $geo_mashup_options->get( 'overall', 'include_taxonomies' );
 	// Now for the HTML
 ?>
 	<script type="text/javascript"> 
@@ -269,6 +270,10 @@ function geo_mashup_options_page() {
 								}
 							?> /> <?php echo $taxonomy->labels->name; ?>
 							<?php endforeach; ?>
+							<br />
+							<span class="description"><?php
+								_e('Makes legends, colors, and other features available. Minimize use of these for best performance.', 'GeoMashup');
+							?></span>
 						</td>
 					</tr>
 					<tr>
@@ -764,35 +769,43 @@ function geo_mashup_options_page() {
 								value="<?php echo esc_attr( $geo_mashup_options->get ( 'global_map', 'click_to_load_text' ) ); ?>" />
 						</td>
 					</tr>
+					<?php if ( !empty( $include_taxonomies ) and !defined( 'GEO_MASHUP_DISABLE_CATEGORIES' ) ) : ?>
 					<tr><td colspan="2" align="center">
+						<?php foreach( $include_taxonomies as $include_taxonomy ) : ?>
+							<?php $taxonomy_object = get_taxonomy( $include_taxonomy ); ?>
+							<?php $taxonomy_options = $geo_mashup_options->get( 'global_map', 'term_options', $include_taxonomy ); ?>
 						<table>
-							<tr><th><?php _e('Category', 'GeoMashup'); ?></th><th><?php _e('Color'); ?></th>
+							<tr><th><?php echo $taxonomy_object->label; ?></th><th><?php _e('Color', 'GeoMashup'); ?></th>
 								<th><?php _e('Show Connecting Line Until Zoom Level (0-20 or none)','GeoMashup'); ?></th></tr>
-							<?php $categories = get_categories( array( 'hide_empty' => false ) ); ?>
-							<?php if (is_array($categories)) : ?>
-								<?php foreach($categories as $category) : ?>
-								<tr><td><?php echo esc_html( $category->name ); ?></td>
+							<?php $terms = get_terms( $include_taxonomy, array( 'hide_empty' => false ) ); ?>
+							<?php if ( is_array($terms) ) : ?>
+								<?php foreach( $terms as $term ) : ?>
+								<tr><td><?php echo esc_html( $term->name ); ?></td>
 									<td>
-										<select id="category_color_<?php echo esc_attr( $category->slug ); ?>" 
-											name="global_map[category_color][<?php echo esc_attr( $category->slug ); ?>]">
+										<select id="<?php echo $include_taxonomy; ?>_color_<?php echo esc_attr( $term->slug ); ?>" 
+											name="global_map[term_options][<?php echo $include_taxonomy; ?>][color][<?php echo esc_attr( $term->slug ); ?>]">
 										<?php foreach($colorNames as $name => $rgb) : ?>
 											<option value="<?php echo esc_attr( $name ); ?>"<?php
-												if ($name == $geo_mashup_options->get ( 'global_map', 'category_color', $category->slug ) ) {
+												if ( isset( $taxonomy_options['color'][$term->slug] ) and $taxonomy_options['color'][$term->slug] == $name ) {
 													echo ' selected="selected"';
 												}
-											?> style="background-color:<?php echo esc_attr( $rgb ); ?>'"><?php echo esc_html( $name ); ?></option>
-										<?php endforeach; ?>	
+											?> style="background-color:<?php echo esc_attr( $rgb ); ?>;"><?php echo esc_html( $name ); ?></option>
+										<?php endforeach; // color name ?>	
 										</select>
 									</td><td>
-									<input id="category_line_zoom_<?php 
-										echo esc_attr( $category->slug ); ?>" name="global_map[category_line_zoom][<?php 
-										echo esc_attr( $category->slug ); ?>]" value="<?php 
-										echo esc_attr( $geo_mashup_options->get( 'global_map', 'category_line_zoom', $category->slug ) );
+									<input id="<?php echo $include_taxonomy; ?>_line_zoom_<?php 
+										echo esc_attr( $term->slug ); ?>" name="global_map[term_options][<?php 
+										echo $include_taxonomy; ?>][line_zoom][<?php
+										echo esc_attr( $term->slug ); ?>]" value="<?php 
+										if ( isset( $taxonomy_options['line_zoom'][$term->slug] ) )
+											echo esc_attr( $taxonomy_options['line_zoom'][$term->slug] );
 									?>" type="text" size="2" maxlength="2" /></td></tr>
-								<?php endforeach; ?>	
+								<?php endforeach; // taxonomy term ?>	
 							<?php endif; ?>
 						</table>
+						<?php endforeach; // included taxonomy ?>
 					</td></tr>
+					<?php endif; ?>
 				</table>
 				<div class="submit"><input type="submit" name="submit" value="<?php _e('Update Options', 'GeoMashup'); ?>" /></div>
 			</fieldset>

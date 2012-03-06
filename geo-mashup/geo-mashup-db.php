@@ -1522,14 +1522,10 @@ class GeoMashupDB {
 		if ( is_numeric( $query_args['maxlon'] ) ) $wheres[] = "lng < {$query_args['maxlon']}";
 
 		// Handle inclusion and exclusion of terms
-		if ( ! empty( $query_args['tax_query'] ) ) {
-			if ( is_array( $query_args['tax_query'] ) )
-				$tax_query = $query_args['tax_query'];
-			else
-				$tax_query = json_decode( $query_args['tax_query'] );
-		} else {
+		if ( ! empty( $query_args['tax_query'] ) and is_array( $query_args['tax_query'] ) )
+			$tax_query = $query_args['tax_query'];
+		else
 			$tax_query = array();
-		}
 
 		if ( ! empty( $query_args['map_cat'] ) ) {
 
