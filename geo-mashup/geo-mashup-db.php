@@ -1451,6 +1451,7 @@ class GeoMashupDB {
 			'radius_km' => null,
 			'radius_mi' => null,
 			'map_cat' => null,
+			'tax_query' => null,
 			'map_post_type' => 'any',
 			'object_name' => 'post',
 			'show_future' => 'false', 
@@ -1464,6 +1465,8 @@ class GeoMashupDB {
 		if ( empty( $object_store ) ) {
 			return null;
 		}
+
+		// Giving tables an alias was a mistake, now filters depend on them
 		$field_string = "gmlr.object_id, o.{$object_store['label_column']} as label, gml.*";
 		$table_string = "{$wpdb->prefix}geo_mashup_locations gml " . 
 			"INNER JOIN {$wpdb->prefix}geo_mashup_location_relationships gmlr " .
@@ -1518,13 +1521,21 @@ class GeoMashupDB {
 		if ( is_numeric( $query_args['maxlat'] ) ) $wheres[] = "lat < {$query_args['maxlat']}";
 		if ( is_numeric( $query_args['maxlon'] ) ) $wheres[] = "lng < {$query_args['maxlon']}";
 
-		// Handle inclusion and exclusion of categories
+		// Handle inclusion and exclusion of terms
+		if ( ! empty( $query_args['tax_query'] ) ) {
+			if ( is_array( $query_args['tax_query'] ) )
+				$tax_query = $query_args['tax_query'];
+			else
+				$tax_query = json_decode( $query_args['tax_query'] );
+		} else {
+			$tax_query = array();
+		}
+
 		if ( ! empty( $query_args['map_cat'] ) ) {
 
 			$cats = preg_split( '/[,\s]+/', $query_args['map_cat'] );
 
 			$escaped_include_ids = array();
-			$escaped_include_slugs = array();
 			$escaped_exclude_ids = array();
 
 			foreach( $cats as $cat ) {
@@ -1550,32 +1561,31 @@ class GeoMashupDB {
 				}
 			} 
 
-			$table_string .= " JOIN $wpdb->term_relationships tr ON tr.object_id = gmlr.object_id ";
-
 			if ( ! empty( $escaped_include_ids ) ) {
-				$term_tax_ids = $wpdb->get_col(
-						"SELECT term_taxonomy_id FROM $wpdb->term_taxonomy " .
-						"WHERE taxonomy = 'category' AND term_id IN (" .
-						implode( ',', $escaped_include_ids ) . ')'
+				$tax_query[] = array(
+					'taxonomy' => 'category',
+					'terms' => $escaped_include_ids,
+					'field' => 'term_id',
 				);
-				$wheres[] = 'tr.term_taxonomy_id IN (' . implode( ',', $term_tax_ids ) . ')';
 			}
 
 			if ( ! empty( $escaped_exclude_ids ) ) {
-				$term_tax_ids = $wpdb->get_col(
-						"SELECT term_taxonomy_id FROM $wpdb->term_taxonomy " .
-						"WHERE taxonomy = 'category' AND term_id IN (" .
-						implode( ',', $escaped_exclude_ids ) . ')'
+				$tax_query[] = array(
+					'taxonomy' => 'category',
+					'terms' => $escaped_exclude_ids,
+					'operator' => 'NOT IN',
+					'field' => 'term_id',
 				);
-				$wheres[] = "o.ID NOT IN ( " .
-						"SELECT object_id " .
-						"FROM $wpdb->term_relationships " .
-						"WHERE term_taxonomy_id IN ( " .
-						implode( ',', $term_tax_ids ) . ') )';
 			}
 
-			$groupby = 'GROUP BY gmlr.object_id';
 		} // end if map_cat exists 
+
+		if ( !empty( $tax_query ) ) {
+			$tax_clauses = get_tax_sql( $tax_query, 'o', $object_store['id_column'] );
+			$table_string .= $tax_clauses['join'];
+			$wheres[] = preg_replace( '/^ AND/', '', $tax_clauses['where'] );
+			$groupby = 'GROUP BY gmlr.object_id';
+		}
 
 		if ( 'post' == $object_name ) {
 			// Handle inclusion and exclusion of post types
