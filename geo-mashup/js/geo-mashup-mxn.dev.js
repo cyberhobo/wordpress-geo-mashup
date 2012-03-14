@@ -74,34 +74,57 @@ GeoMashup.loadFullPost = function( point ) {
 	}
 };
 
-GeoMashup.createCategoryLine = function ( category ) {
+GeoMashup.createTermLine = function ( term_data ) {
+
 	// Polylines are close, but the openlayers implementation at least cannot hide or remove a polyline
-	var options = {color: category.color, width: 5, opacity: 0.5};
-	category.line = new mxn.Polyline(category.points);
+	var options = {color: term_data.color, width: 5, opacity: 0.5};
+
+	term_data.line = new mxn.Polyline(term_data.points);
+	/**
+	 * A term line was created.
+	 * @name GeoMashup#termLine
+	 * @event
+	 * @param {Polyline} line
+	 */
+	this.doAction( 'termLine', term_data.line );
 	/**
 	 * A category line was created.
 	 * @name GeoMashup#categoryLine
 	 * @event
+	 * @deprecated Use GeoMashup#termLine
 	 * @param {GeoMashupOptions} properties Geo Mashup configuration data
 	 * @param {Polyline} line
 	 */
-	this.doAction( 'categoryLine', this.opts, category.line );
+	this.doAction( 'categoryLine', this.opts, term_data.line );
+
+
 	/**
-	 * A category will be added with the given options.
-	 * @name GeoMashup#categoryLineOptions
+	 * A term line will be added with the given options.
+	 * @name GeoMashup#termLineOptions
 	 * @event
+	 * @param {Object} options Modifiable <a href="http://mapstraction.github.com/mxn/build/latest/docs/symbols/mxn.Polyline.html#addData">Mapstraction</a>
+	 *   or <a href="http://code.google.com/apis/maps/documentation/javascript/v2/reference.html#GPolylineOptions">Google</a> Polyline options
+	 */
+	this.doAction( 'termLineOptions', options );
+	/**
+	 * A term line will be added with the given options.
+	 * @name GeoMashup#termLineOptions
+	 * @event
+	 * @deprecated Use GeoMashup#termLineOptions
 	 * @param {GeoMashupOptions} properties Geo Mashup configuration data
 	 * @param {Object} options Modifiable <a href="http://mapstraction.github.com/mxn/build/latest/docs/symbols/mxn.Polyline.html#addData">Mapstraction</a>
 	 *   or <a href="http://code.google.com/apis/maps/documentation/javascript/v2/reference.html#GPolylineOptions">Google</a> Polyline options
 	 */
-	this.doAction( 'categoryLineOptions', this.opts, options );
-	this.map.addPolylineWithData( category.line, options );
-	if (this.map.getZoom() > category.max_line_zoom) {
+	this.doAction( 'termLineOptions', this.opts, options );
+
+	this.map.addPolylineWithData( term_data.line, options );
+
+	if (this.map.getZoom() > term_data.max_line_zoom) {
 		try {
-			category.line.hide();
+			term_data.line.hide();
 		} catch( e ) {
 			// Not implemented?
-			this.map.removePolyline( category.line );
+			this.map.removePolyline( term_data.line );
 		}
 	}
 };
@@ -244,17 +267,46 @@ GeoMashup.showMarkerAttachments = function( marker ) {
 };
 
 GeoMashup.addObjectIcon = function( obj ) {
-	if (typeof customGeoMashupCategoryIcon === 'function') {
-		obj.icon = customGeoMashupCategoryIcon(this.opts, obj.categories);
+
+	// Back compat
+	if ( typeof customGeoMashupCategoryIcon === 'function' && obj.terms && obj.terms.hasOwnProperty( 'category' ) ) {
+		obj.icon = customGeoMashupCategoryIcon( GeoMashup.opts, obj.terms['category'] );
 	} 
-	if (!obj.icon) {
-		if (obj.categories.length > 1) {
-			obj.icon = this.clone(this.multiple_category_icon);
-		} else if (obj.categories.length === 1) {
-			obj.icon = this.clone(this.categories[obj.categories[0]].icon);
-		}else {
-			obj.icon = this.colorIcon( 'red' );
-		} 
+
+	if ( !obj.icon ) {
+
+		jQuery.each( obj.terms, function( taxonomy, terms ) {
+			var single_icon;
+
+			if ( terms.length > 1) {
+
+				obj.icon = GeoMashup.clone( GeoMashup.multiple_term_icon );
+				return false;
+
+			} else if ( terms.length === 1 ) {
+
+				single_icon = GeoMashup.termManager.getTermData( taxonomy, terms[0], 'icon' );
+
+				if ( obj.icon && obj.icon.image != single_icon.image ) {
+
+					// We have two different icons in different taxonomies
+					obj.icon = GeoMashup.clone( GeoMashup.multiple_term_icon );
+					return false;
+
+				} else {
+
+					obj.icon = GeoMashup.clone( single_icon );
+
+				}
+
+			} 
+			
+		} );
+
+		if ( !obj.icon ) {
+			obj.icon = GeoMashup.colorIcon( 'red' );
+		}
+
 		/**
 		 * An icon is being assigned to an object.
 		 * @name GeoMashup#objectIcon
@@ -262,7 +314,7 @@ GeoMashup.addObjectIcon = function( obj ) {
 		 * @param {GeoMashupOptions} properties Geo Mashup configuration data
 		 * @param {GeoMashupObject} object Object whose icon property was set.
 		 */
-		this.doAction( 'objectIcon', this.opts, obj );
+		this.doAction( 'objectIcon', GeoMashup.opts, obj );
 	}
 };
 
@@ -471,8 +523,8 @@ GeoMashup.createMap = function(container, opts) {
 	this.base_color_icon.shadowSize =  [22, 20];
 	this.base_color_icon.iconAnchor = [6, 20];
 	this.base_color_icon.infoWindowAnchor = [5, 1];
-	this.multiple_category_icon = this.clone( this.base_color_icon );
-	this.multiple_category_icon.image = opts.url_path + '/images/mm_20_mixed.png';
+	this.multiple_term_icon = this.clone( this.base_color_icon );
+	this.multiple_term_icon.image = opts.url_path + '/images/mm_20_mixed.png';
 
 	// Falsify options to make tests simpler
 	this.forEach( opts, function( key, value ) {
@@ -598,7 +650,7 @@ GeoMashup.createMap = function(container, opts) {
 		}
 	}
 
-	this.buildCategoryHierarchy();
+	this.termManager.load();
 
 	try {
 		this.map.setMapType( opts.map_type );

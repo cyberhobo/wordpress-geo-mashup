@@ -679,7 +679,7 @@ class GeoMashup {
 					if ( defined( 'GEO_MASHUP_DISABLE_CATEGORIES' ) and GEO_MASHUP_DISABLE_CATEGORIES ) 
 						$include_taxonomies = array();
 					else
-						$include_taxonomies = $geo_mashup_options->get( 'ovarall', 'include_taxonomies' );
+						$include_taxonomies = $geo_mashup_options->get( 'overall', 'include_taxonomies' );
 					
 					foreach( $include_taxonomies as $include_taxonomy ) {
 						// Not using wp_get_object_terms(), which doesn't allow for persistent caching
@@ -778,6 +778,7 @@ class GeoMashup {
 		$object_name = ( isset( $query['object_name'] ) ) ? $query['object_name'] : 'post';
 
 		if ( $map_content == 'single') {
+
 			$location = GeoMashupDB::get_object_location( $object_name, $object_id, ARRAY_A );
 			$options = $geo_mashup_options->get( 'single_map' );
 			if ( !empty( $location ) ) 
@@ -789,23 +790,36 @@ class GeoMashup {
 					$map_data['load_kml'] = array_pop( $kml_urls );
 				}
 			}
-		} else {
-			// Map content is not single
+
+		} else { // $map_content != 'single'
+
 			$map_data['context_object_id'] = $object_id;
 
 			if ( $map_content == 'contextual' ) {
+
 				$options = $geo_mashup_options->get( 'context_map' );
 				// If desired we could make these real options
 				$options['auto_info_open'] = 'false';
-			} else {
+
+			} else { // $map_content == 'global'
+
 				$options = $geo_mashup_options->get( 'global_map' );
-				// Category options done during render
-				unset( $options['category_color'] );
-				unset( $options['category_line_zoom'] );
+
+				// Term options handled during render
+				unset( $options['term_options'] );
+
+				// Determine which taxonomies to include, if any
+				if ( ( defined( 'GEO_MASHUP_DISABLE_CATEGORIES' ) and GEO_MASHUP_DISABLE_CATEGORIES ) )
+					$options['include_taxonomies'] = array();
+				else 
+					$options['include_taxonomies'] = $geo_mashup_options->get( 'overall', 'include_taxonomies' );
+
 				if ( empty( $query['show_future'] ) )
 					$query['show_future'] = $options['show_future'];
+
 				if ( is_null( $map_content ) ) 
 					$options['map_content'] = 'global';
+
 			}
 
 			if ( isset( $options['add_google_bar'] ) and 'true' == $options['add_google_bar'] ) {
@@ -819,7 +833,9 @@ class GeoMashup {
 			// Incorporate parameters from the query and options
 			$map_data = array_merge( $query, $map_data );
 			$map_data = array_merge( $options, $map_data );
-		}
+
+		} // $map_content != 'single'
+
 		return $map_data;
 	}
 
