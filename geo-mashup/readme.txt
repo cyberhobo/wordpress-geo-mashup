@@ -62,6 +62,7 @@ and there is a public [Google Group](http://groups.google.com/group/wordpress-ge
 
 = Translations =
 
+* Romanian by [Web Geek Sciense](http://webhostinggeeks.com) added in version 1.4.8
 * Polish by [Kamil](http://wbartoszycach.pl) added in version 1.4.7
 * Portugese by [Antonio Xeira](http://flyingsouth.thehappytoadfish.com/) added in version 1.4.2
 * Italian by [Federico](http://thrifytuscany.com/) added in version 1.3.10
