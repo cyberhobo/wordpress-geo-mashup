@@ -41,7 +41,8 @@ customGeoMashupSinglePostIcon, customGeoMashupMultiplePostImage;
  * @property {Number} lat Latitude
  * @property {Number} lng Longitude
  * @property {String} author_name The name of the object author
- * @property {Array} categories The IDs of the categories this object belongs to
+ * @property {Array} categories Deprecated, use terms. The object's category IDs if any.
+ * @property {Object} terms The object's terms by taxonomy, e.g. { "tax1": [ "2", "5" ], "tax2": [ "1" ] }
  * @property {GeoMashupIcon} icon The default icon to use for the object
  */
  
@@ -569,7 +570,7 @@ GeoMashup = {
 					jQuery.each( objects[0].visible_terms, function( taxonomy, term_ids ) {
 
 						if ( term_ids.length === 1 ) {
-							GeoMashup.setMarkerImage( marker, GeoMashup.termManager.getTermData( taxonomy, term_ids[0], 'icon' ).image );
+							GeoMashup.setMarkerImage( marker, GeoMashup.term_manager.getTermData( taxonomy, term_ids[0], 'icon' ).image );
 						}
 
 					} );
@@ -601,7 +602,7 @@ GeoMashup = {
 		obj.visible_terms = {};
 		obj.visible_term_count = 0;
 
-		if ( !GeoMashup.termManager || 0 === obj.combined_term_count ) {
+		if ( !GeoMashup.term_manager || 0 === obj.combined_term_count ) {
 
 			// Objects without terms are visible by default
 			filter.visible = true;
@@ -615,7 +616,7 @@ GeoMashup = {
 
 				jQuery.each( term_ids, function( i, term_id ) {
 					
-					if ( GeoMashup.termManager.getTermData( taxonomy, term_id, 'visible' ) ) {
+					if ( GeoMashup.term_manager.getTermData( taxonomy, term_id, 'visible' ) ) {
 						obj.visible_terms[taxonomy].push( term_id );
 						obj.visible_term_count += 1;
 						filter.visible = true;
@@ -667,8 +668,8 @@ GeoMashup = {
 		var i, j, object_id, point, taxonomy, term_id, marker, plus_image,
 			added_markers = [];
 
-		if ( add_term_info && this.termManager ) {
-			this.termManager.reset();
+		if ( add_term_info && this.term_manager ) {
+			this.term_manager.reset();
 		}
 
 		for (i = 0; i < response_data.length; i+=1) {
@@ -683,12 +684,12 @@ GeoMashup = {
 			response_data[i].categories = [];
 
 			response_data[i].combined_term_count = 0;
-			if ( this.termManager ) {
+			if ( this.term_manager ) {
 				// Add terms
 				this.forEach( response_data[i].terms, function( taxonomy, term_ids ) {
 					var k;
 					for (k = 0; k < term_ids.length; k+=1) {
-						GeoMashup.termManager.extendTerm( point, taxonomy, term_ids[k], object_id );
+						GeoMashup.term_manager.extendTerm( point, taxonomy, term_ids[k], object_id );
 					}
 
 					response_data[i].combined_term_count += term_ids.length;
@@ -732,11 +733,11 @@ GeoMashup = {
 		// Openlayers at least only gets clicks on the top layer, so add markers last
 		this.addMarkers( added_markers );
 
-		if ( this.termManager ) {
+		if ( this.term_manager ) {
 
 			// Add term lines
 			if (add_term_info) {
-				this.termManager.createTermWidgets();
+				this.term_manager.createTermWidgets();
 			}
 
 			// Tabbed index may hide markers
@@ -790,28 +791,27 @@ GeoMashup = {
 	 * Show all unfiltered markers.
 	 */
 	showMarkers : function() {
-		var i, category_id, point;
 
-		for (category_id in this.categories) {
-			if ( this.categories.hasOwnProperty( category_id ) && this.categories[category_id].visible ) {
-				for ( i = 0; i < this.categories[category_id].points.length; i += 1 ) {
-					point = this.categories[category_id].points[i];
-					this.showMarker( this.locations[point].marker );
-				}
+		jQuery.each( this.locations, function( point, location ) {
+			if ( GeoMashup.isMarkerOn( location.marker ) ) {
+				GeoMashup.showMarker( location.marker );
 			}
-		}
+		});
+		this.recluster();
+		this.updateVisibleList();
+
 	},
 
 	adjustZoom : function() {
-		var category_id, old_level, new_level;
+		var old_level, new_level;
 		new_level = this.map.getZoom();
 		if ( typeof this.last_zoom_level === 'undefined' ) {
 			this.last_zoom_level = new_level;
 		}
 		old_level = this.last_zoom_level;
 
-		if ( this.termManager ) {
-			this.termManager.updateLineZoom( old_level, new_level );
+		if ( this.term_manager ) {
+			this.term_manager.updateLineZoom( old_level, new_level );
 		}
 
 		if ( this.clusterer && 'clustermarker' === this.opts.cluster_lib ) {

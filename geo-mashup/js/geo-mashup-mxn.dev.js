@@ -285,7 +285,7 @@ GeoMashup.addObjectIcon = function( obj ) {
 
 			} else if ( terms.length === 1 ) {
 
-				single_icon = GeoMashup.termManager.getTermData( taxonomy, terms[0], 'icon' );
+				single_icon = GeoMashup.term_manager.getTermData( taxonomy, terms[0], 'icon' );
 
 				if ( obj.icon && obj.icon.image != single_icon.image ) {
 
@@ -650,7 +650,7 @@ GeoMashup.createMap = function(container, opts) {
 		}
 	}
 
-	this.termManager.load();
+	this.term_manager.load();
 
 	try {
 		this.map.setMapType( opts.map_type );

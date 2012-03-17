@@ -9,11 +9,11 @@
 
 jQuery.extend( GeoMashup, {
 	
-	termManager : (function() {
+	term_manager : (function() {
 		var $ = jQuery, 
 
 			// Public interface
-			termManager = {},
+			term_manager = {},
 
 			// Loaded taxonomies as { "taxonomy1": { term_count: 0, terms: { 
 			// "3" : {
@@ -115,7 +115,7 @@ jQuery.extend( GeoMashup, {
 			}
 		}
 
-		termManager.load = function() {
+		term_manager.load = function() {
 
 			term_properties = GeoMashup.opts.term_properties;
 
@@ -129,7 +129,7 @@ jQuery.extend( GeoMashup, {
 
 		};
 
-		termManager.extendTerm = function(point, taxonomy, term_id, object_id) {
+		term_manager.extendTerm = function(point, taxonomy, term_id, object_id) {
 			var 
 				loaded_taxonomy,
 				icon, 
@@ -212,7 +212,7 @@ jQuery.extend( GeoMashup, {
 		/**
 		 * Enable more objects to be loaded - probably needs work.
 		 */
-		termManager.reset = function() {
+		term_manager.reset = function() {
 
 			$.each( taxonomies, function( taxonomy, tax_data ) {
 				$.each( tax_data.terms, function( term_id, term_data ) {
@@ -225,11 +225,11 @@ jQuery.extend( GeoMashup, {
 
 		};
 
-		termManager.getTermData = function( taxonomy, term_id, property ) {
+		term_manager.getTermData = function( taxonomy, term_id, property ) {
 			return taxonomies[taxonomy].terms[term_id][property];
 		};
 
-		termManager.createTermWidgets = function() {
+		term_manager.createTermWidgets = function() {
 			var $legend, category_id, list_tag, row_tag, term_tag, definition_tag; 
 			
 			if ( GeoMashup.opts.legend_format && 'dl' === GeoMashup.opts.legend_format) { 
@@ -285,7 +285,7 @@ jQuery.extend( GeoMashup, {
 							.attr( 'id', id )
 							.attr( 'checked', 'checked' )
 							.change( function() {
-								GeoMashup.termManager.setTermVisibility( taxonomy, term_id, $( this ).is( ':checked' ) ); 
+								GeoMashup.term_manager.setTermVisibility( taxonomy, term_id, $( this ).is( ':checked' ) ); 
 							});
 
 						$label = $( '<label/>' )
@@ -349,7 +349,7 @@ jQuery.extend( GeoMashup, {
 			} );
 		};
 
-		termManager.setTermVisibility = function( taxonomy, term_id, visible ) {
+		term_manager.setTermVisibility = function( taxonomy, term_id, visible ) {
 			var term_data;
 
 			if ( !taxonomies[taxonomy] || !taxonomies[taxonomy].terms[term_id] ) {
@@ -383,7 +383,7 @@ jQuery.extend( GeoMashup, {
 			return true;
 		};
 
-		termManager.getTermName = function( taxonomy, term_id ) {
+		term_manager.getTermName = function( taxonomy, term_id ) {
 			return term_properties[taxonomy][term_id].name;
 		};
 
@@ -396,7 +396,7 @@ jQuery.extend( GeoMashup, {
 		 * @param {String} ancestor_id The term ID of the potential ancestor
 		 * @param {String} child_id The term ID of the potential child
 		 */
-		termManager.isTermAncestor = function(taxonomy, ancestor_id, child_id) {
+		term_manager.isTermAncestor = function(taxonomy, ancestor_id, child_id) {
 
 			if ( !term_properties[taxonomy] ) {
 				return false;
@@ -409,7 +409,7 @@ jQuery.extend( GeoMashup, {
 				if ( term_properties[taxonomy][child_id].parent_id === ancestor_id ) {
 					return true;
 				} else {
-					return termManager.isTermAncestor( taxonomy, ancestor_id, term_properties[taxonomy][child_id].parent_id );
+					return term_manager.isTermAncestor( taxonomy, ancestor_id, term_properties[taxonomy][child_id].parent_id );
 				}
 			} else {
 				return false;
@@ -421,7 +421,8 @@ jQuery.extend( GeoMashup, {
 		 * 
 		 * @since 1.5
 		 */
-		termManager.updateLineZoom = function( old_zoom, new_zoom ) {
+		term_manager.updateLineZoom = function( old_zoom, new_zoom ) {
+			
 
 			$.each( taxonomies, function( taxonomy, tax_data ) {
 
@@ -443,7 +444,7 @@ jQuery.extend( GeoMashup, {
 
 		};
 
-		return termManager;
+		return term_manager;
 	}()),
 
 	/**
@@ -452,14 +453,14 @@ jQuery.extend( GeoMashup, {
 	 * Works on the loadedMap action and after, when the category hierarchy has been
 	 * determined.
 	 * 
-	 * @deprecated use GeoMashup.termManager.isTermAncestor()
+	 * @deprecated use GeoMashup.term_manager.isTermAncestor()
 	 * 
 	 * @param {String} ancestor_id The category ID of the potential ancestor
 	 * @param {String} child_id The category ID of the potential child
 	 */
 	isCategoryAncestor : function(ancestor_id, child_id) {
 
-		return this.termManager.isTermAncestor('category', ancestor_id, child_id);
+		return this.term_manager.isTermAncestor('category', ancestor_id, child_id);
 
 	},
 
@@ -487,7 +488,7 @@ jQuery.extend( GeoMashup, {
 	 */
 	hideCategory : function(category_id) {
 		
-		GeoMashup.termManager.setTermVisibility( 'category', category_id, false );
+		GeoMashup.term_manager.setTermVisibility( 'category', category_id, false );
 
 	},
 
@@ -497,7 +498,7 @@ jQuery.extend( GeoMashup, {
 	 */
 	showCategory : function(category_id) {
 		
-		GeoMashup.termManager.setTermVisibility( 'category', category_id, true );
+		GeoMashup.term_manager.setTermVisibility( 'category', category_id, true );
 
 	},
 
