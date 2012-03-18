@@ -439,8 +439,12 @@ class GeoMashupRenderMap {
 
 			foreach( $map_data['include_taxonomies'] as $include_taxonomy ) {
 
+				$taxonomy_object = get_taxonomy( $include_taxonomy );
 				$terms = get_terms( $include_taxonomy, array( 'hide_empty' => false ) );
-				$term_properties[$include_taxonomy] = array();
+				$term_properties[$include_taxonomy] = array(
+					'label' => $taxonomy_object->label,
+					'terms' => array()
+				);
 
 				if (is_array($terms)) {
 					foreach($terms as $term) {
@@ -450,16 +454,16 @@ class GeoMashupRenderMap {
 							$parent_id = $term->parent;
 						
 						$term_id = $term->term_id;
-						$term_properties[$include_taxonomy][$term_id] = array(
+						$term_properties[$include_taxonomy]['terms'][$term_id] = array(
 							'name' => esc_js( $term->name ),
 							'parent_id' => $parent_id,
 						);
 
 						if ( !empty( $term_options[$include_taxonomy]['color'][$term->slug] ) )
-							$term_properties[$include_taxonomy][$term_id]['color'] = $term_options[$include_taxonomy]['color'][$term->slug]; 
+							$term_properties[$include_taxonomy]['terms'][$term_id]['color'] = $term_options[$include_taxonomy]['color'][$term->slug]; 
 
 						if ( !empty( $term_options[$include_taxonomy]['line_zoom'][$term->slug] ) )
-							$term_properties[$include_taxonomy][$term_id]['line_zoom'] = $term_options[$include_taxonomy]['line_zoom'][$term->slug]; 
+							$term_properties[$include_taxonomy]['terms'][$term_id]['line_zoom'] = $term_options[$include_taxonomy]['line_zoom'][$term->slug]; 
 
 					} // end foreach taxonomy term
 

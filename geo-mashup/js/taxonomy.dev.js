@@ -15,7 +15,7 @@ jQuery.extend( GeoMashup, {
 			// Public interface
 			term_manager = {},
 
-			// Loaded taxonomies as { "taxonomy1": { term_count: 0, terms: { 
+			// Loaded terms as { "taxonomy1": { term_count: 0, terms: { 
 			// "3" : {
 			// 	icon : icon,
 			// 	points : [point],
@@ -24,9 +24,11 @@ jQuery.extend( GeoMashup, {
 			// 	visible : true,
 			// 	max_line_zoom : max_line_zoom
 			// } } }
-			taxonomies = {},
+			loaded_terms = {},
 		
-			// e.g. { "taxonomy1": { "3": { name: "Term 3 Name", parent_id: "1", color: "red", line_zoom: "7" } } }
+			// e.g. { "taxonomy1": { "label": "Taxonomy One", "terms": { 
+			//   "3": { name: "Term 3 Name", parent_id: "1", color: "red", line_zoom: "7" } 
+			// } } }
 			term_properties,
 			
 			// Each taxonomy gets a tree of term ids with null leaves
@@ -140,15 +142,15 @@ jQuery.extend( GeoMashup, {
 			term_id = String( term_id );
 			object_id = String( object_id );
 
-			if ( !taxonomies.hasOwnProperty( taxonomy ) )
-				taxonomies[taxonomy] = {terms: {}, term_count: 0};
+			if ( !loaded_terms.hasOwnProperty( taxonomy ) )
+				loaded_terms[taxonomy] = {terms: {}, term_count: 0};
 
-			loaded_taxonomy = taxonomies[taxonomy];
+			loaded_taxonomy = loaded_terms[taxonomy];
 
 			if ( !loaded_taxonomy.terms.hasOwnProperty( term_id ) ) {
 
-				if ( term_properties[taxonomy][term_id].color ) {
-					color_name = term_properties[taxonomy][term_id].color;
+				if ( term_properties[taxonomy].terms[term_id].color ) {
+					color_name = term_properties[taxonomy].terms[term_id].color;
 				} else {
 					color_name = GeoMashup.color_names[ loaded_taxonomy.term_count % GeoMashup.color_names.length ];
 				}
@@ -165,15 +167,28 @@ jQuery.extend( GeoMashup, {
 					icon = GeoMashup.colorIcon( color_name );
 				}
 
+				if ( 'category' === taxonomy ) {
+					/**
+					 * A category icon is being assigned.
+					 * @name GeoMashup#categoryIcon
+					 * @deprecated Use GeoMashup#termIcon
+					 * @event
+					 * @param {GeoMashupOptions} properties Geo Mashup configuration data
+					 * @param {GeoMashupIcon} icon
+					 * @param {String} term_id
+					 */
+					GeoMashup.doAction( 'categoryIcon', GeoMashup.opts, icon, term_id );
+				}
+
 				/**
-				 * A category icon is being assigned.
-				 * @name GeoMashup#categoryIcon
+				 * A term icon is being assigned.
+				 * @name GeoMashup#termIcon
 				 * @event
-				 * @param {GeoMashupOptions} properties Geo Mashup configuration data
 				 * @param {GeoMashupIcon} icon
+				 * @param {String} taxonomy
 				 * @param {String} term_id
 				 */
-				GeoMashup.doAction( 'categoryIcon', GeoMashup.opts, icon, term_id );
+				GeoMashup.doAction( 'categoryIcon', icon, taxonomy, term_id );
 
 				/**
 				 * A category icon is being assigned by color.
@@ -186,8 +201,8 @@ jQuery.extend( GeoMashup, {
 				GeoMashup.doAction( 'colorIcon', GeoMashup.opts, icon, color_name );
 
 				max_line_zoom = -1;
-				if ( term_properties[taxonomy][term_id].line_zoom ) {
-					max_line_zoom = term_properties[taxonomy][term_id].line_zoom;
+				if ( term_properties[taxonomy].terms[term_id].line_zoom ) {
+					max_line_zoom = term_properties[taxonomy].terms[term_id].line_zoom;
 				}
 
 				loaded_taxonomy.terms[term_id] = {
@@ -214,7 +229,7 @@ jQuery.extend( GeoMashup, {
 		 */
 		term_manager.reset = function() {
 
-			$.each( taxonomies, function( taxonomy, tax_data ) {
+			$.each( loaded_terms, function( taxonomy, tax_data ) {
 				$.each( tax_data.terms, function( term_id, term_data ) {
 					term_data.points.length = 0;
 					if ( term_data.line ) {
@@ -226,7 +241,7 @@ jQuery.extend( GeoMashup, {
 		};
 
 		term_manager.getTermData = function( taxonomy, term_id, property ) {
-			return taxonomies[taxonomy].terms[term_id][property];
+			return loaded_terms[taxonomy].terms[term_id][property];
 		};
 
 		term_manager.createTermWidgets = function() {
@@ -245,24 +260,40 @@ jQuery.extend( GeoMashup, {
 			} 
 			
 			$.each( GeoMashup.opts.include_taxonomies, function( i, taxonomy ) {
-				var element = getLegendElement( taxonomy );
+				var element = getLegendElement( taxonomy ), $element, $title;
 
 				if ( !element ) {
 					return;
 				}
+				$element = $( element );
+
+				$title = $( '<h2></h2>' )
+					.addClass( 'gm-legend-title' )
+					.addClass( taxonomy + '-legend-title' )
+					.text( term_properties[taxonomy].label );
+				/**
+				 * A taxonomy legend title is being created
+				 * @name GeoMashup#taxonomyLegendTitle
+				 * @event
+				 * @param {jQuery} $title Empty legend element with classes
+				 * @param {String} taxonomy 
+				 */
+				GeoMashup.doAction( 'taxonomyLegend', $title, taxonomy );
+
+				$element.append( $title );
 
 				$legend = $( '<' + list_tag + ' class="gm-legend ' + taxonomy + '" />' );
 
 				/**
 				 * A taxonomy legend is being created
-				 * @name GeoMashup#termLegendElement
+				 * @name GeoMashup#taxonomyLegend
 				 * @event
 				 * @param {jQuery} $legend Empty legend element with classes
 				 * @param {String} taxonomy 
 				 */
-				GeoMashup.doAction( 'taxonomyLegendElement', $legend, taxonomy );
+				GeoMashup.doAction( 'taxonomyLegend', $legend, taxonomy );
 
-				$.each( taxonomies[taxonomy].terms, function ( term_id, term_data ) {
+				$.each( loaded_terms[taxonomy].terms, function ( term_id, term_data ) {
 					var id, name, $entry, $key, $def, $label, $checkbox;
 
 					GeoMashup.createTermLine( term_data );
@@ -279,7 +310,7 @@ jQuery.extend( GeoMashup, {
 					if ( GeoMashup.opts.name && GeoMashup.opts.interactive_legend ) {
 
 						id = 'gm-' + taxonomy + '-checkbox-' + term_id;
-						name = term_properties[taxonomy][term_id].name;
+						name = term_properties[taxonomy].terms[term_id].name;
 
 						$checkbox = $( '<input type="checkbox" name="term_checkbox" />' )
 							.attr( 'id', id )
@@ -352,11 +383,11 @@ jQuery.extend( GeoMashup, {
 		term_manager.setTermVisibility = function( taxonomy, term_id, visible ) {
 			var term_data;
 
-			if ( !taxonomies[taxonomy] || !taxonomies[taxonomy].terms[term_id] ) {
+			if ( !loaded_terms[taxonomy] || !loaded_terms[taxonomy].terms[term_id] ) {
 				return false;
 			}
 
-			term_data = taxonomies[taxonomy].terms[term_id];
+			term_data = loaded_terms[taxonomy].terms[term_id];
 
 			if ( GeoMashup.map.closeInfoWindow ) {
 				GeoMashup.map.closeInfoWindow();
@@ -371,9 +402,9 @@ jQuery.extend( GeoMashup, {
 			}
 
 			// Check for other visible terms at this location
-			taxonomies[taxonomy].terms[term_id].visible = visible;
+			loaded_terms[taxonomy].terms[term_id].visible = visible;
 
-			$.each( taxonomies[taxonomy].terms[term_id].points, function( i, point ) {
+			$.each( loaded_terms[taxonomy].terms[term_id].points, function( i, point ) {
 				GeoMashup.updateMarkerVisibility( GeoMashup.locations[point].marker );
 			});
 			
@@ -384,7 +415,7 @@ jQuery.extend( GeoMashup, {
 		};
 
 		term_manager.getTermName = function( taxonomy, term_id ) {
-			return term_properties[taxonomy][term_id].name;
+			return term_properties[taxonomy].terms[term_id].name;
 		};
 
 		/**
@@ -405,11 +436,11 @@ jQuery.extend( GeoMashup, {
 			ancestor_id = ancestor_id.toString();
 			child_id = child_id.toString();
 
-			if ( term_properties[taxonomy][child_id].parent_id ) {
-				if ( term_properties[taxonomy][child_id].parent_id === ancestor_id ) {
+			if ( term_properties[taxonomy].terms[child_id].parent_id ) {
+				if ( term_properties[taxonomy].terms[child_id].parent_id === ancestor_id ) {
 					return true;
 				} else {
-					return term_manager.isTermAncestor( taxonomy, ancestor_id, term_properties[taxonomy][child_id].parent_id );
+					return term_manager.isTermAncestor( taxonomy, ancestor_id, term_properties[taxonomy].terms[child_id].parent_id );
 				}
 			} else {
 				return false;
@@ -424,7 +455,7 @@ jQuery.extend( GeoMashup, {
 		term_manager.updateLineZoom = function( old_zoom, new_zoom ) {
 			
 
-			$.each( taxonomies, function( taxonomy, tax_data ) {
+			$.each( loaded_terms, function( taxonomy, tax_data ) {
 
 				$.each( tax_data.terms, function( term_id, term_data ) {
 
