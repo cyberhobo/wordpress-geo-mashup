@@ -1099,24 +1099,42 @@ class GeoMashup {
 	}
 
 	/**
-	 * Category legend template tag.
-	 *
+	 * Term legend template tag.
+	 * 
 	 * Returns a placeholder where a related map should display a legend for the 
-	 * categories of the displayed content.
-	 *
-	 * @since 1.1
-	 * @link http://code.google.com/p/wordpress-geo-mashup/wiki/TagReference#Category_Legend
+	 * terms of the displayed content.
+	 * 
+	 * @since 1.5
+	 * @link http://code.google.com/p/wordpress-geo-mashup/wiki/TagReference#Term_Legend
 	 * 
 	 * @param string|array $args Template tag arguments.
 	 * @return string Placeholder HTML.
 	 */
-	public static function category_legend($args = null) {
+	public static function term_legend($args = null) {
 		$args = wp_parse_args($args);
 		$for_map = 'gm-map-1';
 		if ( !empty( $args['for_map'] ) ) {
 			$for_map = $args['for_map'];
 		}	
 		return '<div id="' . $for_map . '-legend"></div>';
+	}
+
+	/**
+	 * Category (term) legend template tag.
+	 *
+	 * Returns a placeholder where a related map should display a legend for the 
+	 * terms of the displayed content. Used to display only categories, now displays
+	 * all included terms.
+	 *
+	 * @since 1.1
+	 * @deprecated 
+	 * @link http://code.google.com/p/wordpress-geo-mashup/wiki/TagReference#Category_Legend
+	 * 
+	 * @param string|array $args Template tag arguments.
+	 * @return string Placeholder HTML.
+	 */
+	public static function category_legend($args = null) {
+		return self::term_legend( $args );
 	}
 
 	/**
