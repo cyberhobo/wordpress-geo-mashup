@@ -188,7 +188,7 @@ jQuery.extend( GeoMashup, {
 				 * @param {String} taxonomy
 				 * @param {String} term_id
 				 */
-				GeoMashup.doAction( 'categoryIcon', icon, taxonomy, term_id );
+				GeoMashup.doAction( 'termIcon', icon, taxonomy, term_id );
 
 				/**
 				 * A category icon is being assigned by color.
@@ -267,21 +267,24 @@ jQuery.extend( GeoMashup, {
 				}
 				$element = $( element );
 
-				$title = $( '<h2></h2>' )
-					.addClass( 'gm-legend-title' )
-					.addClass( taxonomy + '-legend-title' )
-					.text( term_properties[taxonomy].label );
-				/**
-				 * A taxonomy legend title is being created
-				 * @name GeoMashup#taxonomyLegendTitle
-				 * @event
-				 * @param {jQuery} $title Empty legend element with classes
-				 * @param {String} taxonomy 
-				 */
-				GeoMashup.doAction( 'taxonomyLegend', $title, taxonomy );
+				if ( GeoMashup.opts.add_legend_titles || ( !GeoMashup.opts.hasOwnProperty( 'add_legend_titles' ) && GeoMashup.opts.include_taxonomies.length > 1 ) ) {
 
-				$element.append( $title );
+					$title = $( '<h2></h2>' )
+						.addClass( 'gm-legend-title' )
+						.addClass( taxonomy + '-legend-title' )
+						.text( term_properties[taxonomy].label );
+					/**
+					 * A taxonomy legend title is being created
+					 * @name GeoMashup#taxonomyLegendTitle
+					 * @event
+					 * @param {jQuery} $title Empty legend element with classes
+					 * @param {String} taxonomy 
+					 */
+					GeoMashup.doAction( 'taxonomyLegend', $title, taxonomy );
 
+					$element.append( $title );
+
+				}
 				$legend = $( '<' + list_tag + ' class="gm-legend ' + taxonomy + '" />' );
 
 				/**
@@ -509,12 +512,9 @@ jQuery.extend( GeoMashup, {
 		return false;
 	},
 
-	hasLocatedChildren : function(category_id, hierarchy) {
-
-	},
-
 	/**
 	 * Hide markers and line for a category.
+	 * @deprecated Use GeoMashup.term_manager.setTermVisibility()
 	 * @param {String} category_id
 	 */
 	hideCategory : function(category_id) {
@@ -525,6 +525,7 @@ jQuery.extend( GeoMashup, {
 
 	/**
 	 * Show markers for a category. Also show line if consistent with configuration.
+	 * @deprecated Use GeoMashup.term_manager.setTermVisibility()
 	 * @param {String} category_id
 	 */
 	showCategory : function(category_id) {
