@@ -252,6 +252,11 @@ jQuery.extend( GeoMashup, {
 				row_tag = ''; 
 				term_tag = 'dt'; 
 				definition_tag = 'dd'; 
+			} else if ( GeoMashup.opts.legend_format && 'ul' === GeoMashup.opts.legend_format) { 
+				list_tag = 'ul'; 
+				row_tag = 'li'; 
+				term_tag = 'span'; 
+				definition_tag = 'span'; 
 			} else { 
 				list_tag = 'table'; 
 				row_tag = 'tr'; 
@@ -333,13 +338,18 @@ jQuery.extend( GeoMashup, {
 
 					}
 
-					$key = $( '<' + term_tag + '/>').append(
+					$key = $( '<' + term_tag + ' class="symbol"/>').append(
 						$( '<img/>' )
 							.attr( 'src', term_data.icon.image )
 							.attr( 'alt', term_id )
+							.click( function() {
+								// Pass clicks to the checkbox
+								$label.click();
+								return false;
+							} )
 					);
 
-					$def = $( '<' + definition_tag + '/>' ).append( $label );
+					$def = $( '<' + definition_tag + ' class="term"/>' ).append( $label );
 
 					/**
 					 * A taxonomy legend entry is being created
