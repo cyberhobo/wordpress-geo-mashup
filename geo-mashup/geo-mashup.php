@@ -1119,11 +1119,32 @@ class GeoMashup {
 	 */
 	public static function term_legend($args = null) {
 		$args = wp_parse_args($args);
-		$for_map = 'gm-map-1';
-		if ( !empty( $args['for_map'] ) ) {
-			$for_map = $args['for_map'];
-		}	
-		return '<div id="' . $for_map . '-legend"></div>';
+
+		$id = 'gm-map-1';
+		if ( !empty( $args['for_map'] ) ) 
+			$id = $args['for_map'];
+
+		if ( !empty( $args['taxonomy'] ) ) 
+			$id .= '-' . esc_attr ( $args['taxonomy'] );
+
+		$id .= '-legend';
+
+		$classes = array();
+
+		if ( !empty( $args['noninteractive'] ) && 'false' != $args['noninteractive'] )
+			$classes[] = 'noninteractive';
+
+		if ( !empty( $args['format'] ) ) 
+			$classes[] = 'format-' . esc_attr( $args['format'] );
+		
+		if ( isset( $args['titles'] ) ) {
+			if ( $args['titles'] && 'false' != $args['titles'] )
+				$classes[] = 'titles-on';
+			else
+				$classes[] = 'titles-off';
+		}
+
+		return '<div id="' . $id . '" class="' . implode( ' ', $classes ) . '"></div>';
 	}
 
 	/**

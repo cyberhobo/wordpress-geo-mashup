@@ -244,35 +244,52 @@ jQuery.extend( GeoMashup, {
 			return loaded_terms[taxonomy].terms[term_id][property];
 		};
 
-		term_manager.createTermWidgets = function() {
-			var $legend, category_id, list_tag, row_tag, term_tag, definition_tag; 
-			
-			if ( GeoMashup.opts.legend_format && 'dl' === GeoMashup.opts.legend_format) { 
-				list_tag = 'dl'; 
-				row_tag = ''; 
-				term_tag = 'dt'; 
-				definition_tag = 'dd'; 
-			} else if ( GeoMashup.opts.legend_format && 'ul' === GeoMashup.opts.legend_format) { 
-				list_tag = 'ul'; 
-				row_tag = 'li'; 
-				term_tag = 'span'; 
-				definition_tag = 'span'; 
-			} else { 
-				list_tag = 'table'; 
-				row_tag = 'tr'; 
-				term_tag = 'td'; 
-				definition_tag = 'td'; 
-			} 
+		term_manager.createTermLegends = function() {
 			
 			$.each( GeoMashup.opts.include_taxonomies, function( i, taxonomy ) {
-				var element = getLegendElement( taxonomy ), $element, $title;
+				var $legend, list_tag, row_tag, term_tag, definition_tag, 
+					$element, $title, format, format_match, interactive,
+					element = getLegendElement( taxonomy );
 
 				if ( !element ) {
 					return;
 				}
 				$element = $( element );
 
-				if ( GeoMashup.opts.add_legend_titles || ( !GeoMashup.opts.hasOwnProperty( 'add_legend_titles' ) && GeoMashup.opts.include_taxonomies.length > 1 ) ) {
+				if ( $element.hasClass( 'noninteractive' ) ) {
+					interactive = false;
+				} else if ( typeof GeoMashup.opts.interactive_legend === 'undefined' ) {
+					interactive = true;
+				} else {
+					interactive = GeoMashup.opts.interactive_legend;
+				}
+
+				format_match = /format-(\w+)/.exec( $element.attr( 'class' ) );
+				if ( format_match ) {
+					format = format_match[1];
+				} else if ( GeoMashup.opts.legend_format ) {
+					format = GeoMashup.opts.legend_format;
+				} else {
+					format = 'table';
+				}
+				if ( format === 'dl' ) { 
+					list_tag = 'dl'; 
+					row_tag = ''; 
+					term_tag = 'dt'; 
+					definition_tag = 'dd'; 
+				} else if ( format === 'ul' ) { 
+					list_tag = 'ul'; 
+					row_tag = 'li'; 
+					term_tag = 'span'; 
+					definition_tag = 'span'; 
+				} else { 
+					list_tag = 'table'; 
+					row_tag = 'tr'; 
+					term_tag = 'td'; 
+					definition_tag = 'td'; 
+				} 
+				
+				if ( $element.hasClass( 'titles-on' ) || ( !$element.hasClass( 'titles-off' ) && GeoMashup.opts.include_taxonomies.length > 1 ) ) {
 
 					$title = $( '<h2></h2>' )
 						.addClass( 'gm-legend-title' )
@@ -310,15 +327,11 @@ jQuery.extend( GeoMashup, {
 						return true;
 					}
 
-					// Default is interactive
-					if ( typeof GeoMashup.opts.interactive_legend === 'undefined' ) {
-						GeoMashup.opts.interactive_legend = true;
-					}
+					name = term_properties[taxonomy].terms[term_id].name;
 
-					if ( GeoMashup.opts.name && GeoMashup.opts.interactive_legend ) {
+					if ( GeoMashup.opts.name && interactive ) {
 
 						id = 'gm-' + taxonomy + '-checkbox-' + term_id;
-						name = term_properties[taxonomy].terms[term_id].name;
 
 						$checkbox = $( '<input type="checkbox" name="term_checkbox" />' )
 							.attr( 'id', id )
@@ -740,9 +753,6 @@ jQuery.extend( GeoMashup, {
 
 	createCategoryLine : function( category ) {
 		return this.createTermLine( category );
-	},
-
-	createTermWidgets: function() {
 	},
 
 	initializeTabbedIndex : function() {

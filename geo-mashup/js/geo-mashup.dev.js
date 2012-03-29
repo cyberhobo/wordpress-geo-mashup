@@ -737,7 +737,7 @@ GeoMashup = {
 
 			// Add term lines
 			if (add_term_info) {
-				this.term_manager.createTermWidgets();
+				this.term_manager.createTermLegends();
 			}
 
 			// Tabbed index may hide markers
