@@ -650,7 +650,9 @@ GeoMashup.createMap = function(container, opts) {
 		}
 	}
 
-	this.term_manager.load();
+	if ( this.term_manager ) {
+		this.term_manager.load();
+	}
 
 	try {
 		this.map.setMapType( opts.map_type );
