@@ -689,7 +689,7 @@ GeoMashup = {
 				this.forEach( response_data[i].terms, function( taxonomy, term_ids ) {
 					var k;
 					for (k = 0; k < term_ids.length; k+=1) {
-						GeoMashup.term_manager.extendTerm( point, taxonomy, term_ids[k], object_id );
+						GeoMashup.term_manager.extendTerm( point, taxonomy, term_ids[k], response_data[i] );
 					}
 
 					response_data[i].combined_term_count += term_ids.length;
@@ -741,7 +741,7 @@ GeoMashup = {
 			}
 
 			// Tabbed index may hide markers
-			this.initializeTabbedIndex();
+			this.term_manager.tabbed_index.create();
 
 		}
 

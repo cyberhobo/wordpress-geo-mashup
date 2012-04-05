@@ -372,6 +372,11 @@ GeoMashup.createMarker = function(point,obj) {
 
 GeoMashup.clickObjectMarker = function( object_id, try_count ) {
 	var obj = this.objects[object_id];
+
+	if ( !GeoMashup.isObjectOn( obj ) ) {
+		return false;
+	}
+
 	if (typeof try_count === 'undefined') {
 		try_count = 1;
 	}

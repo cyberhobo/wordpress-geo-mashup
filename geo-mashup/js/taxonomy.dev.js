@@ -45,38 +45,44 @@ jQuery.extend( GeoMashup, {
 		 * then the parent if available.
 		 * 
 		 * @param {String} taxonomy 
+		 * @param {String} widget_type 'legend' or 'tabbed-index'
 		 * @param {Document} context
 		 * @return {Element} The legend element or null if not found.
 		 */
-		function getLegendElement( taxonomy, context ) {
+		function getWidgetElement( taxonomy, widget_type, context ) {
 			var element = null;
 
 			if ( typeof context == 'undefined' ) {
 
-				element = getLegendElement( taxonomy, document );
+				element = getWidgetElement( taxonomy, widget_type, document );
 
 				if ( !element && GeoMashup.have_parent_access ) {
-					element = getLegendElement( taxonomy, parent.document );
+					element = getWidgetElement( taxonomy, widget_type, parent.document );
 				}
 
 			} else {
 
 				if ( GeoMashup.opts.name ) {
 
-					element = context.getElementById( GeoMashup.opts.name + '-' + taxonomy + '-legend' );
+					element = context.getElementById( GeoMashup.opts.name + '-' + taxonomy + '-' + widget_type );
 
 					if ( !element ) {
-						element = context.getElementById( GeoMashup.opts.name + '-legend' );
+						element = context.getElementById( GeoMashup.opts.name + '-' + widget_type );
 					}
 
 				}
 
 				if ( !element ) {
-					element = context.getElementById( 'gm-term-legend' );
+					element = context.getElementById( 'gm-term-' + widget_type );
 				}
 
+				// Back compat names
 				if ( !element && 'category' == taxonomy ) {
-					element = context.getElementById( 'gm-cat-legend' );
+					if ( 'legend' == widget_type ) {
+						element = context.getElementById( 'gm-cat-legend' );
+					} else {
+						element = context.getElementById( 'gm-' + widget_type );
+					}
 				}
 
 			}
@@ -94,12 +100,12 @@ jQuery.extend( GeoMashup, {
 				children = {};
 				child_count = 0;
 
-				for (child_id in properties[taxonomy]) {
-					if (properties.hasOwnProperty( child_id ) && properties[child_id].parent_id && properties[child_id].parent_id === term_id) {
-						children[child_id] = this.buildTermHierarchy(taxonomy, child_id);
+				$.each( properties.terms, function( child_id, term_data ) {
+					if ( term_data.parent_id && term_data.parent_id == term_id ) {
+						children[child_id] = buildTermHierarchy( taxonomy, child_id );
 						child_count += 1;
 					}
-				}
+				});
 
 				return (child_count > 0) ? children : null;
 
@@ -108,11 +114,11 @@ jQuery.extend( GeoMashup, {
 				// Build a tree for each taxonomy's top level (no parent) terms
 				hierarchies[taxonomy] = {};
 
-				for (top_id in properties[taxonomy]) {
-					if ( properties.hasOwnProperty( top_id ) && !properties[top_id].parent_id) {
-						hierarchies[taxonomy][top_id] = buildTermHierarchy(taxonomy, top_id);
+				$.each( properties.terms, function( top_id, term_data ) {
+					if ( !term_data.parent_id) {
+						hierarchies[taxonomy][top_id] = buildTermHierarchy( taxonomy, top_id );
 					}
-				}
+				} );
 
 			}
 		}
@@ -131,7 +137,7 @@ jQuery.extend( GeoMashup, {
 
 		};
 
-		term_manager.extendTerm = function(point, taxonomy, term_id, object_id) {
+		term_manager.extendTerm = function(point, taxonomy, term_id, object) {
 			var 
 				loaded_taxonomy,
 				icon, 
@@ -140,7 +146,6 @@ jQuery.extend( GeoMashup, {
 				max_line_zoom;
 
 			term_id = String( term_id );
-			object_id = String( object_id );
 
 			if ( !loaded_terms.hasOwnProperty( taxonomy ) )
 				loaded_terms[taxonomy] = {terms: {}, term_count: 0};
@@ -208,7 +213,7 @@ jQuery.extend( GeoMashup, {
 				loaded_taxonomy.terms[term_id] = {
 					icon : icon,
 					points : [point],
-					posts : [object_id],
+					objects : [object],
 					color : color_rgb,
 					visible : true,
 					max_line_zoom : max_line_zoom
@@ -219,7 +224,7 @@ jQuery.extend( GeoMashup, {
 			} else { // taxonomy term exists
 
 				loaded_taxonomy.terms[term_id].points.push( point );
-				loaded_taxonomy.terms[term_id].posts.push( object_id );
+				loaded_taxonomy.terms[term_id].objects.push( object );
 
 			}
 		};
@@ -244,12 +249,36 @@ jQuery.extend( GeoMashup, {
 			return loaded_terms[taxonomy].terms[term_id][property];
 		};
 
+		term_manager.searchTermHierarchy = function( search_id, hierarchy ) {
+			var child_search, term_id;
+
+			if ( !hierarchy ) {
+				hierarchy = hierarchies['category'];
+			} else if ( typeof hierarchy == 'string' ) {
+				hierarchy = hierarchies[hierarchy];
+			}
+			// Use a regular loop, so it can return a value for this function
+			for( term_id in hierarchy ) {
+				if ( hierarchy.hasOwnProperty( term_id ) && typeof hierarchy[term_id] !== 'function' ) {
+					if ( term_id === search_id ) {
+						return hierarchy[term_id];
+					} else if ( hierarchy[term_id] ) {
+						child_search = searchTermHierarchy( search_id, hierarchy[term_id] );
+						if (child_search) {
+							return child_search;
+						}
+					}
+				}
+			}
+			return null;
+		};
+
 		term_manager.createTermLegends = function() {
 			
 			$.each( GeoMashup.opts.include_taxonomies, function( i, taxonomy ) {
 				var $legend, list_tag, row_tag, term_tag, definition_tag, 
 					$element, $title, format, format_match, interactive,
-					element = getLegendElement( taxonomy );
+					element = getWidgetElement( taxonomy, 'legend' );
 
 				if ( !element ) {
 					return;
@@ -337,7 +366,7 @@ jQuery.extend( GeoMashup, {
 							.attr( 'id', id )
 							.attr( 'checked', 'checked' )
 							.change( function() {
-								GeoMashup.term_manager.setTermVisibility( taxonomy, term_id, $( this ).is( ':checked' ) ); 
+								GeoMashup.term_manager.setTermVisibility( term_id, taxonomy, $( this ).is( ':checked' ) ); 
 							});
 
 						$label = $( '<label/>' )
@@ -406,7 +435,268 @@ jQuery.extend( GeoMashup, {
 			} );
 		};
 
-		term_manager.setTermVisibility = function( taxonomy, term_id, visible ) {
+		term_manager.tabbed_index = (function() {
+			var tabbed_index = {},
+				tab_term_ids = [],
+				tab_hierarchy,
+				tab_index_group_size,
+				show_inactive_tab_markers, 
+				$index;
+
+			function buildTabbedIndex( hierarchy, taxonomy ) {
+				var $list;
+
+				$index = $( '<div></div>' ).attr( 'id', GeoMashup.opts.name + '-tab-index' );
+				$list = $( '<ul class="gm-tabs-nav"></ul>' );
+
+				$.each( hierarchy, function( term_id, children ) {
+					tab_term_ids.push( term_id );
+				} );
+
+				tab_term_ids.sort( function( a, b ) {
+					var a_name = term_properties[taxonomy].terms[a].name,
+						b_name = term_properties[taxonomy].terms[b].name;
+
+					if ( a_name === b_name ) {
+						return 0;
+					} else {
+						return a_name < b_name ? -1 : 1;
+					}
+				} );
+				
+				$.each( tab_term_ids, function( i, term_id ) {
+					var children = hierarchy[term_id],
+						$li = $( '<li></li>' ).addClass( 'gm-tab-inactive' ).addClass( 'gm-tab-inactive-' + term_id ),
+						$a = $( '<a></a>' ).attr( 'href', '#' + GeoMashup.opts.name ).click( function() {
+							tabbed_index.selectTab( term_id, taxonomy );
+							return false;
+						});
+
+					if ( loaded_terms[taxonomy] && loaded_terms[taxonomy].terms[term_id] ) {
+						$a.append( $( '<img />' ).attr( 'src', loaded_terms[taxonomy].terms[term_id].icon.image ) );
+					}
+					$a.append( $( '<span></span>' ).text( term_properties[taxonomy].terms[term_id].name ) );
+					$li.append( $a );
+					$list.append( $li );
+
+					if ( !show_inactive_tab_markers ) {
+						term_manager.setHierarchyVisibility( term_id, children, taxonomy, false );
+					}
+				});
+
+				$index.append( $list ); 
+
+				$.each( hierarchy, function( term_id, children ) {
+					$index.append( buildTermIndex( term_id, taxonomy, children ) );
+				});
+
+				return $index;
+			}
+
+			function hasLocatedChildren( term_id, taxonomy, hierarchy ) {
+				var child_id;
+
+				if ( loaded_terms[taxonomy].terms[term_id] ) {
+					return true;
+				}
+
+				for ( child_id in hierarchy ) {
+					if ( hierarchy.hasOwnProperty( child_id ) && hasLocatedChildren( child_id, taxonomy, hierarchy[child_id] ) ) {
+						return true;
+					}
+				}
+				return false;
+			}
+
+			function buildTermIndex( term_id, taxonomy, children, top_level) {
+				var $term_index, $list, $sub_list, group_count, 
+					// Back compat tax name
+					tax = taxonomy.replace( 'category', 'cat' );  
+
+				if ( typeof top_level === 'undefined' ) {
+					top_level = true;
+				}
+
+				$term_index = $( '<div></div>' )
+					.attr( 'id', tabbed_index.getTermIndexId( term_id, taxonomy ) )
+					.addClass( 'gm-tabs-panel' )
+					.addClass( 'gm-tabs-panel-' + term_id );
+				if ( top_level ) {
+					$term_index.addClass( 'gm-hidden' );
+				}
+
+				$list = $( '<ul></ul>' ).addClass( 'gm-index-posts' );
+
+				if ( loaded_terms[taxonomy].terms[term_id] ) {
+
+					loaded_terms[taxonomy].terms[term_id].objects.sort( function( a, b ) {
+						var a_name = a.title,
+							b_name = b.title;
+
+						if (a_name === b_name) {
+							return 0;
+						} else {
+							return a_name < b_name ? -1 : 1;
+						}
+					});
+
+					$.each( loaded_terms[taxonomy].terms[term_id].objects, function( i, object ) {
+						$list.append( 
+							$( '<li></li>' ).append( 
+								$( '<a></a>' )
+									.attr( 'href', '#' + GeoMashup.opts.name )
+									.text( object.title )
+									.click( function() {
+										GeoMashup.clickObjectMarker( object.object_id );
+									})
+							)
+						);
+					});
+				}
+				
+				if ( children ) {
+
+					group_count = 0;
+					$sub_list = $( '<ul></ul>' ).addClass( 'gm-sub-' + tax + '-index');
+
+					$.each( children, function( child_id, grandchildren ) {
+						var $li = $( '<li></li>' ),
+							loaded_term = loaded_terms[taxonomy].terms[child_id];
+
+						if ( loaded_term ) {
+							$li.append( $( '<img />' ).attr( 'src', loaded_term.icon.image ) )
+								.append( $( '<span></span>' ).addClass( 'gm-sub-' + tax + '-title' ).text( loaded_term.name ) );
+						}
+
+						$li.append( buildTermIndex( child_id, taxonomy, grandchildren, false ) );
+						
+						group_count += 1;
+						if ( tab_index_group_size && group_count%tab_index_group_size === 0) {
+							$list.append( $sub_list );
+							$sub_list = $( '<ul></ul>' ).addClass( 'gm-sub-' + tax + '-index');
+						}
+					});
+					$list.append( $sub_list );
+
+				}
+
+				$term_index.append( $list );
+
+				return $term_index;
+			}
+
+			tabbed_index.getTermIndexId = function( term_id, taxonomy ) {
+				var tax = taxonomy.replace( 'category', 'cat' );
+				return 'gm-' + tax + '-index-' + term_id;
+			};
+
+			tabbed_index.create = function() {
+				var $element, start_tab_term_id, start_tab_term_id_match, group_size_match, taxonomy,
+					disable_tab_auto_select = false;
+
+				// Determine a taxonomy to use
+				$.each( GeoMashup.opts.include_taxonomies, function( i, check_taxonomy ) {
+					var element = getWidgetElement( check_taxonomy, 'tabbed-index' );
+					if ( element ) {
+						taxonomy = check_taxonomy;
+						$element = $( element );
+						return false;
+					}
+				} );
+				if ( $element.length === 0 ) {
+					return;
+				}
+				tab_hierarchy = hierarchies[taxonomy];
+				
+				start_tab_term_id_match = /start-tab-term-(\d+)/.exec( $element.attr( 'class' ) );
+				if ( start_tab_term_id_match ) {
+					start_tab_term_id = start_tab_term_id_match[1];
+				} else if ( 'category' == taxonomy ) {
+					start_tab_term_id = GeoMashup.opts.start_tab_category_id;
+				}
+
+				group_size_match = /tab-index-group-size-(\d+)/.exec( $element.attr( 'class' ) );
+				if ( group_size_match ) {
+					tab_index_group_size = group_size_match[1];
+				} else {
+					tab_index_group_size = GeoMashup.opts.tab_index_group_size;
+				}
+
+				if ( $element.hasClass( 'show-inactive-tab-markers' ) ) {
+					show_inactive_tab_markers = true;
+				} else {
+					show_inactive_tab_markers = GeoMashup.opts.show_inactive_tab_markers;
+				}
+
+				if ( $element.hasClass( 'disable-tab-auto-select' ) ) {
+					disable_tab_auto_select = true;
+				} else if ( 'category' == taxonomy ) {
+					disable_tab_auto_select = GeoMashup.opts.disable_tab_auto_select;
+				}
+				
+				if ( start_tab_term_id ) {
+					tab_hierarchy = term_manager.searchTermHierarchy( start_tab_term_id, tab_hierarchy );
+				}
+
+				$element.append( buildTabbedIndex( tab_hierarchy, taxonomy ) );
+
+				if ( !disable_tab_auto_select ) {
+					// Select the first tab
+					$.each( tab_term_ids, function( i, term_id ) {
+						if ( hasLocatedChildren( term_id, taxonomy, tab_hierarchy ) ) {
+							tabbed_index.selectTab( term_id, taxonomy );
+							return false;
+						}
+					});
+				}
+			};
+
+			tabbed_index.selectTab = function( term_id, taxonomy ) {
+				var $active_tab, hide_term_classes, hide_term_match, hide_term_id;
+
+				if ( !$index ) {
+					return false;
+				}
+
+				if ( $index.find( '.gm-tab-active-' + term_id ).length > 0 ) {
+					// Requested tab is already selected
+					return true;
+				}
+				
+				$active_tab = $index.find( '.gm-tabs-nav .gm-tab-active' );
+				if ( $active_tab.length > 0 ) {
+					hide_term_match = /gm-tab-active-(\d+)/.exec( $active_tab.attr( 'class' ) );
+					if ( hide_term_match ) {
+						hide_term_id = hide_term_match[1];
+						$active_tab.attr( 'class', 'gm-tab-inactive gm-tab-inactive-' + hide_term_id );
+					}
+				}
+				$index.find( '.gm-tabs-nav .gm-tab-inactive-' + term_id )
+					.attr( 'class', 'gm-tab-active gm-tab-active-' + term_id );
+
+				// Hide previous active panel
+				$index.find( '.gm-tabs-panel.gm-active' )
+					.removeClass( 'gm-active' )
+					.addClass( 'gm-hidden' );
+
+				// Show selected panel
+				$index.find( '.gm-tabs-panel-' + term_id ).removeClass( 'gm-hidden' ).addClass( 'gm-active' );
+
+				if ( !show_inactive_tab_markers ) {
+					// Hide previous active markers
+					if ( hide_term_id ) {
+						term_manager.setHierarchyVisibility( hide_term_id, tab_hierarchy[hide_term_id], taxonomy, false );
+					}
+					// Show selected markers second so none get re-hidden
+					term_manager.setHierarchyVisibility( term_id, tab_hierarchy[term_id], taxonomy, true );
+				}
+
+			};
+
+			return tabbed_index;
+		})();
+
+		term_manager.setTermVisibility = function( term_id, taxonomy, visible ) {
 			var term_data;
 
 			if ( !loaded_terms[taxonomy] || !loaded_terms[taxonomy].terms[term_id] ) {
@@ -452,8 +742,9 @@ jQuery.extend( GeoMashup, {
 		 * 
 		 * @param {String} ancestor_id The term ID of the potential ancestor
 		 * @param {String} child_id The term ID of the potential child
+		 * @param {String} taxonomy The taxonomy of the terms.
 		 */
-		term_manager.isTermAncestor = function(taxonomy, ancestor_id, child_id) {
+		term_manager.isTermAncestor = function( ancestor_id, child_id, taxonomy ) {
 
 			if ( !term_properties[taxonomy] ) {
 				return false;
@@ -466,7 +757,7 @@ jQuery.extend( GeoMashup, {
 				if ( term_properties[taxonomy].terms[child_id].parent_id === ancestor_id ) {
 					return true;
 				} else {
-					return term_manager.isTermAncestor( taxonomy, ancestor_id, term_properties[taxonomy].terms[child_id].parent_id );
+					return term_manager.isTermAncestor( ancestor_id, term_properties[taxonomy].terms[child_id].parent_id, taxonomy );
 				}
 			} else {
 				return false;
@@ -480,7 +771,6 @@ jQuery.extend( GeoMashup, {
 		 */
 		term_manager.updateLineZoom = function( old_zoom, new_zoom ) {
 			
-
 			$.each( loaded_terms, function( taxonomy, tax_data ) {
 
 				$.each( tax_data.terms, function( term_id, term_data ) {
@@ -501,6 +791,16 @@ jQuery.extend( GeoMashup, {
 
 		};
 
+		term_manager.setHierarchyVisibility = function( term_id, hierarchy, taxonomy, visible ) {
+
+			term_manager.setTermVisibility( term_id, taxonomy, visible );
+
+			hierarchy = hierarchy || {};
+			$.each( hierarchy, function( child_id, grandchildren ) {
+				term_manager.setHierarchyVisibility( child_id, grandchildren, taxonomy, visible );
+			} );
+		};
+
 		return term_manager;
 	}()),
 
@@ -516,23 +816,7 @@ jQuery.extend( GeoMashup, {
 	 * @param {String} child_id The category ID of the potential child
 	 */
 	isCategoryAncestor : function(ancestor_id, child_id) {
-
-		return this.term_manager.isTermAncestor('category', ancestor_id, child_id);
-
-	},
-
-	hasLocatedChildren : function(category_id, hierarchy) {
-		var child_id;
-
-		if (this.categories[category_id]) {
-			return true;
-		}
-		for (child_id in hierarchy) {
-			if ( hierarchy.hasOwnProperty( child_id ) && this.hasLocatedChildren(child_id, hierarchy[child_id]) ) {
-				return true;
-			}
-		}
-		return false;
+		return this.term_manager.isTermAncestor( ancestor_id, child_id, 'category' );
 	},
 
 	/**
@@ -541,9 +825,7 @@ jQuery.extend( GeoMashup, {
 	 * @param {String} category_id
 	 */
 	hideCategory : function(category_id) {
-		
-		GeoMashup.term_manager.setTermVisibility( 'category', category_id, false );
-
+		GeoMashup.term_manager.setTermVisibility( category_id, 'category', false );
 	},
 
 	/**
@@ -552,199 +834,47 @@ jQuery.extend( GeoMashup, {
 	 * @param {String} category_id
 	 */
 	showCategory : function(category_id) {
-		
-		GeoMashup.term_manager.setTermVisibility( 'category', category_id, true );
-
-	},
-
-	searchCategoryHierarchy : function(search_id, hierarchy) {
-		var child_search, category_id;
-
-		if (!hierarchy) {
-			hierarchy = this.category_hierarchy;
-		}
-		// Use a regular loop, so it can return a value for this function
-		for( category_id in hierarchy ) {
-			if ( hierarchy.hasOwnProperty( category_id ) && typeof hierarchy[category_id] !== 'function' ) {
-				if (category_id === search_id) {
-					return hierarchy[category_id];
-				}else if (hierarchy[category_id]) {
-					child_search = this.searchCategoryHierarchy(search_id, hierarchy[category_id]);
-					if (child_search) {
-						return child_search;
-					}
-				}
-			}
-		}
-		return null;
+		GeoMashup.term_manager.setTermVisibility( category_id, 'category', true );
 	},
 
 	/**
 	 * Hide a category and all its child categories.
+	 * @deprecated Use GeoMashup.term_manager.setHierarchyVisibility()
 	 * @param {String} category_id The ID of the category to hide
 	 */
 	hideCategoryHierarchy : function(category_id) {
-		var child_id;
-
-		this.hideCategory(category_id);
-		this.forEach( this.tab_hierarchy[category_id], function (child_id) {
-			this.hideCategoryHierarchy(child_id);
-		});
-  },
+		var hierarchy = GeoMashup.term_manager.searchTermHierarchy( category_id, 'category' );
+		GeoMashup.term_manager.setHierarchyVisibility( category_id, hierarchy, 'category', false );
+	},
 
 	/**
 	 * Show a category and all its child categories.
+	 * @deprecated Use GeoMashup.term_manager.hideTermHierarchy()
 	 * @param {String} category_id The ID of the category to show
 	 */
 	showCategoryHierarchy : function(category_id) {
-		var child_id;
-
-		this.showCategory(category_id);
-		this.forEach( this.tab_hierarchy[category_id], function (child_id) {
-			this.showCategoryHierarchy(child_id);
-		});
-  },
+		var hierarchy = GeoMashup.term_manager.searchTermHierarchy( category_id, 'category' );
+		GeoMashup.term_manager.setHierarchyVisibility( category_id, hierarchy, 'category', true );
+	},
 
 	/**
 	 * Select a tab of the tabbed category index control.
+	 * @deprecated Use GeoMashup.term_manager.tabbed_index.selectTab()
 	 * @param {String} select_category_id The ID of the category tab to select
 	 */
 	categoryTabSelect : function(select_category_id) {
-		var i, tab_div, tab_list_element, tab_element, id_match, category_id, index_div;
-
-		if ( !this.have_parent_access ) {
-			return false;
-		}
-		tab_div = parent.document.getElementById(this.opts.name + '-tab-index');
-		if (!tab_div) {
-			return false;
-		}
-		tab_list_element = tab_div.childNodes[0];
-		for (i=0; i<tab_list_element.childNodes.length; i += 1) {
-			tab_element = tab_list_element.childNodes[i];
-			id_match = tab_element.childNodes[0].href.match(/\d+$/);
-			category_id = id_match && id_match[0];
-			if (category_id === select_category_id) {
-				tab_element.className = 'gm-tab-active gm-tab-active-' + select_category_id;
-			}else {
-				tab_element.className = 'gm-tab-inactive gm-tab-inactive-' + category_id;
-			}
-		}
-		this.forEach( this.tab_hierarchy, function (category_id) {
-			index_div = parent.document.getElementById(this.categoryIndexId(category_id));
-			if (index_div) {
-				if (category_id === select_category_id) {
-					index_div.className = 'gm-tabs-panel';
-				} else {
-					index_div.className = 'gm-tabs-panel gm-hidden';
-					if (!this.opts.show_inactive_tab_markers) {
-						this.hideCategoryHierarchy(category_id);
-					}
-				}
-			}
-		});
-		if (!this.opts.show_inactive_tab_markers) {
-			// Done last so none of the markers get re-hidden
-			this.showCategoryHierarchy(select_category_id);
-		}
+		this.term_manager.tabbed_index.selectTab( select_category_id, 'category' );
 	},
 
 	/**
 	 * Get the DOM ID of the element containing a category index in the 
 	 * tabbed category index control.
+	 * @deprecated Use GeoMashup.termManager.tabIndex.termIndexId
 	 * @param {String} category_id The category ID
+	 * @return {String} DOM ID
 	 */
 	categoryIndexId : function(category_id) {
 		return 'gm-cat-index-' + category_id;
-	},
-
-	categoryTabIndexHtml : function(hierarchy) {
-		var html_array = [], category_id;
-
-		html_array.push('<div id="');
-		html_array.push(this.opts.name);
-		html_array.push('-tab-index"><ul class="gm-tabs-nav">');
-		for (category_id in hierarchy) {
-			if ( hierarchy.hasOwnProperty( category_id ) && this.hasLocatedChildren(category_id, hierarchy[category_id]) ) {
-				html_array = html_array.concat([
-					'<li class="gm-tab-inactive gm-tab-inactive-',
-					category_id,
-					'"><a href="#',
-					this.categoryIndexId(category_id),
-					'" onclick="frames[\'',
-					this.opts.name,
-					'\'].GeoMashup.categoryTabSelect(\'',
-					category_id,
-					'\'); return false;">']);
-				if (this.categories[category_id]) {
-					html_array.push('<img src="');
-					html_array.push(this.categories[category_id].icon.image);
-					html_array.push('" />');
-				}
-				html_array.push('<span>');
-				html_array.push(this.opts.category_opts[category_id].name);
-				html_array.push('</span></a></li>');
-			}
-		} 
-		html_array.push('</ul></div>');
-		this.forEach( hierarchy, function (category_id) {
-			html_array.push(this.categoryIndexHtml(category_id, hierarchy[category_id]));
-		});
-		return html_array.join('');
-	},
-
-	categoryIndexHtml : function(category_id, children, top_level) {
-		var i, a_name, b_name, html_array = [], group_count, ul_open_tag, child_id;
-		if ( typeof top_level === 'undefined' ) {
-			top_level = true;
-		}
-		html_array.push('<div id="');
-		html_array.push(this.categoryIndexId(category_id));
-		html_array.push('" class="gm-tabs-panel');
-		if ( top_level ) {
-			html_array.push(' gm-hidden');
-		}
-		html_array.push('"><ul class="gm-index-posts">');
-		if (this.categories[category_id]) {
-			this.categories[category_id].posts.sort(function (a, b) {
-				a_name = GeoMashup.objects[a].title;
-				b_name = GeoMashup.objects[b].title;
-				if (a_name === b_name) {
-					return 0;
-				} else {
-					return a_name < b_name ? -1 : 1;
-				}
-			});
-			for (i=0; i<this.categories[category_id].posts.length; i += 1) {
-				html_array.push('<li>');
-				html_array.push(this.objectLinkHtml(this.categories[category_id].posts[i]));
-				html_array.push('</li>');
-			}
-		}
-		html_array.push('</ul>');
-		group_count = 0;
-		ul_open_tag = '<ul class="gm-sub-cat-index">';
-		html_array.push(ul_open_tag);
-		this.forEach( children, function (child_id) {
-			html_array.push('<li>');
-			if (this.categories[child_id]) {
-				html_array.push('<img src="');
-				html_array.push(this.categories[child_id].icon.image);
-				html_array.push('" />');
-				html_array.push('<span class="gm-sub-cat-title">');
-				html_array.push(this.opts.category_opts[child_id].name);
-				html_array.push('</span>');
-			}
-			html_array.push(this.categoryIndexHtml(child_id, children[child_id], false));
-			html_array.push('</li>');
-			group_count += 1;
-			if (this.opts.tab_index_group_size && group_count%this.opts.tab_index_group_size === 0) {
-				html_array.push('</ul>');
-				html_array.push(ul_open_tag);
-			}
-		});
-		html_array.push('</ul></div>');
-		return html_array.join('');
 	},
 
 	createTermLine: function( term_data ) {
@@ -755,35 +885,5 @@ jQuery.extend( GeoMashup, {
 		return this.createTermLine( category );
 	},
 
-	initializeTabbedIndex : function() {
-		var category_id,
-			index_element;
-		if ( !this.have_parent_access ) {
-			return false;
-		}
-		index_element = parent.document.getElementById(this.opts.name + "-tabbed-index");
-		if (!index_element) {
-			index_element = parent.document.getElementById("gm-tabbed-index");
-		}
-		if (index_element) {
-			if (this.opts.start_tab_category_id) {
-				this.tab_hierarchy = this.searchCategoryHierarchy(this.opts.start_tab_category_id);
-			} else {
-				this.tab_hierarchy = this.category_hierarchy;
-			}
-			index_element.innerHTML = this.categoryTabIndexHtml(this.tab_hierarchy);
-			if (!this.opts.disable_tab_auto_select) {
-				// Select the first tab
-				for (category_id in this.tab_hierarchy) {
-					if (this.tab_hierarchy.hasOwnProperty(category_id) && typeof category_id !== 'function') {
-						if (this.hasLocatedChildren(category_id, this.tab_hierarchy[category_id])) {
-							this.categoryTabSelect(category_id);
-							break;
-						}
-					}
-				}
-			}
-		}
-	}
 } );
 
