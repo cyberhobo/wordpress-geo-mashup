@@ -26,6 +26,7 @@ jQuery.extend( GeoMashup, {
 			// } } }
 			loaded_terms = {},
 		
+			// Structure and settings for terms in included taxonomies
 			// e.g. { "taxonomy1": { "label": "Taxonomy One", "terms": { 
 			//   "3": { name: "Term 3 Name", parent_id: "1", color: "red", line_zoom: "7" } 
 			// } } }
@@ -871,7 +872,7 @@ jQuery.extend( GeoMashup, {
 	/**
 	 * Get the DOM ID of the element containing a category index in the 
 	 * tabbed category index control.
-	 * @deprecated Use GeoMashup.termManager.tabIndex.termIndexId
+	 * @deprecated Use GeoMashup.term_manager.tabbed_index.getTermIndexId
 	 * @param {String} category_id The category ID
 	 * @return {String} DOM ID
 	 */
@@ -885,7 +886,7 @@ jQuery.extend( GeoMashup, {
 
 	createCategoryLine : function( category ) {
 		return this.createTermLine( category );
-	},
+	}
 
 } );
 

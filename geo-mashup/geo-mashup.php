@@ -1660,23 +1660,47 @@ class GeoMashup {
 	 * as tabs.
 	 *
 	 * @since 1.2
-	 * @link http://code.google.com/p/wordpress-geo-mashup/wiki/TagReference#Visible_Posts_List
+	 * @link http://code.google.com/p/wordpress-geo-mashup/wiki/TagReference#Tabbed_Category_Index
+	 * @deprecated Use GeoMashup::tabbed_term_index()
 	 *
 	 * @param string|array $args Template tag arguments.
 	 * @return string Placeholder HTML.
 	 */
 	public static function tabbed_category_index( $args ) {
+		return self::tabbed_term_index( $args );
+	}
+
+	/**
+	 * Tabbed term index template tag.
+	 */
+	public static function tabbed_term_index( $args ) {
 		$args = wp_parse_args($args);
 
-		$for_map = 'gm-map-1';
-		if ( !empty( $args['for_map'] ) ) {
-			$for_map = $args['for_map'];
-		}	
-		
-		return '<div id="' . $for_map . '-tabbed-index"></div>';
+		$id = 'gm-map-1';
+		if ( !empty( $args['for_map'] ) ) 
+			$id = $args['for_map'];
+
+		if ( !empty( $args['taxonomy'] ) ) 
+			$id .= '-' . esc_attr ( $args['taxonomy'] );
+
+		$id .= '-tabbed-index';
+
+		$classes = array();
+
+		if ( !empty( $args['show_inactive_tab_markers'] ) && 'false' != $args['show_inactive_tab_markers'] )
+			$classes[] = 'show-inactive-tab-markers';
+
+		if ( !empty( $args['start_tab_term'] ) ) 
+			$classes[] = 'start-tab-term-' . absint( $args['start_tab_term'] );
+
+		if ( !empty( $args['tab_index_group_size'] ) ) 
+			$classes[] = 'tab-index-group-size-' . absint( $args['tab_index_group_size'] );
+
+		if ( !empty( $args['disable_tab_auto_select'] ) && 'false' != $args['disable_tab_auto_select'] )
+			$classes[] = 'disable-tab-auto-select';
+
+		return '<div id="' . $id . '" class="' . implode( ' ', $classes ) . '"></div>';
 	}
 } // class GeoMashup
 GeoMashup::load();
 } // class exists
-
-?>

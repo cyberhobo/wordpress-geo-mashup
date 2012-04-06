@@ -15,6 +15,7 @@ add_shortcode('geo_mashup_term_legend', array( 'GeoMashup', 'term_legend') );
 add_shortcode('geo_mashup_list_located_posts', array( 'GeoMashup', 'list_located_posts' ) );
 add_shortcode('geo_mashup_list_located_posts_by_area', array( 'GeoMashup', 'list_located_posts_by_area' ) );
 add_shortcode('geo_mashup_tabbed_category_index', array( 'GeoMashup', 'tabbed_category_index' ) );
+add_shortcode('geo_mashup_tabbed_term_index', array( 'GeoMashup', 'tabbed_term_index' ) );
 add_shortcode('geo_mashup_visible_posts_list', array( 'GeoMashup', 'visible_posts_list' ) );
 add_shortcode('geo_mashup_location_info', array( 'GeoMashup', 'location_info' ) );
 
