@@ -450,7 +450,9 @@ jQuery.extend( GeoMashup, {
 				$list = $( '<ul class="gm-tabs-nav"></ul>' );
 
 				$.each( hierarchy, function( term_id, children ) {
-					tab_term_ids.push( term_id );
+					if ( hasLocatedChildren( term_id, taxonomy, children ) ) {
+						tab_term_ids.push( term_id );
+					}
 				} );
 
 				tab_term_ids.sort( function( a, b ) {
