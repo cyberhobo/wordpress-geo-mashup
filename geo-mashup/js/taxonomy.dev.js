@@ -124,6 +124,175 @@ jQuery.extend( GeoMashup, {
 			}
 		}
 
+		function createTermLines() {
+			
+			$.each( loaded_terms, function( taxonomy, tax_data ) {
+				$.each( tax_data.terms, function ( term_id, term_data ) {
+						
+					if ( term_data.max_line_zoom >= 0 ) {
+						GeoMashup.createTermLine( term_data );
+					}
+
+				} );
+			} );
+		}
+
+		function createTermLegends() {
+			
+			$.each( loaded_terms, function( taxonomy, tax_data ) {
+				var $legend, list_tag, row_tag, term_tag, definition_tag, 
+					$element, $title, format, format_match, interactive,
+					element = getWidgetElement( taxonomy, 'legend' );
+
+				if ( !element ) {
+					return;
+				}
+				$element = $( element );
+
+				if ( $element.hasClass( 'noninteractive' ) ) {
+					interactive = false;
+				} else if ( typeof GeoMashup.opts.interactive_legend === 'undefined' ) {
+					interactive = true;
+				} else {
+					interactive = GeoMashup.opts.interactive_legend;
+				}
+
+				format_match = /format-(\w+)/.exec( $element.attr( 'class' ) );
+				if ( format_match ) {
+					format = format_match[1];
+				} else if ( GeoMashup.opts.legend_format ) {
+					format = GeoMashup.opts.legend_format;
+				} else {
+					format = 'table';
+				}
+				if ( format === 'dl' ) { 
+					list_tag = 'dl'; 
+					row_tag = ''; 
+					term_tag = 'dt'; 
+					definition_tag = 'dd'; 
+				} else if ( format === 'ul' ) { 
+					list_tag = 'ul'; 
+					row_tag = 'li'; 
+					term_tag = 'span'; 
+					definition_tag = 'span'; 
+				} else { 
+					list_tag = 'table'; 
+					row_tag = 'tr'; 
+					term_tag = 'td'; 
+					definition_tag = 'td'; 
+				} 
+				
+				if ( $element.hasClass( 'titles-on' ) || ( !$element.hasClass( 'titles-off' ) && GeoMashup.opts.include_taxonomies.length > 1 ) ) {
+
+					$title = $( '<h2></h2>' )
+						.addClass( 'gm-legend-title' )
+						.addClass( taxonomy + '-legend-title' )
+						.text( term_properties[taxonomy].label );
+					/**
+					 * A taxonomy legend title is being created
+					 * @name GeoMashup#taxonomyLegendTitle
+					 * @event
+					 * @param {jQuery} $title Empty legend element with classes
+					 * @param {String} taxonomy 
+					 */
+					GeoMashup.doAction( 'taxonomyLegend', $title, taxonomy );
+
+					$element.append( $title );
+
+				}
+				$legend = $( '<' + list_tag + ' class="gm-legend ' + taxonomy + '" />' );
+
+				/**
+				 * A taxonomy legend is being created
+				 * @name GeoMashup#taxonomyLegend
+				 * @event
+				 * @param {jQuery} $legend Empty legend element with classes
+				 * @param {String} taxonomy 
+				 */
+				GeoMashup.doAction( 'taxonomyLegend', $legend, taxonomy );
+
+				$.each( tax_data.terms, function ( term_id, term_data ) {
+					var id, name, $entry, $key, $def, $label, $checkbox;
+
+					name = term_properties[taxonomy].terms[term_id].name;
+
+					if ( GeoMashup.opts.name && interactive ) {
+
+						id = 'gm-' + taxonomy + '-checkbox-' + term_id;
+
+						$checkbox = $( '<input type="checkbox" name="term_checkbox" />' )
+							.attr( 'id', id )
+							.attr( 'checked', 'checked' )
+							.change( function() {
+								GeoMashup.term_manager.setTermVisibility( term_id, taxonomy, $( this ).is( ':checked' ) ); 
+							});
+
+						$label = $( '<label/>' )
+							.attr( 'for', id )
+							.text( name )
+							.prepend( $checkbox );
+
+					} else {
+
+						$label = $( '<span/>' ).text( name ); 
+
+					}
+
+					$key = $( '<' + term_tag + ' class="symbol"/>').append(
+						$( '<img/>' )
+							.attr( 'src', term_data.icon.image )
+							.attr( 'alt', term_id )
+							.click( function() {
+								// Pass clicks to the checkbox
+								$label.click();
+								return false;
+							} )
+					);
+
+					$def = $( '<' + definition_tag + ' class="term"/>' ).append( $label );
+
+					/**
+					 * A taxonomy legend entry is being created
+					 * @name GeoMashup#termLegendEntry
+					 * @event
+					 * @param {jQuery} $key Legend key node (td or dt)
+					 * @param {jQuery} $def Legend definition node (td or dd)
+					 * @param {String} taxonomy 
+					 * @param {String} term_id 
+					 */
+					GeoMashup.doAction( 'taxonomyLegendEntry', $key, $def, taxonomy, term_id );
+
+					if (row_tag) {
+
+						$entry = $( '<' + row_tag + '/>' )
+							.addClass( 'term-' + term_id )
+							.append( $key )
+							.append( $def );
+						/**
+						 * A taxonomy legend table row is being created
+						 * @name GeoMashup#termLegendRow
+						 * @event
+						 * @param {jQuery} $entry Table row 
+						 * @param {String} taxonomy 
+						 * @param {String} term_id 
+						 */
+						GeoMashup.doAction( 'taxonomyLegendRow', $entry, taxonomy, term_id );
+
+						$legend.append( $entry );
+
+					} else {
+
+						$legend.append( $key ).append( $def );
+
+					}
+
+				}); // end each term
+
+				$( element ).append( $legend );
+
+			} );
+		}
+
 		term_manager.load = function() {
 
 			term_properties = GeoMashup.opts.term_properties;
@@ -139,8 +308,7 @@ jQuery.extend( GeoMashup, {
 		};
 
 		term_manager.extendTerm = function(point, taxonomy, term_id, object) {
-			var 
-				loaded_taxonomy,
+			var loaded_taxonomy,
 				icon, 
 				color_rgb, 
 				color_name, 
@@ -274,166 +442,13 @@ jQuery.extend( GeoMashup, {
 			return null;
 		};
 
-		term_manager.createTermLegends = function() {
-			
-			$.each( GeoMashup.opts.include_taxonomies, function( i, taxonomy ) {
-				var $legend, list_tag, row_tag, term_tag, definition_tag, 
-					$element, $title, format, format_match, interactive,
-					element = getWidgetElement( taxonomy, 'legend' );
+		term_manager.populateTermElements = function() {
 
-				if ( !element ) {
-					return;
-				}
-				$element = $( element );
+			createTermLines();
+			createTermLegends();
+			// The tabbed index may hide markers, so it's created last
+			term_manager.tabbed_index.create();
 
-				if ( $element.hasClass( 'noninteractive' ) ) {
-					interactive = false;
-				} else if ( typeof GeoMashup.opts.interactive_legend === 'undefined' ) {
-					interactive = true;
-				} else {
-					interactive = GeoMashup.opts.interactive_legend;
-				}
-
-				format_match = /format-(\w+)/.exec( $element.attr( 'class' ) );
-				if ( format_match ) {
-					format = format_match[1];
-				} else if ( GeoMashup.opts.legend_format ) {
-					format = GeoMashup.opts.legend_format;
-				} else {
-					format = 'table';
-				}
-				if ( format === 'dl' ) { 
-					list_tag = 'dl'; 
-					row_tag = ''; 
-					term_tag = 'dt'; 
-					definition_tag = 'dd'; 
-				} else if ( format === 'ul' ) { 
-					list_tag = 'ul'; 
-					row_tag = 'li'; 
-					term_tag = 'span'; 
-					definition_tag = 'span'; 
-				} else { 
-					list_tag = 'table'; 
-					row_tag = 'tr'; 
-					term_tag = 'td'; 
-					definition_tag = 'td'; 
-				} 
-				
-				if ( $element.hasClass( 'titles-on' ) || ( !$element.hasClass( 'titles-off' ) && GeoMashup.opts.include_taxonomies.length > 1 ) ) {
-
-					$title = $( '<h2></h2>' )
-						.addClass( 'gm-legend-title' )
-						.addClass( taxonomy + '-legend-title' )
-						.text( term_properties[taxonomy].label );
-					/**
-					 * A taxonomy legend title is being created
-					 * @name GeoMashup#taxonomyLegendTitle
-					 * @event
-					 * @param {jQuery} $title Empty legend element with classes
-					 * @param {String} taxonomy 
-					 */
-					GeoMashup.doAction( 'taxonomyLegend', $title, taxonomy );
-
-					$element.append( $title );
-
-				}
-				$legend = $( '<' + list_tag + ' class="gm-legend ' + taxonomy + '" />' );
-
-				/**
-				 * A taxonomy legend is being created
-				 * @name GeoMashup#taxonomyLegend
-				 * @event
-				 * @param {jQuery} $legend Empty legend element with classes
-				 * @param {String} taxonomy 
-				 */
-				GeoMashup.doAction( 'taxonomyLegend', $legend, taxonomy );
-
-				$.each( loaded_terms[taxonomy].terms, function ( term_id, term_data ) {
-					var id, name, $entry, $key, $def, $label, $checkbox;
-
-					GeoMashup.createTermLine( term_data );
-
-					if ( !$legend.length ) {
-						return true;
-					}
-
-					name = term_properties[taxonomy].terms[term_id].name;
-
-					if ( GeoMashup.opts.name && interactive ) {
-
-						id = 'gm-' + taxonomy + '-checkbox-' + term_id;
-
-						$checkbox = $( '<input type="checkbox" name="term_checkbox" />' )
-							.attr( 'id', id )
-							.attr( 'checked', 'checked' )
-							.change( function() {
-								GeoMashup.term_manager.setTermVisibility( term_id, taxonomy, $( this ).is( ':checked' ) ); 
-							});
-
-						$label = $( '<label/>' )
-							.attr( 'for', id )
-							.text( name )
-							.prepend( $checkbox );
-
-					} else {
-
-						$label = $( '<span/>' ).text( name ); 
-
-					}
-
-					$key = $( '<' + term_tag + ' class="symbol"/>').append(
-						$( '<img/>' )
-							.attr( 'src', term_data.icon.image )
-							.attr( 'alt', term_id )
-							.click( function() {
-								// Pass clicks to the checkbox
-								$label.click();
-								return false;
-							} )
-					);
-
-					$def = $( '<' + definition_tag + ' class="term"/>' ).append( $label );
-
-					/**
-					 * A taxonomy legend entry is being created
-					 * @name GeoMashup#termLegendEntry
-					 * @event
-					 * @param {jQuery} $key Legend key node (td or dt)
-					 * @param {jQuery} $def Legend definition node (td or dd)
-					 * @param {String} taxonomy 
-					 * @param {String} term_id 
-					 */
-					GeoMashup.doAction( 'taxonomyLegendEntry', $key, $def, taxonomy, term_id );
-
-					if (row_tag) {
-
-						$entry = $( '<' + row_tag + '/>' )
-							.addClass( 'term-' + term_id )
-							.append( $key )
-							.append( $def );
-						/**
-						 * A taxonomy legend table row is being created
-						 * @name GeoMashup#termLegendRow
-						 * @event
-						 * @param {jQuery} $entry Table row 
-						 * @param {String} taxonomy 
-						 * @param {String} term_id 
-						 */
-						GeoMashup.doAction( 'taxonomyLegendRow', $entry, taxonomy, term_id );
-
-						$legend.append( $entry );
-
-					} else {
-
-						$legend.append( $key ).append( $def );
-
-					}
-
-				}); // end each term
-
-				$( element ).append( $legend );
-
-			} );
 		};
 
 		term_manager.tabbed_index = (function() {
@@ -594,16 +609,17 @@ jQuery.extend( GeoMashup, {
 			};
 
 			tabbed_index.create = function() {
-				var $element, start_tab_term_id, start_tab_term_id_match, group_size_match, taxonomy,
-					disable_tab_auto_select = false;
+				var start_tab_term_id, start_tab_term_id_match, group_size_match, taxonomy,
+					disable_tab_auto_select = false,
+					$element = [];
 
 				// Determine a taxonomy to use
-				$.each( GeoMashup.opts.include_taxonomies, function( i, check_taxonomy ) {
+				$.each( loaded_terms, function( check_taxonomy ) {
 					var element = getWidgetElement( check_taxonomy, 'tabbed-index' );
 					if ( element ) {
 						taxonomy = check_taxonomy;
 						$element = $( element );
-						return false;
+						return true; // break
 					}
 				} );
 				if ( $element.length === 0 ) {
@@ -778,14 +794,17 @@ jQuery.extend( GeoMashup, {
 
 				$.each( tax_data.terms, function( term_id, term_data ) {
 
-					if ( old_zoom <= term_data.max_line_zoom && new_zoom > term_data.max_line_zoom ) {
+					if ( term_data.visible && term_data.line ) {
 
-						GeoMashup.hideLine( term_data.line );
+						if ( old_zoom <= term_data.max_line_zoom && new_zoom > term_data.max_line_zoom ) {
 
-					} else if ( old_zoom > term_data.max_line_zoom && new_zoom <= term_data.max_line_zoom ) {
+							GeoMashup.hideLine( term_data.line );
 
-						GeoMashup.showLine( term_data.line );
+						} else if ( old_zoom > term_data.max_line_zoom && new_zoom <= term_data.max_line_zoom ) {
 
+							GeoMashup.showLine( term_data.line );
+
+						}
 					}
 
 				});
@@ -882,10 +901,6 @@ jQuery.extend( GeoMashup, {
 
 	createTermLine: function( term_data ) {
 		//provider override
-	},
-
-	createCategoryLine : function( category ) {
-		return this.createTermLine( category );
 	}
 
 } );
