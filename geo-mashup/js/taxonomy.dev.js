@@ -223,7 +223,7 @@ jQuery.extend( GeoMashup, {
 					// Add check/uncheck all
 					$check_all = $( '<label></label>' )
 						.text( GeoMashup.opts.check_all_label )
-						.attr( 'for', 'gm-' + taxonomy + '-check_all' )
+						.attr( 'for', 'gm-' + taxonomy + '-check-all' )
 						.prepend(
 							$( '<input type="checkbox" />' ).attr( 'id', 'gm-' + taxonomy + '-check-all' )
 								.attr( 'checked', 'checked' )
