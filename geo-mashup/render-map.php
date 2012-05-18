@@ -435,6 +435,8 @@ class GeoMashupRenderMap {
 
 			// Add saved term options to other term properties needed by the map
 
+			$map_data['check_all_label'] = __( 'Check/Uncheck All', 'GeoMashup' );
+
 			$term_options = $geo_mashup_options->get( 'global_map', 'term_options' );
 
 			foreach( $map_data['include_taxonomies'] as $include_taxonomy ) {

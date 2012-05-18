@@ -142,6 +142,7 @@ jQuery.extend( GeoMashup, {
 			$.each( loaded_terms, function( taxonomy, tax_data ) {
 				var $legend, list_tag, row_tag, term_tag, definition_tag, 
 					$element, $title, format, format_match, interactive,
+					add_check_all, $check_all,
 					element = getWidgetElement( taxonomy, 'legend' );
 
 				if ( !element ) {
@@ -155,6 +156,12 @@ jQuery.extend( GeoMashup, {
 					interactive = true;
 				} else {
 					interactive = GeoMashup.opts.interactive_legend;
+				}
+
+				if ( $element.hasClass( 'check-all-off' ) ) {
+					add_check_all = false;
+				} else if ( interactive ) {
+					add_check_all = true;
 				}
 
 				format_match = /format-(\w+)/.exec( $element.attr( 'class' ) );
@@ -211,6 +218,34 @@ jQuery.extend( GeoMashup, {
 				 */
 				GeoMashup.doAction( 'taxonomyLegend', $legend, taxonomy );
 
+				if ( GeoMashup.opts.name && add_check_all ) {
+
+					// Add check/uncheck all
+					$check_all = $( '<label></label>' )
+						.text( GeoMashup.opts.check_all_label )
+						.attr( 'for', 'gm-' + taxonomy + '-check_all' )
+						.prepend(
+							$( '<input type="checkbox" />' ).attr( 'id', 'gm-' + taxonomy + '-check-all' )
+								.attr( 'checked', 'checked' )
+								.change( function() {
+									if ( $( this ).is( ':checked' ) ) {
+										$legend.find( 'input.gm-' + taxonomy + '-checkbox:not(:checked)' ).click();
+									} else {
+										$legend.find( 'input.gm-' + taxonomy + '-checkbox:checked' ).click();
+									}
+								} )
+						);	
+					if ( row_tag ) {
+						$legend.append( 
+							$( '<' + row_tag + '/>' ).append( $( '<' + term_tag + '/>' ) )
+								.append( $( '<' + definition_tag + '/>' ).append( $check_all ) )
+						);
+					} else {
+						$legend.append( $( '<' + term_tag + '/>' ) ).append( $( '<' + definition_tag + '/>' )
+							.append( $check_all ) );
+					}
+				}
+
 				$.each( tax_data.terms, function ( term_id, term_data ) {
 					var id, name, $entry, $key, $def, $label, $checkbox;
 
@@ -223,6 +258,7 @@ jQuery.extend( GeoMashup, {
 						$checkbox = $( '<input type="checkbox" name="term_checkbox" />' )
 							.attr( 'id', id )
 							.attr( 'checked', 'checked' )
+							.addClass( 'gm-' + taxonomy + '-checkbox' )
 							.change( function() {
 								GeoMashup.term_manager.setTermVisibility( term_id, taxonomy, $( this ).is( ':checked' ) ); 
 							});

@@ -1134,6 +1134,9 @@ class GeoMashup {
 		if ( !empty( $args['noninteractive'] ) && 'false' != $args['noninteractive'] )
 			$classes[] = 'noninteractive';
 
+		if ( !empty( $args['check_all'] ) && 'true' != $args['check_all'] )
+			$classes[] = 'check-all-off';
+
 		if ( !empty( $args['format'] ) ) 
 			$classes[] = 'format-' . esc_attr( $args['format'] );
 		
