@@ -576,7 +576,7 @@ class GeoMashup {
 		}
 		$args = array(
 			'post_type' => 'attachment',
-			'numberposts' => null,
+			'numberposts' => -1,
 			'post_status' => null,
 			'post_mime_type' => array(
 				'application/vnd.google-earth.kml+xml',
