@@ -101,9 +101,6 @@ class GeoMashup {
 		include_once( GEO_MASHUP_DIR_PATH . '/geo-mashup-options.php' );
 		include_once( GEO_MASHUP_DIR_PATH . '/geo-mashup-db.php' );
 		include_once( GEO_MASHUP_DIR_PATH . '/geo-mashup-ui-managers.php' );
-	if ( !is_admin() ) {
-			include_once( GEO_MASHUP_DIR_PATH . '/shortcodes.php');
-		}
 	}
 
 	/**
@@ -170,6 +167,8 @@ class GeoMashup {
 			add_filter( 'query_vars', array( __CLASS__, 'query_vars' ) );
 			add_action( 'template_redirect', array( __CLASS__, 'template_redirect' ) );
 
+			include_once( GEO_MASHUP_DIR_PATH . '/shortcodes.php');
+	
 		}
 	}
 
@@ -577,7 +576,7 @@ class GeoMashup {
 		}
 		$args = array(
 			'post_type' => 'attachment',
-			'numberposts' => null,
+			'numberposts' => -1,
 			'post_status' => null,
 			'post_mime_type' => array(
 				'application/vnd.google-earth.kml+xml',

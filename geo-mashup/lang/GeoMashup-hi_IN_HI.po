@@ -1,0 +1,730 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Geo Mashup\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2010-02-18 08:44-0700\n"
+"PO-Revision-Date: \n"
+"Last-Translator: shivangi <shivangi@outshinesolutions.com>\n"
+"Language-Team: Outshine Solutions <ash.pr@outshinesolutions.com>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-SourceCharset: utf-8\n"
+"X-Poedit-Language: Hindi\n"
+"X-Poedit-Country: INDIA\n"
+
+#: comment-default.php:50
+#, php-format
+msgid "<cite class=\"fn\">%s</cite> <span class=\"says\">says:</span>"
+msgstr "<cite class=\"fn\">%s</cite> <span class=\"says\">sagt:</span>"
+
+#: comment-default.php:53
+#, php-format
+msgid "%1$s at %2$s"
+msgstr "%1$s at %2$s"
+
+#: edit-form.php:131
+msgid "Address"
+msgstr "पता"
+
+#: edit-form.php:132
+msgid "Saved Name"
+msgstr "सहेजा गया नाम"
+
+#: edit-form.php:133
+msgid "Geo Date"
+msgstr "Geo तिथि"
+
+#: edit-form.php:161
+msgid "Loading Google map. Check Geo Mashup options if the map fails to load."
+msgstr "लोड हो रहा है गूगल नक्शे. Geo मैशप विकल्पों की जाँच करें अगर नक्शे लोड करने में विफल रहता है."
+
+#: edit-form.php:167
+msgid "Location Map Image"
+msgstr "स्थान मानचित्र छवि"
+
+#: edit-form.php:173
+msgid "Find a new location:"
+msgstr "एक नए स्थान खोजें:"
+
+#: edit-form.php:177
+msgid "or select from"
+msgstr "चयन"
+
+#: edit-form.php:179
+msgid "[Saved Locations]"
+msgstr "[स्थान सहेजा]"
+
+#: edit-form.php:204
+msgid "Add Location"
+msgstr "स्थान जोड़ें"
+
+#: edit-form.php:205
+msgid "Delete"
+msgstr "हटाना"
+
+#: edit-form.php:206
+msgid "Save"
+msgstr "बचाना"
+
+#: edit-form.php:209
+msgid "help"
+msgstr "मदद"
+
+#: edit-form.php:212
+msgid "<em>Saved Name</em> is an optional name you may use to add entries to the Saved Locations menu."
+msgstr "<em>सहेजा गया नाम </em> आप सहेजे गए स्थान मेनू प्रविष्टियों को जोड़ने का उपयोग कर सकते हैं एक वैकल्पिक नाम है."
+
+#: edit-form.php:213
+msgid "<em>Geo Date</em> associates a date (most formats work) and time with a location. Leave the default value if uncertain."
+msgstr "<em>Geo तिथि</em> सहयोगियों एक (ज्यादातर स्वरूपों काम) की तारीख और स्थान के साथ समय. डिफ़ॉल्ट अगर अनिश्चित मूल्य छोड़ दें."
+
+#: edit-form.php:215
+msgid "Put a green pin at a new location. There are many ways to do it:"
+msgstr "एक नए स्थान पर एक हरे रंग की पिन रखो. वहाँ यह करने के लिए कई तरीके हैं:"
+
+#: edit-form.php:217
+msgid "Search for a location name."
+msgstr "एक नाम और स्थान के लिए खोजें."
+
+#: edit-form.php:218
+msgid "For multiple search results, mouse over pins to see location names, and click a result pin to select that location."
+msgstr "एकाधिक खोज परिणामों के लिए, पिन पर माउस स्थान का नाम देखने के लिए, और एक परिणाम पिन उस स्थान का चयन करने के लिए क्लिक करें."
+
+#: edit-form.php:219
+msgid "Search for a decimal latitude and longitude, like <em>40.123,-105.456</em>."
+msgstr "एक दशमलव अक्षांश और देशांतर के लिए की तरह, की खोज <em>40.123, -105.456</em>."
+
+#: edit-form.php:220
+msgid "Search for a street address, like <em>123 main st, anytown, acity</em>."
+msgstr "<em> 123 मुख्य सेंट, Anytown, acity की तरह एक सड़क का पता के लिए खोज, </ em>."
+
+#: edit-form.php:221
+msgid "Click on the location. Zoom in if necessary so you can refine the location by dragging it or clicking a new location."
+msgstr "स्थान पर क्लिक करें. ज़ूम करने के लिए यदि आवश्यक हो तो आप इसे खींच या एक नए स्थान पर क्लिक करके स्थान को परिष्कृत कर सकते हैं."
+
+#: edit-form.php:223
+msgid "To execute a search, type search text into the Find Location box and hit the enter key. If you type a name next to \"Save As\", the location will be saved under that name and added to the Saved Locations dropdown list."
+msgstr "खोजें स्थान बॉक्स में एक खोज, प्रकार खोज पाठ पर अमल और कुंजी दर्ज करें मारा. यदि आप एक \"इस रूप में सहेजें \" नाम लिखें, स्थान है कि नाम के तहत बचाया जाएगा और सहेजे गए स्थान ड्रॉपडाउन सूची में जोड़ा."
+
+#: edit-form.php:224
+msgid "To remove the location (green pin), clear the search box and hit the enter key."
+msgstr "स्थान (हरे रंग की पिन) को निकालने के लिए, खोज बॉक्स रिक्त करें और कुंजी दर्ज करें मारा."
+
+#: edit-form.php:225
+msgid "When you are satisfied with the location, save or update."
+msgstr "जब आप स्थान से संतुष्ट हैं बचाने के लिए, या अद्यतन करें."
+
+#: edit-form.php:229
+msgid "To add or update location choose a saved location, or find a new location using one of these formats:"
+msgstr "जोड़ने या स्थान अद्यतन करें किसी सहेजे गए स्थान का चयन, या एक नया स्थान खोजने के इन स्वरूपों का उपयोग:"
+
+#: edit-form.php:231
+msgid "A place name like <em>Yellowstone National Park</em>"
+msgstr "<em> Yellowstone राष्ट्रीय उद्यान की तरह एक जगह का नाम </em>"
+
+#: edit-form.php:232
+msgid "A decimal latitude and longitude, like <em>40.123,-105.456</em>."
+msgstr "एक दशमलव अक्षांश और देशांतर की तरह, <em>40.123, -105.456</em>."
+
+#: edit-form.php:233
+msgid "A full or partial street address, like <em>123 main st, anytown, acity 12345 USA</em>."
+msgstr "123 <em> मुख्य सेंट, Anytown, acity 12,345 संयुक्त राज्य अमेरिका की तरह एक पूर्ण या आंशिक सड़क का पता, </em>."
+
+#: edit-form.php:235
+msgid "When you save or update, the closest match available will be saved as the location."
+msgstr "जब आप को बचाने के लिए या, निकटतम उपलब्ध मैच के स्थान के रूप में सहेजा जाएगा."
+
+#: geo-mashup-db.php:746
+msgid "No locations found with missing address fields."
+msgstr "नो स्थानों के लापता पता फ़ील्ड के साथ पाया गया."
+
+#: geo-mashup-db.php:749
+msgid "Locations to geocode: "
+msgstr "geocode के लिए स्थान:"
+
+#: geo-mashup-db.php:757
+msgid "Time limit: "
+msgstr "समय सीमा:"
+
+#: geo-mashup-db.php:768
+msgid "Too many requests, increasing delay to"
+msgstr "बहुत सारे अनुरोध, बढ़ रही है देरी"
+
+#: geo-mashup-db.php:771
+msgid "address"
+msgstr "पता"
+
+#: geo-mashup-db.php:772
+msgid "postal code"
+msgstr "डाक कोड"
+
+#: geo-mashup-db.php:775
+msgid "No address info found, status"
+msgstr "नहीं मिला पता जानकारी स्थिति,"
+
+#: geo-mashup-db.php:779
+msgid "Time limit exceeded, retry to continue."
+msgstr "समय सीमा पार हो गई, जारी रखने के लिए पुन: प्रयास करें."
+
+#: geo-mashup-db.php:854
+msgid "Converting old locations"
+msgstr " पुराने स्थानों को परिवर्तित"
+
+#: geo-mashup-db.php:871
+#, php-format
+msgid "Failed to convert location (%s). You can %sedit the post%s "
+msgstr "स्थान (%s) में बदलने में विफल. आप पोस्ट%s %s के edit कर सकते हैं"
+
+#: geo-mashup-db.php:872
+msgid "to update the location, and try again."
+msgstr "स्थान अद्यतन करें, और फिर कोशिश करें."
+
+#: geo-mashup-db.php:885
+msgid "Converting saved locations"
+msgstr "परिवर्तित सहेजे गए स्थान"
+
+#: geo-mashup-db.php:895
+msgid "OK: "
+msgstr "ठीक है:"
+
+#: geo-mashup-db.php:900
+#, php-format
+msgid "Failed to convert saved location (%s). "
+msgstr "सहेजी गई स्थान (%s) में नाकाम रहे."
+
+#: geo-mashup-db.php:901
+msgid "You'll have to save it again, sorry."
+msgstr "आप इसे फिर से बचाने के लिए, माफ करना होगा."
+
+#: geo-mashup-db.php:925
+msgid "Failed to initialize geo dates from post dates: "
+msgstr "पोस्ट दिनांक से भू दिनांक को प्रारंभ करने में विफल:"
+
+#: geo-mashup-db.php:928
+#, php-format
+msgid "Initialized %d geo dates from corresponding post dates."
+msgstr "प्रारंभिकीकरण%d भू इसी पोस्ट करने की तारीख से तारीखें."
+
+#: geo-mashup-db.php:1386
+msgid "A location must have an ID or coordinates to be saved."
+msgstr "एक स्थान एक आईडी या निर्देशांक को सुरक्षित करना होना चाहिए."
+
+#: geo-mashup-options.php:361
+#: geo-mashup-options.php:369
+#: geo-mashup-options.php:375
+#: geo-mashup-options.php:385
+#: geo-mashup-options.php:401
+#: geo-mashup-options.php:406
+#: geo-mashup-options.php:419
+#: geo-mashup-options.php:451
+#: geo-mashup-options.php:466
+#: geo-mashup-options.php:479
+msgid "is invalid for"
+msgstr "के लिए अमान्य है"
+
+#: geo-mashup-options.php:362
+#: geo-mashup-options.php:376
+msgid ", which must be a valid map type (see documentation)"
+msgstr "जो एक वैध नक्शा प्रकार (प्रलेखन देखें) है, "
+
+#: geo-mashup-options.php:370
+msgid ", which must be an array of valid map types (see documentation)"
+msgstr "जो वैध नक्शा प्रकार के एक सरणी (प्रलेखन देखें) है "
+
+#: geo-mashup-options.php:386
+msgid ", which must be a valid map control (see documentation)"
+msgstr "जो एक वैध नक्शा नियंत्रण (प्रलेखन देखें) है, "
+
+#: geo-mashup-options.php:402
+msgid ", which must be a string"
+msgstr " जो एक स्ट्रिंग होना चाहिए"
+
+#: geo-mashup-options.php:407
+msgid ", which must not contain XML tags."
+msgstr "जो XML टैग नहीं होनी चाहिए."
+
+#: geo-mashup-options.php:420
+msgid ", which must be a number"
+msgstr "जो संख्या में होनी चाहिए"
+
+#: geo-mashup-options.php:452
+msgid ", which must be \"true\" or \"false\""
+msgstr "जो \"true \" या \"गलत \"  होना चाहिए"
+
+#: geo-mashup-options.php:467
+msgid ", which must be an array"
+msgstr ", which must be an array"
+
+#: geo-mashup-options.php:480
+msgid ", which must be a number from 0 to "
+msgstr "जो 0 से एक नंबर होनी चाहिए"
+
+#: geo-mashup-ui-managers.php:123
+msgid "Object location not saved - invalid request."
+msgstr "अमान्य अनुरोध - वस्तु स्थान नहीं सहेजी गई."
+
+#: geo-mashup-ui-managers.php:269
+#: geo-mashup-ui-managers.php:431
+#: geo-mashup-ui-managers.php:432
+msgid "Location"
+msgstr "स्थान"
+
+#: geo-mashup.php:298
+msgid "No object id posted."
+msgstr " वस्तु आईडी पोस्ट नहीं है."
+
+#: geo-mashup.php:315
+msgid "Location updated."
+msgstr "स्थान अपडेट."
+
+#: geo-mashup.php:317
+msgid "Location deleted."
+msgstr "स्थान नष्ट कर दिया."
+
+#: geo-mashup.php:319
+msgid "Location added."
+msgstr "स्थान जोड़ा गया."
+
+#: geo-mashup.php:664
+msgid "Geo Mashup found no objects to map in this context"
+msgstr "Geo मैशप कोई वस्तु इस संदर्भ में मैप करने के लिए पाया गया"
+
+#: geo-mashup.php:688
+msgid "Geo Mashup found no current object to map"
+msgstr "Geo मैशप कोई मौजूदा वस्तु मैप पाया गया"
+
+#: geo-mashup.php:692
+msgid "Geo Mashup ommitted a map for an object with no location"
+msgstr "Geo मैशप कोई स्थान के साथ एक वस्तु के लिए एक नक्शा ommitted"
+
+#: geo-mashup.php:879
+msgid "You must add a description to this category to use this Geo Mashup feature."
+msgstr "आप इस श्रेणी में कोई वर्णन जोड़ने के लिए इस Geo मैशप सुविधा का उपयोग करना चाहिए."
+
+#: geo-mashup.php:909
+#: options.php:127
+msgid "Geo Mashup Options"
+msgstr "Geo मैशप विकल्प"
+
+#: geo-mashup.php:909
+msgid "Geo Mashup"
+msgstr "Geo मैशप"
+
+#: geo-mashup.php:931
+#, php-format
+msgid "Geo Mashup requires a Google API key in the <a href=\"%s\">settings</a> before it will work."
+msgstr "Geo मैशप एक गूगल एपीआई  में सेटिंग्स <a href=\"%s\"> </ a> से पहले यह काम करेगा कुंजी की आवश्यकता है."
+
+#: geo-mashup.php:954
+msgid "Settings"
+msgstr "सेटिंग्स"
+
+#: geo-mashup.php:973
+msgid "Documentation"
+msgstr "दस्तावेज़ीकरण"
+
+#: geo-mashup.php:975
+msgid "Donate"
+msgstr "दान"
+
+#: geo-mashup.php:1153
+msgid "Show on map"
+msgstr "नक्शे पर दिखाएँ "
+
+#: geo-mashup.php:1164
+msgid "Geotag Icon"
+msgstr "Geotag चिह्न"
+
+#: options.php:32
+msgid "Options updated."
+msgstr "Options updated."
+
+#: options.php:45
+msgid "Database upgraded."
+msgstr "डेटाबेस उन्नत किया."
+
+#: options.php:51
+msgid "Saved options may be corrupted, try updating again. Corrupt values: "
+msgstr "सहेजे गए विकल्पों दूषित हो सकती है, फिर से अद्यतन करने की कोशिश करो. भ्रष्ट मूल्यों:"
+
+#: options.php:59
+msgid "Some invalid options will not be used. If you've just upgraded, do an update to initialize new options."
+msgstr "कुछ अवैध विकल्प का इस्तेमाल नहीं किया जाएगा. यदि आप उन्नत किया है, एक अद्यतन करने के लिए नए विकल्प का आरम्भीकरण."
+
+#: options.php:88
+msgid "Roadmap"
+msgstr "रोडमैप"
+
+#: options.php:89
+msgid "Satellite"
+msgstr "उपग्रह"
+
+#: options.php:90
+msgid "Hybrid"
+msgstr "संकर"
+
+#: options.php:91
+msgid "Terrain"
+msgstr "इलाके"
+
+#: options.php:92
+msgid "Earth Plugin"
+msgstr "धरती प्लगइन"
+
+#: options.php:95
+msgid "Small Zoom"
+msgstr "लघु बड़ा"
+
+#: options.php:96
+msgid "Small Zoom 3D"
+msgstr "लघु बड़ा 3D"
+
+#: options.php:97
+msgid "Small Pan/Zoom"
+msgstr "लघु पान / बड़ा"
+
+#: options.php:98
+msgid "Large Pan/Zoom"
+msgstr "बड़े पान / बड़ा"
+
+#: options.php:99
+msgid "Large Pan/Zoom 3D"
+msgstr "बड़े पान / बड़ा 3D"
+
+#: options.php:102
+msgid "Yes"
+msgstr "हां"
+
+#: options.php:103
+msgid "No"
+msgstr "नहीं है"
+
+#: options.php:104
+msgid "Only"
+msgstr "केवल"
+
+#: options.php:106
+msgid "auto"
+msgstr "स्वत:"
+
+#: options.php:132
+msgid "The Geo Mashup database is out of date."
+msgstr "Geo मैशप डेटाबेस की तारीख से बाहर है."
+
+#: options.php:133
+msgid "Upgrade Database"
+msgstr "धन्यवाद अपग्रेड"
+
+#: options.php:139
+msgid "Overall"
+msgstr "कुल"
+
+#: options.php:140
+msgid "Global Maps"
+msgstr "विश्व मानचित्र"
+
+#: options.php:141
+msgid "Single Maps"
+msgstr "एकल मानचित्र"
+
+#: options.php:142
+msgid "Contextual Maps"
+msgstr "प्रासंगिक मानचित्र"
+
+#: options.php:150
+msgid "Overall Geo Mashup Settings"
+msgstr "समस्त Geo मैशप सेटिंग्स"
+
+#: options.php:153
+msgid "Google API Key"
+msgstr "गूगल एपीआई कुंजी"
+
+#: options.php:160
+msgid "Get yours here"
+msgstr "तुम्हारे यहाँ है"
+
+#: options.php:163
+msgid "This setting is required for Geo Mashup to work."
+msgstr "यह सेटिंग Geo मैशप लिए आवश्यक है "
+
+#: options.php:169
+msgid "Generated links go here"
+msgstr "उत्पन्न लिंक यहाँ जाओ"
+
+#: options.php:170
+msgid "Global Mashup Page"
+msgstr "ग्लोबल मैशप पेज"
+
+#: options.php:184
+msgid "No pages available."
+msgstr " पृष्ठ  उपलब्ध नहीं है"
+
+#: options.php:188
+msgid "Geo Mashup will use this page for generated location links"
+msgstr "Geo मैशप उत्पन्न स्थान लिंक के लिए इस पृष्ठ का उपयोग करेगा"
+
+#: options.php:193
+msgid "Use Theme Style Sheet with Maps"
+msgstr "मैप्स के साथ थीम स्टाइल शीट का प्रयोग करें"
+
+#: options.php:206
+msgid "Add Category Links"
+msgstr "श्रेणी लिंक जोड़ें"
+
+#: options.php:214
+msgid "Add map links to category lists. Categories must have descriptions for this to work."
+msgstr "Add map links to category lists. Categories must have descriptions for this to work."
+
+#: options.php:219
+msgid "Category Link Separator"
+msgstr "श्रेणी लिंक सेपरेटर"
+
+#: options.php:230
+msgid "Category Link Text"
+msgstr "श्रेणी लिंक पाठ"
+
+#: options.php:240
+msgid "Category Link Zoom Level"
+msgstr "श्रेणी लिंक बड़ा स्तर"
+
+#: options.php:252
+#: options.php:421
+#: options.php:558
+#: options.php:793
+msgid "0 is zoomed all the way out."
+msgstr "0 सभी तरह जूम किया है."
+
+#: options.php:257
+msgid "Collect Location For"
+msgstr "स्थान ले लीजिए"
+
+#: options.php:263
+msgid "posts and pages"
+msgstr "पोस्ट और पृष्ठों"
+
+#: options.php:268
+msgid "users"
+msgstr "उपयोगकर्ताओं"
+
+#: options.php:273
+msgid "comments"
+msgstr "टिप्पणी"
+
+#: options.php:277
+msgid "Enable Reverse Geocoding"
+msgstr "रिवर्स जियोकोडिंग सक्षम"
+
+#: options.php:285
+msgid "Try to look up missing address fields for new locations."
+msgstr "नए स्थानों को के लिए लापता पता फ़ील्ड को देखने की कोशिश करो."
+
+#: options.php:291
+msgid "Bulk Reverse Geocode"
+msgstr "थोक रिवर्स geocode"
+
+#: options.php:293
+msgid "Start"
+msgstr "प्रारंभ"
+
+#: options.php:295
+msgid "Try to look up missing address fields for existing locations. Could be slow."
+msgstr "मौजूदा स्थानों के लिए लापता पता फ़ील्ड को देखने की कोशिश करो. धीमी गति से किया जा सका"
+
+#: options.php:301
+msgid "AdSense For Search ID"
+msgstr "खोज आईडी के लिए ऐडसेंस"
+
+#: options.php:309
+msgid "Your client ID, used with the Google Bar. Leave the default value to use Geo Mashup's :)."
+msgstr "आपका ग्राहक आईडी, गूगल बार के साथ इस्तेमाल किया. डिफ़ॉल्ट मान छोड़ दो Geo मैशप है :) का उपयोग करने के लिए."
+
+#: options.php:314
+#: options.php:446
+#: options.php:450
+#: options.php:682
+#: options.php:839
+msgid "Update Options"
+msgstr "विकल्प अपडेट करें"
+
+#: options.php:317
+msgid "Default settings for maps of a single located post."
+msgstr "एक एकल स्थित पोस्ट के नक्शे के लिए डिफ़ॉल्ट सेटिंग्स."
+
+#: options.php:320
+#: options.php:453
+#: options.php:688
+msgid "Map Width"
+msgstr "नक्शा चौड़ाई"
+
+#: options.php:327
+#: options.php:460
+#: options.php:695
+msgid "Pixels, or append %."
+msgstr "पिक्सल, या संलग्न%."
+
+#: options.php:331
+#: options.php:464
+#: options.php:699
+msgid "Map Height"
+msgstr "नक्शा ऊँचाई"
+
+#: options.php:338
+#: options.php:471
+#: options.php:706
+msgid "px"
+msgstr "पिक्सल"
+
+#: options.php:342
+#: options.php:475
+#: options.php:710
+msgid "Map Control"
+msgstr "नक्शा नियंत्रण"
+
+#: options.php:356
+#: options.php:489
+#: options.php:724
+msgid "Default Map Type"
+msgstr "डिफ़ॉल्ट नक्शा प्रकार"
+
+#: options.php:370
+#: options.php:503
+#: options.php:738
+msgid "Add Map Type Control"
+msgstr "नक्शा प्रकार नियंत्रण जोड़ें"
+
+#: options.php:385
+#: options.php:518
+#: options.php:753
+msgid "Add Overview Control"
+msgstr "Add Overview Control"
+
+#: options.php:393
+#: options.php:528
+#: options.php:763
+msgid "Add Google Bar"
+msgstr "Google बार जोड़ें"
+
+#: options.php:401
+#: options.php:538
+#: options.php:773
+msgid "Enable Scroll Wheel Zoom"
+msgstr "स्क्रॉल व्हील बड़ा सक्षम"
+
+#: options.php:409
+#: options.php:546
+#: options.php:781
+msgid "Default Zoom Level"
+msgstr "डिफ़ॉल्ट ज़ूम स्तर"
+
+#: options.php:426
+#: options.php:633
+#: options.php:819
+msgid "Click To Load"
+msgstr "लोड करने के लिए क्लिक करें"
+
+#: options.php:436
+#: options.php:643
+#: options.php:829
+msgid "Click To Load Text"
+msgstr "पाठ लोड करने के लिए क्लिक करें"
+
+#: options.php:449
+msgid "Default settings for global maps of located items."
+msgstr "स्थित मदों की वैश्विक नक्शे के लिए डिफ़ॉल्ट सेटिंग्स."
+
+#: options.php:563
+msgid "Cluster Markers Until Zoom Level"
+msgstr "क्लस्टर मार्करों बड़ा स्तर"
+
+#: options.php:571
+msgid "Highest zoom level to cluster markers, or blank for no clustering."
+msgstr "उच्चतम ज़ूम स्तर क्लस्टर मार्करों, कोई क्लस्टरिंग के लिए या रिक्त करने के लिए."
+
+#: options.php:576
+#: options.php:798
+msgid "Marker Selection Behaviors"
+msgstr "मार्कर चयन व्यवहार"
+
+#: options.php:581
+#: options.php:803
+msgid "Open info window"
+msgstr "जानकारी विंडो खोलें"
+
+#: options.php:585
+#: options.php:807
+msgid "Highlight"
+msgstr "हाइलाइट"
+
+#: options.php:589
+#: options.php:811
+msgid "Center"
+msgstr "केंद्र"
+
+#: options.php:593
+#: options.php:815
+msgid "Show Geo Attachments"
+msgstr "Geo अनुलग्नक"
+
+#: options.php:597
+msgid "Automatic Selection"
+msgstr "स्वत: चयन"
+
+#: options.php:605
+msgid "Selects the linked or most recent item when the map loads."
+msgstr "आइटम लिंक्ड या सबसे हाल ही में जब नक्शा लोड चुनता है."
+
+#: options.php:610
+msgid "Show Only Most Recent Items"
+msgstr "केवल सबसे हाल के आइटम दिखाएँ"
+
+#: options.php:617
+msgid "Number of items to show, leave blank for all"
+msgstr "आइटम की संख्या को दिखाने के लिए, सभी के लिए खाली छोड़ दें"
+
+#: options.php:621
+msgid "Show Future Posts"
+msgstr "भविष्य के पद"
+
+#: options.php:654
+msgid "Category"
+msgstr "श्रेणी"
+
+#: options.php:654
+msgid "Color"
+msgstr "रंग"
+
+#: options.php:655
+msgid "Show Connecting Line Until Zoom Level (0-20 or none)"
+msgstr "बड़ा स्तर तक कनेक्ट रेखा (0-20 या कोई नहीं)"
+
+#: options.php:685
+msgid "Default settings for contextual maps, which include just the items shown on a page, for example."
+msgstr "प्रासंगिक नक्शे, जो सिर्फ एक पृष्ठ पर दिखाए गए उदाहरण के लिए आइटम, के लिए डिफ़ॉल्ट सेटिंग्स."
+
+#: options.php:844
+msgid "Activation Log"
+msgstr "सक्रियण प्रवेश करें"
+
+#: options.php:848
+msgid "View Activation Log"
+msgstr "सक्रियण प्रवेश देखें"
+
+#: options.php:850
+msgid "Geo Mashup Documentation"
+msgstr "Geo मैशप प्रलेखन"
+
+#: render-map.php:218
+msgid "This map requires JavaScript. You may have to enable it in your settings."
+msgstr "इस नक्शे को जावास्क्रिप्ट की आवश्यकता है. आप अपनी सेटिंग्स में सक्षम हो सकता है."
+
+#: user-default.php:40
+msgid "Display Name"
+msgstr "नाम प्रदर्शित करें"
+
+#: user-default.php:45
+msgid "Website"
+msgstr "वेबसाइट"
+
+#~ msgid "Geo Mashup Plugin Options"
+#~ msgstr "Geo Mashup Plugin Einstellungen"
