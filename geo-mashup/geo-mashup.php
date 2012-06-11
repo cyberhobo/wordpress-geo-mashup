@@ -53,6 +53,13 @@ class GeoMashup {
 	private static $add_loader_script = false;
 
 	/**
+	 * The basename of the Geo Mashup Search plugin when deactivated.
+	 * 
+	 * @since 1.5
+	 */
+	private static $deactivate_geo_search_basename = '';
+
+	/**
 	 * Load Geo Mashup.
 	 * 
 	 * Initializations that can be done before init(). 
@@ -98,9 +105,28 @@ class GeoMashup {
 	 * @since 1.2
 	 */
 	private static function load_dependencies() {
+		global $geo_mashup_options;
 		include_once( GEO_MASHUP_DIR_PATH . '/geo-mashup-options.php' );
 		include_once( GEO_MASHUP_DIR_PATH . '/geo-mashup-db.php' );
 		include_once( GEO_MASHUP_DIR_PATH . '/geo-mashup-ui-managers.php' );
+
+		if ( $geo_mashup_options->get( 'overall', 'enable_geo_search' ) == 'true' )
+			include_once( GEO_MASHUP_DIR_PATH . '/geo-mashup-search.php' );
+
+		if ( class_exists( 'GeoMashupSearch' ) and defined( 'GeoMashupSearch::VERSION' ) ) {
+
+			// The old search plugin is active - enable native geo search and flag for deactivation
+			self::$deactivate_geo_search_basename = GeoMashupSearch::get_instance()->basename;
+			$geo_mashup_options->set_valid_options(
+				array(
+					'overall' => array(
+						'enable_geo_search' => 'true',
+					)
+				)
+			);
+			$geo_mashup_options->save();
+		}
+
 	}
 
 	/**
@@ -1228,22 +1254,28 @@ class GeoMashup {
 	public static function admin_notices() {
 		global $geo_mashup_options;
 
-		$message = '';
+		$message = array();
+		if ( !empty( self::$deactivate_geo_search_basename ) ) {
+			deactivate_plugins( GeoMashupSearch::get_instance()->basename );
+			$message_format = __( 'Geo Mashup now includes search, deactivating the old %s plugin. It\'s safe to delete it.', 'GeoMashup' );
+			$message[] = sprintf( $message_format, self::$deactivate_geo_search_basename );
+		}
+
 		if ( ! self::is_options_page() ) {
 			// We're not looking at the settings, but it may be important to do so
 			$google_key = $geo_mashup_options->get( 'overall', 'google_key' );
 			if ( empty( $google_key ) and 'google' == $geo_mashup_options->get( 'overall', 'map_api' ) and current_user_can( 'manage_options' ) ) {
-				$message = __( 'Geo Mashup requires a Google API key in the <a href="%s">settings</a> before it will work.', 'GeoMashup' );
-				$message = sprintf( $message, admin_url( 'options-general.php?page=' . GEO_MASHUP_PLUGIN_NAME ) );
+				$message_format = __( 'Geo Mashup requires a Google API key in the <a href="%s">settings</a> before it will work.', 'GeoMashup' );
+				$message[] = sprintf( $message_format, admin_url( 'options-general.php?page=' . GEO_MASHUP_PLUGIN_NAME ) );
 			}
 			if ( GEO_MASHUP_DB_VERSION != GeoMashupDB::installed_version() and current_user_can( 'manage_options' ) ) {
-				$message = __( 'Geo Mashup needs to upgrade its database, visit the <a href="%s">settings</a> to do it now.', 'GeoMashup' );
-				$message = sprintf( $message, admin_url( 'options-general.php?page=' . GEO_MASHUP_PLUGIN_NAME ) );
+				$message_format = __( 'Geo Mashup needs to upgrade its database, visit the <a href="%s">settings</a> to do it now.', 'GeoMashup' );
+				$message[] = sprintf( $message_format, admin_url( 'options-general.php?page=' . GEO_MASHUP_PLUGIN_NAME ) );
 			}
 		}
 
 		if ( ! empty( $message ) ) {
-			echo '<div class="error fade"><p>' . $message . '</p></div>';
+			echo '<div class="error fade"><p>' . implode( '</p><p>', $message ) . '</p></div>';
 		}
 	}
 

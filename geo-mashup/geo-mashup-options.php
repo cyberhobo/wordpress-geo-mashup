@@ -40,7 +40,8 @@ class GeoMashupOptions {
 			'adsense_code' => 'partner-pub-5088093001880917',
 			'geonames_username' => 'geomashup',
 	 		'map_api' => 'googlev3',
-			'import_custom_field' => '' ),
+			'import_custom_field' => '',
+			'enable_geo_search' => 'false' ),
 		'global_map' => array (
 			'width' => '400',
 			'height' => '400',
@@ -479,6 +480,7 @@ class GeoMashupOptions {
 			case 'user':
 			case 'comment':
 			case 'enable_reverse_geocoding':
+			case 'enable_geo_search':
 				if ( empty ( $value ) ) {
 					// fail quietly - it will be converted to false
 					return false;
