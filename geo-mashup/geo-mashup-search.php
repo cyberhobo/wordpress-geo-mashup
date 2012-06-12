@@ -294,8 +294,6 @@ class GeoMashupSearchWidget extends WP_Widget {
 			wp_enqueue_script( 'geo-mashup-search-find-me' );
 		}
 
-		add_action( 'wp_footer', array( $geo_mashup_search, 'action_wp_footer' ) );
-
 		extract( $args );
 		$title = apply_filters( 'widget_title', $instance['title'] );
 		echo $before_widget . $before_title . $title . $after_title;
