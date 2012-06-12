@@ -936,6 +936,12 @@ class GeoMashup {
 				$map_content = 'single';
 			}
 
+		} else if ( $map_content instanceof WP_Query ) {
+
+			// We've been given a post query, put its contents in a global map
+			$atts['object_ids'] = implode( ',', wp_list_pluck( $map_content->posts, 'ID' ) );
+			$map_content = 'global';
+
 		}
 
 		switch ($map_content) {
