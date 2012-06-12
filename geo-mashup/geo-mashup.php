@@ -273,7 +273,7 @@ class GeoMashup {
 	 * WordPress action to remove expired Geo Mashup transients.
 	 * 
 	 * @since 1.4.6
-	 * @uses apply_filter() geo_mashup_disable_scheduled_delete A way to disable the scheduled delete.
+	 * @uses apply_filters() geo_mashup_disable_scheduled_delete A way to disable the scheduled delete.
 	 */
 	public static function action_wp_scheduled_delete() {
 		global $wpdb, $_wp_using_ext_object_cache;

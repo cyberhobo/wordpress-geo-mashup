@@ -14,6 +14,10 @@
 class GeoMashupSearch {
 	const MILES_PER_KILOMETER = 0.621371;
 
+	/**
+	 * Plugin URL path.
+	 * @deprecated Use GEO_MASHUP_URL_PATH.
+	 */
 	public $url_path;
 
 	private $results;
@@ -40,6 +44,7 @@ class GeoMashupSearch {
 	 */
 	public function __construct() {
 
+		// Back compat 
 		$this->url_path = GEO_MASHUP_URL_PATH;
 
 		// Initialize
@@ -82,6 +87,7 @@ class GeoMashupSearch {
 	 * WordPress filter to add geo mashup search results to page content
 	 * when requested.
 	 *
+	 * @uses apply_filters() geo_mashup_search_query_args Filter the geo query arguments.
 	 * @param string $content
 	 * @return string Content including search results if requested.
 	 */
@@ -133,6 +139,8 @@ class GeoMashupSearch {
 
 				if ( isset( $_REQUEST['map_cat'] ) )
 					$geo_query_args['map_cat'] = $_REQUEST['map_cat'];
+
+				$geo_query_args = apply_filters( 'geo_mashup_search_query_args', $geo_query_args );
 
 				$this->results = GeoMashupDB::get_object_locations( $geo_query_args );
 				$this->result_count = count( $this->results );

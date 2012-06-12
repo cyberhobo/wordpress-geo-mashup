@@ -38,7 +38,7 @@
 	<?php echo GeoMashup::map( array(
 		'name' => 'search-results-map',
 		'search_text' => $search_text,
-		'search_plugin_url_path' => $geo_mashup_search->url_path,
+		'search_plugin_url_path' => GEO_MASHUP_URL_PATH,
 		'object_ids' => $geo_mashup_search->get_the_ID_list(),
 		'center_lat' => $near_location['lat'],
 		'center_lng' => $near_location['lng'],
