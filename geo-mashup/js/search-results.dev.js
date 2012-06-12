@@ -10,8 +10,8 @@ GeoMashup.addAction( 'loadedMap', function( properties, map ) {
 		if ( 'google' == properties.map_api ) {
 
 			icon = new google.maps.Icon();
-			icon.image = properties.search_plugin_url_path + '/images/bluedot16.png';
-			icon.shadow = properties.search_plugin_url_path + '/images/dotshadow.png';
+			icon.image = properties.url_path + '/images/bluedot16.png';
+			icon.shadow = properties.url_path + '/images/dotshadow.png';
 			icon.iconSize = new google.maps.Size( 16, 16 );
 			icon.shadowSize = new google.maps.Size( 25, 16 );
 			icon.iconAnchor = new google.maps.Point( 8, 8 );
@@ -28,8 +28,8 @@ GeoMashup.addAction( 'loadedMap', function( properties, map ) {
 			search_latlng = new mxn.LatLonPoint( parseFloat( properties.search_lat), parseFloat( properties.search_lng ) );
 			search_marker = new mxn.Marker( search_latlng );
 			search_marker.addData( {
-				icon: properties.search_plugin_url_path + '/images/bluedot16.png',
-				iconShadow: properties.search_plugin_url_path + '/images/dotshadow.png',
+				icon: properties.url_path + '/images/bluedot16.png',
+				iconShadow: properties.url_path + '/images/dotshadow.png',
 				iconSize: [ 16, 16 ],
 				iconShadowSize: [ 25, 16 ],
 				iconAnchor: [ 8, 8 ],
