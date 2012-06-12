@@ -113,20 +113,6 @@ class GeoMashup {
 		if ( $geo_mashup_options->get( 'overall', 'enable_geo_search' ) == 'true' )
 			include_once( GEO_MASHUP_DIR_PATH . '/geo-mashup-search.php' );
 
-		if ( class_exists( 'GeoMashupSearch' ) and defined( 'GeoMashupSearch::VERSION' ) ) {
-
-			// The old search plugin is active - enable native geo search and flag for deactivation
-			self::$deactivate_geo_search_basename = GeoMashupSearch::get_instance()->basename;
-			$geo_mashup_options->set_valid_options(
-				array(
-					'overall' => array(
-						'enable_geo_search' => 'true',
-					)
-				)
-			);
-			$geo_mashup_options->save();
-		}
-
 	}
 
 	/**
@@ -266,7 +252,25 @@ class GeoMashup {
 	 * @uses do_action() geo_mashup_init Fired when Geo Mashup is loaded and ready.
 	 */
 	public static function dependent_init() {
+		global $geo_mashup_options;
+
 		do_action( 'geo_mashup_init' );
+
+		if ( class_exists( 'GeoMashupSearch' ) and defined( 'GeoMashupSearch::VERSION' ) ) {
+
+			// The old search plugin is active - enable native geo search and flag for deactivation
+			self::$deactivate_geo_search_basename = GeoMashupSearch::get_instance()->basename;
+			$geo_mashup_options->set_valid_options(
+				array(
+					'overall' => array(
+						'enable_geo_search' => 'true',
+					)
+				)
+			);
+			$geo_mashup_options->save();
+		}
+
+
 	}
 
 	/**
