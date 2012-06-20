@@ -38,7 +38,7 @@ function geo_mashup_options_page() {
 			$activated_copy_geodata = true;
 		$geo_mashup_options->set_valid_options ( $_POST );
 		if ($geo_mashup_options->save()) {
-			echo '<div class="updated fade"><p>'.__('Options updated.', 'GeoMashup').'</p></div>';
+			echo '<div class="updated fade"><p>'.__('Options updated.  Browser or server caching may delay updates for recently viewed maps.', 'GeoMashup').'</p></div>';
 		}
 	}
 
