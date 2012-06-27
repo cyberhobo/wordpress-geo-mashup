@@ -62,7 +62,7 @@ and there is a public [Google Group](http://groups.google.com/group/wordpress-ge
 
 = Translations =
 
-* Hindi by [Chandel](http://outshinesolutions.com) added in version 1.4.9
+* Hindi by [Outshine Solutions](http://outshinesolutions.com) added in version 1.4.9
 * Romanian by [Web Geek Sciense](http://webhostinggeeks.com) added in version 1.4.8
 * Polish by [Kamil](http://wbartoszycach.pl) added in version 1.4.7
 * Portugese by [Antonio Xeira](http://flyingsouth.thehappytoadfish.com/) added in version 1.4.2
