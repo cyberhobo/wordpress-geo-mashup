@@ -1,0 +1,870 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Geo Mashup 1.4\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2011-07-09 22:56-0800\n"
+"PO-Revision-Date: 2012-04-10 16:56+0200\n"
+"X-Poedit-Language: Slovak\n"
+"X-Poedit-Country: Slovakia\n"
+"Language-Team: Web Geeks\n"
+"Last-Translator: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-KeywordsList: _e;__\n"
+"X-Poedit-Basepath: .\n"
+"X-Poedit-SearchPath-0: ..\n"
+
+#: ../edit-form.php:127
+msgid "Address"
+msgstr "Adresa"
+
+#: ../edit-form.php:128
+msgid "Saved Name"
+msgstr "Ulo¾enému menu"
+
+#: ../edit-form.php:129
+msgid "Geo Date"
+msgstr "Geo dátum"
+
+#: ../edit-form.php:157
+msgid "Loading Google map. Check Geo Mashup options if the map fails to load."
+msgstr "Načítanie Google mapy. Skontrolujte, či Geo Mashup možnosti ak mape zlyhá načítavanie."
+
+#: ../edit-form.php:163
+msgid "Location Map Image"
+msgstr "Umiestnenie Map Image"
+
+#: ../edit-form.php:169
+msgid "Find a new location:"
+msgstr "Nájsť nové miesto:"
+
+#: ../edit-form.php:173
+msgid "or select from"
+msgstr "alebo vyberte"
+
+#: ../edit-form.php:175
+msgid "[Saved Locations]"
+msgstr "[Uloženého umiestnenia]"
+
+#: ../edit-form.php:198
+msgid "Add Location"
+msgstr "Pridanie umiestnenia"
+
+#: ../edit-form.php:199
+msgid "Delete"
+msgstr "Odstrániť"
+
+#: ../edit-form.php:200
+msgid "Save"
+msgstr "Uložiť"
+
+#: ../edit-form.php:203
+msgid "help"
+msgstr "pomoc"
+
+#: ../edit-form.php:206
+msgid "<em>Saved Name</em> is an optional name you may use to add entries to the Saved Locations menu."
+msgstr "<em>Uloží názov</em> je voliteľný názov môžete použiť na pridanie položky do ponuky uložené miestach."
+
+#: ../edit-form.php:207
+msgid "<em>Geo Date</em> associates a date (most formats work) and time with a location. Leave the default value if uncertain."
+msgstr "<em>Geo dátum</em> priradí dátum (väčšinu formátov práce) a čas miesto. Ak neisté, ponechajte predvolené hodnoty."
+
+#: ../edit-form.php:209
+msgid "Put a green pin at a new location. There are many ways to do it:"
+msgstr "Zložiť zelenej pin na nové miesto. Existuje mnoho spôsobov, ako to urobiť:"
+
+#: ../edit-form.php:211
+msgid "Search for a location name."
+msgstr "Vyhľadajte umiestnenie názvu."
+
+#: ../edit-form.php:212
+msgid "For multiple search results, mouse over pins to see location names, and click a result pin to select that location."
+msgstr "Pre viacnásobné výsledky vyhľadávania, myšou kolíky vidieť miesto mená a kliknúť na výsledok spojke vyberte požadované miesto."
+
+#: ../edit-form.php:213
+msgid "Search for a decimal latitude and longitude separated by a comma, like <em>40.123,-105.456</em>. Seven decimal places are stored. Negative latitude is used for the southern hemisphere, and negative longitude for the western hemisphere."
+msgstr "Vyhľadávanie desatinné zemepisnej šírky a dĺžky oddelené čiarkou, napríklad <em>40.123,-105.456</em>. Sedem desatinné miesta sú uložené. Negatívny šírky sa používa na južnej pologuli a negatívne dĺžky na západnej pologuli."
+
+#: ../edit-form.php:214
+msgid "Search for a street address, like <em>123 main st, anytown, acity</em>."
+msgstr "Vyhľadať poštovú adresu ako <em>123 hlavné st, anytown, acity</em>."
+
+#: ../edit-form.php:215
+msgid "Click on the location. Zoom in if necessary so you can refine the location by dragging it or clicking a new location."
+msgstr "Kliknite na položku umiestnenie. Priblíženie potreby tak môžete spresniť umiestnenie presunutím alebo kliknutím na nové miesto."
+
+#: ../edit-form.php:217
+msgid "To execute a search, type search text into the Find Location box and hit the enter key. If you type a name next to \"Save As\", the location will be saved under that name and added to the Saved Locations dropdown list."
+msgstr "Ak chcete vykonať hľadanie, zadajte hľadaný text do poľa Nájsť umiestnenie a stlačte klávesu Enter. Ak zadáte názov vedľa \"Uložiť ako\", miesto bude uložený pod týmto menom a pridaný do rozbaľovacieho zoznamu uložené miestach."
+
+#: ../edit-form.php:218
+msgid "To remove the location (green pin), clear the search box and hit the enter key."
+msgstr "Ak chcete odstrániť umiestnenie (zelené kód pin), zrušte do vyhľadávacieho poľa a stlačte kláves enter."
+
+#: ../edit-form.php:219
+msgid "When you are satisfied with the location, save or update."
+msgstr "Ak ste spokojní s umiestnením, uložiť alebo aktualizovať."
+
+#: ../edit-form.php:223
+msgid "To add or update location choose a saved location, or find a new location using one of these formats:"
+msgstr "Ak chcete pridať alebo aktualizovať umiestnenie vyberte umiestnenie pre uložený, alebo nájsť nové miesto pomocou jednej z týchto formátov:"
+
+#: ../edit-form.php:225
+msgid "A place name like <em>Yellowstone National Park</em>"
+msgstr "Názov miesta ako <em>Yellowstone National Park</em>"
+
+#: ../edit-form.php:226
+msgid "A decimal latitude and longitude, like <em>40.123,-105.456</em>."
+msgstr "Desatinné zemepisnej šírky a dĺžky, ako <em>40.123,-105.456</em>."
+
+#: ../edit-form.php:227
+msgid "A full or partial street address, like <em>123 main st, anytown, acity 12345 USA</em>."
+msgstr "Úplné alebo čiastočné poštovú adresu, ako <em>123 hlavné st, anytown, acity 12345 USA</em>."
+
+#: ../edit-form.php:229
+msgid "When you save or update, the closest match available will be saved as the location."
+msgstr "Keď uložíte alebo aktualizujete, najbližšie zápas k dispozícii sa uložia ako miesto."
+
+#: ../geo-mashup-db.php:620
+msgid "Activating Geo Mashup"
+msgstr "Aktivácia Geo Mashup"
+
+#: ../geo-mashup-db.php:685
+msgid "Geo Mashup database is up to date."
+msgstr "Geo Mashup databáza je až do dnešného dňa."
+
+#: ../geo-mashup-db.php:688
+msgid "Geo Mashup database upgrade failed."
+msgstr "Geo Mashup databázy aktualizácia zlyhala."
+
+#: ../geo-mashup-db.php:945
+msgid "No locations found with missing address fields."
+msgstr "Žiadne umiestnenie našiel s chýbajúcimi polia s adresou."
+
+#: ../geo-mashup-db.php:948
+msgid "Locations to geocode: "
+msgstr "Miesta na geocode: "
+
+#: ../geo-mashup-db.php:956
+msgid "Time limit: "
+msgstr "Časový limit: "
+
+#: ../geo-mashup-db.php:967
+msgid "Lookup error:"
+msgstr "Chyba vyhľadávania:"
+
+#: ../geo-mashup-db.php:968
+msgid "Increasing delay to"
+msgstr "Zvýšenie meškania"
+
+#: ../geo-mashup-db.php:971
+msgid "address"
+msgstr "adresa"
+
+#: ../geo-mashup-db.php:973
+msgid "postal code"
+msgstr "poštové smerovacie číslo"
+
+#: ../geo-mashup-db.php:977
+msgid "No address info found."
+msgstr "Žiadna adresa informácie nájsť."
+
+#: ../geo-mashup-db.php:980
+msgid "Time limit exceeded, retry to continue."
+msgstr "Časový limit uplynul, znova pokračovať."
+
+#: ../geo-mashup-db.php:1025
+msgid "Geodata duplication done."
+msgstr "Geode duplicite urobiť."
+
+#: ../geo-mashup-db.php:1064
+#, php-format
+msgid "Copying missing %s geodata from WordPress"
+msgstr "Kopírovanie chýbajúce %s Geode z WordPress"
+
+#: ../geo-mashup-db.php:1075
+#, php-format
+msgid "Failed to duplicate WordPress location (%s). You can edit %s with id %s to update the location, and try again."
+msgstr "Nepodarilo sa duplicitná WordPress miesto (% s). Môžete upraviť %s s identifikáciou %s aktualizujte umiestnenie a skúste znova."
+
+#: ../geo-mashup-db.php:1101
+#, php-format
+msgid "Copying missing %s geodata from Geo Mashup"
+msgstr "Kopírovanie chýbajúce %s Geode z Geo Mashup"
+
+#: ../geo-mashup-db.php:1113
+#, php-format
+msgid "Failed to duplicate Geo Mashup location for %s (%s)."
+msgstr "Nepodarilo sa zdvojiť Geo Mashup umiestnenie: %s (% s)."
+
+#: ../geo-mashup-db.php:1154
+msgid "Converting old locations"
+msgstr "Konverzia starých miest"
+
+#: ../geo-mashup-db.php:1167
+#, php-format
+msgid "Failed to convert location (%s). You can %sedit the post%s to update the location, and try again."
+msgstr "Nepodarilo sa konvertovať umiestnenie (% s). Môžete % sedit post %s aktualizujte umiestnenie a skúste znova."
+
+#: ../geo-mashup-db.php:1177
+msgid "Converting saved locations"
+msgstr "Konverzia uložené umiestnenia"
+
+#: ../geo-mashup-db.php:1186
+msgid "OK: "
+msgstr "ok: "
+
+#: ../geo-mashup-db.php:1190
+#, php-format
+msgid "Failed to convert saved location (%s). You'll have to save it again, sorry."
+msgstr "Nepodarilo sa konvertovať uloženého umiestnenia (% s). Budete musieť znova uložiť ľúto."
+
+#: ../geo-mashup-db.php:1209
+msgid "Failed to initialize geo dates from post dates: "
+msgstr "Nepodarilo sa inicializovať geo pochádza z poštou termíny: "
+
+#: ../geo-mashup-db.php:1212
+#, php-format
+msgid "Initialized %d geo dates from corresponding post dates."
+msgstr "Inicializovať %d geo dátumy od zodpovedajúcich dátumov príspevok."
+
+#: ../geo-mashup-db.php:1752
+msgid "A location must have an ID or coordinates to be saved."
+msgstr "Miesto musí mať identifikáciu alebo súradnice uložia."
+
+#: ../geo-mashup-geocoders.php:149
+#: ../geo-mashup-geocoders.php:351
+#: ../geo-mashup-geocoders.php:414
+msgid "Reverse geocoding requires numeric coordinates."
+msgstr "Reverzné geocoding vyžaduje číselných súradníc."
+
+#: ../geo-mashup-geocoders.php:313
+#, php-format
+msgid "The geocoding request failed with status %s."
+msgstr "Požiadavka geocoding zlyhala so stavom % s."
+
+#: ../geo-mashup-options.php:360
+#: ../geo-mashup-options.php:368
+#: ../geo-mashup-options.php:374
+#: ../geo-mashup-options.php:384
+#: ../geo-mashup-options.php:393
+#: ../geo-mashup-options.php:402
+#: ../geo-mashup-options.php:424
+#: ../geo-mashup-options.php:429
+#: ../geo-mashup-options.php:442
+#: ../geo-mashup-options.php:474
+#: ../geo-mashup-options.php:490
+#: ../geo-mashup-options.php:503
+#: ../geo-mashup-options.php:512
+msgid "is invalid for"
+msgstr "je neplatný"
+
+#: ../geo-mashup-options.php:361
+#: ../geo-mashup-options.php:375
+msgid ", which must be a valid map type (see documentation)"
+msgstr ", ktoré musí byť platné mapa ťahadlo (pozri dokumentáciu)"
+
+#: ../geo-mashup-options.php:369
+msgid ", which must be an array of valid map types (see documentation)"
+msgstr ", ktorý musí byť pole typov platné mapa (pozrite dokumentáciu)"
+
+#: ../geo-mashup-options.php:385
+msgid ", which must be a valid map control (see documentation)"
+msgstr ", ktoré musí byť platné map control (pozrite dokumentáciu)"
+
+#: ../geo-mashup-options.php:394
+msgid ", which must be a valid map provider."
+msgstr ", ktoré musí byť platné mapa poskytovateľa."
+
+#: ../geo-mashup-options.php:403
+msgid ", which must be a valid clustering library."
+msgstr ", ktoré musí byť platné klastrov knižnice."
+
+#: ../geo-mashup-options.php:425
+msgid ", which must be a string"
+msgstr ", ktorý musí byť reťazec"
+
+#: ../geo-mashup-options.php:430
+msgid ", which must not contain XML tags."
+msgstr ", ktorý nesmie obsahovať značky XML."
+
+#: ../geo-mashup-options.php:443
+msgid ", which must be a number"
+msgstr ", ktorý musí byť číslo"
+
+#: ../geo-mashup-options.php:475
+msgid ", which must be \"true\" or \"false\""
+msgstr ""
+
+#: ../geo-mashup-options.php:491
+msgid ", which must be an array"
+msgstr ", ktorý musí byť pole"
+
+#: ../geo-mashup-options.php:504
+msgid ", which must be a number from 0 to "
+msgstr ", ktorý musí byť číslo od 0 do "
+
+#: ../geo-mashup-options.php:513
+msgid ", which is a deprecated option"
+msgstr ", ktorá je možnosť zastarané"
+
+#: ../geo-mashup-ui-managers.php:156
+msgid "Object location not saved - invalid request."
+msgstr "Umiestnenie objektu neuložia - neplatná požiadavka."
+
+#: ../geo-mashup-ui-managers.php:303
+#: ../geo-mashup-ui-managers.php:492
+msgid "Location"
+msgstr "Umiestnenie"
+
+#: ../geo-mashup-ui-managers.php:607
+msgid "Address not found - try making it less detailed"
+msgstr "Address not found - skúste, čím menej podrobné"
+
+#: ../geo-mashup-ui-managers.php:789
+msgid "Written from (location)"
+msgstr "Kópiu písomného (umiestnenie)"
+
+#: ../geo-mashup-ui-managers.php:791
+msgid "Loading..."
+msgstr "Načítava sa..."
+
+#: ../geo-mashup.php:395
+msgid "No object id posted."
+msgstr "Žiadnu identifikáciu objektu vyslaný."
+
+#: ../geo-mashup.php:412
+msgid "Location updated."
+msgstr "Umiestnenie aktualizované."
+
+#: ../geo-mashup.php:414
+msgid "Location deleted."
+msgstr "Umiestnenie vypúšťa."
+
+#: ../geo-mashup.php:416
+msgid "Location added."
+msgstr "Umiestnenie pridané."
+
+#: ../geo-mashup.php:851
+msgid "Geo Mashup found no objects to map in this context"
+msgstr "Geo Mashup nájdené žiadne objekty na mape v tomto kontexte"
+
+#: ../geo-mashup.php:869
+msgid "Geo Mashup found no current object to map"
+msgstr "Geo Mashup nájdené žiadne aktuálneho objektu na mape"
+
+#: ../geo-mashup.php:873
+msgid "Geo Mashup omitted a map for an object with no location"
+msgstr "Geo Mashup vynechať mapu pre objekt s žiadne miesto"
+
+#: ../geo-mashup.php:880
+msgid "Geo Mashup map omitted to avoid nesting maps"
+msgstr "Geo Mashup mapa vynechať vyhnúť vnorenia mapy"
+
+#: ../geo-mashup.php:907
+msgid "Geo Mashup omitted a map with no located objects found."
+msgstr "Geo Mashup vynechať mapu s nájdené žiadne nachádza objekty."
+
+#: ../geo-mashup.php:1061
+msgid "You must add a description to this category to use this Geo Mashup feature."
+msgstr "Do tejto kategórie pre použitie tejto funkcie Geo Mashup musí pridať popis."
+
+#: ../geo-mashup.php:1089
+#: ../options.php:160
+msgid "Geo Mashup Options"
+msgstr "Geo Mashup možnosti"
+
+#: ../geo-mashup.php:1089
+msgid "Geo Mashup"
+msgstr "Geo Mashup"
+
+#: ../geo-mashup.php:1109
+#, php-format
+msgid "Geo Mashup requires a Google API key in the <a href=\"%s\">settings</a> before it will work."
+msgstr "Geo Mashup vyžaduje Google API kľúč v <a href=\"%s\">nastavenia</a> skôr, ako to bude fungovať."
+
+#: ../geo-mashup.php:1113
+#, php-format
+msgid "Geo Mashup needs to upgrade its database, visit the <a href=\"%s\">settings</a> to do it now."
+msgstr "Geo Mashup musí zlepšiť svoju databázu nájdete na <a href=\"%s\">nastavenia</a> to urobiť hneď."
+
+#: ../geo-mashup.php:1134
+msgid "Settings"
+msgstr "Nastavenia"
+
+#: ../geo-mashup.php:1151
+msgid "Documentation"
+msgstr "Dokumentácia"
+
+#: ../geo-mashup.php:1153
+msgid "Donate"
+msgstr "Darujte"
+
+#: ../geo-mashup.php:1310
+msgid "Show on map"
+msgstr "Zobraziť na mape"
+
+#: ../geo-mashup.php:1321
+msgid "Geotag Icon"
+msgstr "Značku zemepisnou ikonu"
+
+#: ../options.php:38
+msgid "Options updated."
+msgstr "Možnosti aktualizujú."
+
+#: ../options.php:44
+msgid "Copied existing geodata, see log for details."
+msgstr "Skopírované existujúcich Geode zobraziť denník podrobnosti."
+
+#: ../options.php:55
+msgid "Database upgraded, see log for details."
+msgstr "Databázu inovovať, pozrite si denník podrobnosti."
+
+#: ../options.php:62
+msgid "Log deleted."
+msgstr "Denník vypúšťa."
+
+#: ../options.php:68
+msgid "Saved options may be corrupted, try updating again. Corrupt values: "
+msgstr "Uložené možnosti môže byť poškodený, pokúste sa o aktualizáciu znova. Poškodený hodnoty: "
+
+#: ../options.php:76
+msgid "Some invalid options will not be used. If you've just upgraded, do an update to initialize new options."
+msgstr "Niektoré neplatné možnosti sa nepoužije. Ak ste práve ste inovovali urobiť aktualizáciu inicializovať nové možnosti."
+
+#: ../options.php:105
+msgid "Roadmap"
+msgstr "Cestovná mapa"
+
+#: ../options.php:106
+msgid "Satellite"
+msgstr "Satelit"
+
+#: ../options.php:107
+msgid "Hybrid"
+msgstr "Hybridné"
+
+#: ../options.php:108
+msgid "Terrain"
+msgstr "Terén"
+
+#: ../options.php:109
+msgid "Earth Plugin"
+msgstr "Earth Plugin"
+
+#: ../options.php:112
+msgid "Small Zoom"
+msgstr "Malé Zoom"
+
+#: ../options.php:113
+msgid "Small Zoom 3D"
+msgstr "Malé zväčšenia 3D"
+
+#: ../options.php:114
+msgid "Small Pan/Zoom"
+msgstr "Malé Pan/Zoom"
+
+#: ../options.php:115
+msgid "Large Pan/Zoom"
+msgstr "Veľká panva/Zoom"
+
+#: ../options.php:116
+msgid "Large Pan/Zoom 3D"
+msgstr "Veľká panva a zväčšenia 3D"
+
+#: ../options.php:119
+msgid "Yes"
+msgstr "áno"
+
+#: ../options.php:120
+msgid "No"
+msgstr "nie"
+
+#: ../options.php:121
+msgid "Only"
+msgstr "Iba"
+
+#: ../options.php:124
+msgid "Google v2"
+msgstr "Google v2"
+
+#: ../options.php:125
+msgid "Google v3"
+msgstr "Google v3"
+
+#: ../options.php:126
+msgid "OpenLayers"
+msgstr "OpenLayers"
+
+#: ../options.php:129
+msgid "auto"
+msgstr "auto"
+
+#: ../options.php:135
+msgid "Cluster Marker"
+msgstr "Hviezdokopa Marker"
+
+#: ../options.php:136
+msgid "Marker Clusterer"
+msgstr "Značka Clusterer"
+
+#: ../options.php:163
+msgid "Overall"
+msgstr "Celková"
+
+#: ../options.php:164
+msgid "Single Maps"
+msgstr "Jediný mapy"
+
+#: ../options.php:165
+msgid "Global Maps"
+msgstr "Globálne mapy"
+
+#: ../options.php:166
+msgid "Contextual Maps"
+msgstr "Kontextové mapy"
+
+#: ../options.php:174
+msgid "Overall Geo Mashup Settings"
+msgstr "Celková Geo Mashup nastavenia"
+
+#: ../options.php:178
+msgid "Map Provider"
+msgstr "Mapa poskytovateľa"
+
+#: ../options.php:191
+msgid "Some features still work only with Google v2."
+msgstr "Niektoré funkcie aj naďalej pracovať iba s Google v2."
+
+#: ../options.php:197
+msgid "Google API Key"
+msgstr "Google API kľúč"
+
+#: ../options.php:204
+msgid "Get yours here"
+msgstr "Získať vy tu"
+
+#: ../options.php:207
+msgid "This setting is required for Geo Mashup to work."
+msgstr "Toto nastavenie je potrebné Geo Mashup pracovať."
+
+#: ../options.php:214
+msgid "Generated links go here"
+msgstr "Generované odkazy ísť sem"
+
+#: ../options.php:215
+msgid "Global Mashup Page"
+msgstr "Globálna stránka Mashup"
+
+#: ../options.php:229
+msgid "No pages available."
+msgstr "Žiadne stránky k dispozícii."
+
+#: ../options.php:233
+msgid "Geo Mashup will use this page for generated location links"
+msgstr "Geo Mashup použije túto stránku pre generované umiestnenie väzby"
+
+#: ../options.php:238
+msgid "Collect Location For"
+msgstr "Zhromažďovať umiestnenie"
+
+#: ../options.php:251
+msgid "Users"
+msgstr "Užívatelia"
+
+#: ../options.php:256
+msgid "Comments"
+msgstr "Komentáre"
+
+#: ../options.php:260
+msgid "Copy Geodata Meta Fields"
+msgstr "Kópia Geode Meta polia"
+
+#: ../options.php:271
+#, php-format
+msgid "Copy coordinates to and from %sgeodata meta fields%s, for integration with the Geolocation and other plugins."
+msgstr "Kopírovať súradnice do a z % sgeodata meta polia %s pre integráciu Geolocation s ostatnými pluginy."
+
+#: ../options.php:277
+msgid "Geocode Custom Field"
+msgstr "Geocode vlastné pole"
+
+#: ../options.php:285
+msgid "Custom fields with this key will be geocoded and the resulting location saved for the post."
+msgstr "Vlastné polia s tento kľúč bude geocoded a výsledné umiestnenie uložených na post."
+
+#: ../options.php:290
+msgid "Enable Reverse Geocoding"
+msgstr "Umožniť spätné Geocoding"
+
+#: ../options.php:298
+msgid "Try to look up missing address fields for new locations."
+msgstr "Pokúste sa vyhľadať chýbajúci polia s adresou pre nové miesta."
+
+#: ../options.php:304
+msgid "Bulk Reverse Geocode"
+msgstr "Hromadný reverzné Geocode"
+
+#: ../options.php:306
+msgid "Start"
+msgstr "Štart"
+
+#: ../options.php:308
+msgid "Try to look up missing address fields for existing locations. Could be slow."
+msgstr "Pokúste sa vyhľadať chýbajúci polia s adresou pre existujúcich lokalitách. Môže byť pomalý."
+
+#: ../options.php:314
+msgid "Use Theme Style Sheet with Maps"
+msgstr "Použiť motív šablóny so štýlmi s mapami"
+
+#: ../options.php:327
+msgid "Add Category Links"
+msgstr "Pridať kategóriu odkazy"
+
+#: ../options.php:335
+msgid "Add map links to category lists. Categories must have descriptions for this to work."
+msgstr "Pridať mapa odkazy na kategórie zoznamov. Kategórie, musia mať označenia pre túto prácu."
+
+#: ../options.php:340
+msgid "Category Link Separator"
+msgstr "Kategória Link oddeľovač"
+
+#: ../options.php:351
+msgid "Category Link Text"
+msgstr "Text odkazu kategórie"
+
+#: ../options.php:361
+msgid "Category Link Zoom Level"
+msgstr "Úrovne zväčšenia prepojenie kategórie"
+
+#: ../options.php:373
+#: ../options.php:516
+#: ../options.php:655
+#: ../options.php:895
+msgid "0 is zoomed all the way out."
+msgstr "0 je oddialená celú cestu."
+
+#: ../options.php:378
+msgid "GeoNames ID"
+msgstr "GeoNames ID"
+
+#: ../options.php:386
+#, php-format
+msgid "Your %sGeoNames username%s, used with GeoNames API requests. Leave the default value to use Geo Mashup's."
+msgstr "Vaša % sGeoNames username %s používa vyhoveli GeoNames API. Nechajte predvolenú hodnotu použiť Geo Mashup."
+
+#: ../options.php:393
+msgid "AdSense For Search ID"
+msgstr "AdSense pre vyhľadávanie ID"
+
+#: ../options.php:401
+msgid "Your client ID, used with the Google Bar. Leave the default value to use Geo Mashup's :)."
+msgstr "Váš klient ID použiť s Google Bar. Nechajte predvolenú hodnotu použiť Geo Mashup:)."
+
+#: ../options.php:407
+#: ../options.php:541
+#: ../options.php:545
+#: ../options.php:782
+#: ../options.php:941
+msgid "Update Options"
+msgstr "Možnosti aktualizácie"
+
+#: ../options.php:410
+msgid "Default settings for maps of a single located post."
+msgstr "Predvolené nastavenie pre mapy jediné nachádza miesto."
+
+#: ../options.php:413
+#: ../options.php:548
+#: ../options.php:788
+msgid "Map Width"
+msgstr "Mapa šírka"
+
+#: ../options.php:420
+#: ../options.php:555
+#: ../options.php:795
+msgid "Pixels, or append %."
+msgstr "Pixelov, ani pripojiť %."
+
+#: ../options.php:424
+#: ../options.php:559
+#: ../options.php:799
+msgid "Map Height"
+msgstr "Mapa výška"
+
+#: ../options.php:431
+#: ../options.php:566
+#: ../options.php:806
+msgid "px"
+msgstr "PX"
+
+#: ../options.php:435
+#: ../options.php:570
+#: ../options.php:810
+msgid "Map Control"
+msgstr "Map Control"
+
+#: ../options.php:449
+#: ../options.php:584
+#: ../options.php:824
+msgid "Default Map Type"
+msgstr "Predvolený typ mapy"
+
+#: ../options.php:463
+#: ../options.php:598
+#: ../options.php:838
+msgid "Add Map Type Control"
+msgstr "Pridanie mapy typ ovládacieho prvku"
+
+#: ../options.php:478
+#: ../options.php:613
+#: ../options.php:853
+msgid "Add Overview Control"
+msgstr "Pridať ovládací prvok – preh¾ad"
+
+#: ../options.php:487
+#: ../options.php:624
+#: ../options.php:864
+msgid "Add Google Bar"
+msgstr "Pridať Google Bar"
+
+#: ../options.php:496
+#: ../options.php:635
+#: ../options.php:875
+msgid "Enable Scroll Wheel Zoom"
+msgstr "Umožniť Scroll Wheel Zoom"
+
+#: ../options.php:504
+#: ../options.php:643
+#: ../options.php:883
+msgid "Default Zoom Level"
+msgstr "Predvolená úroveň zväčšovania"
+
+#: ../options.php:521
+#: ../options.php:733
+#: ../options.php:921
+msgid "Click To Load"
+msgstr "Kliknite na položku zaťaženia"
+
+#: ../options.php:531
+#: ../options.php:743
+#: ../options.php:931
+msgid "Click To Load Text"
+msgstr "Kliknite na tlačidlo Načítať Text"
+
+#: ../options.php:544
+msgid "Default settings for global maps of located items."
+msgstr "Predvolené nastavenie pre globálne mapy nachádzajú položky."
+
+#: ../options.php:661
+msgid "Cluster Markers Until Zoom Level"
+msgstr "Hviezdokopa markerov až do úrovne zväčšenia"
+
+#: ../options.php:670
+msgid "Highest zoom level to cluster markers, or blank for no clustering."
+msgstr "Najvyššia úroveň priblížiť klastra značky alebo slepú pre žiadne terminálovej služby."
+
+#: ../options.php:676
+#: ../options.php:900
+msgid "Marker Selection Behaviors"
+msgstr "Značku výberu správania"
+
+#: ../options.php:681
+#: ../options.php:905
+msgid "Open info window"
+msgstr "Otvorené informačné okno"
+
+#: ../options.php:685
+#: ../options.php:909
+msgid "Highlight"
+msgstr "Zvýraznite"
+
+#: ../options.php:689
+#: ../options.php:913
+msgid "Center"
+msgstr "Centrum"
+
+#: ../options.php:693
+#: ../options.php:917
+msgid "Show Geo Attachments"
+msgstr "Zobraziť Geo príloh"
+
+#: ../options.php:697
+msgid "Automatic Selection"
+msgstr "Automatický výber"
+
+#: ../options.php:705
+msgid "Selects the linked or most recent item when the map loads."
+msgstr "Vyberie prepojený alebo posledné položky, keď mape načíta."
+
+#: ../options.php:710
+msgid "Show Only Most Recent Items"
+msgstr "Zobraziť iba najnovšie položky"
+
+#: ../options.php:717
+msgid "Number of items to show, leave blank for all"
+msgstr "Počet položiek zobraziť, ponechajte prázdny pre všetky"
+
+#: ../options.php:721
+msgid "Show Future Posts"
+msgstr "Zobraziť budúce príspevky"
+
+#: ../options.php:754
+msgid "Category"
+msgstr "Kategória"
+
+#: ../options.php:754
+msgid "Color"
+msgstr "Farba"
+
+#: ../options.php:755
+msgid "Show Connecting Line Until Zoom Level (0-20 or none)"
+msgstr "Zobraziť pripojenia linky kým úroveň priblíženia (0 – 20 alebo žiadne)"
+
+#: ../options.php:785
+msgid "Default settings for contextual maps, which include just the items shown on a page, for example."
+msgstr "Predvolené nastavenie pre kontextové mapy, ktoré zahŕňajú len položky zobrazené na stránke, napríklad."
+
+#: ../options.php:946
+msgid "Update Log"
+msgstr "Aktualizácia denníka"
+
+#: ../options.php:950
+msgid "Delete Log"
+msgstr "Odstrániť denník"
+
+#: ../options.php:951
+msgid "You can keep this log as a record, future entries will be appended."
+msgstr "Môžete držať tohto denníka ako záznam, budúce položky sa pripoja."
+
+#: ../options.php:966
+msgid "View Update Log"
+msgstr "Zobraziť aktualizácie denník"
+
+#: ../options.php:968
+msgid "Geo Mashup Documentation"
+msgstr "Geo Mashup dokumentácie"
+
+#: ../default-templates/comment.php:50
+#, php-format
+msgid "<cite class=\"fn\">%s</cite> <span class=\"says\">says:</span>"
+msgstr "<cite class=\"fn\">%s</cite> <span class=\"says\">hovorí:</span>"
+
+#: ../default-templates/comment.php:53
+#, php-format
+msgid "%1$s at %2$s"
+msgstr "%1$s %2$ s"
+
+#: ../default-templates/map-frame.php:51
+msgid "This map requires JavaScript. You may have to enable it in your settings."
+msgstr "Táto mapa vyžaduje JavaScript. Možno budete musieť zapnúť v nastaveniach."
+
+#: ../default-templates/user.php:40
+msgid "Display Name"
+msgstr "Zobrazované meno"
+
+#: ../default-templates/user.php:45
+msgid "Website"
+msgstr "Webová stránka"
+

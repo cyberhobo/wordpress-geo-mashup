@@ -62,6 +62,7 @@ and there is a public [Google Group](http://groups.google.com/group/wordpress-ge
 
 = Translations =
 
+* Slovak by B. Radenovich of [Web Hosting Watch](http://webhostingw.com) added in version 1.4.10
 * Hindi by [Outshine Solutions](http://outshinesolutions.com) added in version 1.4.9
 * Romanian by [Web Geek Sciense](http://webhostinggeeks.com) added in version 1.4.8
 * Polish by [Kamil](http://wbartoszycach.pl) added in version 1.4.7
