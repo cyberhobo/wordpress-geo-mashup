@@ -410,15 +410,15 @@ class GeoMashupNominatimGeocoder extends GeoMashupHttpGeocoder {
 			$location->lng = $result->lon;
 			$location->address = $result->display_name;
 			if ( !empty( $result->address ) ) {
-				if ( !empty( $first_result->address->country_code ) )
-					$location->country_code = strtoupper( $first_result->address->country_code );
+				if ( !empty( $result->address->country_code ) )
+					$location->country_code = strtoupper( $result->address->country_code );
 				// Returns admin name in address->state, but no code
-				if ( !empty( $first_result->address->county ) )
-					$location->sub_admin_code = $first_result->address->county;
-				if ( !empty( $first_result->address->postcode ) )
-					$location->postal_code = $first_result->address->postcode;
-				if ( !empty( $first_result->address->city ) )
-					$location = $first_result->address->city;
+				if ( !empty( $result->address->county ) )
+					$location->sub_admin_code = $result->address->county;
+				if ( !empty( $result->address->postcode ) )
+					$location->postal_code = $result->address->postcode;
+				if ( !empty( $result->address->city ) )
+					$location = $result->address->city;
 			}
 			$locations[] = $location;
 		}
