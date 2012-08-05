@@ -86,6 +86,23 @@ abstract class GeoMashupHttpGeocoder {
 	 * @return array|WP_Error Array of search result locations.
 	 */
 	abstract public function reverse_geocode( $lat, $lng );
+
+	/**
+	 * Convert a text term to UTF-8 if necessary before URL encoding.
+	 *
+	 * @since 1.4.10
+	 *
+	 * @static
+	 * @param $text
+	 * @return string Encoded text.
+	 */
+	static protected function url_utf8_encode( $text ) {
+
+		if ( !mb_check_encoding( $text, 'UTF-8' ) )
+			$text = mb_convert_encoding( $text, 'UTF-8' );
+
+		return urlencode( $text );
+	}
 }
 
 /**
@@ -110,7 +127,7 @@ class GeoMashupGeonamesGeocoder extends GeoMashupHttpGeocoder {
 
 	public function geocode( $query ) {
 		$url = 'http://api.geonames.org/searchJSON?username=' . $this->geonames_username .
-				'&maxRows=' .  $this->max_results . '&q=' .  urlencode( utf8_encode( $query ) ) .
+				'&maxRows=' .  $this->max_results . '&q=' . self::url_utf8_encode( $query ) .
 				'&lang=' . $this->language;
 
 		$response = $this->http->get( $url, $this->request_params );
@@ -296,7 +313,7 @@ class GeoMashupGoogleGeocoder extends GeoMashupHttpGeocoder {
 	 */
 	private function query( $query_type, $query ) {
 		$google_geocode_url = 'http://maps.google.com/maps/api/geocode/json?sensor=false&' . $query_type . '=' .
-			urlencode( utf8_encode( $query ) ) . '&language=' . $this->language;
+			self::url_utf8_encode( $query ) . '&language=' . $this->language;
 
 		$response = $this->http->get( $google_geocode_url, $this->request_params );
 		if ( is_wp_error( $response ) )
@@ -368,7 +385,7 @@ class GeoMashupNominatimGeocoder extends GeoMashupHttpGeocoder {
 	public function geocode( $query ) {
 
 		$geocode_url = 'http://nominatim.openstreetmap.org/search?format=json&polygon=0&addressdetails=1&q=' .
-			urlencode( utf8_encode( $query ) ) . '&accept-language=' . $this->language .
+			self::url_utf8_encode( $query ) . '&accept-language=' . $this->language .
 			'&email=' . urlencode( get_option( 'admin_email' ) );
 
 		$response = $this->http->get( $geocode_url, $this->request_params );
