@@ -4,7 +4,7 @@ Donate Link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: map, maps, google maps, google map, mapping, mashup, geo, google, geocms
 Requires at least: 3.0
 Tested up to: 3.4
-Stable tag: 1.4.9
+Stable tag: 1.4.10
  
 Include Google and OpenStreetMap maps in posts and pages, and map posts, pages, and other objects on global maps. Make WordPress into a GeoCMS.
 
@@ -62,7 +62,9 @@ and there is a public [Google Group](http://groups.google.com/group/wordpress-ge
 
 = Translations =
 
-* Hindi by [Chandel](http://outshinesolutions.com) added in version 1.4.9
+* Russian by [Tony](http://tohapro.com) added in version 1.4.10
+* Slovak by B. Radenovich of [Web Hosting Watch](http://webhostingw.com) added in version 1.4.10
+* Hindi by [Outshine Solutions](http://outshinesolutions.com) added in version 1.4.9
 * Romanian by [Web Geek Sciense](http://webhostinggeeks.com) added in version 1.4.8
 * Polish by [Kamil](http://wbartoszycach.pl) added in version 1.4.7
 * Portugese by [Antonio Xeira](http://flyingsouth.thehappytoadfish.com/) added in version 1.4.2
@@ -105,34 +107,34 @@ for the best way to keep your custom files safe moving forward.
 
 Features are generally added in one-dot releases, while two-dot releases contain fixes and small updates.
 
-= 1.4.9 =
-[milestone 1.4.9 changes](http://code.google.com/p/wordpress-geo-mashup/issues/list?can=1&q=Milestone%3D1.4.9)
+= 1.4.10 Aug 5 2012 =
+[milestone 1.4.10 changes](http://code.google.com/p/wordpress-geo-mashup/issues/list?can=1&q=Milestone%3D1.4.10)
 
-= 1.4.8 =
+= 1.4.8 Mar 27 2012 =
 [milestone 1.4.8 changes](http://code.google.com/p/wordpress-geo-mashup/issues/list?can=1&q=Milestone%3D1.4.8)
 
-= 1.4.7 =
+= 1.4.7 Feb 11 2012 =
 [milestone 1.4.7 changes](http://code.google.com/p/wordpress-geo-mashup/issues/list?can=1&q=Milestone%3D1.4.7)
 
-= 1.4.6 =
+= 1.4.6 Jan 2012 =
 [milestone 1.4.6 changes](http://code.google.com/p/wordpress-geo-mashup/issues/list?can=1&q=Milestone%3D1.4.6)
 
-= 1.4.5 =
+= 1.4.5 Dec 2011 =
 [milestone 1.4.5 changes](http://code.google.com/p/wordpress-geo-mashup/issues/list?can=1&q=Milestone%3D1.4.5)
 
-= 1.4.4 =
+= 1.4.4 Nov 2011 =
 [milestone 1.4.4 changes](http://code.google.com/p/wordpress-geo-mashup/issues/list?can=1&q=Milestone%3D1.4.4)
 
-= 1.4.3 =
+= 1.4.3 Nov 2011 =
 [milestone 1.4.3 changes](http://code.google.com/p/wordpress-geo-mashup/issues/list?can=1&q=Milestone%3D1.4.3)
 
-= 1.4.2 =
+= 1.4.2 Nov 2011 =
 [milestone 1.4.2 changes](http://code.google.com/p/wordpress-geo-mashup/issues/list?can=1&q=Milestone%3D1.4.2)
 
-= 1.4.1 =
+= 1.4.1 Jul 2011 =
 [milestone 1.4.1 changes](http://code.google.com/p/wordpress-geo-mashup/issues/list?can=1&q=Milestone%3D1.4.1)
 
-= 1.4 =
+= 1.4 Jul 2011 =
 [milestone 1.4 changes](http://code.google.com/p/wordpress-geo-mashup/issues/list?can=1&q=Milestone%3D1.4)
 
 = 1.3.11 =
@@ -242,3 +244,6 @@ Fixed:
 
 * New features lost to the fogs of time.
 
+= First released on [Nov 15 2005][inception] =
+
+[inception]: http://plugins.trac.wordpress.org/timeline?from=11%2F15%2F05&daysback=1&authors=cyberhobo&ticket=on&changeset=on&wiki=on&update=Update
