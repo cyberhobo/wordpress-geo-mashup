@@ -93,7 +93,8 @@ class GeoMashupSearch {
 	 */
 	public function filter_the_content( $content ) {
 
-		if ( !isset( $_REQUEST['location_text'] ) )
+		// Ignore unless a search was posted for this page
+		if ( !isset( $_REQUEST['results_page_id'] ) || $_REQUEST['results_page_id'] != get_the_ID() )
 			return $content;
 
 		// Remove this filter to prevent recursion
