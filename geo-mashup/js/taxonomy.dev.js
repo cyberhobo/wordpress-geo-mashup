@@ -202,7 +202,7 @@ jQuery.extend( GeoMashup, {
 					 * @param {jQuery} $title Empty legend element with classes
 					 * @param {String} taxonomy 
 					 */
-					GeoMashup.doAction( 'taxonomyLegend', $title, taxonomy );
+					GeoMashup.doAction( 'taxonomyLegendTitle', $title, taxonomy );
 
 					$element.append( $title );
 
