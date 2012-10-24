@@ -1615,8 +1615,17 @@ class GeoMashup {
 	 * @return string List HTML.
 	 */
 	public static function list_located_posts_by_area( $args ) {
+		static $instance_count = 1;
+		
 		$args = wp_parse_args( $args );
-		$list_html = '<div class="gm-area-list">';
+
+		if ( $instance_count > 1 )
+			$id_suffix = '-' . $instance_count;
+		else
+			$id_suffix = '';
+
+		$list_html = '<div id="gm-area-list' . $id_suffix . '" class="gm-area-list">';
+
 		$countries = GeoMashupDB::get_distinct_located_values( 'country_code', array( 'object_name' => 'post' ) );
 		$country_count = count( $countries );
 		$country_heading = '';
@@ -1624,10 +1633,13 @@ class GeoMashup {
 			if ( $country_count > 1 ) {
 				$country_name = GeoMashupDB::get_administrative_name( $country->country_code ); 
 				$country_name = $country_name ? $country_name : $country->country_code;
-				$country_heading = '<h3>' . $country_name . '</h3>';
+				$country_heading = '<h3 id="' . $country->country_code . $id_suffix . '">' . $country_name . '</h3>';
 			}
-			$states = GeoMashupDB::get_distinct_located_values( 'admin_code', 
-				array( 'country_code' => $country->country_code, 'object_name' => 'post' ) );
+
+			$states = GeoMashupDB::get_distinct_located_values( 
+				'admin_code', 
+				array( 'country_code' => $country->country_code, 'object_name' => 'post' ) 
+			);
 			if ( empty( $states ) ) {
 				$states = array( (object) array( 'admin_code' => null ) );
 			}
@@ -1647,7 +1659,7 @@ class GeoMashup {
 					if ( null != $states[0]->admin_code ) {
 						$state_name = GeoMashupDB::get_administrative_name( $country->country_code, $state->admin_code );
 						$state_name = $state_name ? $state_name : $state->admin_code;
-						$list_html .= '<h4>' . $state_name . '</h4>';
+						$list_html .= '<h4 id="' . $country->country_code . '-' . $state->admin_code . $id_suffix . '">' . $state_name . '</h4>';
 					}
 					$list_html .= '<ul class="gm-index-posts">';
 					foreach ( $post_locations as $post_location ) { 
