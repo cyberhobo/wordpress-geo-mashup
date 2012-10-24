@@ -467,6 +467,11 @@ class GeoMashupRenderMap {
 						if ( !empty( $term_options[$include_taxonomy]['line_zoom'][$term->slug] ) )
 							$term_properties[$include_taxonomy]['terms'][$term_id]['line_zoom'] = $term_options[$include_taxonomy]['line_zoom'][$term->slug]; 
 
+						if ( defined( 'GEO_MASHUP_TERM_ORDER_FIELD' ) and property_exists( $term, GEO_MASHUP_TERM_ORDER_FIELD ) ) {
+							$order_field = GEO_MASHUP_TERM_ORDER_FIELD;
+							$term_properties[$include_taxonomy]['terms'][$term_id]['order'] = $term->$order_field; 
+						}
+
 					} // end foreach taxonomy term
 
 				} // end if taxonomy has terms

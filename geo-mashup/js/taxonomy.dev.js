@@ -137,6 +137,32 @@ jQuery.extend( GeoMashup, {
 			} );
 		}
 
+		function sortTermLegendData( taxonomy, tax_data ) {
+			var ordered_terms = [];
+
+			$.each( tax_data.terms, function ( term_id, term_data ) {
+				var order, sort_term = term_data;
+
+				sort_term.term_id = term_id;
+				sort_term.name = term_properties[taxonomy].terms[term_id].name;
+
+				// Check for an explicit order field, otherwise use name
+				if ( term_properties[taxonomy].terms[term_id].hasOwnProperty( 'order' ) ) {
+					sort_term.order = term_properties[taxonomy].terms[term_id].order;
+				} else {
+					sort_term.order = sort_term.name.toLowerCase();
+				}
+
+				ordered_terms.push( sort_term );
+			} );
+
+			ordered_terms.sort( function( a, b ) {
+				return ((a.order < b.order) ? -1 : ((a.order > b.order) ? 1 : 0));
+			} );
+			
+			return ordered_terms;
+		}
+
 		function createTermLegends() {
 			
 			$.each( loaded_terms, function( taxonomy, tax_data ) {
@@ -246,10 +272,11 @@ jQuery.extend( GeoMashup, {
 					}
 				}
 
-				$.each( tax_data.terms, function ( term_id, term_data ) {
-					var id, name, $entry, $key, $def, $label, $checkbox;
+				$.each( sortTermLegendData( taxonomy, tax_data ), function ( i, sort_term ) {
+					var term_id, id, name, $entry, $key, $def, $label, $checkbox;
 
-					name = term_properties[taxonomy].terms[term_id].name;
+					term_id = sort_term.term_id;
+					name = sort_term.name;
 
 					if ( GeoMashup.opts.name && interactive ) {
 
@@ -276,7 +303,7 @@ jQuery.extend( GeoMashup, {
 
 					$key = $( '<' + term_tag + ' class="symbol"/>').append(
 						$( '<img/>' )
-							.attr( 'src', term_data.icon.image )
+							.attr( 'src', sort_term.icon.image )
 							.attr( 'alt', term_id )
 							.click( function() {
 								// Pass clicks to the checkbox
