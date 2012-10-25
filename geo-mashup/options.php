@@ -327,7 +327,7 @@ function geo_mashup_options_page() {
 								size="35"
 								value="<?php echo esc_attr( $geo_mashup_options->get ( 'overall', 'import_custom_field' ) ); ?>" /><br/>
 							<span class="description"><?php
-								_e('Comma separated keys of custom fields to be geocoded and the resulting location saved for the post. Multiple fields will be combined in order before geocoding.', 'GeoMashup');
+								_e('Comma separated keys of custom fields to be geocoded when saved. Multiple fields will be combined in order before geocoding. Saves a location for the post if found.', 'GeoMashup');
 							?></span>
 						</td>
 					</tr>
