@@ -194,8 +194,8 @@ class GeoMashupDB {
 		$location_keys = array();
 		if ( 'true' == $geo_mashup_options->get( 'overall', 'copy_geodata' ) )
 			$location_keys = array_merge( $location_keys, array( 'geo_latitude', 'geo_longitude', 'geo_lat_lng' ) );
-		$import_custom_key = $geo_mashup_options->get( 'overall', 'import_custom_field' );
-		$location_keys[] = $import_custom_key;
+		$import_custom_keys = preg_split( '/\s*,\s*/', trim( $geo_mashup_options->get( 'overall', 'import_custom_field' ) ) );
+		$location_keys = array_merge( $location_keys, $import_custom_keys );
 		if ( ! in_array( $meta_key, $location_keys ) ) 
 			return;
 
@@ -230,15 +230,31 @@ class GeoMashupDB {
 				return;
 			$location['lat'] = $lat;
 
-		} else if ( $import_custom_key == $meta_key ) {
+		} else if ( 'post' == $meta_type and in_array( $meta_key, $import_custom_keys ) ) {
 
 			$lat_lng = preg_split( '/\s*[, ]\s*/', trim( $meta_value ) );
 			if ( count( $lat_lng ) == 2 and is_numeric( $lat_lng[0] ) and is_numeric( $lat_lng[1] ) ) {
 				$location['lat'] = $lat_lng[0];
 				$location['lng'] = $lat_lng[1];
 			} else if ( !empty( $meta_value ) ) {
+				$geocode_values = array();
+				foreach( $import_custom_keys as $import_custom_key ) {
+					if ( $meta_key == $import_custom_key ) {
+						$geocode_values[] = $meta_value;
+					} else {
+						$value = get_metadata( $meta_type, $object_id, $import_custom_key, true );
+
+						// All keys must have a value - do nothing if not
+						if ( $value ) 
+							$geocode_values[] = $value;
+						else
+							return;
+					}
+				}
 				$location = self::blank_location( ARRAY_A );
-				self::geocode( $meta_value, $location );
+				self::geocode( implode( ',', $geocode_values ), $location );
+				if ( self::$geocode_error ) 
+					update_metadata( $meta_type, $object_id, 'geocoding_error', self::$geocode_error->get_error_message() );
 			}
 		}
 
@@ -2054,7 +2070,8 @@ class GeoMashupDB {
 		global $wpdb;
 		if ( isset( $_GET['q'] ) ) {
 			$limit = (int) apply_filters( 'postmeta_form_limit', 30 );
-			$like = $wpdb->escape( $_GET['q'] );
+			$stub = trim( array_pop( explode( ',', $_GET['q'] ) ) );
+			$like = $wpdb->escape( $stub );
 			$keys = $wpdb->get_col( "
 				SELECT meta_key
 				FROM $wpdb->postmeta

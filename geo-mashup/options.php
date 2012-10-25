@@ -154,7 +154,19 @@ function geo_mashup_options_page() {
 				$( '#geo-mashup-selected-tab' ).val( ui.index );
 			}
 		} );
-		$( '#import_custom_field' ).suggest( ajaxurl + '?action=geo_mashup_suggest_custom_keys' );
+		$( '#import_custom_field' ).suggest( ajaxurl + '?action=geo_mashup_suggest_custom_keys', {
+			multiple: true,
+			multipleSep: ',',
+			onSelect: function( $input ) {
+				// Remove the trailing comma
+				$(this).val( $(this).val().replace( /,\s*$/, '' ) );
+			}
+		} ).keypress( function( e ) {
+			if ( ( e.keyCode && e.keyCode === 13 ) || ( e.which && e.which === 13 ) ) {
+				e.preventDefault();
+				$( '#overall-submit' ).click();
+			} 
+		} );
 		$( '#map_api' ).change( function() {
 			$( '#overall-submit' ).click();
 		} );
@@ -315,7 +327,7 @@ function geo_mashup_options_page() {
 								size="35"
 								value="<?php echo esc_attr( $geo_mashup_options->get ( 'overall', 'import_custom_field' ) ); ?>" /><br/>
 							<span class="description"><?php
-								_e('Custom fields with this key will be geocoded and the resulting location saved for the post.', 'GeoMashup');
+								_e('Comma separated keys of custom fields to be geocoded and the resulting location saved for the post. Multiple fields will be combined in order before geocoding.', 'GeoMashup');
 							?></span>
 						</td>
 					</tr>
