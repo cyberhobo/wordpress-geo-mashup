@@ -1480,7 +1480,9 @@ class GeoMashupDB {
 			'object_name' => 'post',
 			'show_future' => 'false', 
 			'suppress_filters' => false,
-	 		'limit' => 0 );
+	 		'limit' => 0,
+			'map_offset' => 0,
+		);
 		$query_args = wp_parse_args( $query_args, $default_args );
 		
 		// Construct the query 
@@ -1643,7 +1645,12 @@ class GeoMashupDB {
 		$where = ( empty( $wheres ) ) ? '' :  'WHERE ' . implode( ' AND ', $wheres ); 
 		$sort = ( isset( $query_args['sort'] ) ) ? $query_args['sort'] : $object_store['sort'];
 		$sort = ( empty( $sort ) ) ? '' : 'ORDER BY ' . $wpdb->escape( $sort );
-		$limit = ( is_numeric( $query_args['limit'] ) && $query_args['limit']>0 ) ? " LIMIT 0,{$query_args['limit']}" : '';
+		$offset = absint( $query_args['map_offset'] );
+		$limit = absint( $query_args['limit'] );
+		if ( $limit or $offset )
+			$limit = " LIMIT {$offset},{$limit}";
+		else
+			$limit = '';
 
 		if ( ! $query_args['suppress_filters'] ) {
 			$field_string	= apply_filters( 'geo_mashup_locations_fields', $field_string );
