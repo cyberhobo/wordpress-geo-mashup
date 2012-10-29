@@ -18,6 +18,7 @@ add_shortcode('geo_mashup_tabbed_category_index', array( 'GeoMashup', 'tabbed_ca
 add_shortcode('geo_mashup_tabbed_term_index', array( 'GeoMashup', 'tabbed_term_index' ) );
 add_shortcode('geo_mashup_visible_posts_list', array( 'GeoMashup', 'visible_posts_list' ) );
 add_shortcode('geo_mashup_location_info', array( 'GeoMashup', 'location_info' ) );
+add_shortcode('geo_mashup_nearby_list', array( 'GeoMashup', 'nearby_list' ) );
 
 /**
  * Map template tag alias.

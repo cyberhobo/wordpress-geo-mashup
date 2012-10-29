@@ -6,7 +6,7 @@
  */
 
 /**
- * Singleton houses Geo Mashup Search.
+ * The Geo Mashup Search class.
  *
  * @since 1.5
  * @package GeoMashup
@@ -18,151 +18,140 @@ class GeoMashupSearch {
 	 * Plugin URL path.
 	 * @deprecated Use GEO_MASHUP_URL_PATH.
 	 */
-	public $url_path;
+	static public $url_path;
 
 	private $results;
 	private $result;
 	private $current_result;
 	private $result_count;
+	private $query_vars = array();
+	private $near_location;
 	private $units;
-	private $object_name;
+	private $max_km;
+	private $distance_factor;
 
 	/**
-	 * Static instance access.
-	 * @static
+	 * Constructor.
+	 *
+	 * Sets up the query if included.
+	 *
+	 * @since 1.5
+	 * @param string|array $query Search parameters.
 	 */
-	public static function get_instance() {
-		static $the_instance = null;
-		if ( is_null( $the_instance ) ) {
-			$the_instance = new GeoMashupSearch();
-		}
-		return $the_instance;
-	}
-
-	/**
-	 * Singleton constructor executed at load time
-	 */
-	public function __construct() {
+	public function __construct( $query ) {
 
 		// Back compat 
 		$this->url_path = GEO_MASHUP_URL_PATH;
 
-		// Initialize
-		add_action( 'init', array( $this, 'action_init' ) );
-
-		// Add the search widget
-		add_action( 'widgets_init', array( $this, 'action_widgets_init' ) );
+		if ( ! empty( $query ) )
+			$this->query( $query );
 	}
 
 	/**
-	 * Add hooks needed for the current request.
-	 */
-	public function action_init() {
-		if ( isset( $_REQUEST['location_text'] ) ) {
-			// Add search results to page content
-			add_filter( 'the_content', array( $this, 'filter_the_content' ) );
+	 * Run a search query.
+	 * 
+	 * @since 1.5
+	 * @uses apply_filters() geo_mashup_search_query_args Filter the geo query arguments.
+	 *
+	 * @param string|array $args Search parameters.
+	 * @return array Search results.
+	 **/
+	public function query( $args ) {
+
+		$default_args = array( 
+			'object_name' => 'post',
+			'object_ids' => null,
+			'exclude_object_ids' => null,
+			'units' => 'km',
+			'location_text' => '',
+			'radius' => null,
+			'sort' => 'distance_km ASC',
+		);
+		$this->query_vars = wp_parse_args( $args, $default_args );
+		extract( $this->query_vars );
+
+		$this->results = array();
+		$this->result_count = 0;
+		$this->result = null;
+		$this->current_result = -1;
+		$this->units = $units;
+		$this->max_km = 20000;
+		$this->distance_factor = ( 'km' == $units ) ? 1 : self::MILES_PER_KILOMETER;
+		$this->near_location = GeoMashupDB::blank_location( ARRAY_A );
+
+		$geo_query_args = wp_array_slice_assoc( 
+			$this->query_vars, 
+			array( 'object_name', 'sort', 'exclude_object_ids' )
+		);
+
+		if ( !empty( $near_lat ) and !empty( $near_lng ) ) {
+
+			$this->near_location['lat'] = $near_lat;
+			$this->near_location['lng'] = $near_lng;
+
+		} else if ( !empty( $location_text ) ) {
+
+			$geocode_text = empty( $geolocation ) ? $location_text : $geolocation;
+
+			if ( ! GeoMashupDB::geocode( $geocode_text, $this->near_location ) ) {
+				// No search center was found, we can't continue
+				return $this->results;
+			}
+
+		} else {
+
+			// No coordinates to search near
+			return $this->results;
+
 		}
-		add_action( 'geo_mashup_render_map', array( $this, 'action_geo_mashup_render_map' ) );
-	}
 
-	/**
-	 * Register the search widget.
-	 */
-	public function action_widgets_init() {
-		register_widget( 'GeoMashupSearchWidget' );
-	}
+		$radius_km = $this->max_km;
 
-	/**
-	 * Queue custom script for the results map.
-	 */
-	public function action_geo_mashup_render_map() {
-		if ( 'search-results-map' == GeoMashupRenderMap::map_property( 'name' ) ) {
-			// Custom javascript for optional use in template
-			GeoMashup::register_script( 'geo-mashup-search-results', 'js/search-results.js', array( 'geo-mashup' ), GEO_MASHUP_VERSION, true );
-			GeoMashupRenderMap::enqueue_script( 'geo-mashup-search-results' );
-		}
+		if ( ! empty( $radius ) )
+			$radius_km = absint( $radius ) / $this->distance_factor;
+
+		$geo_query_args['radius_km'] = $radius_km;
+		$geo_query_args['near_lat'] = $this->near_location['lat'];
+		$geo_query_args['near_lng'] = $this->near_location['lng'];
+
+		if ( isset( $map_cat ) )
+			$geo_query_args['map_cat'] = $map_cat;
+
+		$geo_query_args = apply_filters( 'geo_mashup_search_query_args', $geo_query_args );
+
+		$this->results = GeoMashupDB::get_object_locations( $geo_query_args );
+		$this->result_count = count( $this->results );
+		if ( $this->result_count > 0 )
+			$this->max_km = $this->results[$this->result_count - 1]->distance_km;
+		else
+			$this->max_km = $radius_km;
+
+		return $this->results;
 	}
 
 	/**
 	 * WordPress filter to add geo mashup search results to page content
 	 * when requested.
 	 *
-	 * @uses apply_filters() geo_mashup_search_query_args Filter the geo query arguments.
 	 * @param string $content
 	 * @return string Content including search results if requested.
 	 */
-	public function filter_the_content( $content ) {
-
-		// Ignore unless a search was posted for this page
-		if ( !isset( $_REQUEST['results_page_id'] ) || $_REQUEST['results_page_id'] != get_the_ID() )
-			return $content;
-
-		// Remove this filter to prevent recursion
-		remove_filter( 'the_content', array( $this, 'filter_the_content' ) );
-
-		$this->results = array( );
-		$this->result_count = 0;
-		$this->result = null;
-		$this->current_result = -1;
-		$this->units = isset( $_REQUEST['units'] ) ? $_REQUEST['units'] : 'km';
-
-		$this->object_name = (isset( $_REQUEST['object_name'] ) && in_array( $_REQUEST['object_name'], array( 'post', 'user', 'comment' ) ) ) ? $_REQUEST['object_name'] : 'post';
+	public function load_template( $template = 'search-results' ) {
 
 		// Define variables for the template
-		$search_text = isset( $_REQUEST['location_text'] ) ? $_REQUEST['location_text'] : '';
-		$units = $this->units; // Put $units in template scope
-		$object_name = $this->object_name;
-		$radius = isset( $_REQUEST['radius'] ) ? $_REQUEST['radius'] : '';
-		$distance_factor = ( 'km' == $this->units ) ? 1 : self::MILES_PER_KILOMETER;
-		$max_km = 20000;
+		extract( $this->query_vars );
+		$search_text = $location_text;
+		$distance_factor = $this->distance_factor;
+		$near_location = $this->near_location;
 		$geo_mashup_search = &$this;
 
-		if ( !empty( $_REQUEST['location_text'] ) ) {
-
-			$near_location = GeoMashupDB::blank_location( ARRAY_A );
-			$geocode_text = empty( $_REQUEST['geolocation'] ) ? $_REQUEST['location_text'] : $_REQUEST['geolocation'];
-
-			if ( GeoMashupDB::geocode( $geocode_text, $near_location ) ) {
-
-				// A search center was found, we can continue
-				$geo_query_args = array(
-					'object_name' => $object_name,
-					'near_lat' => $near_location['lat'],
-					'near_lng' => $near_location['lng'],
-					'sort' => 'distance_km ASC'
-				);
-				$radius_km = $max_km;
-
-				if ( isset( $_REQUEST['radius'] ) )
-					$radius_km = absint( $_REQUEST['radius'] ) / $distance_factor;
-
-				$geo_query_args['radius_km'] = $radius_km;
-
-				if ( isset( $_REQUEST['map_cat'] ) )
-					$geo_query_args['map_cat'] = $_REQUEST['map_cat'];
-
-				$geo_query_args = apply_filters( 'geo_mashup_search_query_args', $geo_query_args );
-
-				$this->results = GeoMashupDB::get_object_locations( $geo_query_args );
-				$this->result_count = count( $this->results );
-				if ( $this->result_count > 0 )
-					$max_km = $this->results[$this->result_count - 1]->distance_km;
-				else
-					$max_km = $radius_km;
-			}
-		}
-
-		$approximate_zoom = absint( log( 10000 / $max_km, 2 ) );
+		$approximate_zoom = absint( log( 10000 / $this->max_km, 2 ) );
 
 		// Buffer output from the template
-		$template = GeoMashup::locate_template( 'search-results' );
-		ob_start();
+		$template = GeoMashup::locate_template( $template );
+
+		// Load the template with local variables
 		require( $template );
-		$content .= ob_get_clean();
-
-		// This filter shouldn't run more than once per request, so don't bother adding it again
-
-		return $content;
 	}
 
 	/**
@@ -264,8 +253,75 @@ class GeoMashupSearch {
 
 }
 
-// Instantiate our singleton
-GeoMashupSearch::get_instance();
+// Add search handling hooks
+add_action( 'init', array( 'GeoMashupSearchHandling', 'action_init' ) );
+add_action( 'widgets_init', array( 'GeoMashupSearchHandling', 'action_widgets_init' ) );
+
+/**
+ * Geo Mashup Search Handling class.
+ *
+ * Catch and handle requests from a search widget.
+ *
+ * @package GeoMashup
+ * @static
+ **/
+class GeoMashupSearchHandling {
+	/**
+	 * No constructor - static class
+	 **/
+	private function __construct() {}
+
+	/**
+	 * Add hooks needed for the current request.
+	 */
+	public static function action_init() {
+		if ( isset( $_POST['location_text'] ) ) {
+			// Add search results to page content
+			add_filter( 'the_content', array( __CLASS__, 'filter_the_content' ) );
+		}
+		add_action( 'geo_mashup_render_map', array( __CLASS__, 'action_geo_mashup_render_map' ) );
+	}
+
+	/**
+	 * Register the search widget.
+	 */
+	public static function action_widgets_init() {
+		register_widget( 'GeoMashupSearchWidget' );
+	}
+
+	/**
+	 * Queue custom script for the results map.
+	 */
+	public static function action_geo_mashup_render_map() {
+		if ( 'search-results-map' == GeoMashupRenderMap::map_property( 'name' ) ) {
+			// Custom javascript for optional use in template
+			GeoMashup::register_script( 'geo-mashup-search-results', 'js/search-results.js', array( 'geo-mashup' ), GEO_MASHUP_VERSION, true );
+			GeoMashupRenderMap::enqueue_script( 'geo-mashup-search-results' );
+		}
+	}
+
+	public static function filter_the_content( $content ) {
+
+		// Ignore unless a search was posted for this page
+		if ( !isset( $_POST['results_page_id'] ) || $_POST['results_page_id'] != get_the_ID() )
+			return $content;
+
+		// Remove this filter to prevent recursion
+		remove_filter( 'the_content', array( __CLASS__, 'filter_the_content' ) );
+
+		$geo_search = new GeoMashupSearch( $_POST );
+
+		// Buffer templated results and append to content
+		ob_start();
+		$geo_search->load_template( 'search-results' );
+		$content .= ob_get_clean();
+
+		// This filter shouldn't run more than once per request, so don't bother adding it again
+
+		return $content;
+	}
+
+}
 
 class GeoMashupSearchWidget extends WP_Widget {
 
@@ -280,7 +336,6 @@ class GeoMashupSearchWidget extends WP_Widget {
 	// Display Widget
 	function widget( $args, $instance ) {
 		// Arrange footer scripts
-		$geo_mashup_search = GeoMashupSearch::get_instance();
 
 		GeoMashup::register_script( 'geo-mashup-search-form', 'js/search-form.js', array(), GEO_MASHUP_VERSION, true );
 		wp_enqueue_script( 'geo-mashup-search-form' );
@@ -484,4 +539,5 @@ class GeoMashupSearchWidget extends WP_Widget {
 	}
 
 }
+
 

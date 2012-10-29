@@ -20,6 +20,7 @@
 <form class="geo-mashup-search-form" method="post" action="<?php echo $action_url; ?>">
 
 <input name="object_name" type="hidden" value="<?php echo esc_attr( $instance['object_name'] ); ?>" />
+<input name="results_page_id" type="hidden" value="<?php echo esc_attr( $instance['results_page_id'] ); ?>" />
 <?php if ( !empty( $categories ) ) : ?>
 	<label for="<?php echo $widget_id; ?>-categories"><?php _e( 'find', 'GeoMashup' ); ?>
 	<select id="<?php echo $widget_id; ?>-categories" name="map_cat">

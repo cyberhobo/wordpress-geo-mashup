@@ -1627,8 +1627,11 @@ class GeoMashupDB {
 		if ( ! empty( $query_args['object_id'] ) ) {
 			$wheres[] = 'gmlr.object_id = ' . $wpdb->escape( $query_args['object_id'] );
 		} else if ( ! empty( $query_args['object_ids'] ) ) {
-			$wheres[] = 'gmlr.object_id in ( ' . $wpdb->escape( $query_args['object_ids'] ) .' )';
+			$wheres[] = 'gmlr.object_id IN ( ' . $wpdb->escape( $query_args['object_ids'] ) .' )';
 		}
+
+		if ( ! empty( $query_args['exclude_object_ids'] ) ) 
+			$wheres[] = 'gmlr.object_id NOT IN ( ' . $wpdb->escape( $query_args['exclude_object_ids'] ) . ' )';
 
 		$no_where_fields = array( 'object_name', 'object_id', 'geo_date' );
 		foreach ( self::blank_object_location( ARRAY_A ) as $field => $blank ) {

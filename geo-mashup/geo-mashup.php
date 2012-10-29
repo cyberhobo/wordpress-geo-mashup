@@ -1682,6 +1682,59 @@ class GeoMashup {
 	}
 
 	/**
+	 * List nearby items.
+	 *
+	 * Returns an HTML list of objects near the current reference, the current post by default.
+	 *
+	 * @since 1.5
+	 * @link http://code.google.com/p/wordpress-geo-mashup/wiki/TagReference#NearbyList
+	 *
+	 * @param string|array $args Template tag arguments.
+	 * @return string List HTML.
+	 */
+	 public static function nearby_list( $args = '' ) {
+	 	
+		$default_args = array(
+			'template' => 'nearby-list',
+			'object_name' => 'post',
+			'radius' => '50',
+	 	);
+		$args = wp_parse_args( $args, $default_args );
+		$template = $args['template'];
+		unset( $args['template'] );
+		
+		if ( !isset( $args['near_lat'] ) and !isset( $args['location_text'] ) ) {
+
+			// Look near an object
+			if ( isset( $args['object_id'] ) ) {
+
+				// We were given an ID
+				$object_id = $args['object_id'];
+				unset( $args['object_id'] );
+
+			} else {
+
+				// Use the current loop ID
+				$object_id = get_the_ID();
+
+			}
+
+			// Use the reference object location
+			$near_location = GeoMashupDB::get_object_location( $args['object_name'], $object_id );
+			if ( $near_location ) {
+				$args['near_lat'] = $near_location->lat;
+				$args['near_lng'] = $near_location->lng;
+				$args['exclude_object_ids'] = $object_id;
+			}
+		}
+
+		$geo_search = new GeoMashupSearch( $args );
+		ob_start();
+		$geo_search->load_template( $template );
+		return ob_get_clean();
+	 }
+
+	/**
 	 * Post coordinates template tag.
 	 *
 	 * Get the coordinates of the current post. 
