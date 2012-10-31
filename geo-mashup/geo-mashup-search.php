@@ -303,7 +303,16 @@ class GeoMashupSearchHandling {
 	public static function filter_the_content( $content ) {
 
 		// Ignore unless a search was posted for this page
-		if ( !isset( $_POST['results_page_id'] ) || $_POST['results_page_id'] != get_the_ID() )
+		$ignore = true;
+
+		// Older search forms did not include result page id, but always location text
+		if ( !isset( $_POST['results_page_id'] ) and isset( $_POST['location_text'] ) )
+			$ignore = false;
+
+		if ( isset( $_POST['results_page_id'] ) and $_POST['results_page_id'] == get_the_ID() )
+			$ignore = false;
+
+		if ( $ignore )
 			return $content;
 
 		// Remove this filter to prevent recursion
