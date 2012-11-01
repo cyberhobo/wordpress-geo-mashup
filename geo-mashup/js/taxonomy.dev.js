@@ -168,7 +168,7 @@ jQuery.extend( GeoMashup, {
 			$.each( loaded_terms, function( taxonomy, tax_data ) {
 				var $legend, list_tag, row_tag, term_tag, definition_tag, 
 					$element, $title, format, format_match, interactive,
-					add_check_all, $check_all,
+					add_check_all, $check_all, default_off,
 					element = getWidgetElement( taxonomy, 'legend' );
 
 				if ( !element ) {
@@ -185,9 +185,15 @@ jQuery.extend( GeoMashup, {
 				}
 
 				if ( $element.hasClass( 'check-all-off' ) ) {
-					add_check_all = false;
+					default_off = false;
 				} else if ( interactive ) {
 					add_check_all = true;
+				}
+
+				if ( $element.hasClass( 'default-off' ) ) {
+					default_off = true;
+				} else {
+					default_off = false;
 				}
 
 				format_match = /format-(\w+)/.exec( $element.attr( 'class' ) );
@@ -252,7 +258,7 @@ jQuery.extend( GeoMashup, {
 						.attr( 'for', 'gm-' + taxonomy + '-check-all' )
 						.prepend(
 							$( '<input type="checkbox" />' ).attr( 'id', 'gm-' + taxonomy + '-check-all' )
-								.attr( 'checked', 'checked' )
+								.attr( 'checked', ( default_off ? false : 'checked' ) )
 								.change( function() {
 									if ( $( this ).is( ':checked' ) ) {
 										$legend.find( 'input.gm-' + taxonomy + '-checkbox:not(:checked)' ).click();
@@ -284,11 +290,16 @@ jQuery.extend( GeoMashup, {
 
 						$checkbox = $( '<input type="checkbox" name="term_checkbox" />' )
 							.attr( 'id', id )
-							.attr( 'checked', 'checked' )
 							.addClass( 'gm-' + taxonomy + '-checkbox' )
 							.change( function() {
 								GeoMashup.term_manager.setTermVisibility( term_id, taxonomy, $( this ).is( ':checked' ) ); 
 							});
+
+						if ( default_off ) {
+							GeoMashup.term_manager.setTermVisibility( term_id, taxonomy, false ); 
+						} else {
+							$checkbox.attr( 'checked', 'checked' );
+						}
 
 						$label = $( '<label/>' )
 							.attr( 'for', id )
