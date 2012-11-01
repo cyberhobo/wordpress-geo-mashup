@@ -267,7 +267,9 @@ class GeoMashupDB {
 
 		// Save the location, attempt reverse geocoding
 		self::remove_geodata_sync_hooks();
-		self::set_object_location( $meta_type, $object_id, $location, null );
+		// Use geo date if it exists
+		$geo_date = get_metadata( $meta_type, $object_id, 'geo_date', true );
+		self::set_object_location( $meta_type, $object_id, $location, null, $geo_date );
 		self::add_geodata_sync_hooks();
 		$wpdb->insert_id = $restore_insert_id;
 	}
@@ -285,19 +287,20 @@ class GeoMashupDB {
 
 		$geo_latitude = get_metadata( $meta_type, $object_id, 'geo_latitude', true );
 		$geo_longitude = get_metadata( $meta_type, $object_id, 'geo_longitude', true );
-		$existing_location = self::get_location( $location_id );
+		$existing_object_location = self::get_object_location( $meta_type, $object_id );
 
 		// Do nothing if the geodata already exists
 		if ( $geo_latitude and $geo_longitude ) {
 			$epsilon = 0.00001;
-			if ( abs( $geo_latitude - $existing_location->lat ) < $epsilon and abs( $geo_longitude - $existing_location->lng ) < $epsilon )
+			if ( abs( $geo_latitude - $existing_object_location->lat ) < $epsilon and abs( $geo_longitude - $existing_object_location->lng ) < $epsilon )
 				return;
 		}
 		
 		self::remove_geodata_sync_hooks();
-		update_metadata( $meta_type, $object_id, 'geo_latitude', $existing_location->lat );
-		update_metadata( $meta_type, $object_id, 'geo_longitude', $existing_location->lng );
-		update_metadata( $meta_type, $object_id, 'geo_address', $existing_location->address );
+		update_metadata( $meta_type, $object_id, 'geo_latitude', $existing_object_location->lat );
+		update_metadata( $meta_type, $object_id, 'geo_longitude', $existing_object_location->lng );
+		update_metadata( $meta_type, $object_id, 'geo_address', $existing_object_location->address );
+		update_metadata( $meta_type, $object_id, 'geo_date', $existing_object_location->geo_date );
 		self::$copied_to_geodata[$meta_type . '-' . $object_id] = true;
 		self::add_geodata_sync_hooks();
 	}
