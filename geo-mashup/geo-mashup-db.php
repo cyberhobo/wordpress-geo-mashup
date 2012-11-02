@@ -1402,10 +1402,18 @@ class GeoMashupDB {
 
 		$object_location = wp_cache_get( $cache_id, 'geo_mashup_object_locations' );
 		if ( !$object_location ) {
-			$select_string = "SELECT * 
+			$object_store = self::object_storage( $object_name );
+			$field_string = "gmlr.object_id, o.{$object_store['label_column']} as label, gml.*";
+
+			if ( 'post' == $object_name )
+				$field_string .= ', o.post_author';
+
+			$select_string = "SELECT {$field_string}
 				FROM {$wpdb->prefix}geo_mashup_locations gml
-				JOIN {$wpdb->prefix}geo_mashup_location_relationships gmlr ON gmlr.location_id = gml.id " .
-				$wpdb->prepare( 'WHERE gmlr.object_name = %s AND gmlr.object_id = %d', $object_name, $object_id );
+				INNER JOIN {$wpdb->prefix}geo_mashup_location_relationships gmlr " .
+				$wpdb->prepare( 'ON gmlr.object_name = %s AND gmlr.location_id = gml.id ', $object_name ) .
+				"INNER JOIN {$object_store['table']} o ON o.{$object_store['id_column']} = gmlr.object_id " .
+				$wpdb->prepare( 'WHERE gmlr.object_id = %d', $object_id ); 
 
 			$object_location = $wpdb->get_row( $select_string );
 			wp_cache_add( $cache_id, $object_location, 'geo_mashup_object_locations' );

@@ -688,58 +688,13 @@ class GeoMashup {
 	 * @return string Queried object locations JSON ( { "object" : [...] } ).
 	 */
 	public static function get_locations_json( $query_args, $format = 'JSON' ) {
-		global $geo_mashup_options;
-
 		$default_args = array( 'object_name' => 'post' );
 		$query_args = wp_parse_args( $query_args, $default_args );
 		$json_objects = array();
 		$objects = GeoMashupDB::get_object_locations( $query_args );
 		if ( $objects ) {
 			foreach ($objects as $object) {
-				$term_ids_by_taxonomy = array();
-				$author_name = '';
-				$attachments = array();
-				if ( 'post' == $query_args['object_name'] ) {
-
-					// Filter the title
-					$object->label = sanitize_text_field( apply_filters( 'the_title', $object->label, $object->object_id ) );
-
-					// Add terms
-					if ( defined( 'GEO_MASHUP_DISABLE_CATEGORIES' ) and GEO_MASHUP_DISABLE_CATEGORIES ) 
-						$include_taxonomies = array();
-					else
-						$include_taxonomies = $geo_mashup_options->get( 'overall', 'include_taxonomies' );
-					
-					foreach( $include_taxonomies as $include_taxonomy ) {
-						// Not using wp_get_object_terms(), which doesn't allow for persistent caching
-						$tax_terms = get_the_terms( $object->object_id, $include_taxonomy );
-						$term_ids_by_taxonomy[$include_taxonomy] = empty( $tax_terms ) ? array() : wp_list_pluck( $tax_terms, 'term_id' );
-					}
-
-					// Include post author
-					$author = get_userdata( $object->post_author );
-					if ( empty( $author ) ) {
-						$author_name = '';
-					} else {
-						$author_name = $author->display_name;
-					}
-				}
-
-				$json_object = array(
-					'object_name' => $query_args['object_name'],
-					'object_id' => $object->object_id,
-					// We should be able to use real UTF-8 characters in titles
-					// Helps with the spelling-out of entities in tooltips
-					'title' => html_entity_decode( $object->label, ENT_COMPAT, 'UTF-8' ),
-					'lat' => $object->lat,
-					'lng' => $object->lng,
-					'author_name' => $author_name,
-					'terms' => $term_ids_by_taxonomy,
-				);
-
-				// Allow companion plugins to add data
-				$json_object = apply_filters( 'geo_mashup_locations_json_object', $json_object, $object );
-				$json_objects[] = $json_object;
+				$json_objects[] = self::augment_map_object_location( $query_args['object_name'], $object );
 			}
 		}
 		if ( ARRAY_A == $format ) 
@@ -768,6 +723,65 @@ class GeoMashup {
 				unset( $atts[$old_key] );
 			}
 		}
+	}
+
+	/**
+	 * Augment an object location for display.
+	 *
+	 * @since 1.5
+	 * 
+	 * @param array $object_location The object location data.
+	 * @return array The 
+	 */
+	private static function augment_map_object_location( $object_name, $object_location ) {
+		global $geo_mashup_options;
+
+		$term_ids_by_taxonomy = array();
+		$author_name = '';
+		$attachments = array();
+		if ( 'post' == $object_name ) {
+
+			// Filter the title
+			$object_location->label = sanitize_text_field( apply_filters( 'the_title', $object_location->label, $object_location->object_id ) );
+
+			// Add terms
+			if ( defined( 'GEO_MASHUP_DISABLE_CATEGORIES' ) and GEO_MASHUP_DISABLE_CATEGORIES ) 
+				$include_taxonomies = array();
+			else
+				$include_taxonomies = $geo_mashup_options->get( 'overall', 'include_taxonomies' );
+			
+			foreach( $include_taxonomies as $include_taxonomy ) {
+				// Not using wp_get_object_terms(), which doesn't allow for persistent caching
+				$tax_terms = get_the_terms( $object_location->object_id, $include_taxonomy );
+				$term_ids_by_taxonomy[$include_taxonomy] = empty( $tax_terms ) ? array() : wp_list_pluck( $tax_terms, 'term_id' );
+			}
+
+			// Add post author name
+			if ( defined( 'GEO_MASHUP_DISABLE_AUTHOR_NAME' ) and GEO_MASHUP_DISABLE_AUTHOR_NAME ) 
+				$author = null;
+			else
+				$author = get_userdata( $object_location->post_author );
+
+			if ( empty( $author ) ) 
+				$author_name = '';
+			else 
+				$author_name = $author->display_name;
+		}
+
+		$augmented_object = array(
+			'object_name' => $object_name,
+			'object_id' => $object_location->object_id,
+			// We should be able to use real UTF-8 characters in titles
+			// Helps with the spelling-out of entities in tooltips
+			'title' => html_entity_decode( $object_location->label, ENT_COMPAT, 'UTF-8' ),
+			'lat' => $object_location->lat,
+			'lng' => $object_location->lng,
+			'author_name' => $author_name,
+			'terms' => $term_ids_by_taxonomy,
+		);
+
+		// Allow companion plugins to add data with legacy filter name
+		return apply_filters( 'geo_mashup_locations_json_object', $augmented_object, $object_location );
 	}
 
 	/**
@@ -808,11 +822,15 @@ class GeoMashup {
 
 		if ( $map_content == 'single') {
 
-			$location = GeoMashupDB::get_object_location( $object_name, $object_id, ARRAY_A );
+			$object_location = GeoMashupDB::get_object_location( $object_name, $object_id );
+			if ( !empty( $object_location ) ) {
+				$augmented_location = self::augment_map_object_location( $object_name, $object_location );
+				$map_data['object_data'] = array( 'objects' => array( $augmented_location ) );
+			}
+
 			$options = $geo_mashup_options->get( 'single_map' );
-			if ( !empty( $location ) ) 
-				$map_data['object_data'] = array( 'objects' => array( $location ) );
 			$map_data = array_merge ( $options, $map_data );
+
 			if ( 'post' == $object_name ) {
 				$kml_urls = self::get_kml_attachment_urls( $object_id );
 				if (count($kml_urls)>0) {
