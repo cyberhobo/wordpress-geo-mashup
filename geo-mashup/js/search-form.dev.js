@@ -1,4 +1,4 @@
-/**global jQuery */
+/*global jQuery */
 
 // If jQuery is in use, enhance the search form(s) a bit
 if ( typeof jQuery !== 'undefined' ) {
@@ -10,5 +10,5 @@ if ( typeof jQuery !== 'undefined' ) {
 				cleared = true;
 			}
 		} );
-	})
+	} );
 }

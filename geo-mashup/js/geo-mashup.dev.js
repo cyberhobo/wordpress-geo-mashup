@@ -20,7 +20,7 @@ details.
  * The base Geo Mashup code that is independent of mapping API.
  */
 
-/*global GeoMashup: true */
+/*global jQuery, GeoMashup: true */
 // These globals are retained for backward custom javascript compatibility
 /*global customizeGeoMashup, customizeGeoMashupMap, customGeoMashupColorIcon, customGeoMashupCategoryIcon */
 /*global customGeoMashupSinglePostIcon, customGeoMashupMultiplePostImage */
@@ -444,7 +444,7 @@ GeoMashup = {
 		if ( !this.opts.term_properties.hasOwnProperty( 'category' ) ) {
 			return null;
 		}
-		return this.opts.term_properties['category'][category_id];
+		return this.opts.term_properties.category[category_id];
 	},
 
 	/**
@@ -665,7 +665,7 @@ GeoMashup = {
 	 *   data for these objects, for legend or other term controls.
 	 */
 	addObjects : function(response_data, add_term_info) {
-		var i, j, object_id, point, taxonomy, term_id, marker, plus_image,
+		var i, k, object_id, point, taxonomy, term_ids, term_id, marker, plus_image,
 			added_markers = [];
 
 		if ( add_term_info && this.term_manager ) {
@@ -686,18 +686,21 @@ GeoMashup = {
 			response_data[i].combined_term_count = 0;
 			if ( this.term_manager ) {
 				// Add terms
-				this.forEach( response_data[i].terms, function( taxonomy, term_ids ) {
-					var k;
-					for (k = 0; k < term_ids.length; k+=1) {
-						GeoMashup.term_manager.extendTerm( point, taxonomy, term_ids[k], response_data[i] );
-					}
+				for( taxonomy in response_data[i].terms ) {
+					if ( response_data[i].terms.hasOwnProperty( taxonomy ) && typeof taxonomy !== 'function' ) {
 
-					response_data[i].combined_term_count += term_ids.length;
+						term_ids = response_data[i].terms[taxonomy];
+						for (k = 0; k < term_ids.length; k+=1) {
+							GeoMashup.term_manager.extendTerm( point, taxonomy, term_ids[k], response_data[i] );
+						}
 
-					if ( 'category' === taxonomy ) {
-						response_data[i].categories = term_ids;
+						response_data[i].combined_term_count += term_ids.length;
+
+						if ( 'category' === taxonomy ) {
+							response_data[i].categories = term_ids;
+						}
 					}
-				} );
+				}
 			}
 			
 			if (this.opts.max_posts && this.object_count >= this.opts.max_posts) {

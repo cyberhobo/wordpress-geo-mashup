@@ -212,7 +212,7 @@ GeoMashup.addObjectIcon = function( obj ) {
 
 	// Back compat
 	if ( typeof customGeoMashupCategoryIcon === 'function' && obj.terms && obj.terms.hasOwnProperty( 'category' ) ) {
-		obj.icon = customGeoMashupCategoryIcon( GeoMashup.opts, obj.terms['category'] );
+		obj.icon = customGeoMashupCategoryIcon( GeoMashup.opts, obj.terms.category );
 	} 
 
 	if (!obj.icon) {
@@ -230,7 +230,7 @@ GeoMashup.addObjectIcon = function( obj ) {
 
 				single_icon = GeoMashup.term_manager.getTermData( taxonomy, terms[0], 'icon' );
 
-				if ( obj.icon && obj.icon.image != single_icon.image ) {
+				if ( obj.icon && obj.icon.image !== single_icon.image ) {
 
 					// We have two different icons in different taxonomies
 					obj.icon = new google.maps.Icon( GeoMashup.multiple_term_icon );

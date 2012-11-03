@@ -1,4 +1,5 @@
-/**global jQuery, geo_mashup_search_find_me_env */
+/*global jQuery, geo_mashup_search_find_me_env */
+/*jslint browser: true */
 
 jQuery( function( $ ) {
 	$( '.geo-mashup-search-find-me' ).show().click( function() {

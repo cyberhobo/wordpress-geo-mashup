@@ -1,13 +1,14 @@
 /*
  * Geo Mashup customization for search results map
  */
+/*global GeoMashup, google, mxn */
 GeoMashup.addAction( 'loadedMap', function( properties, map ) {
 	var search_marker, search_latlng, icon; 
 	// Double-check that we're customizing the right map
-	if ( 'search-results-map' == properties.name && properties.search_text ) {
+	if ( 'search-results-map' === properties.name && properties.search_text ) {
 
 		// Put the blue dot at the search location
-		if ( 'google' == properties.map_api ) {
+		if ( 'google' === properties.map_api ) {
 
 			icon = new google.maps.Icon();
 			icon.image = properties.url_path + '/images/bluedot16.png';
@@ -38,4 +39,4 @@ GeoMashup.addAction( 'loadedMap', function( properties, map ) {
 			map.addMarker( search_marker );
 		}
 	}
-})
+} );
