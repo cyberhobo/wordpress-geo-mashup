@@ -15,6 +15,12 @@ mxn.register( 'googlev3', {
 					});
 				}
 			});
+
+			// Fire endPan when the center changes (add a better event to mxn?)
+			// Lets us detect recentering after a KML layer is loaded
+			google.maps.event.addListener( me.maps['googlev3'], 'center_changed', function() {
+				me.endPan.fire()
+			} );
 		},
 
 		setMapTypes: function( types ) {
