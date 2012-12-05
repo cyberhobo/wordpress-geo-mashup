@@ -1592,7 +1592,7 @@ class GeoMashupDB {
 				$searchable_post_types = GeoMashup::get_searchable_post_types();
 
 				if ( ! empty( $searchable_post_types ) )
-					$include_post_types .= $wpdb->prepare("o.post_type IN ('" . join("', '", $searchable_post_types ) . "')");
+					$include_post_types .= "o.post_type IN ('" . join("', '", array_map( 'esc_sql', $searchable_post_types ) ) . "')";
 
 				$wheres[] = $include_post_types;
 			} else {
