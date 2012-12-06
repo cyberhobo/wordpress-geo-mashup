@@ -1,0 +1,868 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Geo Mashup 1.4\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2011-07-09 22:56-0800\n"
+"PO-Revision-Date: 2012-11-26 18:19+0530\n"
+"Last-Translator: Ajeet <Ajeetbook@gmail.com>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-KeywordsList: _e;__\n"
+"X-Poedit-Basepath: .\n"
+"X-Poedit-SearchPath-0: ..\n"
+
+#: ../edit-form.php:127
+msgid "Address"
+msgstr "seoladh"
+
+#: ../edit-form.php:128
+msgid "Saved Name"
+msgstr "Ainm sábháilte"
+
+#: ../edit-form.php:129
+msgid "Geo Date"
+msgstr "geo dáta"
+
+#: ../edit-form.php:157
+msgid "Loading Google map. Check Geo Mashup options if the map fails to load."
+msgstr "Ag luchtú Google léarscáil. Seiceáil Geo roghanna Mashup má theipeann ar an léarscáil a luchtú."
+
+#: ../edit-form.php:163
+msgid "Location Map Image"
+msgstr "Íomhá Léarscáil Suíomh"
+
+#: ../edit-form.php:169
+msgid "Find a new location:"
+msgstr "Aimsigh suíomh nua:"
+
+#: ../edit-form.php:173
+msgid "or select from"
+msgstr "nó roghnú as"
+
+#: ../edit-form.php:175
+msgid "[Saved Locations]"
+msgstr "[Suímh shábháil]"
+
+#: ../edit-form.php:198
+msgid "Add Location"
+msgstr "Cuir Suíomh"
+
+#: ../edit-form.php:199
+msgid "Delete"
+msgstr "Scrios"
+
+#: ../edit-form.php:200
+msgid "Save"
+msgstr "Sábháil"
+
+#: ../edit-form.php:203
+msgid "help"
+msgstr "cabhrú le"
+
+#: ../edit-form.php:206
+msgid "<em>Saved Name</em> is an optional name you may use to add entries to the Saved Locations menu."
+msgstr "<em>Sábháilte Ainm</em> is ainm roghnach is féidir leat a úsáid chun iontrálacha a chur leis an roghchlár Suímh Sábháilte."
+
+#: ../edit-form.php:207
+msgid "<em>Geo Date</em> associates a date (most formats work) and time with a location. Leave the default value if uncertain."
+msgstr "<em>Geo Dáta </em> Associates dáta (an chuid is mó formáidí oibre) agus am a bhfuil ar an suíomh. Fág an luach réamhshocraithe más éiginnte."
+
+#: ../edit-form.php:209
+msgid "Put a green pin at a new location. There are many ways to do it:"
+msgstr "Cuir le bioráin glas ag suíomh nua. Tá go leor bealaí chun é a dhéanamh:"
+
+#: ../edit-form.php:211
+msgid "Search for a location name."
+msgstr "Cuardaigh le haghaidh ainm a shuíomh."
+
+#: ../edit-form.php:212
+msgid "For multiple search results, mouse over pins to see location names, and click a result pin to select that location."
+msgstr "Chun na torthaí cuardaigh éagsúla, luch thar bioráin a fheiceáil ainmneacha suíomh, agus bioráin toradh a roghnú an suíomh sin cliceáil."
+
+#: ../edit-form.php:213
+msgid "Search for a decimal latitude and longitude separated by a comma, like <em>40.123,-105.456</em>. Seven decimal places are stored. Negative latitude is used for the southern hemisphere, and negative longitude for the western hemisphere."
+msgstr "Cuardaigh le haghaidh domhanleithead agus domhanfhad dheachúlach scartha le camóga, cosúil le <em>40.123,-105.456</em>. Seacht deachúil a stóráil. Tá domhanleithead Diúltach a úsáidtear le haghaidh an leathsféar theas, agus diúltach domhanfhad don Leathsféar an iarthair."
+
+#: ../edit-form.php:214
+msgid "Search for a street address, like <em>123 main st, anytown, acity</em>."
+msgstr "Cuardaigh le haghaidh ainm na sráide, ar nós <em>123 príomh-ú, anytown, acity </em>."
+
+#: ../edit-form.php:215
+msgid "Click on the location. Zoom in if necessary so you can refine the location by dragging it or clicking a new location."
+msgstr "Cliceáil ar an suíomh. Súmáil isteach más gá ionas gur féidir leat a bheachtú an suíomh trí tharraingt air nó cliceáil ar an suíomh nua."
+
+#: ../edit-form.php:217
+msgid "To execute a search, type search text into the Find Location box and hit the enter key. If you type a name next to \"Save As\", the location will be saved under that name and added to the Saved Locations dropdown list."
+msgstr "A fhorghníomhú cuardaigh, téacs cuardaigh cineál isteach sa bhosca Suíomh Aimsigh agus brúigh an eochair isteach. Má scríobhann tú ainm in aice leis  \"Save As \", beidh an suíomh a shábháil fén ainm sin agus leis an liosta Suímh Sábháilte anuas."
+
+#: ../edit-form.php:218
+msgid "To remove the location (green pin), clear the search box and hit the enter key."
+msgstr "A bhaint as an suíomh (glas bioráin), soiléir an bhosca cuardaigh agus an eochair isteach an leathanaigh."
+
+#: ../edit-form.php:219
+msgid "When you are satisfied with the location, save or update."
+msgstr "Nuair a bheidh tú sásta leis an suíomh, shábháil nó a nuashonrú."
+
+#: ../edit-form.php:223
+msgid "To add or update location choose a saved location, or find a new location using one of these formats:"
+msgstr "Chun cur leis nó suíomh cothrom le dáta a roghnú suíomh a shábháil, nó suíomh nua ag baint úsáide as ceann amháin de na formáidí a fháil:"
+
+#: ../edit-form.php:225
+msgid "A place name like <em>Yellowstone National Park</em>"
+msgstr "Ainm áit mhaith <em> Yellowstone Páirc Náisiúnta </em>"
+
+#: ../edit-form.php:226
+msgid "A decimal latitude and longitude, like <em>40.123,-105.456</em>."
+msgstr "A domhanleithead agus domhanfhad dheachúlach, cosúil le <em>40.123, -105.456</em>."
+
+#: ../edit-form.php:227
+msgid "A full or partial street address, like <em>123 main st, anytown, acity 12345 USA</em>."
+msgstr "A ainm na sráide iomlán nó páirteach, cosúil le <em>123 príomh-ú, anytown, acity 12345 Stáit Aontaithe Mheiriceá </em>."
+
+#: ../edit-form.php:229
+msgid "When you save or update, the closest match available will be saved as the location."
+msgstr "Nuair a bheidh tú a shábháil nó a thabhairt cothrom le dáta, beidh an cluiche is gaire atá ar fáil a shábháil mar an suíomh."
+
+#: ../geo-mashup-db.php:620
+msgid "Activating Geo Mashup"
+msgstr "Activating Geo Mashup"
+
+#: ../geo-mashup-db.php:685
+msgid "Geo Mashup database is up to date."
+msgstr "Is é Geo Mashup bunachar sonraí cothrom le dáta."
+
+#: ../geo-mashup-db.php:688
+msgid "Geo Mashup database upgrade failed."
+msgstr "Geo uasghrádú bunachar sonraí Mashup theip."
+
+#: ../geo-mashup-db.php:945
+msgid "No locations found with missing address fields."
+msgstr "Níl aon suímh le fáil le réimsí seoladh ar iarraidh."
+
+#: ../geo-mashup-db.php:948
+msgid "Locations to geocode: "
+msgstr "Suímh le geocode:"
+
+#: ../geo-mashup-db.php:956
+msgid "Time limit: "
+msgstr "Teorainn ama:"
+
+#: ../geo-mashup-db.php:967
+msgid "Lookup error:"
+msgstr "Lookup earráid:"
+
+#: ../geo-mashup-db.php:968
+msgid "Increasing delay to"
+msgstr "Méadú moill a"
+
+#: ../geo-mashup-db.php:971
+msgid "address"
+msgstr "seoladh"
+
+#: ../geo-mashup-db.php:973
+msgid "postal code"
+msgstr "poist cód"
+
+#: ../geo-mashup-db.php:977
+msgid "No address info found."
+msgstr "Níl aon eolas seoladh aimsithe."
+
+#: ../geo-mashup-db.php:980
+msgid "Time limit exceeded, retry to continue."
+msgstr "Teorainn ama sáraithe, lean ar aghaidh."
+
+#: ../geo-mashup-db.php:1025
+msgid "Geodata duplication done."
+msgstr "Geodata dúbláil a dhéanamh."
+
+#: ../geo-mashup-db.php:1064
+#, php-format
+msgid "Copying missing %s geodata from WordPress"
+msgstr "Cóipeála ar iarraidh %s geodata ó WordPress"
+
+#: ../geo-mashup-db.php:1075
+#, php-format
+msgid "Failed to duplicate WordPress location (%s). You can edit %s with id %s to update the location, and try again."
+msgstr "Theip ar dhúbailt WordPress suíomh (%s). Is féidir leat in eagar %s le %s id cothrom le dáta an suíomh, agus déan iarracht eile."
+
+#: ../geo-mashup-db.php:1101
+#, php-format
+msgid "Copying missing %s geodata from Geo Mashup"
+msgstr "Cóipeála ar iarraidh %s geodata ó Geo Mashup"
+
+#: ../geo-mashup-db.php:1113
+#, php-format
+msgid "Failed to duplicate Geo Mashup location for %s (%s)."
+msgstr "Theip ar dhúbailt Geo Mashup suíomh le haghaidh %s (%s)."
+
+#: ../geo-mashup-db.php:1154
+msgid "Converting old locations"
+msgstr "Suíomhanna Athrú aois"
+
+#: ../geo-mashup-db.php:1167
+#, php-format
+msgid "Failed to convert location (%s). You can %sedit the post%s to update the location, and try again."
+msgstr "Theip ar thiontú suíomh (%s). Is féidir leat %s edit an bpost %s cothrom le dáta an suíomh, agus déan iarracht eile."
+
+#: ../geo-mashup-db.php:1177
+msgid "Converting saved locations"
+msgstr "Athrú áiteanna sábháilte"
+
+#: ../geo-mashup-db.php:1186
+msgid "OK: "
+msgstr "OK:"
+
+#: ../geo-mashup-db.php:1190
+#, php-format
+msgid "Failed to convert saved location (%s). You'll have to save it again, sorry."
+msgstr "Theip ar thiontú suíomh shábháil (%s). Beidh tú a shábháil arís, tá brón orainn."
+
+#: ../geo-mashup-db.php:1209
+msgid "Failed to initialize geo dates from post dates: "
+msgstr "Theip ar thúsú dátaí geo ó dhátaí an bpost:"
+
+#: ../geo-mashup-db.php:1212
+#, php-format
+msgid "Initialized %d geo dates from corresponding post dates."
+msgstr "Initialized %d geo dátaí ó na dátaí phost comhfhreagrach."
+
+#: ../geo-mashup-db.php:1752
+msgid "A location must have an ID or coordinates to be saved."
+msgstr "Ní mór go mbeadh suíomh ID nó comhordanáidí a shábháil."
+
+#: ../geo-mashup-geocoders.php:149
+#: ../geo-mashup-geocoders.php:351
+#: ../geo-mashup-geocoders.php:414
+msgid "Reverse geocoding requires numeric coordinates."
+msgstr "Éilíonn geocoding droim ar ais comhordanáidí uimhriúil."
+
+#: ../geo-mashup-geocoders.php:313
+#, php-format
+msgid "The geocoding request failed with status %s."
+msgstr "An t-iarratas geocoding Theip %s stádas."
+
+#: ../geo-mashup-options.php:360
+#: ../geo-mashup-options.php:368
+#: ../geo-mashup-options.php:374
+#: ../geo-mashup-options.php:384
+#: ../geo-mashup-options.php:393
+#: ../geo-mashup-options.php:402
+#: ../geo-mashup-options.php:424
+#: ../geo-mashup-options.php:429
+#: ../geo-mashup-options.php:442
+#: ../geo-mashup-options.php:474
+#: ../geo-mashup-options.php:490
+#: ../geo-mashup-options.php:503
+#: ../geo-mashup-options.php:512
+msgid "is invalid for"
+msgstr "Is neamhbhailí"
+
+#: ../geo-mashup-options.php:361
+#: ../geo-mashup-options.php:375
+msgid ", which must be a valid map type (see documentation)"
+msgstr ", Ní mór a bheith ina chineál léarscáil bailí (féach doiciméadú)"
+
+#: ../geo-mashup-options.php:369
+msgid ", which must be an array of valid map types (see documentation)"
+msgstr ", Ní mór a bheith ina sraith de chineálacha léarscáil bailí (féach doiciméadú)"
+
+#: ../geo-mashup-options.php:385
+msgid ", which must be a valid map control (see documentation)"
+msgstr ", Ní mór a bheith ina rialú léarscáil bailí (féach doiciméadú)"
+
+#: ../geo-mashup-options.php:394
+msgid ", which must be a valid map provider."
+msgstr ", Ní mór a bheith ina sholáthraí léarscáil bailí."
+
+#: ../geo-mashup-options.php:403
+msgid ", which must be a valid clustering library."
+msgstr ", Ní mór a bheith ina leabharlann braisliú bailí."
+
+#: ../geo-mashup-options.php:425
+msgid ", which must be a string"
+msgstr ", Ní mór a bheith ina teaghrán"
+
+#: ../geo-mashup-options.php:430
+msgid ", which must not contain XML tags."
+msgstr ", Ní mór a bhfuil clibeanna XML."
+
+#: ../geo-mashup-options.php:443
+msgid ", which must be a number"
+msgstr ", Ní mór a bheith ina uimhir"
+
+#: ../geo-mashup-options.php:475
+msgid ", which must be \"true\" or \"false\""
+msgstr ", Ní mór a bheith ina  \"true\" or \"false\""
+
+#: ../geo-mashup-options.php:491
+msgid ", which must be an array"
+msgstr ", Ní mór a bheith ina eagar"
+
+#: ../geo-mashup-options.php:504
+msgid ", which must be a number from 0 to "
+msgstr ", Ní mór a roinnt ó 0 go"
+
+#: ../geo-mashup-options.php:513
+msgid ", which is a deprecated option"
+msgstr ", which is a deprecated option"
+
+#: ../geo-mashup-ui-managers.php:156
+msgid "Object location not saved - invalid request."
+msgstr "Suíomh Cuspóir ní shábháil - iarratas neamhbhailí."
+
+#: ../geo-mashup-ui-managers.php:303
+#: ../geo-mashup-ui-managers.php:492
+msgid "Location"
+msgstr "suíomh"
+
+#: ../geo-mashup-ui-managers.php:607
+msgid "Address not found - try making it less detailed"
+msgstr "Aghaidh a thabhairt ar Ní bhfuarthas an - déan iarracht é a dhéanamh chomh mionsonraithe"
+
+#: ../geo-mashup-ui-managers.php:789
+msgid "Written from (location)"
+msgstr "Scríofa ó (suíomh)"
+
+#: ../geo-mashup-ui-managers.php:791
+msgid "Loading..."
+msgstr "Ag luchtú ..."
+
+#: ../geo-mashup.php:395
+msgid "No object id posted."
+msgstr "Uimh id réad phost."
+
+#: ../geo-mashup.php:412
+msgid "Location updated."
+msgstr "Suíomh suas chun dáta."
+
+#: ../geo-mashup.php:414
+msgid "Location deleted."
+msgstr "Suíomh scriosadh."
+
+#: ../geo-mashup.php:416
+msgid "Location added."
+msgstr "Suíomh leis."
+
+#: ../geo-mashup.php:851
+msgid "Geo Mashup found no objects to map in this context"
+msgstr "Geo Mashup bhfuarthas aon agóid a mhapáil sa chomhthéacs seo"
+
+#: ../geo-mashup.php:869
+msgid "Geo Mashup found no current object to map"
+msgstr "Geo Mashup aimsíodh aon rud atá ann faoi láthair a mhapáil"
+
+#: ../geo-mashup.php:873
+msgid "Geo Mashup omitted a map for an object with no location"
+msgstr "Geo Mashup fhágáil ar lár léarscáil chun rud nach bhfuil aon suíomh"
+
+#: ../geo-mashup.php:880
+msgid "Geo Mashup map omitted to avoid nesting maps"
+msgstr "Geo Mashup léarscáil ar lár a sheachaint léarscáileanna neadaithe"
+
+#: ../geo-mashup.php:907
+msgid "Geo Mashup omitted a map with no located objects found."
+msgstr "Geo Mashup fhágáil ar lár léarscáil nach bhfuil aon rudaí atá lonnaithe aimsithe."
+
+#: ../geo-mashup.php:1061
+msgid "You must add a description to this category to use this Geo Mashup feature."
+msgstr "Ní mór duit cur síos a chur leis an gcatagóir seo a úsáid Geo Mashup ghné seo."
+
+#: ../geo-mashup.php:1089
+#: ../options.php:160
+msgid "Geo Mashup Options"
+msgstr "Geo Roghanna Mashup."
+
+#: ../geo-mashup.php:1089
+msgid "Geo Mashup"
+msgstr "Geo Mashup"
+
+#: ../geo-mashup.php:1109
+#, php-format
+msgid "Geo Mashup requires a Google API key in the <a href=\"%s\">settings</a> before it will work."
+msgstr "Geo Mashup éilíonn API Google lárnach ag an <a href=\"%s\">settings</a> sula mbeidh sé ag obair."
+
+#: ../geo-mashup.php:1113
+#, php-format
+msgid "Geo Mashup needs to upgrade its database, visit the <a href=\"%s\">settings</a> to do it now."
+msgstr "Geo Mashup gá a uasghrádú a bhunachar sonraí, tabhair cuairt ar <a href=\"%s\">settings</a> chun é a dhéanamh anois."
+
+#: ../geo-mashup.php:1134
+msgid "Settings"
+msgstr "Socruithe"
+
+#: ../geo-mashup.php:1151
+msgid "Documentation"
+msgstr "Doiciméadú"
+
+#: ../geo-mashup.php:1153
+msgid "Donate"
+msgstr "Síntiúis"
+
+#: ../geo-mashup.php:1310
+msgid "Show on map"
+msgstr "Taispeáin ar léarscáil"
+
+#: ../geo-mashup.php:1321
+msgid "Geotag Icon"
+msgstr "Geotag Deilbhín"
+
+#: ../options.php:38
+msgid "Options updated."
+msgstr "Roghanna cothrom le dáta."
+
+#: ../options.php:44
+msgid "Copied existing geodata, see log for details."
+msgstr "Chóipeáil geodata atá ann cheana féin, féach logáil isteach le haghaidh sonraí."
+
+#: ../options.php:55
+msgid "Database upgraded, see log for details."
+msgstr "Bunachar uasghrádú, féach logáil isteach le haghaidh sonraí."
+
+#: ../options.php:62
+msgid "Log deleted."
+msgstr "Logáil scriosadh."
+
+#: ../options.php:68
+msgid "Saved options may be corrupted, try updating again. Corrupt values: "
+msgstr "Is féidir roghanna Sábháilte a bheith truaillithe, déan iarracht thabhairt suas chun dáta arís. Luachanna truaillithe:"
+
+#: ../options.php:76
+msgid "Some invalid options will not be used. If you've just upgraded, do an update to initialize new options."
+msgstr "Ní bheidh roinnt roghanna neamhbhailí a úsáid. Má tá tú uasghrádú go díreach, a dhéanamh cothrom le dáta a thúsú roghanna nua."
+
+#: ../options.php:105
+msgid "Roadmap"
+msgstr "Slí"
+
+#: ../options.php:106
+msgid "Satellite"
+msgstr "satailíte"
+
+#: ../options.php:107
+msgid "Hybrid"
+msgstr "Hibrid"
+
+#: ../options.php:108
+msgid "Terrain"
+msgstr "Réimse"
+
+#: ../options.php:109
+msgid "Earth Plugin"
+msgstr "cré breiseán"
+
+#: ../options.php:112
+msgid "Small Zoom"
+msgstr "Zúmáil Beaga"
+
+#: ../options.php:113
+msgid "Small Zoom 3D"
+msgstr "Beag Zoom 3D"
+
+#: ../options.php:114
+msgid "Small Pan/Zoom"
+msgstr "Pan Beaga / Zúmáil"
+
+#: ../options.php:115
+msgid "Large Pan/Zoom"
+msgstr "Pan Móra / Zúmáil"
+
+#: ../options.php:116
+msgid "Large Pan/Zoom 3D"
+msgstr "Large Pan / Zúmáil 3D"
+
+#: ../options.php:119
+msgid "Yes"
+msgstr "Tá"
+
+#: ../options.php:120
+msgid "No"
+msgstr "Uimh"
+
+#: ../options.php:121
+msgid "Only"
+msgstr "Amháin"
+
+#: ../options.php:124
+msgid "Google v2"
+msgstr "google v2"
+
+#: ../options.php:125
+msgid "Google v3"
+msgstr "google v3"
+
+#: ../options.php:126
+msgid "OpenLayers"
+msgstr "OpenLayers"
+
+#: ../options.php:129
+msgid "auto"
+msgstr "uathoibríoch"
+
+#: ../options.php:135
+msgid "Cluster Marker"
+msgstr "Marker Braisle"
+
+#: ../options.php:136
+msgid "Marker Clusterer"
+msgstr "marcóir clusterer"
+
+#: ../options.php:163
+msgid "Overall"
+msgstr "Tríd is tríd"
+
+#: ../options.php:164
+msgid "Single Maps"
+msgstr "Léarscáileanna Aonair"
+
+#: ../options.php:165
+msgid "Global Maps"
+msgstr "Léarscáileanna Domhanda"
+
+#: ../options.php:166
+msgid "Contextual Maps"
+msgstr "Léarscáileanna comhthéacsúla"
+
+#: ../options.php:174
+msgid "Overall Geo Mashup Settings"
+msgstr "Tríd is tríd Geo Mashup Socruithe"
+
+#: ../options.php:178
+msgid "Map Provider"
+msgstr "Soláthraí Léarscáil"
+
+#: ../options.php:191
+msgid "Some features still work only with Google v2."
+msgstr "Roinnt gnéithe fós ag obair ach amháin le Google v2."
+
+#: ../options.php:197
+msgid "Google API Key"
+msgstr "Google API Key"
+
+#: ../options.php:204
+msgid "Get yours here"
+msgstr "Faigh mise anseo"
+
+#: ../options.php:207
+msgid "This setting is required for Geo Mashup to work."
+msgstr "Tá an suíomh ag teastáil le haghaidh Geo Mashup a bheith ag obair."
+
+#: ../options.php:214
+msgid "Generated links go here"
+msgstr "Dul naisc Gineadh anseo"
+
+#: ../options.php:215
+msgid "Global Mashup Page"
+msgstr "Leathanach Mashup Domhanda"
+
+#: ../options.php:229
+msgid "No pages available."
+msgstr "Níl aon leathanaigh atá ar fáil."
+
+#: ../options.php:233
+msgid "Geo Mashup will use this page for generated location links"
+msgstr "Beidh Geo Mashup úsáid as an leathanach seo le haghaidh naisc suíomh a ghintear"
+
+#: ../options.php:238
+msgid "Collect Location For"
+msgstr "Bailigh Suíomh Chun"
+
+#: ../options.php:251
+msgid "Users"
+msgstr "Úsáideoirí"
+
+#: ../options.php:256
+msgid "Comments"
+msgstr "tuairimí"
+
+#: ../options.php:260
+msgid "Copy Geodata Meta Fields"
+msgstr "Réimsí Cóip Meta Geodata"
+
+#: ../options.php:271
+#, php-format
+msgid "Copy coordinates to and from %sgeodata meta fields%s, for integration with the Geolocation and other plugins."
+msgstr "Cóipeáil comhordanáidí chuig agus ó %s meta geodata réimsí %s, do chomhtháthú leis an Geolocation agus plugins eile."
+
+#: ../options.php:277
+msgid "Geocode Custom Field"
+msgstr "Réimse an Chustaim Geocode"
+
+#: ../options.php:285
+msgid "Custom fields with this key will be geocoded and the resulting location saved for the post."
+msgstr "Beidh réimsí saincheaptha leis an eochair a gheochódú agus ar an suíomh mar thoradh air a shábháil ar an bpost."
+
+#: ../options.php:290
+msgid "Enable Reverse Geocoding"
+msgstr "Cumasaigh Geocoding droim ar ais"
+
+#: ../options.php:298
+msgid "Try to look up missing address fields for new locations."
+msgstr "Déan iarracht chun breathnú suas réimsí seoladh ar iarraidh le haghaidh suímh nua."
+
+#: ../options.php:304
+msgid "Bulk Reverse Geocode"
+msgstr "Geocode droim ar ais Bulc"
+
+#: ../options.php:306
+msgid "Start"
+msgstr "Tosaigh"
+
+#: ../options.php:308
+msgid "Try to look up missing address fields for existing locations. Could be slow."
+msgstr "Déan iarracht chun breathnú suas réimsí seoladh ar iarraidh le haghaidh áiteanna atá ann cheana féin. Níorbh fhéidir a bheith mall."
+
+#: ../options.php:314
+msgid "Use Theme Style Sheet with Maps"
+msgstr "Bain úsáid as Bileog Stíl Theme with Léarscáileanna"
+
+#: ../options.php:327
+msgid "Add Category Links"
+msgstr "Cuir Naisc Catagóir"
+
+#: ../options.php:335
+msgid "Add map links to category lists. Categories must have descriptions for this to work."
+msgstr "Naisc léarscáil Cuir le liostaí catagóir. Ní mór Catagóirí Tá cur síos ar an obair."
+
+#: ../options.php:340
+msgid "Category Link Separator"
+msgstr "Deighilteoir Nasc Catagóir"
+
+#: ../options.php:351
+msgid "Category Link Text"
+msgstr "Text Link Catagóir"
+
+#: ../options.php:361
+msgid "Category Link Zoom Level"
+msgstr "Leibhéal Catagóir Zoom Link"
+
+#: ../options.php:373
+#: ../options.php:516
+#: ../options.php:655
+#: ../options.php:895
+msgid "0 is zoomed all the way out."
+msgstr "0 Tá súmáilte léir ar an mbealach amach."
+
+#: ../options.php:378
+msgid "GeoNames ID"
+msgstr "GeoNames ID"
+
+#: ../options.php:386
+#, php-format
+msgid "Your %sGeoNames username%s, used with GeoNames API requests. Leave the default value to use Geo Mashup's."
+msgstr "Do%sGeoNames username%s ainm , a úsáidtear le GeoNames iarratais API. Fág an luach réamhshocraithe a úsáid Geo Mashup ar."
+
+#: ../options.php:393
+msgid "AdSense For Search ID"
+msgstr "AdSense Do Cuardaigh ID"
+
+#: ../options.php:401
+msgid "Your client ID, used with the Google Bar. Leave the default value to use Geo Mashup's :)."
+msgstr "Do ID cliant, a úsáidtear leis an Bharra Google. Fág an luach réamhshocraithe a úsáid :) Geo Mashup ar."
+
+#: ../options.php:407
+#: ../options.php:541
+#: ../options.php:545
+#: ../options.php:782
+#: ../options.php:941
+msgid "Update Options"
+msgstr "Roghanna Nuashonraigh"
+
+#: ../options.php:410
+msgid "Default settings for maps of a single located post."
+msgstr "Socruithe réamhshocraithe do léarscáileanna de phost amháin suite."
+
+#: ../options.php:413
+#: ../options.php:548
+#: ../options.php:788
+msgid "Map Width"
+msgstr "Leithead Léarscáil"
+
+#: ../options.php:420
+#: ../options.php:555
+#: ../options.php:795
+msgid "Pixels, or append %."
+msgstr "Picteilín, nó % iarcheangail."
+
+#: ../options.php:424
+#: ../options.php:559
+#: ../options.php:799
+msgid "Map Height"
+msgstr "Airde Léarscáil"
+
+#: ../options.php:431
+#: ../options.php:566
+#: ../options.php:806
+msgid "px"
+msgstr "px"
+
+#: ../options.php:435
+#: ../options.php:570
+#: ../options.php:810
+msgid "Map Control"
+msgstr "Léarscáil Rialú"
+
+#: ../options.php:449
+#: ../options.php:584
+#: ../options.php:824
+msgid "Default Map Type"
+msgstr "Cineál Roimhe Seo"
+
+#: ../options.php:463
+#: ../options.php:598
+#: ../options.php:838
+msgid "Add Map Type Control"
+msgstr "Cuir Rialú Cineál Léarscáil"
+
+#: ../options.php:478
+#: ../options.php:613
+#: ../options.php:853
+msgid "Add Overview Control"
+msgstr "Cuir Rialú Forbhreathnú"
+
+#: ../options.php:487
+#: ../options.php:624
+#: ../options.php:864
+msgid "Add Google Bar"
+msgstr "Cuir Google Bar"
+
+#: ../options.php:496
+#: ../options.php:635
+#: ../options.php:875
+msgid "Enable Scroll Wheel Zoom"
+msgstr "Cumasaigh Zoom Roth Scroll"
+
+#: ../options.php:504
+#: ../options.php:643
+#: ../options.php:883
+msgid "Default Zoom Level"
+msgstr "Leibhéal Zoom Réamhshocrú"
+
+#: ../options.php:521
+#: ../options.php:733
+#: ../options.php:921
+msgid "Click To Load"
+msgstr "cliceáil Chun Luchtaigh"
+
+#: ../options.php:531
+#: ../options.php:743
+#: ../options.php:931
+msgid "Click To Load Text"
+msgstr "Cliceáil Téacs Chun Luchtaigh"
+
+#: ../options.php:544
+msgid "Default settings for global maps of located items."
+msgstr "Socruithe réamhshocraithe do léarscáileanna domhanda na n-ítimí suite."
+
+#: ../options.php:661
+msgid "Cluster Markers Until Zoom Level"
+msgstr "Marcóirí Braisle Go dtí Leibhéal súmáil"
+
+#: ../options.php:670
+msgid "Highest zoom level to cluster markers, or blank for no clustering."
+msgstr "Leibhéal zúmála airde do marcóirí braisle, nó bán le haghaidh aon bhraisliú."
+
+#: ../options.php:676
+#: ../options.php:900
+msgid "Marker Selection Behaviors"
+msgstr "Iompraíochtaí Roghnú Marker"
+
+#: ../options.php:681
+#: ../options.php:905
+msgid "Open info window"
+msgstr "Fuinneog info Oscailte"
+
+#: ../options.php:685
+#: ../options.php:909
+msgid "Highlight"
+msgstr "Aibhsigh"
+
+#: ../options.php:689
+#: ../options.php:913
+msgid "Center"
+msgstr "Ionad"
+
+#: ../options.php:693
+#: ../options.php:917
+msgid "Show Geo Attachments"
+msgstr "Taispeáin Ceangaltáin Geo"
+
+#: ../options.php:697
+msgid "Automatic Selection"
+msgstr "Roghnú Uathoibríoch"
+
+#: ../options.php:705
+msgid "Selects the linked or most recent item when the map loads."
+msgstr "Roghnaigh an mhír nasctha nó is déanaí nuair na hualaí léarscáil."
+
+#: ../options.php:710
+msgid "Show Only Most Recent Items"
+msgstr ""
+
+#: ../options.php:717
+msgid "Number of items to show, leave blank for all"
+msgstr ""
+
+#: ../options.php:721
+msgid "Show Future Posts"
+msgstr "Taispeáin Poist sa Todhchaí"
+
+#: ../options.php:754
+msgid "Category"
+msgstr "catagóir"
+
+#: ../options.php:754
+msgid "Color"
+msgstr "dath"
+
+#: ../options.php:755
+msgid "Show Connecting Line Until Zoom Level (0-20 or none)"
+msgstr "Taispeáin Líne Ceangal Go dtí Leibhéal Zoom (0-20 nó aon cheann)"
+
+#: ../options.php:785
+msgid "Default settings for contextual maps, which include just the items shown on a page, for example."
+msgstr "Socruithe réamhshocraithe do léarscáileanna comhthéacsúla, lena n-áirítear ach na míreanna a thaispeántar ar an leathanach, mar shampla."
+
+#: ../options.php:946
+msgid "Update Log"
+msgstr "Nuashonraigh Logáil."
+
+#: ../options.php:950
+msgid "Delete Log"
+msgstr "Scrios Logáil isteach"
+
+#: ../options.php:951
+msgid "You can keep this log as a record, future entries will be appended."
+msgstr "Is féidir leat seo a choinneáil loga toisc go mbeidh taifead, iontrálacha sa todhchaí a chur i gceangal."
+
+#: ../options.php:966
+msgid "View Update Log"
+msgstr "Féach Nuashonraigh Logáil isteach"
+
+#: ../options.php:968
+msgid "Geo Mashup Documentation"
+msgstr "Geo Mashup Doiciméadú"
+
+#: ../default-templates/comment.php:50
+#, php-format
+msgid "<cite class=\"fn\">%s</cite> <span class=\"says\">says:</span>"
+msgstr "<cite class=\"fn\">%s</cite> <span class=\"says\">a deir:</span>"
+
+#: ../default-templates/comment.php:53
+#, php-format
+msgid "%1$s at %2$s"
+msgstr "%1$s ag %2$s"
+
+#: ../default-templates/map-frame.php:51
+msgid "This map requires JavaScript. You may have to enable it in your settings."
+msgstr "Éilíonn an léarscáil JavaScript. B'fhéidir go mbeadh ort chun a chumasú dó i do chuid socruithe."
+
+#: ../default-templates/user.php:40
+msgid "Display Name"
+msgstr "Taispeáin Ainm"
+
+#: ../default-templates/user.php:45
+msgid "Website"
+msgstr "Suíomh Gréasáin"
+
