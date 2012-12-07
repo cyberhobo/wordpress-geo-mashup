@@ -1971,36 +1971,33 @@ class GeoMashupDB {
 	public static function get_comment_in( $args ) {
 		global $wpdb;
 
-		$args = wp_parse_args( $args );
+		$default_args = array( 'comment__in' => '' );
+		$args = wp_parse_args( $args, $default_args );
 		if ( is_array( $args['comment__in'] ) ) {
 			$comment_ids = implode( ',', $args['comment__in'] );
 		} else {
 			$comment_ids = ( isset( $args['comment__in'] ) ) ? $args['comment__in'] : '0';
 		}
 		$select_string = "SELECT * FROM $wpdb->comments WHERE comment_ID IN (" .
-			$wpdb->prepare( $comment_ids ) . ') ORDER BY comment_date_gmt DESC';
+			implode( ',', wp_parse_id_list( $args['comment__in'] ) ) . ') ORDER BY comment_date_gmt DESC';
 		return $wpdb->get_results( $select_string );
 	}
 
 	/**
 	 * Get multiple users.
 	 *
-	 * What is the WordPress way? Expect deprecation.
+	 * Now just a wrapper for get_users().
 	 * 
 	 * @return array Users.
 	 */
 	public static function get_user_in( $args ) {
 		global $wpdb;
 
-		$args = wp_parse_args( $args );
-		if ( is_array( $args['user__in'] ) ) {
-			$user_ids = implode( ',', $args['user__in'] );
-		} else {
-			$user_ids = ( isset( $args['user__in'] ) ) ? $args['user__in'] : '0';
+		if ( isset( $args['user__in'] ) ) {
+			$args['include'] = $args['user__in'];
+			unset( $args['user__in'] );
 		}
-		$select_string = "SELECT * FROM $wpdb->users WHERE ID IN (" .
-			$wpdb->prepare( $user_ids ) . ') ORDER BY display_name ASC';
-		return $wpdb->get_results( $select_string );
+		return get_users( $args );
 	}
 
 	/**
