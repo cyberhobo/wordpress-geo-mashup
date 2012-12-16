@@ -5,8 +5,8 @@
  * @package GeoMashup
  */
 
-// init action
-add_action( 'init', array( 'GeoMashupDB', 'init' ) );
+// Init at load time - just adds hooks
+GeoMashupDB::init();
 
 /**
  * Static class to provide a namespace for Geo Mashup data functions.
@@ -47,7 +47,6 @@ class GeoMashupDB {
 	 * WordPress action to set up data-related WordPress hooks.
 	 *
 	 * @since 1.4
-	 * @usedby do_action() init
 	 */
 	public static function init() {
 		global $geo_mashup_options;
