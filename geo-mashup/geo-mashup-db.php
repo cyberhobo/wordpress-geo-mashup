@@ -1402,7 +1402,7 @@ class GeoMashupDB {
 		$object_location = wp_cache_get( $cache_id, 'geo_mashup_object_locations' );
 		if ( !$object_location ) {
 			$object_store = self::object_storage( $object_name );
-			$field_string = "gmlr.object_id, o.{$object_store['label_column']} as label, gml.*";
+			$field_string = "gmlr.object_id, gmlr.geo_date, o.{$object_store['label_column']} as label, gml.*";
 
 			if ( 'post' == $object_name )
 				$field_string .= ', o.post_author';
@@ -1503,7 +1503,7 @@ class GeoMashupDB {
 		}
 
 		// Giving tables an alias was a mistake, now filters depend on them
-		$field_string = "gmlr.object_id, o.{$object_store['label_column']} as label, gml.*";
+		$field_string = "gmlr.object_id, gmlr.geo_date, o.{$object_store['label_column']} as label, gml.*";
 		$table_string = "{$wpdb->prefix}geo_mashup_locations gml " . 
 			"INNER JOIN {$wpdb->prefix}geo_mashup_location_relationships gmlr " .
 			$wpdb->prepare( 'ON gmlr.object_name = %s AND gmlr.location_id = gml.id ', $object_name ) .
