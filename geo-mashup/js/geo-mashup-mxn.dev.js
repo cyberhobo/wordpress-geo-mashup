@@ -489,12 +489,19 @@ GeoMashup.setMarkerImage = function( marker, image_url ) {
 };
 
 GeoMashup.autoZoom = function() {
-	var max_zoom;
-	this.map.autoCenterAndZoom();
-	max_zoom = parseInt( this.opts.auto_zoom_max, 10 );
-	if ( this.map.getZoom() > max_zoom ) {
-		this.map.setZoom( max_zoom );
-	} 
+    var map = this.map;
+    var limitZoom = function() {
+        var max_zoom = parseInt( GeoMashup.opts.auto_zoom_max, 10 );
+
+        if ( map.getZoom() > max_zoom ) {
+            map.setZoom( max_zoom );
+        }
+        map.changeZoom.removeHandler( limitZoom );
+    }
+    if ( typeof this.opts.auto_zoom_max !== 'undefined' ) {
+        map.changeZoom.addHandler( limitZoom );
+    }
+    map.autoCenterAndZoom();
 };
 
 GeoMashup.isMarkerVisible = function( marker ) {
