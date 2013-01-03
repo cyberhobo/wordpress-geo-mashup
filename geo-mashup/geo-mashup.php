@@ -855,12 +855,6 @@ class GeoMashup {
 				// Term options handled during render
 				unset( $options['term_options'] );
 
-				// Determine which taxonomies to include, if any
-				if ( ( defined( 'GEO_MASHUP_DISABLE_CATEGORIES' ) and GEO_MASHUP_DISABLE_CATEGORIES ) )
-					$options['include_taxonomies'] = array();
-				else 
-					$options['include_taxonomies'] = $geo_mashup_options->get( 'overall', 'include_taxonomies' );
-
 				if ( empty( $query['show_future'] ) )
 					$query['show_future'] = $options['show_future'];
 
@@ -868,6 +862,12 @@ class GeoMashup {
 					$options['map_content'] = 'global';
 
 			}
+
+			// Determine which taxonomies to include, if any
+			if ( ( defined( 'GEO_MASHUP_DISABLE_CATEGORIES' ) and GEO_MASHUP_DISABLE_CATEGORIES ) )
+				$options['include_taxonomies'] = array();
+			else
+				$options['include_taxonomies'] = $geo_mashup_options->get( 'overall', 'include_taxonomies' );
 
 			if ( isset( $options['add_google_bar'] ) and 'true' == $options['add_google_bar'] ) {
 				$options['adsense_code'] = $geo_mashup_options->get( 'overall', 'adsense_code' );
