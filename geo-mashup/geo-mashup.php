@@ -95,6 +95,10 @@ class GeoMashup {
 	 * @since 1.2
 	 */
 	public static function init() {
+		if ( GEO_MASHUP_DB_VERSION != GeoMashupDB::installed_version() ) {
+			// We're active but not installed - try once more to install
+			GeoMashupDB::install();
+		}
 		GeoMashup::load_styles();
 		GeoMashup::load_scripts();
 	}
@@ -1715,7 +1719,7 @@ class GeoMashup {
 	 * @return string List HTML.
 	 */
 	 public static function nearby_list( $args = '' ) {
-	 	
+
 		$default_args = array(
 			'template' => 'nearby-list',
 			'object_name' => 'post',
