@@ -1745,6 +1745,8 @@ class GeoMashupDB {
 			$set_id = $location_id;
 			do_action( 'geo_mashup_updated_object_location', $object_name, $object_id, $geo_date, $location_id );
 		}
+		wp_cache_delete( $object_name . '-' . $object_id, 'geo_mashup_object_locations');
+
 		return $set_id;
 	}
 
@@ -1922,6 +1924,9 @@ class GeoMashupDB {
 				$rows_affected += $wpdb->query( $delete_string );
 				if ( $wpdb->last_error )
 					return new WP_Error( 'delete_object_location_error', $wpdb->last_error );
+
+				wp_cache_delete( $object_name . '-' . $object_id, 'geo_mashup_object_locations' );
+
 				do_action( 'geo_mashup_deleted_object_location', $object_location );
 			}
 		}
