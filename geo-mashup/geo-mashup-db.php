@@ -1887,6 +1887,8 @@ class GeoMashupDB {
 		if ( $changed_locale )
 			setlocale( constant( 'LC_NUMERIC' ), $original_locale );
 
+		wp_cache_set( $location['id'], (object) $location, 'geo_mashup_locations' );
+
 		if( OBJECT === $input_type )
 			$location = (object) $location;
 
@@ -1946,6 +1948,7 @@ class GeoMashupDB {
 				$rows_affected += $wpdb->query( $wpdb->prepare( "DELETE FROM {$wpdb->prefix}geo_mashup_locations WHERE id = %d", $id ) );
 				if ( $wpdb->last_error )
 					return new WP_Error( 'delete_location_error', $wpdb->last_error );
+				wp_cache_delete( $id, 'geo_mashup_locations' );
 				do_action( 'geo_mashup_deleted_location', $location );
 			}
 		}
