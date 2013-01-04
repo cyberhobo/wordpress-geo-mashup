@@ -1772,7 +1772,9 @@ class GeoMashupDB {
 			$do_lookups = ( $geo_mashup_options->get( 'overall', 'enable_reverse_geocoding' ) == 'true' );
 		}
 
+		$input_type = ARRAY_A;
 		if ( is_object( $location ) ) {
+			$input_type = OBJECT;
 			$location = (array) $location;
 		}
 
@@ -1881,8 +1883,13 @@ class GeoMashupDB {
 			$location['lng'] = $tmp_lng;
 
 		}
+
 		if ( $changed_locale )
 			setlocale( constant( 'LC_NUMERIC' ), $original_locale );
+
+		if( OBJECT === $input_type )
+			$location = (object) $location;
+
 		return $set_id;
 	}
 
