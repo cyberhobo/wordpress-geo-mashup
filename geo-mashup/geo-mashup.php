@@ -132,10 +132,11 @@ class GeoMashup {
 		add_action( 'wp_ajax_geo_mashup_kml_attachments', array( __CLASS__, 'ajax_kml_attachments') );
 		add_action( 'wp_ajax_nopriv_geo_mashup_kml_attachments', array( __CLASS__, 'ajax_kml_attachments') );
 		add_action( 'wp_ajax_geo_mashup_suggest_custom_keys', array( 'GeoMashupDB', 'post_meta_key_suggest' ) );
+		
+		register_activation_hook( __FILE__, array( __CLASS__, 'activation_hook' ) );
 
 		if (is_admin()) {
 
-			register_activation_hook( __FILE__, array( __CLASS__, 'activation_hook' ) );
 
 			// To add Geo Mashup settings page
 			add_action('admin_menu', array(__CLASS__, 'admin_menu'));
