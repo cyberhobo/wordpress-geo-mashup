@@ -273,7 +273,7 @@ function geo_mashup_options_page() {
 						</td>
 					</tr>
 					<tr>
-						<th scope="row"><?php _e('Enable Geo Search Widget', 'GeoMashup'); ?></th>
+						<th scope="row"><?php _e('Enable Geo Search', 'GeoMashup'); ?></th>
 						<td>
 							<input id="enable_geo_search" name="overall[enable_geo_search]" type="checkbox" value="true"<?php
 								if ($geo_mashup_options->get ( 'overall', 'enable_geo_search' ) == 'true' ) {
@@ -281,7 +281,7 @@ function geo_mashup_options_page() {
 								}
 							?> />
 							<span class="description"><?php
-								_e('Creates a customizable widget for performing radius searches.', 'GeoMashup');
+								_e('Creates a customizable widget and other features for performing radius searches.', 'GeoMashup');
 							?></span>
 						</td>
 					</tr>

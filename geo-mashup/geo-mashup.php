@@ -1720,6 +1720,9 @@ class GeoMashup {
 	 */
 	 public static function nearby_list( $args = '' ) {
 
+		if ( ! class_exists( 'GeoMashupSearch' ) )
+			return __( 'Enable the geo search widget in the Geo Mashup settings to power the nearby list!', 'GeoMashup' );
+
 		$default_args = array(
 			'template' => 'nearby-list',
 			'object_name' => 'post',
