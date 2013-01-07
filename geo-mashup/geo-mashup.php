@@ -958,6 +958,9 @@ class GeoMashup {
 		// Default query is for posts
 		$object_name = ( isset( $atts['object_name'] ) ) ? $atts['object_name'] : 'post';
 
+		// Map content type isn't required, if empty we'll choose one
+		$map_content = isset( $atts['map_content'] ) ? $atts['map_content'] : null;
+
 		// Find the ID and location of the container object if it exists
 		if ( 'post' == $object_name and $wp_query->in_the_loop ) {
 
@@ -972,15 +975,23 @@ class GeoMashup {
 			$context_object_id = $wp_query->post->post_author;
 
 		}
-		if ( empty( $atts['object_id'] ) and ! empty( $context_object_id ) ) {
-			
-			$atts['object_id'] = $context_object_id;
-			$context_location = GeoMashupDB::get_object_location( $object_name, $context_object_id );
+
+		if ( empty( $atts['object_id'] ) ) {
+
+			if ( ! empty( $context_object_id ) ) {
+
+				// If we found a context object, we'll query for that by default
+				$atts['object_id'] = $context_object_id;
+				$context_location = GeoMashupDB::get_object_location( $object_name, $context_object_id );
+
+			} else if ( 'single' == $map_content and 'post' == $object_name ) {
+
+				// In secondary post loops we won't find a context object
+				// but can at least allow explicit single maps
+				$atts['object_id'] = get_the_ID();
+			}
 
 		}
-
-		// Map content type isn't required, so resolve it
-		$map_content = isset( $atts['map_content'] ) ? $atts['map_content'] : null;
 
 		if ( empty ( $map_content ) ) {
 
