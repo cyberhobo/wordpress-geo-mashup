@@ -814,7 +814,7 @@ class GeoMashup {
 
 		$map_data = $query + array(
 			'ajaxurl' => admin_url( 'admin-ajax.php' ),
-			'siteurl' => home_url(), // qTranslate doesn't work with get_option( 'home' )
+			'siteurl' => home_url( '/' ), // qTranslate doesn't work with get_option( 'home' )
 			'url_path' => GEO_MASHUP_URL_PATH,
 			'template_url_path' => get_stylesheet_directory_uri()
 		);
@@ -902,8 +902,10 @@ class GeoMashup {
 	 */
 	public static function build_home_url( $query = array() ) {
 
-		// Sending no path to home_url() provides compatbility with WPML, which may change the domain this way
-		$home_url_parts = parse_url( home_url() );
+		// We want domain changes or language parameters from WPML
+		// It won't provide them for any path but '/'
+		$home_url = home_url( '/' );
+		$home_url_parts = parse_url( $home_url );
 
 		// Language plugins may also add query parameters to home_url(). We'll add to these.
 		$home_url_query_parts = array();
@@ -913,11 +915,8 @@ class GeoMashup {
 			$query = array_merge( $home_url_query_parts, $query );
 		}
 
-		$home_url = $home_url_parts['scheme'] . '://' . $home_url_parts['host'];
-		if ( !empty( $home_url_parts['path'] ) )
-			$home_url .= $home_url_parts['path'];
 		if ( !empty( $query ) )
-			$home_url .=  '?' . htmlspecialchars( http_build_query( $query ) );
+			$home_url = add_query_arg( $query, $home_url );
 
 		return $home_url;
 	}
