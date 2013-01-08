@@ -219,6 +219,54 @@ class GeoMashupDB_Unit_Tests extends WP_UnitTestCase {
 		$this->assertFalse( empty( $geo_date ) );
 	}
 
+	function test_auto_post_join() {
+
+		// A query for post locations should honor posts_where and related filters
+		$posts = array(
+			$this->factory->post->create_and_get(),
+			$this->factory->post->create_and_get(),
+			$this->factory->post->create_and_get(),
+		);
+		GeoMashupDB::set_object_location( 
+			'post', 
+			$posts[0]->ID, 
+			$this->rand_location(),
+			$do_lookups = false
+		);
+		GeoMashupDB::set_object_location( 
+			'post', 
+			$posts[1]->ID, 
+			$this->rand_location(),
+			$do_lookups = false
+		);
+		GeoMashupDB::set_object_location( 
+			'post', 
+			$posts[2]->ID, 
+			$this->rand_location(),
+			$do_lookups = false
+		);
+
+		$where_filter = create_function( 
+			'$where', 
+			'return $where .= \' AND post_title="' . $posts[1]->post_title . '"\';'
+		);
+		add_filter( 'posts_where', $where_filter );
+
+		// An open query should only return post index 1 of the 3
+		$results = GeoMashupDB::get_object_locations();
+		$this->assertEquals( 1, count( $results ) );
+		$this->assertEquals( $posts[1]->ID, $results[0]->object_id );
+
+		// Explicitly suppress post filters
+		$results = GeoMashupDB::get_object_locations( 'suppress_filters=1' );
+		$this->assertEquals( 3, count( $results ) );
+
+		// Disable post filters
+		define( 'GEO_MASHUP_SUPPRESS_POST_FILTERS', true );
+		$results = GeoMashupDB::get_object_locations();
+		$this->assertEquals( 3, count( $results ) );
+	}
+
 	private function get_nv_test_location() {
 		$location = GeoMashupDB::blank_location();
 		$location->lat = 40;

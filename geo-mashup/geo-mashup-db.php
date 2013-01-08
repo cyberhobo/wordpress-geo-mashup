@@ -1521,6 +1521,7 @@ class GeoMashupDB {
 			} else {
 				$wheres[] = 'post_status = \'publish\'';
 			}
+
 		} else if ( 'comment' == $object_name ) {
 			$wheres[] = 'comment_approved = \'1\'';
 		}
@@ -1669,6 +1670,15 @@ class GeoMashupDB {
 			$sort = apply_filters( 'geo_mashup_locations_orderby', $sort );
 			$groupby = apply_filters( 'geo_mashup_locations_groupby', $groupby );
 			$limit = apply_filters( 'geo_mashup_locations_limits', $limit );
+
+			$suppress_post_filters = defined( 'GEO_MASHUP_SUPPRESS_POST_FILTERS' ) && GEO_MASHUP_SUPPRESS_POST_FILTERS;
+			if ( 'post' === $object_name and ! $suppress_post_filters ) {
+				$field_string	= apply_filters( 'posts_fields', $field_string );
+				$table_string = apply_filters( 'posts_join', $table_string );
+				$where = apply_filters( 'posts_where', $where );
+				$groupby = apply_filters( 'posts_groupby', $groupby );
+				$limit = apply_filters( 'post_limits', $limit );
+			}
 		}
 		
 		$query_string = "SELECT $field_string FROM $table_string $where $groupby $having $sort $limit";
