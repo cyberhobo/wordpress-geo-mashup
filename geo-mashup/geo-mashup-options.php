@@ -178,7 +178,7 @@ class GeoMashupOptions {
 	 * @since 1.2
 	 * @var array
 	 */
-	private $validation_errors = array();
+	public $validation_errors = array();
 
 	/**
 	 * PHP5 constructor
