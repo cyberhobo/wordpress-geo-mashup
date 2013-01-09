@@ -203,9 +203,13 @@ function geo_mashup_options_page() {
 									?>><?php echo esc_html( $label ); ?></option>
 								<?php endforeach; ?>
 							</select>
-							<span class="description"><?php
-								_e( 'Some features still work only with Google v2.', 'GeoMashup' );
-							?></span>
+							<?php if ( 'google' == $map_api ) : ?>
+								<span class="description">
+									<a href="https://developers.google.com/maps/documentation/javascript/v2/reference"><?php
+									_e( 'Google v2 support expires soon.', 'GeoMashup' );
+									?></a>
+								</span>
+							<?php endif; ?>
 						</td>
 					</tr>
 					<?php if ( 'google' == $map_api ) : ?>
@@ -219,10 +223,26 @@ function geo_mashup_options_page() {
 								value="<?php echo esc_attr( $geo_mashup_options->get ( 'overall', 'google_key' ) ); ?>" />
 							<a href="http://maps.google.com/apis/maps/signup.html"><?php _e('Get yours here', 'GeoMashup'); ?></a>
 							<?php if ( empty( $google_key ) ) : ?>
-							<p class="description">
-							<?php _e( 'This setting is required for Geo Mashup to work.', 'GeoMashup' ); ?>
-							</p>
+								<p class="description">
+								<?php _e( 'This setting is required for Geo Mashup to work.', 'GeoMashup' ); ?>
+								</p>
 							<?php endif; ?>
+						</td>
+					</tr>
+					<?php endif; ?>
+					<?php if ( 'googlev3' == $map_api ) : ?>
+					<tr>
+						<th width="33%" scope="row"><?php _e('Google API Key', 'GeoMashup'); ?></th>
+						<td>
+							<input id="googlev3_key"
+								name="overall[googlev3_key]"
+								type="text"
+								size="40"
+								value="<?php echo esc_attr( $geo_mashup_options->get ( 'overall', 'googlev3_key' ) ); ?>" />
+							<a href="https://developers.google.com/maps/documentation/javascript/tutorial#api_key"><?php _e('Get yours here', 'GeoMashup'); ?></a>
+							<p class="description">
+								<?php _e( 'Old Google v2 keys may not work with v3. A key is recommended but not required by Google.' ); ?>
+							</p>
 						</td>
 					</tr>
 					<?php endif; ?>

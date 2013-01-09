@@ -23,6 +23,7 @@ class GeoMashupOptions {
 		'overall' => array (
 			'version' => '',
 			'google_key' => '',
+			'googlev3_key' => '',
 			'mashup_page' => '',
 			'category_link_separator' => '::',
 			'category_link_text' => 'map',
@@ -431,6 +432,7 @@ class GeoMashupOptions {
 			case 'import_custom_field':
 				if ( empty ( $value ) ) return true;
 			case 'google_key':
+			case 'googlev3_key':
 			case 'version':
 			case 'mashup_page':
 				if ( !is_string ( $value ) ) {

@@ -916,7 +916,7 @@ class GeoMashup {
 		}
 
 		if ( !empty( $query ) )
-			$home_url = add_query_arg( $query, $home_url );
+			$home_url = htmlspecialchars( add_query_arg( $query, $home_url ) );
 
 		return $home_url;
 	}

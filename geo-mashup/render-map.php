@@ -302,9 +302,12 @@ class GeoMashupRenderMap {
 			$mashup_dependencies[] = 'mxn-openlayers-gm';
 		} else if ( 'googlev3' == $map_data['map_api'] ) {
 			$google_3_url = 'http://maps.google.com/maps/api/js?sensor=false';
-			if ( ! empty( $language_code ) ) {
+			$googlev3_key = $geo_mashup_options->get( 'overall', 'googlev3_key' );
+			if ( ! empty( $googlev3_key ) )
+				$google_3_url .= '&amp;key=' . $googlev3_key;
+			if ( ! empty( $language_code ) )
 				$google_3_url .= '&amp;language=' . substr( $language_code, 0, 2 );
-			}
+
 			wp_register_script( 
 					'google-maps-3', 
 					$google_3_url, 
