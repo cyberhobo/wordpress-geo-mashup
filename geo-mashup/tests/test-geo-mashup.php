@@ -11,4 +11,8 @@ class GeoMashup_Unit_Tests extends WP_UnitTestCase {
 		$this->assertEquals( array( 'a' => '1', 10 => '', 'b' => 'test' ), $result );
 	}
 	
+	function test_empty_map() {
+		$output = GeoMashup::map();
+		$this->assertStringMatchesFormat( '<!--%s-->', $output );
+	}
 }
