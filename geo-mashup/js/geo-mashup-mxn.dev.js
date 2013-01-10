@@ -497,7 +497,7 @@ GeoMashup.autoZoom = function() {
             map.setZoom( max_zoom );
         }
         map.changeZoom.removeHandler( limitZoom );
-    }
+    };
     if ( typeof this.opts.auto_zoom_max !== 'undefined' ) {
         this.map.changeZoom.addHandler( limitZoom );
     }
