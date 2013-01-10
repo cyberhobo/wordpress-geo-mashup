@@ -15,4 +15,33 @@ class GeoMashup_Unit_Tests extends WP_UnitTestCase {
 		$output = GeoMashup::map();
 		$this->assertStringMatchesFormat( '<!--%s-->', $output );
 	}
+
+	function test_build_home_url() {
+		$url = GeoMashup::build_home_url();
+		$this->assertStringMatchesFormat( 
+			'%s/', 
+			$url,
+			'An empty home URL should have a trailing slash!' 
+		);
+
+		$args = array( 
+			'arg1' => 10,
+			'arg2' => '"a value"',
+		);
+
+		$url = GeoMashup::build_home_url( $args );
+		$url_parts = parse_url( $url );
+		$this->assertNotEmpty( $url_parts['query'] );
+		$parsed_args = wp_parse_args( htmlspecialchars_decode( $url_parts['query'] ) );
+		$this->assertEquals( $args, $parsed_args );
+
+		// It must work with an ampersand entity specified as separator also 
+		ini_set( 'arg_separator.output', '&amp;' );
+		$url = GeoMashup::build_home_url( $args );
+		$url_parts = parse_url( $url );
+		$this->assertNotEmpty( $url_parts['query'] );
+		$parsed_args = wp_parse_args( htmlspecialchars_decode( $url_parts['query'] ) );
+		$this->assertEquals( $args, $parsed_args );
+
+	}
 }
