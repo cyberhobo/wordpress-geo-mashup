@@ -652,6 +652,8 @@ GeoMashup.createMap = function(container, opts) {
 
 	if (opts.load_kml) {
 		try {
+            // Some servers (Google) don't like HTML entities in URLs
+            opts.load_kml = jQuery( '<div/>').html( opts.load_kml ).text();
 			if ( initial_zoom === 'auto' ) {
 				this.map.addOverlay( opts.load_kml, true );
 			} else {
