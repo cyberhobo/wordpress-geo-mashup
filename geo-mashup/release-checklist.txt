@@ -10,7 +10,7 @@ These are notes for the software author, to help ensure you don't get a broken r
 If any step fails, fix before continuing, repeating any necessary prior steps.
 
 	1. Bump versions in source.
-	  1. Make a new POT file.
+	  1. Make a new POT file. (cd ~/bin; php makepot.php wp-plugin <plugin_dir>; mv geo-mashup.pot ...)
 	1. Edit WP readme.txt (remember stable tag, tested version, and changelog!)
 		1. Edit project site home page.
 	1. Commit.
