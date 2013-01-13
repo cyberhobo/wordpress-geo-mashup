@@ -267,6 +267,54 @@ class GeoMashupDB_Unit_Tests extends WP_UnitTestCase {
 		$this->assertEquals( 3, count( $results ) );
 	}
 
+	function test_combine_import_fields() {
+		// This test calls geocoding services, but allows for failure
+		global $geo_mashup_options;
+
+		$geo_mashup_options->set_valid_options( array( 'overall' => array( 'import_custom_field' => 'geo1, geo2' ) ) );
+		GeoMashupDB::add_geodata_sync_hooks();
+
+		$post_id = $this->factory->post->create();
+		$this->assertEmpty( GeoMashupDB::get_object_location( 'post', $post_id ) );
+
+		update_post_meta( $post_id, 'geo1', 'Paris' );
+		$this->assertEmpty( GeoMashupDB::get_object_location( 'post', $post_id ) );
+
+		update_post_meta( $post_id, 'geo2', 'France' );
+		$error = get_post_meta( $post_id, 'geocoding_error', true );
+		if ( $error ) {
+
+			// If we can't geocode, no location is saved
+			$this->assertEmpty( GeoMashupDB::get_object_location( 'post', $post_id ) );
+
+		} else {
+
+			$location = GeoMashupDB::get_object_location( 'post', $post_id );
+			$this->assertEquals( 48, intval( $location->lat ) );
+			$this->assertEquals( 2, intval( $location->lng ) );
+
+			// A second update overwrites if successful
+			update_post_meta( $post_id, 'geo2', 'Texas' );
+			$error = get_post_meta( $post_id, 'geocoding_error', true );
+			if ( $error ) {
+
+				// Failed geocoding leaves the first result
+				$location = GeoMashupDB::get_object_location( 'post', $post_id );
+				$this->assertEquals( 48, intval( $location->lat ) );
+				$this->assertEquals( 2, intval( $location->lng ) );
+
+			} else {
+
+				// Location is updated to Paris, TX
+				$location = GeoMashupDB::get_object_location( 'post', $post_id );
+				$this->assertEquals( 33, intval( $location->lat ) );
+				$this->assertEquals( -95, intval( $location->lng ) );
+
+			}
+		}
+	}
+
+
 	private function get_nv_test_location() {
 		$location = GeoMashupDB::blank_location();
 		$location->lat = 40;
