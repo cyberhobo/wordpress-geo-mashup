@@ -1899,7 +1899,7 @@ class GeoMashupDB {
 		if ( $changed_locale )
 			setlocale( constant( 'LC_NUMERIC' ), $original_locale );
 
-		wp_cache_set( $location['id'], (object) $location, 'geo_mashup_locations' );
+		wp_cache_delete( $set_id, 'geo_mashup_locations' );
 
 		if( OBJECT === $input_type )
 			$location = (object) $location;
