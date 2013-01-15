@@ -107,30 +107,6 @@ class GeoMashupRenderMap {
 	}
 
 	/**
-	 * Make sure a non-javascript item is double-quoted.
-	 *
-	 * @since 1.3
-	 *
-	 * @param mixed $item The value in question, may be modified.
-	 * @param string $key The JSON key.
-	 */
-	private static function add_double_quotes(&$item,$key) {
-		if ( $key == 'post_data' ) {
-			// don't quote
-		} else if ( !is_numeric( $item ) && empty ( $item ) ) {
-			$item = '""';
-		} else if ( is_array( $item ) && isset( $item[0] ) ) {
-			// As of 1.5 need to accomodate nested array parameters like tax_query
-			if ( is_array( $item[0] ) )
-				$item = json_encode( $item );
-			else
-				$item = '["' . implode( '","', $item ) . '"]';
-		} else if ( is_string( $item ) && $item[0] != '{' && $item[0] != '[' ) {
-			$item = '"'.$item.'"';
-		}
-	}
-
-	/**
 	 * Resolve and queue map styles.
 	 * 
 	 * @since 1.5
@@ -504,12 +480,6 @@ class GeoMashupRenderMap {
 		self::enqueue_scripts( $map_data );
 
 		self::add_term_properties( $map_data );
-
-		// JSON-ify queried object data if it isn't already
-		//if ( isset( $map_data['object_data'] ) and is_array( $map_data['object_data'] ) )
-		//	$map_data['object_data'] = json_encode( $map_data['object_data'] );
-
-		//array_walk( $map_data, array( 'GeoMashupRenderMap', 'add_double_quotes' ) );
 
 		// Store the properties for use by the template tag GeoMashupRenderMap::map_script
 		self::$map_data = json_encode( $map_data );
