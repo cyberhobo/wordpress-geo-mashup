@@ -4,9 +4,20 @@ class GeoMashup_Unit_Tests extends WP_UnitTestCase {
 
 	const DELTA = 0.0001;
 
+	private $added_filters;
+
+	function setUp() {
+		parent::setUp();
+		$this->added_filters = array();
+	}
+
 	function tearDown() {
 		global $wpdb;
 		parent::tearDown();
+
+		foreach( $this->added_filters as $filter ) {
+			remove_filter( $filter['tag'], $filter['call'], $filter['priority'] );
+		}
 		$wpdb->query( "TRUNCATE TABLE {$wpdb->prefix}geo_mashup_administrative_names" );
 		$wpdb->query( "TRUNCATE TABLE {$wpdb->prefix}geo_mashup_location_relationships" );
 		$wpdb->query( "TRUNCATE TABLE {$wpdb->prefix}geo_mashup_locations" );
@@ -301,7 +312,7 @@ class GeoMashup_Unit_Tests extends WP_UnitTestCase {
 			'$where', 
 			'return $where .= \' AND post_title="' . $posts[1]->post_title . '"\';'
 		);
-		add_filter( 'posts_where', $where_filter );
+		$this->add_filter( 'posts_where', $where_filter );
 
 		// An open query should only return post index 1 of the 3
 		$results = GeoMashupDB::get_object_locations();
@@ -425,12 +436,29 @@ class GeoMashup_Unit_Tests extends WP_UnitTestCase {
 			'return str_replace( "color:red", "color:blue", $map_image );'
 		);
 
-		add_filter( 'geo_mashup_static_map', $filter, 10, 3 );
+		$this->add_filter( 'geo_mashup_static_map', $filter, 10, 3 );
 
-		$post_id = $this->factory->post->create();
-		GeoMashupDB::set_object_location( 'post', $post_id, $this->rand_location(), false );
+		list( $post_id ) = $this->generate_rand_located_posts( 1 );
 		$static_map = GeoMashup::map( 'map_content=single&static=true&object_id=' . $post_id );
 		$this->assertContains( 'color:blue', $static_map );
+	}
+
+	/**
+	* issue 612
+	*/
+	function test_wp_query_single_map() {
+		$post_id = $this->factory->post->create( array( 
+			'post_content' => '[geo_mashup_map map_content="single"]',
+		) );
+		GeoMashupDB::set_object_location( 'post', $post_id, $this->rand_location(), false );
+		
+		$test_query = new WP_Query( array( 
+			'posts_per_page' => 1,
+		) );
+		$this->assertTrue( $test_query->have_posts() );
+		$test_query->the_post();
+		$this->assertContains( '<iframe', apply_filters( 'the_content', get_the_content() ) );
+		wp_reset_postdata();
 	}
 
 	private function get_nv_test_location() {
@@ -447,4 +475,20 @@ class GeoMashup_Unit_Tests extends WP_UnitTestCase {
 		return $location;
 	}
 
+	private function generate_rand_located_posts( $count ) {
+		$post_ids = $this->factory->post->create_many( $count );
+		foreach( $post_ids as $post_id ) {
+			GeoMashupDB::set_object_location( 'post', $post_id, $this->rand_location(), false );
+		}
+		return $post_ids;
+	}
+
+	private function add_action( $tag, $call, $priority = 10, $accepted_args = 1 ) {
+		return $this->add_filter( $tag, $call, $priority, $accepted_args );
+	}
+
+	private function add_filter( $tag, $call, $priority = 10, $accepted_args = 1 ) {
+		$this->added_filters[] = compact( 'tag', 'call', 'priority' );
+		return add_filter( $tag, $call, $priority, $accepted_args );
+	}
 }
