@@ -5,6 +5,7 @@ class GeoMashupDB_Unit_Tests extends WP_UnitTestCase {
 
 	function tearDown() {
 		global $wpdb;
+		parent::tearDown();
 		$wpdb->query( "TRUNCATE TABLE {$wpdb->prefix}geo_mashup_administrative_names" );
 		$wpdb->query( "TRUNCATE TABLE {$wpdb->prefix}geo_mashup_location_relationships" );
 		$wpdb->query( "TRUNCATE TABLE {$wpdb->prefix}geo_mashup_locations" );
@@ -148,6 +149,9 @@ class GeoMashupDB_Unit_Tests extends WP_UnitTestCase {
 		$this->assertEquals( $post_locs[1]->ID, $two_results->object_id );
 	}
 
+	/**
+	* issue 550
+	*/
 	function test_query_offset() {
 		$posts = $this->factory->post->create_many( 2 );
 		$post_locs = array();
@@ -219,6 +223,9 @@ class GeoMashupDB_Unit_Tests extends WP_UnitTestCase {
 		$this->assertFalse( empty( $geo_date ) );
 	}
 
+	/**
+	* issue 607
+	*/
 	function test_auto_post_join() {
 
 		// A query for post locations should honor posts_where and related filters
@@ -267,6 +274,9 @@ class GeoMashupDB_Unit_Tests extends WP_UnitTestCase {
 		$this->assertEquals( 3, count( $results ) );
 	}
 
+	/**
+	* issue 507
+	*/
 	function test_combine_import_fields() {
 		// This test calls geocoding services, but allows for failure
 		global $geo_mashup_options;
@@ -361,6 +371,23 @@ class GeoMashupDB_Unit_Tests extends WP_UnitTestCase {
 		$this->assertContains( $tag2_post_ids[0], wp_list_pluck( $tag_locs, 'object_id' ) );
 		$this->assertContains( $tag2_post_ids[1], wp_list_pluck( $tag_locs, 'object_id' ) );
 					
+	}
+	/**
+	* issue 581
+	*/
+	function test_static_map_filter() {
+		$filter = create_function( 
+			'$map_image, $map_data, $args',
+			'return str_replace( "color:red", "color:blue", $map_image );'
+		);
+
+		add_filter( 'geo_mashup_static_map', $filter, 10, 3 );
+
+		$post_id = $this->factory->post->create();
+		GeoMashupDB::set_object_location( 'post', $post_id, $this->rand_location(), false );
+		$static_map = GeoMashup::map( 'map_content=single&static=true&object_id=' . $post_id );
+		var_dump( $static_map );
+		$this->assertContains( 'color:blue', $static_map );
 	}
 
 	private function get_nv_test_location() {
