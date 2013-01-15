@@ -314,6 +314,54 @@ class GeoMashupDB_Unit_Tests extends WP_UnitTestCase {
 		}
 	}
 
+	function test_tax_query() {
+		$taxonomy = WP_UnitTest_Factory_For_Term::DEFAULT_TAXONOMY;
+
+		$bare_post_ids = $this->factory->post->create_many( 2 );
+		GeoMashupDB::set_object_location( 'post', $bare_post_ids[0], $this->rand_location(), false );
+		GeoMashupDB::set_object_location( 'post', $bare_post_ids[1], $this->rand_location(), false );
+
+		$tag1_post_ids = $this->factory->post->create_many( 2 );
+		wp_set_post_terms( $tag1_post_ids[0], 'tag1' );
+		GeoMashupDB::set_object_location( 'post', $tag1_post_ids[0], $this->rand_location(), false );
+		wp_set_post_terms( $tag1_post_ids[1], 'tag1' );
+		GeoMashupDB::set_object_location( 'post', $tag1_post_ids[1], $this->rand_location(), false );
+
+		$tag2_post_ids = $this->factory->post->create_many( 2 );
+		wp_set_post_terms( $tag2_post_ids[0], 'tag2' );
+		GeoMashupDB::set_object_location( 'post', $tag2_post_ids[0], $this->rand_location(), false );
+		wp_set_post_terms( $tag2_post_ids[1], 'tag2' );
+		GeoMashupDB::set_object_location( 'post', $tag2_post_ids[1], $this->rand_location(), false );
+
+		$tag1_locs = GeoMashupDB::get_object_locations( array( 
+			'tax_query' => array(
+				array( 
+					'taxonomy' => $taxonomy,
+					'terms' => 'tag1',
+					'field' => 'slug',
+				)
+			)
+		) );
+		$this->assertEquals( 2, count( $tag1_locs ) );
+		$this->assertContains( $tag1_post_ids[0], wp_list_pluck( $tag1_locs, 'object_id' ) );
+		$this->assertContains( $tag1_post_ids[1], wp_list_pluck( $tag1_locs, 'object_id' ) );
+
+		$tag_locs = GeoMashupDB::get_object_locations( array( 
+			'tax_query' => array(
+				array( 
+					'taxonomy' => $taxonomy,
+					'terms' => array( 'tag1' , 'tag2' ),
+					'field' => 'slug',
+				)
+			)
+		) );
+		$this->assertEquals( 4, count( $tag_locs ) );
+		$this->assertContains( $tag1_post_ids[0], wp_list_pluck( $tag_locs, 'object_id' ) );
+		$this->assertContains( $tag1_post_ids[1], wp_list_pluck( $tag_locs, 'object_id' ) );
+		$this->assertContains( $tag2_post_ids[0], wp_list_pluck( $tag_locs, 'object_id' ) );
+		$this->assertContains( $tag2_post_ids[1], wp_list_pluck( $tag_locs, 'object_id' ) );
+					
+	}
 
 	private function get_nv_test_location() {
 		$location = GeoMashupDB::blank_location();
@@ -325,7 +373,7 @@ class GeoMashupDB_Unit_Tests extends WP_UnitTestCase {
 	private function rand_location() {
 		$location = GeoMashupDB::blank_location();
 		$location->lat = rand( -9000, 9000 ) / 100;
-		$location->lng = rand( -180000, 180000 ) / 100;
+		$location->lng = rand( -18000, 18000 ) / 100;
 		return $location;
 	}
 
