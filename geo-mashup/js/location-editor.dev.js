@@ -720,7 +720,21 @@ var
 	clearHaveUnsavedChanges = function() {
 		have_unsaved_changes = false;
 		$changed_input.val( '' );
+	},
+
+	/**
+	 * Copy current location data to corresponding custom fields.
+	 */
+	copyGeodata = function() {
+		var lat_meta_matches = /meta[(\d*)][key]/.exec( $( '#list-table input[value="geo_latitude"]').attr( 'name' ));
+
+		console.log( lat_meta_matches );
+		console.log( selected_location );
+		if ( lat_meta_matches ) {
+
+		}
 	};
+
 	// End of private function variables
 
 	// Add public members
@@ -877,17 +891,25 @@ var
 	} );
 
 	$update_button.click( function() {
-		var post_data = $( '#geo_mashup_location_editor input' ).serialize() + 
-			'&geo_mashup_update_location=true&action=geo_mashup_edit';
+		var post_data = $( '#geo_mashup_location_editor input' ).serialize() +
+				'&geo_mashup_update_location=true&action=geo_mashup_edit',
+			copy_geodata = ( geo_mashup_location_editor_settings.copy_geodata === 'true' ),
+			$lat_custom_key = $( '#postcustom input[value="geo_latitude"]');
 
 		if ( '' === $location_name_input.val() && $saved_name_ui.hasClass( 'ui-state-highlight' ) ) {
 			// The saved name has been cleared
 			post_data += '&geo_mashup_null_fields=saved_name';
 		}
 		$ajax_message.hide();
+
 		$.post( ajax_url, post_data, function( data ) {
 			$ajax_message.html( data.status.message ).fadeIn( 'slow' );
 			if ( 200 === data.status.code ) {
+				if ( copy_geodata && $lat_custom_key.length > 0 ) {
+					// Custom fields were updated in the DB but not the current view
+					// A reload (not an update) will load the new values
+					window.location.reload();
+				}
 				clearHaveUnsavedChanges();
 				$display.find( '.ui-state-highlight' ).removeClass( 'ui-state-highlight' );
 				$update_button.hide();
