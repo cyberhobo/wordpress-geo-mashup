@@ -720,19 +720,6 @@ var
 	clearHaveUnsavedChanges = function() {
 		have_unsaved_changes = false;
 		$changed_input.val( '' );
-	},
-
-	/**
-	 * Copy current location data to corresponding custom fields.
-	 */
-	copyGeodata = function() {
-		var lat_meta_matches = /meta[(\d*)][key]/.exec( $( '#list-table input[value="geo_latitude"]').attr( 'name' ));
-
-		console.log( lat_meta_matches );
-		console.log( selected_location );
-		if ( lat_meta_matches ) {
-
-		}
 	};
 
 	// End of private function variables
