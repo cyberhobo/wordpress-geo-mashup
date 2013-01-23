@@ -408,6 +408,10 @@ class GeoMashupRenderMap {
 	private static function add_term_properties( &$map_data ) {
 		global $geo_mashup_options;
 
+		// Ignore if term properties are already set (allow test data override)
+		if ( isset( $map_data['term_properties'] ) )
+			return;
+
 		$term_properties = array();
 
 		if ( 'single' != $map_data['map_content'] and !empty( $map_data['include_taxonomies'] ) ) {
