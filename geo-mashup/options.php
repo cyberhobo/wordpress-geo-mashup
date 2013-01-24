@@ -147,7 +147,8 @@ function geo_mashup_options_page() {
 ?>
 	<script type="text/javascript"> 
 	jQuery(function( $ ) { 
-		var selector = '#geo-mashup-settings-form';
+		var selector = '#geo-mashup-settings-form',
+			$obscure_settings = $('.obscure').hide();
 		$( selector ).tabs( {
 			selected: <?php echo $selected_tab ?>,
 			select: function ( event, ui ) {
@@ -170,6 +171,17 @@ function geo_mashup_options_page() {
 		$( '#map_api' ).change( function() {
 			$( '#overall-submit' ).click();
 		} );
+		$( '#show_obscure_settings').click( function( e ) {
+			var $link = $(this);
+			e.preventDefault();
+			if ( $link.hasClass( 'ui-icon-triangle-1-e' ) ) {
+				$link.removeClass('ui-icon-triangle-1-e').addClass('ui-icon-triangle-1-s');
+				$obscure_settings.show();
+			} else {
+                $link.removeClass('ui-icon-triangle-1-s').addClass('ui-icon-triangle-1-e');
+                $obscure_settings.hide();
+			}
+		})
  	} ); 
 	</script>
 	<div class="wrap">
@@ -389,6 +401,43 @@ function geo_mashup_options_page() {
 						</td>
 					</tr>
 					<tr>
+						<th scope="row"><?php _e('Obscure Settings', 'GeoMashup'); ?></th>
+						<td>
+							<a id="show_obscure_settings" href="#show_obscure_settings" class="ui-icon ui-icon-triangle-1-e alignleft"></a>
+							<span class="description"><?php
+								_e('Reveal some less commonly used settings.', 'GeoMashup' );
+							?></span>
+						</td>
+					</tr>
+					<tr class="obscure">
+						<th scope="row"><?php _e('GeoNames ID', 'GeoMashup'); ?></th>
+						<td>
+							<input id="geonames_username_text"
+								name="overall[geonames_username]"
+								type="text"
+								size="35"
+								value="<?php echo esc_attr( $geo_mashup_options->get ( 'overall', 'geonames_username' ) ); ?>" /><br/>
+							<span class="description"><?php
+								printf( __('Your %sGeoNames username%s, used with GeoNames API requests. Leave the default value to use Geo Mashup\'s.', 'GeoMashup'),
+									'<a href="http://geonames.wordpress.com/2011/01/28/application-identification-for-free-geonames-web-services/" title="">', '</a>' );
+							?></span>
+						</td>
+					</tr>
+					<?php if ( 'google' == $map_api ) : ?>
+					<tr class="obscure">
+						<th scope="row"><?php _e('AdSense For Search ID', 'GeoMashup'); ?></th>
+						<td>
+							<input id="adsense_code_text"
+								name="overall[adsense_code]"
+								type="text"
+								size="35"
+								value="<?php echo esc_attr( $geo_mashup_options->get ( 'overall', 'adsense_code' ) ); ?>" /><br/>
+							<span class="description"><?php
+								_e('Your client ID, used with the Google Bar. Leave the default value to use Geo Mashup\'s :).', 'GeoMashup');
+							?></span>
+						</td>
+					</tr>
+					<?php endif; ?>					<tr class="obscure">
 						<th scope="row"><?php _e('Add Category Links', 'GeoMashup'); ?></th>
 						<td>
 							<input id="add_category_links" name="overall[add_category_links]" type="checkbox" value="true"<?php 
@@ -401,7 +450,7 @@ function geo_mashup_options_page() {
 							?></span>
 						</td>
 					</tr>
-					<tr>
+					<tr class="obscure">
 						<th scope="row"><?php _e('Category Link Separator', 'GeoMashup'); ?></th>
 						<td>
 							<input id="category_link_separator" 
@@ -412,7 +461,7 @@ function geo_mashup_options_page() {
 								value="<?php echo esc_attr( $geo_mashup_options->get( 'overall', 'category_link_separator' ) ); ?>" />
 						</td>
 					</tr>
-					<tr>
+					<tr class="obscure">
 						<th scope="row"><?php _e('Category Link Text', 'GeoMashup'); ?></th>
 						<td>
 							<input id="category_link_text" 
@@ -422,7 +471,7 @@ function geo_mashup_options_page() {
 								value="<?php echo esc_attr( $geo_mashup_options->get( 'overall', 'category_link_text' ) ); ?>" />
 						</td>
 					</tr>
-					<tr>
+					<tr class="obscure">
 						<th scope="row"><?php _e('Category Link Zoom Level', 'GeoMashup'); ?></th>
 						<td>
 							<select id="category_zoom" name="overall[category_zoom]">
@@ -439,35 +488,6 @@ function geo_mashup_options_page() {
 							?></span>
 						</td>
 					</tr>
-					<tr>
-						<th scope="row"><?php _e('GeoNames ID', 'GeoMashup'); ?></th>
-						<td>
-							<input id="geonames_username_text"
-								name="overall[geonames_username]"
-								type="text"
-								size="35"
-								value="<?php echo esc_attr( $geo_mashup_options->get ( 'overall', 'geonames_username' ) ); ?>" /><br/>
-							<span class="description"><?php
-								printf( __('Your %sGeoNames username%s, used with GeoNames API requests. Leave the default value to use Geo Mashup\'s.', 'GeoMashup'),
-									'<a href="http://geonames.wordpress.com/2011/01/28/application-identification-for-free-geonames-web-services/" title="">', '</a>' );
-							?></span>
-						</td>
-					</tr>
-					<?php if ( 'google' == $map_api ) : ?>
-					<tr>
-						<th scope="row"><?php _e('AdSense For Search ID', 'GeoMashup'); ?></th>
-						<td>
-							<input id="adsense_code_text" 
-								name="overall[adsense_code]" 
-								type="text" 
-								size="35" 
-								value="<?php echo esc_attr( $geo_mashup_options->get ( 'overall', 'adsense_code' ) ); ?>" /><br/>
-							<span class="description"><?php
-								_e('Your client ID, used with the Google Bar. Leave the default value to use Geo Mashup\'s :).', 'GeoMashup'); 
-							?></span>
-						</td>
-					</tr>
-					<?php endif; ?>
 				</table>
 				<div class="submit"><input id="overall-submit" type="submit" name="submit" value="<?php _e('Update Options', 'GeoMashup'); ?>" /></div>
 			</fieldset>
