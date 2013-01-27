@@ -153,7 +153,7 @@ class GeoMashupRenderMap {
 				if ( $map_parameters )
 					$map_data = GeoMashup::build_map_data( $map_parameters );
 				else
-					$map_data = GeoMashup::build_map_data( '' );
+					$map_data = false;
 			}
 		} else {
 			// Try building map data from the query string
@@ -478,6 +478,12 @@ class GeoMashupRenderMap {
 		self::enqueue_styles();
 
 		$map_data = self::get_map_data();
+		if ( empty( $map_data ) ) {
+			status_header( 500 );
+			_e( 'WordPress transients may not be working. Try deactivating or reconfiguring caching plugins.', 'GeoMashup' );
+			echo ' <a href="https://code.google.com/p/wordpress-geo-mashup/issues/detail?id=425" target="_top">issue 425</a>';
+			exit();
+		}
 
 		self::extract_template_properties( $map_data );
 
