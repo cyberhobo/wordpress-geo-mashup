@@ -211,8 +211,17 @@ class GeoMashup {
 	 * @since 1.2
 	 */
 	private static function load_scripts() {
-		if ( self::is_options_page() )
+		if ( self::is_options_page() ) {
 			wp_enqueue_script( 'jquery-ui-tabs' );
+			wp_enqueue_script( 'suggest' );
+			if ( isset( $_POST['geo_mashup_run_tests'] ) ){
+				self::register_script( 'qunit', 'js/qunit.js', array( 'jquery' ), GEO_MASHUP_VERSION, true );
+				self::register_script( 'qunit-close-enough', 'js/qunit-close-enough.js', array( 'qunit' ), GEO_MASHUP_VERSION, true );
+				self::register_script( 'geo-mashup-tests', 'js/qunit-tests.js', array( 'qunit-close-enough' ), GEO_MASHUP_VERSION, true );
+				wp_enqueue_script( 'geo-mashup-tests' );
+				include_once( GEO_MASHUP_DIR_PATH . '/tests.php' );
+			}
+		}
 	}
 
 	/**
@@ -224,7 +233,10 @@ class GeoMashup {
 		if ( self::is_options_page() ) {
 			self::register_style( 'jquery-smoothness', 'css/jquery-ui.1.7.smoothness.css', array(), GEO_MASHUP_VERSION, 'screen' );
 			wp_enqueue_style( 'jquery-smoothness' );
-			wp_enqueue_script( 'suggest' );
+			if ( isset( $_POST['geo_mashup_run_tests'] ) ){
+				self::register_style( 'qunit', 'css/qunit.css', array(), GEO_MASHUP_VERSION, 'screen' );
+				wp_enqueue_style( 'qunit' );
+			}
 		}
 	}
 

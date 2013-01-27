@@ -53,7 +53,23 @@ function geo_mashup_options_page() {
 		echo '<div class="updated fade">' . $log . '</div>';
 	}
 
+	if ( isset( $_POST['geo_mashup_run_tests'] ) ) {
+		$test_transient = get_transient( 'geo_mashup_test' );
+		if ( !$test_transient ) {
+			echo '<div class="updated fade">';
+			_e( 'WordPress transients may not be working. Try deactivating or reconfiguring caching plugins.', 'GeoMashup' );
+			echo ' <a href="https://code.google.com/p/wordpress-geo-mashup/issues/detail?id=425">issue 425</a>';
+			echo '</div>';
+			unset( $_POST['geo_mashup_run_tests'] );
+		} else {
+			// load tests
+		}
+	} else {
+		// Set a test transient
+		set_transient( 'geo_mashup_test', 'true', 60*60 );
+	}
 	if ( GEO_MASHUP_DB_VERSION != GeoMashupDB::installed_version() ) {
+		// This happens at init now
 		if ( GeoMashupDB::install() ) {
 			echo '<div class="updated fade"><p>'.__('Database upgraded, see log for details.', 'GeoMashup').'</p></div>';
 		}
@@ -192,6 +208,7 @@ function geo_mashup_options_page() {
 			<li><a href="#geo-mashup-single-map-settings"><span><?php _e('Single Maps', 'GeoMashup'); ?></span></a></li>
 			<li><a href="#geo-mashup-global-map-settings"><span><?php _e('Global Maps', 'GeoMashup'); ?></span></a></li>
 			<li><a href="#geo-mashup-context-map-settings"><span><?php _e('Contextual Maps', 'GeoMashup'); ?></span></a></li>
+			<li><a href="#geo-mashup-tests"><span><?php _e('Tests', 'GeoMashup'); ?></span></a></li>
 			</ul>
 			<fieldset id="geo-mashup-overall-settings">
 				<?php wp_nonce_field('geo-mashup-update-options'); ?>
@@ -975,7 +992,7 @@ function geo_mashup_options_page() {
 					<tr>
 						<th scope="row"><?php _e('Default Zoom Level', 'GeoMashup'); ?></th>
 						<td>
-							<select id="zoom" name="context_map[zoom]">
+							<select id="context_zoom" name="context_map[zoom]">
 								<?php foreach ( $zoomOptions as $value => $label ) : ?>
 								<option value="<?php echo esc_attr( $value ); ?>"<?php
 									if ( strcmp( $value, $geo_mashup_options->get( 'context_map', 'zoom' ) ) == 0 ) {
@@ -1032,6 +1049,15 @@ function geo_mashup_options_page() {
 					</tr>
 				</table>
 				<div class="submit"><input type="submit" name="submit" value="<?php _e('Update Options', 'GeoMashup'); ?>" /></div>
+			</fieldset>
+			<fieldset id="geo-mashup-tests">
+				<p><?php _e('Some checks that Geo Mashup is working properly.', 'GeoMashup'); ?></p>
+				<?php if ( isset( $_POST['geo_mashup_run_tests'] ) ) : ?>
+					<div id="qunit-fixture"></div>
+					<div id="qunit"></div>
+				<?php else : ?>
+					<input type="submit" name="geo_mashup_run_tests" value="<?php _e('Run Tests', 'GeoMashup'); ?>" class="button" />
+				<?php endif; ?>
 			</fieldset>
 		</form>
 		<?php if ( isset( $_GET['view_activation_log'] ) ) : ?>
