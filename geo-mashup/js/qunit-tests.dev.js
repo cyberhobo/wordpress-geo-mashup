@@ -1,3 +1,6 @@
+/*global QUnit, asyncTest, ok, equal, start, jQuery, gm_test_data */
+/*jslint browser: true */
+
 jQuery( function( $ ) {
 	var location_count = parseInt( gm_test_data.location_count, 10 );
 

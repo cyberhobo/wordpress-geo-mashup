@@ -50,6 +50,8 @@
 					<exclude name="*markerclusterer.dev.js"/>
 					<exclude name="*ClusterMarker.dev.js"/>
 					<exclude name="*mapiconmaker.dev.js"/>
+					<exclude name="*qunit.dev.js"/>
+					<exclude name="*qunit-close-enough.dev.js"/>
 					<exclude name="mxn/*"/>
 				</fileset>
 			</path>
