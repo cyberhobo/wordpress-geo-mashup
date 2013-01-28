@@ -1051,7 +1051,10 @@ function geo_mashup_options_page() {
 				<div class="submit"><input type="submit" name="submit" value="<?php _e('Update Options', 'GeoMashup'); ?>" /></div>
 			</fieldset>
 			<fieldset id="geo-mashup-tests">
-				<p><?php _e('Some checks that Geo Mashup is working properly.', 'GeoMashup'); ?></p>
+				<p>
+					<?php _e('Some checks that Geo Mashup is working properly.', 'GeoMashup'); ?>
+					<?php _e('Not working in Firefox yet - free Geo Mashup license to the first to figure out why!', 'GeoMashup'); ?>
+				</p>
 				<?php if ( isset( $_POST['geo_mashup_run_tests'] ) ) : ?>
 					<div id="qunit-fixture"></div>
 					<div id="qunit"></div>
