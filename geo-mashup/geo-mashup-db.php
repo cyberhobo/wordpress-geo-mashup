@@ -1673,11 +1673,20 @@ class GeoMashupDB {
 
 			$suppress_post_filters = defined( 'GEO_MASHUP_SUPPRESS_POST_FILTERS' ) && GEO_MASHUP_SUPPRESS_POST_FILTERS;
 			if ( 'post' === $object_name and ! $suppress_post_filters ) {
-				$field_string	= apply_filters( 'posts_fields', $field_string );
-				$table_string = apply_filters( 'posts_join', $table_string );
-				$where = apply_filters( 'posts_where', $where );
-				$groupby = apply_filters( 'posts_groupby', $groupby );
+				// This is already mostly for WPML's sake, but it needs extra help with custom post types
+				// This includes all translatable post types, I hope
+				if ( defined( 'ICL_LANGUAGE_CODE' ) )
+					add_filter( 'get_translatable_documents', array( __CLASS__, 'wpml_filter_get_translatable_documents' ) );
+
+				// Apply post query filters, changing posts table references to our alias
+				$field_string = str_replace( $wpdb->posts . '.', 'o.', apply_filters( 'posts_fields', $field_string ) );
+				$table_string = str_replace( $wpdb->posts . '.', 'o.', apply_filters( 'posts_join', $table_string ) );
+				$where = str_replace( $wpdb->posts . '.', 'o.', apply_filters( 'posts_where', $where ) );
+				$groupby = str_replace( $wpdb->posts . '.', 'o.', apply_filters( 'posts_groupby', $groupby ) );
 				$limit = apply_filters( 'post_limits', $limit );
+
+				if ( defined( 'ICL_LANGUAGE_CODE' )  )
+					remove_filter( 'get_translatable_documents', array( __CLASS__, 'wpml_filter_get_translatable_documents' ) );
 			}
 		}
 		
@@ -1686,6 +1695,18 @@ class GeoMashupDB {
 		$wpdb->query( $query_string );
 		
 		return $wpdb->last_result;
+	}
+
+	/**
+	 * Expand the post types returned by WPML for our queries
+	 *
+	 * @since 1.5
+	 * @param $post_types
+	 */
+	public static function wpml_filter_get_translatable_documents( $post_types ) {
+		global $geo_mashup_options;
+		// Our post types may not be translatable, but I couldn't get those out of WPML
+		return array_flip( $geo_mashup_options->get( 'overall', 'located_post_types' ) );
 	}
 
 	/**

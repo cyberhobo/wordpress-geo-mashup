@@ -621,10 +621,13 @@ GeoMashup.createMap = function(container, opts) {
 		opts.object_name = 'post';
 	}
 	this.opts = opts;
-	filter.url = opts.siteurl + '?geo_mashup_content=geo-query&map_name=' + encodeURIComponent( opts.name );
-	if ( opts.lang ) {
+	filter.url = opts.siteurl +
+		( opts.siteurl.indexOf( '?' ) > 0 ? '&' : '?' ) +
+		'geo_mashup_content=geo-query&map_name=' + encodeURIComponent( opts.name );
+	if ( opts.lang && filter.url.indexOf( 'lang=' ) === -1 ) {
 		filter.url += '&lang=' + encodeURIComponent( opts.lang );
 	}
+
 	/**
 	 * The base URL used for geo queries is being set.
 	 * @name GeoMashup#geoQueryUrl
