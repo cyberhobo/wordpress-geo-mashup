@@ -23,21 +23,42 @@ jQuery( function( $ ) {
 					equal( gm.map.markers.length, location_count, 'a marker is created for each location' );
 					ok( gm.map.polylines, 'polylines are available' );
 					equal( gm.map.polylines.length, 1, 'a polyline is created for each term with line zoom set' );
-					QUnit.close( gm.map.getCenter().lat, 37.8, 0.5, 'map center latitude is near the middle of locations' );
-					QUnit.close( gm.map.getCenter().lon, -116.7, 0.5, 'map center longitude is near the middle of locations' );
+					QUnit.close(
+						gm.map.getCenter().lat,
+						37.8,
+						0.5,
+						'map center latitude is near the middle of locations'
+					);
+					QUnit.close(
+						gm.map.getCenter().lon,
+						-116.7,
+						0.5,
+						'map center longitude is near the middle of locations'
+					);
 					start();
 				} );
 			} );
 		} );
 
-		asyncTest( api + " markers respond", location_count, function() {
+		asyncTest( api + " markers respond", location_count*3, function() {
 			var $frame = loadTestFrame( gm_test_data.global_urls[api], function() {
 				var gm = window.frames[gm_test_data.name].GeoMashup;
 				gm.map.load.addHandler( function() {
 					$.each( gm.map.markers, function( i, marker ) {
 						marker.click.fire();
 						equal( gm.selected_marker, marker, 'a clicked marker is selected' );
-						QUnit.close( marker.location.lat, gm.map.getCenter())
+						QUnit.close(
+							marker.location.lat,
+							gm.map.getCenter().lat,
+							0.005,
+							'map center latitude is close to clicked marker'
+						);
+						QUnit.close(
+							marker.location.lon,
+							gm.map.getCenter().lon,
+							0.005,
+							'map center longitude is close to clicked marker'
+						);
 					} );
 					start();
 				} );
