@@ -461,6 +461,27 @@ class GeoMashup_Unit_Tests extends WP_UnitTestCase {
 		wp_reset_postdata();
 	}
 
+	/**
+	* issue 621
+	*/
+	function test_wp_query_location_info() {
+		$post_id = $this->factory->post->create( array( 
+			'post_content' => '[geo_mashup_location_info fields="locality_name,admin_code" format="%s, %s"]',
+		) );
+		$nv_location = $this->get_nv_test_location();
+		$nv_location->admin_code = 'NV';
+		$nv_location->locality_name = 'Reno';
+		GeoMashupDB::set_object_location( 'post', $post_id, $nv_location, false );
+
+		$test_query = new WP_Query( array( 
+			'posts_per_page' => 1,
+		) );
+		$this->assertTrue( $test_query->have_posts() );
+		$test_query->the_post();
+		$this->assertContains( 'Reno, NV', apply_filters( 'the_content', get_the_content() ) );
+		wp_reset_postdata();
+	}
+
 	private function get_nv_test_location() {
 		$location = GeoMashupDB::blank_location();
 		$location->lat = 40;

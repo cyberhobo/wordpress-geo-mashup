@@ -1424,18 +1424,27 @@ class GeoMashup {
 	/**
 	 * Get the location of the current loop object, if any.
 	 *
+	 * Doesn't work in non-global loops, such as are made with WP_Query.
+	 *
 	 * @since 1.3
 	 *
 	 * @param string $output ARRAY_A | ARRAY_N | OBJECT
+	 * @param string $object_name Kind of object we're looking for, 'post', 'user', 'comment'.
 	 * @return object|bool Location object or false if none.
 	 */
-	public static function current_location( $output = OBJECT ) {
+	public static function current_location( $output = OBJECT, $object_name = '' ) {
 		global $in_comment_loop, $in_user_loop, $user;
-
 
 		$location = false;
 
-		if ( $in_comment_loop ) {
+		// Find the context
+		if ( $object_name == 'comment' ) {
+			$object_id =  get_comment_ID();
+		} else if ( $object_name == 'user' ) {
+			$object_id = $user->ID;
+		} else if ( $object_name == 'post' ) {
+			$object_id = get_the_ID();
+		} else if ( $in_comment_loop ) {
 			$object_name = 'comment';
 			$object_id = get_comment_ID();
 		} else if ( $in_user_loop ) {
@@ -1448,13 +1457,37 @@ class GeoMashup {
 			$object_name = $object_id = '';
 		}
 			
-		if ( $object_name && $object_id ) {
+		if ( $object_name && $object_id )
 			$location = GeoMashupDB::get_object_location( $object_name, $object_id, $output );
+
+		return $location;
+	}
+
+	/**
+	 * Look at global loops first, then try to guess a current location if needed.
+	 *
+	 * @uses current_location()
+	 *
+	 * @param string $output ARRAY_A | ARRAY_N | OBJECT
+	 * @param string $object_name Kind of object we're looking for, 'post', 'user', 'comment'.
+	 * @return object|bool Location object or false if none.
+	 */
+	public static function current_location_guess( $output = OBJECT, $object_name = '' ) {
+		global $post, $comment, $user;
+
+		$location = self::current_location( $output, $object_name );
+		if ( empty( $location ) ) {
+			if ( !$location and $post and !in_array( $object_name, array( 'comment', 'user' ) ) )
+				$location = GeoMashupDB::get_object_location( 'post', $post->ID, ARRAY_A );
+			if ( !$location and $comment and !in_array( $object_name, array( 'post', 'user' ) ) )
+				$location = GeoMashupDB::get_object_location( 'comment', $comment->comment_ID, ARRAY_A );
+			if ( !$location and $user and !in_array( $object_name, array( 'post', 'comment' ) ) )
+				$location = GeoMashupDB::get_object_location( 'user', $user->ID, ARRAY_A );
 		}
 		return $location;
 	}
 
-	/** 
+	/**
 	 * A template tag to insert location information.
 	 *
 	 * @since 1.3
@@ -1463,7 +1496,7 @@ class GeoMashup {
 	 * @return string The information requested, empty string if none.
 	 */
 	public static function location_info( $args = '' ) {
-		$defaults = array( 
+		$defaults = array(
 			'fields' => 'address', 
 			'separator' => ',', 
 			'format' => '',
@@ -1473,11 +1506,10 @@ class GeoMashup {
 		extract( $args, EXTR_SKIP );
 		$info = '';
 
-		if ( $object_name && $object_id ) {
+		if ( $object_name && $object_id )
 			$location = GeoMashupDB::get_object_location( $object_name, $object_id, ARRAY_A );
-		} else {
-			$location = self::current_location( ARRAY_A );
-		}
+		else
+			$location = self::current_location_guess( ARRAY_A, $object_name );
 
 		if ( !empty( $location ) ) {
 			$fields = preg_split( '/\s*,\s*/', $fields );
@@ -1529,7 +1561,7 @@ class GeoMashup {
 		$args = wp_parse_args( $args, $defaults );
 
 		$url = '';
-		$location = self::current_location();
+		$location = self::current_location_guess();
 
 		if ( !$location and $post ) {
 
