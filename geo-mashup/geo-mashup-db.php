@@ -1192,7 +1192,7 @@ class GeoMashupDB {
 					add_post_meta( $post_id, '_geo_converted', $wpdb->prefix . 'geo_mashup_locations.id = ' . $set_id );
 					self::activation_log( 'OK: post_id ' . $post_id );
 				} else {
-					$msg = sprintf( __( 'Failed to convert location (%s). You can %sedit the post%s ' .
+					$msg = sprintf( __( 'Failed to convert location (%s). You can %s edit the post %s ' .
 						'to update the location, and try again.', 'GeoMashup' ),
 						$postmeta->meta_value, '<a href="post.php?action=edit&post=' . $post_id . '">', '</a>');
 					$msg .= ' (' . $set_id->get_error_message() . ')';
