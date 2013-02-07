@@ -101,9 +101,12 @@ class GeoMashupUIManager {
 				
 			$required_scripts[] = 'mxn-google-2-gm';
 		} else if ( 'googlev3' == $map_api ) {
+			$scheme = ( empty( $_SERVER['HTTPS'] ) ? 'http' : 'https' );
 			wp_register_script( 
 					'google-maps-3',
-					'http://maps.google.com/maps/api/js?sensor=false&amp;language=' . GeoMashup::get_language_code(), 
+					$scheme .
+						'://maps.google.com/maps/api/js?sensor=false&amp;language=' .
+						GeoMashup::get_language_code(),
 					null, 
 					'', 
 					true );
