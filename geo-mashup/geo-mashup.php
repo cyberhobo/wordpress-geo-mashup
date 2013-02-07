@@ -321,7 +321,7 @@ class GeoMashup {
 	 * @param string $handle Global tag for the script.
 	 * @param string $src Path to the script from the root directory of Geo Mashup.
 	 * @param array $deps Array of dependency handles.
-	 * @param string $ver Script version.
+	 * @param string|bool $ver Script version.
 	 * @param bool $in_footer Whether the script can be loaded in the footer.
 	 */
 	public static function register_script( $handle, $src, $deps = array(), $ver = false, $in_footer = false ) {
@@ -344,8 +344,8 @@ class GeoMashup {
 	 * @param string $handle Global tag for the style.
 	 * @param string $src Path to the stylesheet from the root directory of Geo Mashup.
 	 * @param array $deps Array of dependency handles.
-	 * @param string $ver Script version.
-	 * @param bool $media Stylesheet media target.
+	 * @param string|bool $ver Script version.
+	 * @param string $media Stylesheet media target.
 	 */
 	public static function register_style( $handle, $src, $deps = array(), $ver = false, $media = 'all' ) {
 		// Use the .dev version if SCRIPT_DEBUG is set or there is no minified version
@@ -549,7 +549,7 @@ class GeoMashup {
 	 * @param string $outer_glue Pair separator.
 	 * @param array $array Array to implode.
 	 * @param mixed $skip_empty Whether to include empty values in output.
-	 * @param mixed $urlencoded Whetern to URL encode the output.
+	 * @param mixed $urlencoded Whether to URL encode the output.
 	 * @return string The imploded string.
 	 */
 	public static function implode_assoc($inner_glue, $outer_glue, $array, $skip_empty=false, $urlencoded=false) {
@@ -575,7 +575,6 @@ class GeoMashup {
 	 * @return string Language code.
 	 */
 	public static function get_language_code() {
-		$language_code = '';
 		if ( isset( $_GET['lang'] ) ) {
 			// A language override technique is to use this querystring parameter
 			$language_code = $_GET['lang'];
@@ -614,7 +613,7 @@ class GeoMashup {
 	 * 
 	 * @since 1.1
 	 *
-	 * @param id $post_id 
+	 * @param int $post_id
 	 * @return array Array of URL strings.
 	 */
 	public static function get_kml_attachment_urls($post_id) {
@@ -721,7 +720,7 @@ class GeoMashup {
 	}
 
 	/**
-	 * Convert depricated attribute names.
+	 * Convert deprecated attribute names.
 	 *
 	 * @since 1.3
 	 * 
@@ -746,7 +745,8 @@ class GeoMashup {
 	 * Augment an object location for display.
 	 *
 	 * @since 1.5
-	 * 
+	 *
+	 * @param string $object_name The object type, e.g. 'post', 'user', etc.
 	 * @param array $object_location The object location data.
 	 * @return array The 
 	 */
@@ -755,7 +755,6 @@ class GeoMashup {
 
 		$term_ids_by_taxonomy = array();
 		$author_name = '';
-		$attachments = array();
 		if ( 'post' == $object_name ) {
 
 			// Filter the title
@@ -922,7 +921,6 @@ class GeoMashup {
 		// Language plugins may also add query parameters to home_url(). We'll add to these.
 		$home_url_query_parts = array();
 		if ( !empty( $home_url_parts['query'] ) ) {
-			$home_url_query_parts = array();
 			wp_parse_str( $home_url_parts['query'], $home_url_query_parts );
 			$query = array_merge( $home_url_query_parts, $query );
 		}
@@ -1308,7 +1306,6 @@ class GeoMashup {
 					return $content . $geo_mashup_options->get('overall', 'category_link_separator') . 
 						__( 'You must add a description to this category to use this Geo Mashup feature.', 'GeoMashup' );
 				}
-				$link = '';
 				$url = get_page_link($geo_mashup_options->get('overall', 'mashup_page'));
 				if (strstr($url,'?')) {
 					$url .= '&amp;';
@@ -1424,7 +1421,7 @@ class GeoMashup {
 	/**
 	 * Get the location of the current loop object, if any.
 	 *
-	 * Doesn't work in non-global loops, such as are made with WP_Query.
+	 * Does not work in non-global loops, such as are made with WP_Query.
 	 *
 	 * @since 1.3
 	 *
@@ -1496,6 +1493,11 @@ class GeoMashup {
 	 * @return string The information requested, empty string if none.
 	 */
 	public static function location_info( $args = '' ) {
+		/** @var $fields string  */
+		/** @var $separator string  */
+		/** @var $format string  */
+		/** @var $object_name string  */
+		/** @var $object_id int  */
 		$defaults = array(
 			'fields' => 'address', 
 			'separator' => ',', 
@@ -1552,6 +1554,7 @@ class GeoMashup {
 	 * @since 1.3
 	 * @todo What would happen if the global map is not a post map?
 	 *
+	 * @param string|array $args Template tag arguments.
 	 * @return string The URL, empty if no current location is found.
 	 */
 	public static function show_on_map_link_url( $args = null ) {
@@ -1598,6 +1601,7 @@ class GeoMashup {
 	 *
 	 * @since 1.3
 	 *
+	 * @param string|array $args Tag arguments.
 	 * @return string The link HTML, empty if no current location is found.
 	 */
 	public static function show_on_map_link( $args = null ) {
@@ -1664,7 +1668,7 @@ class GeoMashup {
 	 * @since 1.1
 	 * @link http://code.google.com/p/wordpress-geo-mashup/wiki/TagReference#List_Located_Posts
 	 *
-	 * @param string|array $args Template tag arguments.
+	 * @param string|array $option_args Template tag arguments.
 	 * @return string List HTML.
 	 */
 	public static function list_located_posts( $option_args = null ) {
@@ -1826,7 +1830,7 @@ class GeoMashup {
 	 * @link http://code.google.com/p/wordpress-geo-mashup/wiki/TagReference#Post_Coordinates
 	 * @deprecated 1.3 Use GeoMashup::current_location()
 	 *
-	 * @param string|array $places Maximum number of decimal places to use.
+	 * @param int $places Maximum number of decimal places to use.
 	 * @return array Array containing 'lat' and 'lng' keys.
 	 */
 	public static function post_coordinates($places = 10) {

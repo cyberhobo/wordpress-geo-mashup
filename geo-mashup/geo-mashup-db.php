@@ -1313,7 +1313,7 @@ class GeoMashupDB {
 	 * 
 	 * @param string $names Comma separated table field names.
 	 * @param array $where Associtive array of conditional field names and values.
-	 * @return object WP_DB query results.
+	 * @return array WP_DB query results.
 	 */
 	public static function get_distinct_located_values( $names, $where = null ) {
 		global $wpdb;
@@ -1388,7 +1388,7 @@ class GeoMashupDB {
 	 * @since 1.3
 	 *
 	 * @param string $object_name 'post', 'user', a GeoMashupDB::object_storage() index.
-	 * @param id $object_id Object 
+	 * @param int $object_id Object
 	 * @param string $output (optional) one of ARRAY_A | ARRAY_N | OBJECT constants.  Return an
 	 * 		associative array (column => value, ...), a numerically indexed array (0 => value, ...)
 	 * 		or an object ( ->column = value ), respectively.
