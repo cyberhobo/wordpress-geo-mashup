@@ -27,6 +27,7 @@ Some popular features are:
   * Global maps can present your posts in many ways
 	They can show just one category, custom taxonomy term, or custom post type, for example
 	Clicking on a post marker shows a customizable summary of the post or page in an info window
+  * A Geo Search widget enables searching for content by distance from a search location
   * Location can be saved for all post types (including pages) users, and comments
   * Synchronize [Geodata](http://codex.wordpress.org/Geodata) with the Geo location mobile client and other plugins
   * Support for both standard WordPress [shortcodes](http://codex.wordpress.org/Shortcode_API) and [template tags](http://codex.wordpress.org/Template_Tags/How_to_Pass_Tag_Parameters) to add maps to your site.

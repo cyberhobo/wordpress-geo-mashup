@@ -30,6 +30,7 @@
  * Template callback for GeoMashupQuery::list_users()
  *
  * @since 1.3
+ * @package GeoMashup
  * @param object $user The user to display.
  */
 function geo_mashup_user_default_template( $user ) { 

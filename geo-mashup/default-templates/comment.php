@@ -35,6 +35,7 @@
  *
  * @since 1.3
  * @access public
+ * @package GeoMashup
  *
  * @param object $comment The comment to display
  * @param array $args Arguments from wp_list_comments

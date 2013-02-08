@@ -1,4 +1,8 @@
 <?php
+/**
+ * Data and dependencies for automated functional tests.
+ * @package GeoMashup
+ */
 $width = 400;
 $height = 400;
 $name = 'test-map';

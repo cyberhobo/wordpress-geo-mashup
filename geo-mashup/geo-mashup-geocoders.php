@@ -13,6 +13,7 @@ if ( ! class_exists( 'GeoMashupHttpGeocoder' ) ) {
  * The Geo Mashup Http Geocoder base class.
  *
  * @since 1.4
+ * @package GeoMashup
  */
 abstract class GeoMashupHttpGeocoder {
 	/**
@@ -111,6 +112,7 @@ abstract class GeoMashupHttpGeocoder {
  * Includes an additional method for looking up administrative area names.
  *
  * @since 1.4
+ * @package GeoMashup
  */
 class GeoMashupGeonamesGeocoder extends GeoMashupHttpGeocoder {
 	/**
@@ -299,6 +301,7 @@ class GeoMashupGeonamesGeocoder extends GeoMashupHttpGeocoder {
  * HTTP geocoder using the Google geocoding web service
  *
  * @since 1.4
+ * @package GeoMashup
  */
 class GeoMashupGoogleGeocoder extends GeoMashupHttpGeocoder {
 
@@ -379,6 +382,7 @@ class GeoMashupGoogleGeocoder extends GeoMashupHttpGeocoder {
  * HTTP geocoder using the nominatim web service.
  *
  * @since 1.4
+ * @package GeoMashup
  */
 class GeoMashupNominatimGeocoder extends GeoMashupHttpGeocoder {
 

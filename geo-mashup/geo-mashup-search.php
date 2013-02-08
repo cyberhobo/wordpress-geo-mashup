@@ -332,6 +332,12 @@ class GeoMashupSearchHandling {
 
 }
 
+/**
+ * Class GeoMashupSearchWidget
+ *
+ * @since 1.5
+ * @package GeoMashup
+ */
 class GeoMashupSearchWidget extends WP_Widget {
 
 	// Construct Widget
