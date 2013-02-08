@@ -9,7 +9,12 @@
 /*jslint browser: true, white: true, sloppy: true */
 
 jQuery.extend( GeoMashup, {
-	
+
+	/**
+	 * An object to manage taxonomy terms.
+	 * @since 1.5
+	 * @memberOf GeoMashup
+	 */
 	term_manager : (function() {
 		var $ = jQuery, 
 
@@ -45,7 +50,9 @@ jQuery.extend( GeoMashup, {
 		 * 
 		 * Without a context, the current document is searched first, 
 		 * then the parent if available.
-		 * 
+		 *
+		 * @private
+		 *
 		 * @param {String} taxonomy 
 		 * @param {String} widget_type 'legend' or 'tabbed-index'
 		 * @param {Document} context
@@ -232,6 +239,7 @@ jQuery.extend( GeoMashup, {
 					 * A taxonomy legend title is being created
 					 * @name GeoMashup#taxonomyLegendTitle
 					 * @event
+					 * @since 1.5
 					 * @param {jQuery} $title Empty legend element with classes
 					 * @param {String} taxonomy 
 					 */
@@ -246,6 +254,7 @@ jQuery.extend( GeoMashup, {
 				 * A taxonomy legend is being created
 				 * @name GeoMashup#taxonomyLegend
 				 * @event
+				 * @since 1.5
 				 * @param {jQuery} $legend Empty legend element with classes
 				 * @param {String} taxonomy 
 				 */
@@ -330,6 +339,7 @@ jQuery.extend( GeoMashup, {
 					 * A taxonomy legend entry is being created
 					 * @name GeoMashup#termLegendEntry
 					 * @event
+					 * @since 1.5
 					 * @param {jQuery} $key Legend key node (td or dt)
 					 * @param {jQuery} $def Legend definition node (td or dd)
 					 * @param {String} taxonomy 
@@ -347,7 +357,8 @@ jQuery.extend( GeoMashup, {
 						 * A taxonomy legend table row is being created
 						 * @name GeoMashup#termLegendRow
 						 * @event
-						 * @param {jQuery} $entry Table row 
+						 * @since 1.5
+						 * @param {jQuery} $entry Table row
 						 * @param {String} taxonomy 
 						 * @param {String} term_id 
 						 */
@@ -423,6 +434,7 @@ jQuery.extend( GeoMashup, {
 					 * @name GeoMashup#categoryIcon
 					 * @deprecated Use GeoMashup#termIcon
 					 * @event
+					 * @since 1.5
 					 * @param {GeoMashupOptions} properties Geo Mashup configuration data
 					 * @param {GeoMashupIcon} icon
 					 * @param {String} term_id
@@ -434,6 +446,7 @@ jQuery.extend( GeoMashup, {
 				 * A term icon is being assigned.
 				 * @name GeoMashup#termIcon
 				 * @event
+				 * @since 1.5
 				 * @param {GeoMashupIcon} icon
 				 * @param {String} taxonomy
 				 * @param {String} term_id
@@ -444,6 +457,7 @@ jQuery.extend( GeoMashup, {
 				 * A category icon is being assigned by color.
 				 * @name GeoMashup#colorIcon
 				 * @event
+				 * @since 1.5
 				 * @param {GeoMashupOptions} properties Geo Mashup configuration data
 				 * @param {GeoMashupIcon} icon
 				 * @param {String} color_name
@@ -475,7 +489,10 @@ jQuery.extend( GeoMashup, {
 		};
 
 		/**
-		 * Enable more objects to be loaded - probably needs work.
+		 * Enable more objects to be loaded.
+		 * Consider it alpha - probably needs work.
+		 * @methodOf GeoMashup
+		 * @since 1.5
 		 */
 		term_manager.reset = function() {
 
@@ -490,6 +507,15 @@ jQuery.extend( GeoMashup, {
 
 		};
 
+		/**
+		 * Get a property of a loaded term.
+		 * @methodOf GeoMashup
+		 * @since 1.5
+		 * @param taxonomy
+		 * @param term_id
+		 * @param property Property name
+		 * @returns {*} Property value
+		 */
 		term_manager.getTermData = function( taxonomy, term_id, property ) {
 			return loaded_terms[taxonomy].terms[term_id][property];
 		};
@@ -527,6 +553,11 @@ jQuery.extend( GeoMashup, {
 
 		};
 
+		/**
+		 * The tabbed index control object.
+		 * @memberOf GeoMashup
+		 * @since 1.5
+		 */
 		term_manager.tabbed_index = (function() {
 			var tabbed_index = {},
 				tab_term_ids = [],
@@ -679,6 +710,14 @@ jQuery.extend( GeoMashup, {
 				return $index;
 			}
 
+			/**
+			 * Get the DOM id of term index element
+			 * @since 1.5
+			 * @methodOf GeoMashup.term_manager
+			 * @param term_id
+			 * @param taxonomy
+			 * @returns {string}
+			 */
 			tabbed_index.getTermIndexId = function( term_id, taxonomy ) {
 				var tax = taxonomy.replace( 'category', 'cat' );
 				return 'gm-' + tax + '-index-' + term_id;
@@ -746,6 +785,14 @@ jQuery.extend( GeoMashup, {
 				}
 			};
 
+			/**
+			 * Make a term tab active.
+			 * @methodOf GeoMashup.term_manager
+			 * @since 1.5
+			 * @param term_id
+			 * @param taxonomy
+			 * @returns {boolean} success
+			 */
 			tabbed_index.selectTab = function( term_id, taxonomy ) {
 				var $active_tab, hide_term_classes, hide_term_match, hide_term_id;
 
@@ -791,6 +838,15 @@ jQuery.extend( GeoMashup, {
 			return tabbed_index;
 		}());
 
+		/**
+		 * Show or hide a term.
+		 * @methodOf GeoMashup
+		 * @since 1.5
+		 * @param term_id
+		 * @param taxonomy
+		 * @param visible
+		 * @returns {boolean} Whether visibility was set.
+		 */
 		term_manager.setTermVisibility = function( term_id, taxonomy, visible ) {
 			var term_data;
 
@@ -825,6 +881,15 @@ jQuery.extend( GeoMashup, {
 			return true;
 		};
 
+		/**
+		 * Get the display name of a term.
+		 * @methodOf GeoMashup
+		 * @since 1.5
+		 *
+		 * @param taxonomy
+		 * @param term_id
+		 * @returns {String} The term name.
+		 */
 		term_manager.getTermName = function( taxonomy, term_id ) {
 			return term_properties[taxonomy].terms[term_id].name;
 		};
@@ -834,10 +899,13 @@ jQuery.extend( GeoMashup, {
 		 * 
 		 * Works on the loadedMap action and after, when the term hierarchy has been
 		 * determined.
-		 * 
+		 *
+		 * @methodOf GeoMashup
+		 * @since 1.5
 		 * @param {String} ancestor_id The term ID of the potential ancestor
 		 * @param {String} child_id The term ID of the potential child
 		 * @param {String} taxonomy The taxonomy of the terms.
+		 * @returns {boolean}
 		 */
 		term_manager.isTermAncestor = function( ancestor_id, child_id, taxonomy ) {
 
@@ -861,8 +929,12 @@ jQuery.extend( GeoMashup, {
 
 		/**
 		 * Show or hide category lines according to their max_line_zoom setting.
-		 * 
+		 *
+		 * @methodOf GeoMashup
 		 * @since 1.5
+		 *
+		 * @param {number} old_zoom Previous zoom level.
+		 * @param {number} new_zoom New zoom level.
 		 */
 		term_manager.updateLineZoom = function( old_zoom, new_zoom ) {
 			
@@ -889,6 +961,16 @@ jQuery.extend( GeoMashup, {
 
 		};
 
+		/**
+		 * Show or hide a tree of terms.
+		 * @methodOf GeoMashup
+		 * @since 1.5
+		 *
+		 * @param term_id
+		 * @param hierarchy The term hierarchy ID tree.
+		 * @param taxonomy
+		 * @param visible
+		 */
 		term_manager.setHierarchyVisibility = function( term_id, hierarchy, taxonomy, visible ) {
 
 			term_manager.setTermVisibility( term_id, taxonomy, visible );
@@ -907,9 +989,11 @@ jQuery.extend( GeoMashup, {
 	 * 
 	 * Works on the loadedMap action and after, when the category hierarchy has been
 	 * determined.
-	 * 
-	 * @deprecated use GeoMashup.term_manager.isTermAncestor()
-	 * 
+	 *
+	 * @methodOf GeoMashup
+	 * @deprecated 1.5
+	 * @see GeoMashup.term_manager.isTermAncestor()
+	 *
 	 * @param {String} ancestor_id The category ID of the potential ancestor
 	 * @param {String} child_id The category ID of the potential child
 	 */
@@ -919,7 +1003,9 @@ jQuery.extend( GeoMashup, {
 
 	/**
 	 * Hide markers and line for a category.
-	 * @deprecated Use GeoMashup.term_manager.setTermVisibility()
+	 * @methodOf GeoMashup
+	 * @deprecated 1.5
+	 * @see GeoMashup.term_manager.setTermVisibility()
 	 * @param {String} category_id
 	 */
 	hideCategory : function(category_id) {
@@ -928,7 +1014,9 @@ jQuery.extend( GeoMashup, {
 
 	/**
 	 * Show markers for a category. Also show line if consistent with configuration.
-	 * @deprecated Use GeoMashup.term_manager.setTermVisibility()
+	 * @methodOf GeoMashup
+	 * @deprecated 1.5
+	 * @see GeoMashup.term_manager.setTermVisibility()
 	 * @param {String} category_id
 	 */
 	showCategory : function(category_id) {
@@ -937,7 +1025,10 @@ jQuery.extend( GeoMashup, {
 
 	/**
 	 * Hide a category and all its child categories.
-	 * @deprecated Use GeoMashup.term_manager.setHierarchyVisibility()
+	 * @methodOf GeoMashup
+	 * @deprecated 1.5
+	 * @see GeoMashup.term_manager.searchTermHierarchy()
+	 * @see GeoMashup.term_manager.setHierarchyVisibility()
 	 * @param {String} category_id The ID of the category to hide
 	 */
 	hideCategoryHierarchy : function(category_id) {
@@ -947,7 +1038,10 @@ jQuery.extend( GeoMashup, {
 
 	/**
 	 * Show a category and all its child categories.
-	 * @deprecated Use GeoMashup.term_manager.hideTermHierarchy()
+	 * @methodof GeoMashup
+	 * @deprecated 1.5
+	 * @see GeoMashup.term_manager.searchTermHierarchy()
+	 * @see GeoMashup.term_manager.setHierarchyVisibility()
 	 * @param {String} category_id The ID of the category to show
 	 */
 	showCategoryHierarchy : function(category_id) {
@@ -957,7 +1051,9 @@ jQuery.extend( GeoMashup, {
 
 	/**
 	 * Select a tab of the tabbed category index control.
-	 * @deprecated Use GeoMashup.term_manager.tabbed_index.selectTab()
+	 * @methodOf GeoMashup
+	 * @deprecated 1.5
+	 * @see GeoMashup.term_manager.tabbed_index.selectTab()
 	 * @param {String} select_category_id The ID of the category tab to select
 	 */
 	categoryTabSelect : function(select_category_id) {
@@ -967,7 +1063,9 @@ jQuery.extend( GeoMashup, {
 	/**
 	 * Get the DOM ID of the element containing a category index in the 
 	 * tabbed category index control.
-	 * @deprecated Use GeoMashup.term_manager.tabbed_index.getTermIndexId
+	 * @methodOf GeoMashup
+	 * @deprecated 1.5
+	 * @see GeoMashup.term_manager.tabbed_index.getTermIndexId()
 	 * @param {String} category_id The category ID
 	 * @return {String} DOM ID
 	 */
