@@ -2,16 +2,16 @@
 Contributors: cyberhobo
 Donate Link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=11045324
 Tags: map, maps, google maps, google map, mapping, mashup, geo, google, geocms
-Requires at least: 3.0
-Tested up to: 3.5
-Stable tag: 1.4.12
+Requires at least: 3.4
+Tested up to: 3.5.1
+Stable tag: 1.5
  
 Include Google and OpenStreetMap maps in posts and pages, and map posts, pages, and other objects on global maps. Make WordPress into a GeoCMS.
 
 == Description ==
 
 This plugin lets you save location information with posts, pages, and other WordPress objects. 
-These can then be presented on interactive Google maps in many ways.
+These can then be presented on interactive maps in many ways.
 
 = Examples =
 
@@ -23,9 +23,9 @@ Geo Mashup, like WordPress, has a simple interface for basic features,
 templates for control of output, and APIs for endless customization options.
 Some popular features are:
 
-  * Use Google Maps v2 or v3, or [OpenStreetMap](http://openstreetmap.org) as a map provider.
+  * Use [Google Maps v3](https://developers.google.com/maps/documentation/javascript/reference) or [OpenStreetMap](http://openstreetmap.org) as a map provider.
   * Global maps can present your posts in many ways
-	They can show just one category or custom post type, for example
+	They can show just one category, custom taxonomy term, or custom post type, for example
 	Clicking on a post marker shows a customizable summary of the post or page in an info window
   * Location can be saved for all post types (including pages) users, and comments
   * Synchronize [Geodata](http://codex.wordpress.org/Geodata) with the Geo location mobile client and other plugins
@@ -43,7 +43,7 @@ and the [tag reference](http://code.google.com/p/wordpress-geo-mashup/wiki/TagRe
 
 Geo Mashup was one of the earliest WordPress mapping plugins, first released
 in 2005. Eventually the author began using it for freelance jobs, which he
-still does. As such Geo Mashup is more tailored to customization than ease of
+still does. As such Geo Mashup is more tailored to customization and hacking than ease of
 use, but many user-requested features have been
 [released](http://code.google.com/p/wordpress-geo-mashup/issues/list?can=1&q=type%3DEnhancement) 
 over the years. Geo Mashup creates three tables to optimize location
@@ -59,6 +59,8 @@ me via [my site](http://www.cyberhobo.net/hire-me) and I'll work with you.
 
 The author monitors [WP Questions](http://wpquestions.com/affiliates/register/name/cyberhobo),
 and there is a public [Google Group](http://groups.google.com/group/wordpress-geo-mashup-plugin).
+The author doesn't promise free support, but is amenable to questions that contribute something
+to the community.
 
 = Translations =
 
@@ -77,7 +79,7 @@ and there is a public [Google Group](http://groups.google.com/group/wordpress-ge
 * German by [Thomas Morvay](http://internet-dienste.biz/) added in version 1.3.2
 * Belorussian by [FatCow](http://www.fatcow.com) added in version 1.2.8
 
-Please contact the author if you'd like to add or update a translation.
+[Translators welcome](https://code.google.com/p/wordpress-geo-mashup/wiki/Translating).
 
 = Beta Features = 
 
@@ -90,7 +92,8 @@ for more.
 = Mashup Ingredients =
 
 Geo Mashup combines WordPress, [Google Maps](http://maps.google.com), [OpenStreetMap](http://openstreetmap.org)
-and [GeoNames](http://geonames.org) to create a GeoCMS that puts you in control of all your content, including geographic data.
+[GeoNames](http://geonames.org), and [geoPlugin](http://geoplugin.net) to create a GeoCMS that puts you in control
+of all your content, including geographic data.
 
 == Installation ==
 
@@ -108,7 +111,10 @@ for the best way to keep your custom files safe moving forward.
 
 Features are generally added in one-dot releases, while two-dot releases contain fixes and small updates.
 
-= 1.4.12 Dec 6 2012 =
+= 1.5 Feb 7 2013 =
+[milestone 1.5 changes](http://code.google.com/p/wordpress-geo-mashup/issues/list?can=1&q=Milestone%3D1.5)
+
+== 1.4.12 Dec 6 2012 =
 [milestone 1.4.12 changes](http://code.google.com/p/wordpress-geo-mashup/issues/list?can=1&q=Milestone%3D1.4.12)
 
 = 1.4.11 Dec 5 2012 =
