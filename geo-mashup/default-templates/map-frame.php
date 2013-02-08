@@ -53,7 +53,7 @@
 	<body>
 	<div id="geo-mashup">
 		<noscript>
-			<p><?php _e( 'This map requires JavaScript. You may have to enable it in your settings.', 'GeoMashup' ); ?></p>
+			<p><?php _e( 'This map requires JavaScript. You may have to enable it in your browser\'s settings.', 'GeoMashup' ); ?></p>
 		</noscript>
 	</div>
 	<?php echo GeoMashupRenderMap::map_script( 'geo-mashup' ); ?>

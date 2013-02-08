@@ -139,6 +139,10 @@ class GeoMashupGeonamesGeocoder extends GeoMashupHttpGeocoder {
 			return new WP_Error( 'geocoder_http_request_failed', $status . ': ' . $response['response']['message'], $response );
 
 		$data = json_decode( $response['body'] );
+
+		if ( isset( $data->status ) and isset( $data->status->message ) )
+			return new WP_Error( 'geocoder_http_request_failed', $data->status->value . ': ' . $data->status->message, $data );
+
 		if ( empty( $data ) or 0 == $data->totalResultsCount ) 
 			return array();
 
@@ -418,7 +422,7 @@ class GeoMashupNominatimGeocoder extends GeoMashupHttpGeocoder {
 				if ( !empty( $result->address->postcode ) )
 					$location->postal_code = $result->address->postcode;
 				if ( !empty( $result->address->city ) )
-					$location = $result->address->city;
+					$location->locality_name = $result->address->city;
 			}
 			$locations[] = $location;
 		}

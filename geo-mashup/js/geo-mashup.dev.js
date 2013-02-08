@@ -20,14 +20,14 @@ details.
  * The base Geo Mashup code that is independent of mapping API.
  */
 
-/*global GeoMashup: true */
+/*global jQuery, GeoMashup: true */
 // These globals are retained for backward custom javascript compatibility
 /*global customizeGeoMashup, customizeGeoMashupMap, customGeoMashupColorIcon, customGeoMashupCategoryIcon */
 /*global customGeoMashupSinglePostIcon, customGeoMashupMultiplePostImage */
 /*jslint browser: true, white: true, sloppy: true */
 
 var GeoMashup, customizeGeoMashup, customizeGeoMashupMap, customGeoMashupColorIcon, customGeoMashupCategoryIcon, 
-	customGeoMashupSinglePostIcon, customGeoMashupMultiplePostImage;
+customGeoMashupSinglePostIcon, customGeoMashupMultiplePostImage;
 
 /** 
  * @name GeoMashupObject
@@ -41,7 +41,8 @@ var GeoMashup, customizeGeoMashup, customizeGeoMashupMap, customGeoMashupColorIc
  * @property {Number} lat Latitude
  * @property {Number} lng Longitude
  * @property {String} author_name The name of the object author
- * @property {Array} categories The IDs of the categories this object belongs to
+ * @property {Array} categories Deprecated, use terms. The object's category IDs if any.
+ * @property {Object} terms The object's terms by taxonomy, e.g. { "tax1": [ "2", "5" ], "tax2": [ "1" ] }
  * @property {GeoMashupIcon} icon The default icon to use for the object
  */
  
@@ -91,8 +92,6 @@ GeoMashup = {
 	objects : {},
 	object_count : 0,
 	locations : {},
-	categories : {}, // only categories on the map here
-	category_count : 0,
 	open_attachments : [],
 	errors : [],
 	color_names : ['red','lime','blue','orange','yellow','aqua','green','silver','maroon','olive','navy','purple','gray','teal','fuchsia','white','black'],
@@ -201,390 +200,15 @@ GeoMashup = {
 		return false;
 	},
 
-	buildCategoryHierarchy : function(category_id) {
-		var children, child_count, cat_id, child_id;
-		if (category_id) {
-			category_id = category_id.toString();
-			children = {};
-			child_count = 0;
-			for (child_id in this.opts.category_opts) {
-				if (this.opts.category_opts.hasOwnProperty( child_id ) &&
-					this.opts.category_opts[child_id].parent_id &&
-					this.opts.category_opts[child_id].parent_id === category_id) {
-						children[child_id] = this.buildCategoryHierarchy(child_id);
-						child_count += 1;
-				}
-			}
-			return (child_count > 0) ? children : null;
-		} else {
-			this.category_hierarchy = {};
-			for (cat_id in this.opts.category_opts) {
-				if ( this.opts.category_opts.hasOwnProperty( cat_id ) &&
-					!this.opts.category_opts[cat_id].parent_id) {
-					this.category_hierarchy[cat_id] = this.buildCategoryHierarchy(cat_id);
-				}
-			}
-		}
-	},
-
-	/**
-	 * Determine whether a category ID is an ancestor of another.
-	 * 
-	 * Works on the loadedMap action and after, when the category hierarchy has been
-	 * determined.
-	 * 
-	 * @param {String} ancestor_id The category ID of the potential ancestor
-	 * @param {String} child_id The category ID of the potential child
-	 */
-	isCategoryAncestor : function(ancestor_id, child_id) {
-		ancestor_id = ancestor_id.toString();
-		child_id = child_id.toString();
-		if (this.opts.category_opts[child_id].parent_id) {
-			if (this.opts.category_opts[child_id].parent_id === ancestor_id) {
-				return true;
-			} else {
-				return this.isCategoryAncestor(ancestor_id, this.opts.category_opts[child_id].parent_id);
-			}
-		} else {
-			return false;
-		}
-	},
-
-	hasLocatedChildren : function(category_id, hierarchy) {
-		var child_id;
-
-		if (this.categories[category_id]) {
-			return true;
-		}
-		for (child_id in hierarchy) {
-			if ( hierarchy.hasOwnProperty( child_id ) && this.hasLocatedChildren(child_id, hierarchy[child_id]) ) {
-				return true;
-			}
-		}
-		return false;
-	},
-
-	searchCategoryHierarchy : function(search_id, hierarchy) {
-		var child_search, category_id;
-
-		if (!hierarchy) {
-			hierarchy = this.category_hierarchy;
-		}
-		// Use a regular loop, so it can return a value for this function
-		for( category_id in hierarchy ) {
-			if ( hierarchy.hasOwnProperty( category_id ) && typeof hierarchy[category_id] !== 'function' ) {
-				if (category_id === search_id) {
-					return hierarchy[category_id];
-				}else if (hierarchy[category_id]) {
-					child_search = this.searchCategoryHierarchy(search_id, hierarchy[category_id]);
-					if (child_search) {
-						return child_search;
-					}
-				}
-			}
-		}
-		return null;
-	},
-
-	/**
-	 * Hide a category and all its child categories.
-	 * @param {String} category_id The ID of the category to hide
-	 */
-	hideCategoryHierarchy : function(category_id) {
-		var child_id;
-
-		this.hideCategory(category_id);
-		this.forEach( this.tab_hierarchy[category_id], function (child_id) {
-			this.hideCategoryHierarchy(child_id);
-		});
-  },
-
-	/**
-	 * Show a category and all its child categories.
-	 * @param {String} category_id The ID of the category to show
-	 */
-	showCategoryHierarchy : function(category_id) {
-		var child_id;
-
-		this.showCategory(category_id);
-		this.forEach( this.tab_hierarchy[category_id], function (child_id) {
-			this.showCategoryHierarchy(child_id);
-		});
-  },
-
-	/**
-	 * Select a tab of the tabbed category index control.
-	 * @param {String} select_category_id The ID of the category tab to select
-	 */
-	categoryTabSelect : function(select_category_id) {
-		var i, tab_div, tab_list_element, tab_element, id_match, category_id, index_div;
-
-		if ( !this.have_parent_access ) {
-			return false;
-		}
-		tab_div = parent.document.getElementById(this.opts.name + '-tab-index');
-		if (!tab_div) {
-			return false;
-		}
-		tab_list_element = tab_div.childNodes[0];
-		for (i=0; i<tab_list_element.childNodes.length; i += 1) {
-			tab_element = tab_list_element.childNodes[i];
-			id_match = tab_element.childNodes[0].href.match(/\d+$/);
-			category_id = id_match && id_match[0];
-			if (category_id === select_category_id) {
-				tab_element.className = 'gm-tab-active gm-tab-active-' + select_category_id;
-			}else {
-				tab_element.className = 'gm-tab-inactive gm-tab-inactive-' + category_id;
-			}
-		}
-		this.forEach( this.tab_hierarchy, function (category_id) {
-			index_div = parent.document.getElementById(this.categoryIndexId(category_id));
-			if (index_div) {
-				if (category_id === select_category_id) {
-					index_div.className = 'gm-tabs-panel';
-				} else {
-					index_div.className = 'gm-tabs-panel gm-hidden';
-					if (!this.opts.show_inactive_tab_markers) {
-						this.hideCategoryHierarchy(category_id);
-					}
-				}
-			}
-		});
-		if (!this.opts.show_inactive_tab_markers) {
-			// Done last so none of the markers get re-hidden
-			this.showCategoryHierarchy(select_category_id);
-		}
-	},
-
-	/**
-	 * Get the DOM ID of the element containing a category index in the 
-	 * tabbed category index control.
-	 * @param {String} category_id The category ID
-	 */
-	categoryIndexId : function(category_id) {
-		return 'gm-cat-index-' + category_id;
-	},
-
-	categoryTabIndexHtml : function(hierarchy) {
-		var html_array = [], category_id;
-
-		html_array.push('<div id="');
-		html_array.push(this.opts.name);
-		html_array.push('-tab-index"><ul class="gm-tabs-nav">');
-		for (category_id in hierarchy) {
-			if ( hierarchy.hasOwnProperty( category_id ) && this.hasLocatedChildren(category_id, hierarchy[category_id]) ) {
-				html_array = html_array.concat([
-					'<li class="gm-tab-inactive gm-tab-inactive-',
-					category_id,
-					'"><a href="#',
-					this.categoryIndexId(category_id),
-					'" onclick="frames[\'',
-					this.opts.name,
-					'\'].GeoMashup.categoryTabSelect(\'',
-					category_id,
-					'\'); return false;">']);
-				if (this.categories[category_id]) {
-					html_array.push('<img src="');
-					html_array.push(this.categories[category_id].icon.image);
-					html_array.push('" />');
-				}
-				html_array.push('<span>');
-				html_array.push(this.opts.category_opts[category_id].name);
-				html_array.push('</span></a></li>');
-			}
-		} 
-		html_array.push('</ul></div>');
-		this.forEach( hierarchy, function (category_id) {
-			html_array.push(this.categoryIndexHtml(category_id, hierarchy[category_id]));
-		});
-		return html_array.join('');
-	},
-
-	categoryIndexHtml : function(category_id, children, top_level) {
-		var i, a_name, b_name, html_array = [], group_count, ul_open_tag, child_id;
-		if ( typeof top_level === 'undefined' ) {
-			top_level = true;
-		}
-		html_array.push('<div id="');
-		html_array.push(this.categoryIndexId(category_id));
-		html_array.push('" class="gm-tabs-panel');
-		if ( top_level ) {
-			html_array.push(' gm-hidden');
-		}
-		html_array.push('"><ul class="gm-index-posts">');
-		if (this.categories[category_id]) {
-			this.categories[category_id].posts.sort(function (a, b) {
-				a_name = GeoMashup.objects[a].title;
-				b_name = GeoMashup.objects[b].title;
-				if (a_name === b_name) {
-					return 0;
-				} else {
-					return a_name < b_name ? -1 : 1;
-				}
-			});
-			for (i=0; i<this.categories[category_id].posts.length; i += 1) {
-				html_array.push('<li>');
-				html_array.push(this.objectLinkHtml(this.categories[category_id].posts[i]));
-				html_array.push('</li>');
-			}
-		}
-		html_array.push('</ul>');
-		group_count = 0;
-		ul_open_tag = '<ul class="gm-sub-cat-index">';
-		html_array.push(ul_open_tag);
-		this.forEach( children, function (child_id) {
-			html_array.push('<li>');
-			if (this.categories[child_id]) {
-				html_array.push('<img src="');
-				html_array.push(this.categories[child_id].icon.image);
-				html_array.push('" />');
-				html_array.push('<span class="gm-sub-cat-title">');
-				html_array.push(this.opts.category_opts[child_id].name);
-				html_array.push('</span>');
-			}
-			html_array.push(this.categoryIndexHtml(child_id, children[child_id], false));
-			html_array.push('</li>');
-			group_count += 1;
-			if (this.opts.tab_index_group_size && group_count%this.opts.tab_index_group_size === 0) {
-				html_array.push('</ul>');
-				html_array.push(ul_open_tag);
-			}
-		});
-		html_array.push('</ul></div>');
-		return html_array.join('');
-	},
-
-	createCategoryLine : function( category ) {
-		// Provider override
-	},
-
-	showCategoryInfo : function() {
-		var legend_element = null,
-			legend_html,
-			category_id,
-			label,
-			list_tag,
-			row_tag,
-			term_tag,
-			definition_tag,
-			id;
-		if (this.opts.name && this.have_parent_access ) {
-			legend_element = parent.document.getElementById(this.opts.name + "-legend");
-		}
-		if (!legend_element && this.have_parent_access ) {
-			legend_element = parent.document.getElementById("gm-cat-legend");
-		}
-		if (this.opts.legend_format && 'dl' === this.opts.legend_format) {
-			list_tag = 'dl';
-			row_tag = '';
-			term_tag = 'dt';
-			definition_tag = 'dd';
-		} else {
-			list_tag = 'table';
-			row_tag = 'tr';
-			term_tag = 'td';
-			definition_tag = 'td';
-		}
-
-		legend_html = ['<', list_tag, ' class="gm-legend">'];
-		this.forEach(this.categories, function (category_id, category) {
-			this.createCategoryLine( category );
-			if (legend_element) {
-				// Default is interactive
-				if (typeof this.opts.interactive_legend === 'undefined') {
-					this.opts.interactive_legend = true;
-				}
-				if (this.opts.name && this.opts.interactive_legend) {
-					id = 'gm-cat-checkbox-' + category_id;
-					label = [
-						'<label for="',
-						id,
-						'"><input type="checkbox" name="category_checkbox" id="',
-						id,
-						'" onclick="if (this.checked) { frames[\'',
-						this.opts.name,
-						'\'].GeoMashup.showCategory(\'',
-						category_id,
-						'\'); } else { frames[\'',
-						this.opts.name,
-						'\'].GeoMashup.hideCategory(\'',
-						category_id,
-						'\'); }" checked="true" />',
-						this.opts.category_opts[category_id].name,
-						'</label>'].join('');
-				} else {
-					label = this.opts.category_opts[category_id].name;
-				}
-				if (row_tag) {
-					legend_html.push('<' + row_tag + '>');
-				}
-				legend_html = legend_html.concat([
-					'<',
-					term_tag,
-					'><img src="',
-					category.icon.image,
-					'" alt="',
-					category_id,
-					'"></',
-					term_tag,
-					'><',
-					definition_tag,
-					'>',
-					label,
-					'</',
-					definition_tag,
-					'>']);
-				if (row_tag) {
-					legend_html.push('</' + row_tag + '>');
-				}
-			}
-		}); // end forEach this.categories
-		legend_html.push('</' + list_tag + '>');
-		if (legend_element) {
-			legend_element.innerHTML = legend_html.join('');
-		}
-	},
-
-	initializeTabbedIndex : function() {
-		var category_id,
-			index_element;
-		if ( !this.have_parent_access ) {
-			return false;
-		}
-		index_element = parent.document.getElementById(this.opts.name + "-tabbed-index");
-		if (!index_element) {
-			index_element = parent.document.getElementById("gm-tabbed-index");
-		}
-		if (index_element) {
-			if (this.opts.start_tab_category_id) {
-				this.tab_hierarchy = this.searchCategoryHierarchy(this.opts.start_tab_category_id);
-			} else {
-				this.tab_hierarchy = this.category_hierarchy;
-			}
-			index_element.innerHTML = this.categoryTabIndexHtml(this.tab_hierarchy);
-			if (!this.opts.disable_tab_auto_select) {
-				// Select the first tab
-				for (category_id in this.tab_hierarchy) {
-					if (this.tab_hierarchy.hasOwnProperty(category_id) && typeof category_id !== 'function') {
-						if (this.hasLocatedChildren(category_id, this.tab_hierarchy[category_id])) {
-							this.categoryTabSelect(category_id);
-							break;
-						}
-					}
-				}
-			}
-		}
-	}, 
-
 	/**
 	 * Get the DOM element where the full post content should be displayed, if any.
 	 * @returns {DOMElement} The element, or undefined if none.
 	 */
 	getShowPostElement : function() {
-	  if ( this.have_parent_access && !this.show_post_element && this.opts.name) {
+		if ( this.have_parent_access && !this.show_post_element && this.opts.name) {
 			this.show_post_element = parent.document.getElementById(this.opts.name + '-post');
 		}
-	  if ( this.have_parent_access && !this.show_post_element) {
+		if ( this.have_parent_access && !this.show_post_element) {
 			this.show_post_element = parent.document.getElementById('gm-post');
 		}
 		return this.show_post_element;
@@ -659,7 +283,7 @@ GeoMashup = {
 	 * @returns {LatLonPoint} The marker coordinates
 	 */
 	getMarkerLatLng : function( marker ) {
-		// Provider override
+	// Provider override
 	},
 
 	/**
@@ -667,7 +291,7 @@ GeoMashup = {
 	 * @param {Marker} marker The existing marker
 	 */
 	addGlowMarker : function( marker ) {
-		// Provider override
+	// Provider override
 	},
 
 	/**
@@ -675,7 +299,7 @@ GeoMashup = {
 	 * @param {Marker} marker
 	 */
 	openInfoWindow : function( marker ) {
-		// Provider override
+	// Provider override
 	},
 
 	/**
@@ -683,21 +307,21 @@ GeoMashup = {
 	 * @param {Marker} marker
 	 */
 	closeInfoWindow : function( marker ) {
-		// provider override
+	// provider override
 	},
 
 	/**
 	 * Remove the highlighted "glow" marker from the map if it exists.
 	 */
 	removeGlowMarker : function() {
-		// Provider override
+	// Provider override
 	},
 
 	/**
 	 * Hide any visible attachment layers on the map.
 	 */
 	hideAttachments : function() {
-		// Provider override
+	// Provider override
 	},
 
 	/**
@@ -706,7 +330,7 @@ GeoMashup = {
 	 * @param {Marker} marker
 	 */
 	showMarkerAttachments : function( marker ) {
-		// Provider override
+	// Provider override
 	},
 
 	/** 
@@ -715,7 +339,7 @@ GeoMashup = {
 	 * @param {LatLonPoint} point
 	 */
 	loadFullPost : function( point ) {
-		// jQuery or provider override
+	// jQuery or provider override
 	},
 
 	/**
@@ -758,7 +382,7 @@ GeoMashup = {
 	 * @param {Number} zoom Optional zoom level
 	 */
 	centerMarker : function ( marker, zoom ) {
-		// provider override
+	// provider override
 	},
 
 	/**
@@ -780,7 +404,7 @@ GeoMashup = {
 	},
 
 	addObjectIcon : function( obj ) {
-		// provider override
+	// provider override
 	},
 
 	createMarker : function( point, obj ) {
@@ -790,7 +414,7 @@ GeoMashup = {
 	},
 
 	checkDependencies : function () {
-		// provider override
+	// provider override
 	},
 
 	/**
@@ -800,7 +424,7 @@ GeoMashup = {
 	 *   is still being loaded).
 	 */
 	clickObjectMarker : function(object_id, try_count) {
-		// provider override
+	// provider override
 	},
 
 	/**
@@ -812,11 +436,15 @@ GeoMashup = {
 	},
 
 	/**
-	 * Get the name of a category.
+	 * Get the name of a category, if loaded.
 	 * @param {String} category_id
+	 * @return {String} The ID or null if not available.
 	 */
 	getCategoryName : function (category_id) {
-		return this.category_opts[category_id].name;
+		if ( !this.opts.term_properties.hasOwnProperty( 'category' ) ) {
+			return null;
+		}
+		return this.opts.term_properties.category[category_id];
 	},
 
 	/**
@@ -824,7 +452,7 @@ GeoMashup = {
 	 * @param {Marker} marker
 	 */
 	hideMarker : function( marker ) {
-		// Provider override
+	// Provider override
 	},
 
 	/**
@@ -832,7 +460,7 @@ GeoMashup = {
 	 * @param {Marker} marker
 	 */
 	showMarker : function( marker ) {
-		// Provider override
+	// Provider override
 	},
 
 	/**
@@ -840,7 +468,7 @@ GeoMashup = {
 	 * @param {Polyline} line
 	 */
 	hideLine : function( line ) {
-		// Provider override
+	// Provider override
 	},
 
 	/**
@@ -848,7 +476,7 @@ GeoMashup = {
 	 * @param {Polyline} line
 	 */
 	showLine : function( line ) {
-		// Provider override
+	// Provider override
 	},
 
 	/**
@@ -864,91 +492,33 @@ GeoMashup = {
 	},
 
 	extendLocationBounds : function( ) {
-		// Provider override
+	// Provider override
 	},
 
 	addMarkers : function( ) {
-		// Provider override
+	// Provider override
 	},
 
 	makeMarkerMultiple : function( marker ) {
-		// Provider override
+	// Provider override
 	},
 
 	setMarkerImage : function( marker, image_url ) {
-		// Provider override
+	// Provider override
 	},
 
 	/**
 	 * Zoom the map to loaded content.
 	 */
 	autoZoom : function( ) {
-		// Provider override
+	// Provider override
 	},
 
 	/**
 	 * If clustering is active, refresh clusters.
 	 */
 	recluster : function( ) {
-		// Provider override
-	},
-
-	extendCategory : function(point, category_id, post_id) {
-		var icon, color, color_name, max_line_zoom;
-
-		if (!this.categories[category_id]) {
-			if (this.opts.category_opts[category_id].color_name) {
-				color_name = this.opts.category_opts[category_id].color_name;
-			} else {
-				color_name = this.color_names[this.category_count%this.color_names.length];
-			}
-			color = this.colors[color_name];
-			// Custom callbacks
-			if (!icon && typeof customGeoMashupCategoryIcon === 'function') {
-				icon = customGeoMashupCategoryIcon(this.opts, [category_id]);
-			}
-			if (!icon && typeof customGeoMashupColorIcon === 'function') {
-				icon = customGeoMashupColorIcon(this.opts, color_name);
-			}
-			if (!icon) {
-				icon = this.colorIcon( color_name );
-			}
-			/**
-			 * A category icon is being assigned.
-			 * @name GeoMashup#categoryIcon
-			 * @event
-			 * @param {GeoMashupOptions} properties Geo Mashup configuration data
-			 * @param {GeoMashupIcon} icon
-			 * @param {String} category_id
-			 */
-			this.doAction( 'categoryIcon', this.opts, icon, category_id );
-			/**
-			 * A category icon is being assigned by color.
-			 * @name GeoMashup#colorIcon
-			 * @event
-			 * @param {GeoMashupOptions} properties Geo Mashup configuration data
-			 * @param {GeoMashupIcon} icon
-			 * @param {String} color_name
-			 */
-			this.doAction( 'colorIcon', this.opts, icon, color_name );
-
-			max_line_zoom = -1;
-			if (this.opts.category_opts[category_id].max_line_zoom) {
-				max_line_zoom = this.opts.category_opts[category_id].max_line_zoom;
-			}
-			this.categories[category_id] = {
-				icon : icon,
-				points : [point],
-				posts : [post_id],
-				color : color,
-				visible : true,
-				max_line_zoom : max_line_zoom
-			};
-			this.category_count += 1;
-		} else {
-			this.categories[category_id].points.push(point);
-			this.categories[category_id].posts.push(post_id);
-		}
+	// Provider override
 	},
 
 	/**
@@ -961,7 +531,7 @@ GeoMashup = {
 		this.updateVisibleList();
 	},
 
-	updateMarkerVisibility : function( marker, point ) {
+	updateMarkerVisibility : function( marker ) {
 		if ( this.isMarkerOn( marker ) ) {
 			this.showMarker( marker );
 		} else {
@@ -970,7 +540,9 @@ GeoMashup = {
 	},
 
 	isMarkerOn : function( marker ) {
-		var i, objects, visible_object_indices = [], filter = {visible: false};
+		var i, objects, visible_object_indices = [], filter = {
+			visible: false
+		};
 
 		objects = this.getMarkerObjects( marker );
 		for ( i = 0; i < objects.length; i += 1 ) {
@@ -986,17 +558,25 @@ GeoMashup = {
 			if ( objects.length > 1 ) {
 
 				if ( visible_object_indices.length === 1 ) {
-					this.setMarkerImage( marker, objects[visible_object_indices[0]].icon.image );
+					GeoMashup.setMarkerImage( marker, objects[visible_object_indices[0]].icon.image );
 				} else {
-					this.makeMarkerMultiple( marker );
+					GeoMashup.makeMarkerMultiple( marker );
 				}
 
-			} else if ( objects[0].categories.length > 1 ) {
+			} else if ( objects[0].combined_term_count > 1 ) {
 
-				if ( objects[0].visible_categories.length === 1 ) {
-					this.setMarkerImage( marker, this.categories[objects[0].visible_categories[0]].icon.image );
+				if ( objects[0].visible_term_count === 1 ) {
+
+					jQuery.each( objects[0].visible_terms, function( taxonomy, term_ids ) {
+
+						if ( term_ids.length === 1 ) {
+							GeoMashup.setMarkerImage( marker, GeoMashup.term_manager.getTermData( taxonomy, term_ids[0], 'icon' ).image );
+						}
+
+					} );
+
 				} else {
-					this.setMarkerImage( marker, objects[0].icon.image );
+					GeoMashup.setMarkerImage( marker, objects[0].icon.image );
 				}
 			}
 		}
@@ -1015,24 +595,36 @@ GeoMashup = {
 	},
 
 	isObjectOn : function( obj ) {
-		var i, check_cat_id, filter = {visible: false};
+		var filter = {
+			visible: false
+		};
 
-		obj.visible_categories = [];
-		if ( 0 === obj.categories.length ) {
+		obj.visible_terms = {};
+		obj.visible_term_count = 0;
 
-			// Objects without categories are visible by default
+		if ( !GeoMashup.term_manager || 0 === obj.combined_term_count ) {
+
+			// Objects without terms are visible by default
 			filter.visible = true;
 
 		} else {
 
-			// Check category visibility
-			for ( i = 0; i < obj.categories.length; i += 1 ) {
-				check_cat_id = obj.categories[i];
-				if ( this.categories[check_cat_id] && this.categories[check_cat_id].visible ) {
-					obj.visible_categories.push( check_cat_id );
-					filter.visible = true;
-				}
-			}
+			// Check term visibility
+			jQuery.each( obj.terms, function( taxonomy, term_ids ) {
+				
+				obj.visible_terms[taxonomy] = [];
+
+				jQuery.each( term_ids, function( i, term_id ) {
+					
+					if ( GeoMashup.term_manager.getTermData( taxonomy, term_id, 'visible' ) ) {
+						obj.visible_terms[taxonomy].push( term_id );
+						obj.visible_term_count += 1;
+						filter.visible = true;
+					}
+
+				});
+
+			});
 
 		}
 
@@ -1067,71 +659,19 @@ GeoMashup = {
 	},
 
 	/**
-	 * Hide markers and line for a category.
-	 * @param {String} category_id
-	 */
-	hideCategory : function(category_id) {
-		var i, loc;
-
-		if (!this.categories[category_id]) {
-			return false;
-		}
-		if ( this.map.closeInfoWindow ) {
-			this.map.closeInfoWindow();
-		}
-		if (this.categories[category_id].line) {
-			this.hideLine( this.categories[category_id].line );
-		}
-		// A somewhat involved check for other visible categories at this location
-		this.categories[category_id].visible = false;
-		for (i=0; i<this.categories[category_id].points.length; i+=1) {
-			loc = this.locations[ this.categories[category_id].points[i] ];
-			this.updateMarkerVisibility( loc.marker, this.categories[category_id].points[i] );
-		}
-		this.recluster();
-		this.updateVisibleList();
-	},
-
-	/**
-	 * Show markers for a category. Also show line if consistent with configuration.
-	 * @param {String} category_id
-	 */
-	showCategory : function(category_id) {
-		var i, point;
-
-		if (!this.categories[category_id]) {
-			return false;
-		}
-		if (this.categories[category_id].line && this.map.getZoom() <= this.categories[category_id].max_line_zoom) {
-			this.showLine( this.categories[category_id].line );
-		}
-		this.categories[category_id].visible = true;
-		for (i=0; i<this.categories[category_id].points.length; i+=1) {
-			point = this.categories[category_id].points[i];
-			this.updateMarkerVisibility( this.locations[point].marker, point );
-		}
-		this.recluster();
-		this.updateVisibleList();
-	},
-
-	/**
 	 * Add objects to the map.
 	 * @param {Object} response_data Data returned by a geo query.
-	 * @param {Boolean} add_category_info Whether to build and show category
-	 *   data for these objects, for legend or other category controls.
+	 * @param {Boolean} add_term_info Whether to build and show term
+	 *   data for these objects, for legend or other term controls.
 	 */
-	addObjects : function(response_data, add_category_info) {
-		var i, j, object_id, point, category_id, marker, plus_image,
+	addObjects : function(response_data, add_term_info) {
+		var i, k, object_id, point, taxonomy, term_ids, term_id, marker, plus_image,
 			added_markers = [];
 
-		if (add_category_info) {
-			this.forEach( this.categories, function (category_id, category) {
-				category.points.length = 0;
-				if (category.line) {
-					this.hideLine( category.line );
-				}
-			});
+		if ( add_term_info && this.term_manager ) {
+			this.term_manager.reset();
 		}
+
 		for (i = 0; i < response_data.length; i+=1) {
 			// Make a marker for each new object location
 			object_id = response_data[i].object_id;
@@ -1139,14 +679,34 @@ GeoMashup = {
 				parseFloat(response_data[i].lat),
 				parseFloat(response_data[i].lng)
 			);
-			// Update categories
-			for (j = 0; j < response_data[i].categories.length; j+=1) {
-				category_id = response_data[i].categories[j];
-				this.extendCategory(point, category_id, object_id);
+
+			// Back compat for categories API
+			response_data[i].categories = [];
+
+			response_data[i].combined_term_count = 0;
+			if ( this.term_manager ) {
+				// Add terms
+				for( taxonomy in response_data[i].terms ) {
+					if ( response_data[i].terms.hasOwnProperty( taxonomy ) && typeof taxonomy !== 'function' ) {
+
+						term_ids = response_data[i].terms[taxonomy];
+						for (k = 0; k < term_ids.length; k+=1) {
+							GeoMashup.term_manager.extendTerm( point, taxonomy, term_ids[k], response_data[i] );
+						}
+
+						response_data[i].combined_term_count += term_ids.length;
+
+						if ( 'category' === taxonomy ) {
+							response_data[i].categories = term_ids;
+						}
+					}
+				}
 			}
+			
 			if (this.opts.max_posts && this.object_count >= this.opts.max_posts) {
 				break;
 			}
+
 			if (!this.objects[object_id]) {
 				// This object has not yet been loaded
 				this.objects[object_id] = response_data[i];
@@ -1154,7 +714,10 @@ GeoMashup = {
 				if (!this.locations[point]) {
 					// There are no other objects yet at this point, create a marker
 					this.extendLocationBounds( point );
-					this.locations[point] = {objects : [ response_data[i] ], loaded_content: {}};
+					this.locations[point] = {
+						objects : [ response_data[i] ], 
+						loaded_content: {}
+					};
 					marker = this.createMarker(point, response_data[i]);
 					this.objects[object_id].marker = marker;
 					this.locations[point].marker = marker;
@@ -1170,16 +733,12 @@ GeoMashup = {
 			}
 		} // end for each marker
 
-		// Add category lines
-		if (add_category_info) {
-			this.showCategoryInfo();
-		}
-
 		// Openlayers at least only gets clicks on the top layer, so add markers last
 		this.addMarkers( added_markers );
 
-		// Tabbed index may hide markers
-		this.initializeTabbedIndex();
+		if ( this.term_manager ) {
+			this.term_manager.populateTermElements();
+		}
 
 		if (this.firstLoad) {
 			this.firstLoad = false;
@@ -1205,7 +764,7 @@ GeoMashup = {
 	},
 
 	requestObjects : function(use_bounds) {
-		// provider override (maybe jQuery?)
+	// provider override (maybe jQuery?)
 	},
 
 	/**
@@ -1224,49 +783,39 @@ GeoMashup = {
 	},
 
 	/**
-	 * Show all markers.
+	 * Show all unfiltered markers.
 	 */
 	showMarkers : function() {
-		var i, category_id, point;
 
-		for (category_id in this.categories) {
-			if ( this.categories.hasOwnProperty( category_id ) && this.categories[category_id].visible ) {
-				for ( i = 0; i < this.categories[category_id].points.length; i += 1 ) {
-					point = this.categories[category_id].points[i];
-					this.showMarker( this.locations[point].marker );
-				}
+		jQuery.each( this.locations, function( point, location ) {
+			if ( GeoMashup.isMarkerOn( location.marker ) ) {
+				GeoMashup.showMarker( location.marker );
 			}
-		}
+		});
+		this.recluster();
+		this.updateVisibleList();
+
 	},
 
 	adjustZoom : function() {
-		var category_id, old_level, new_level;
+		var old_level, new_level;
 		new_level = this.map.getZoom();
 		if ( typeof this.last_zoom_level === 'undefined' ) {
 			this.last_zoom_level = new_level;
 		}
 		old_level = this.last_zoom_level;
 
-		for (category_id in this.categories) {
-			if ( this.categories.hasOwnProperty( category_id ) ) {
-				if (old_level <= this.categories[category_id].max_line_zoom &&
-				  new_level > this.categories[category_id].max_line_zoom) {
-					this.hideLine( this.categories[category_id].line );
-				} else if (this.categories[category_id].visible &&
-					old_level > this.categories[category_id].max_line_zoom &&
-				  new_level <= this.categories[category_id].max_line_zoom) {
-					this.showLine( this.categories[category_id].line );
-				}
-			}
+		if ( this.term_manager ) {
+			this.term_manager.updateLineZoom( old_level, new_level );
 		}
 
 		if ( this.clusterer && 'clustermarker' === this.opts.cluster_lib ) {
 			if ( old_level <= this.opts.cluster_max_zoom && 
-					new_level > this.opts.cluster_max_zoom ) {
+				new_level > this.opts.cluster_max_zoom ) {
 				this.clusterer.clusteringEnabled = false;
 				this.clusterer.refresh( true );
 			} else if ( old_level > this.opts.cluster_max_zoom &&
-					new_level <= this.opts.cluster_max_zoom ) {
+				new_level <= this.opts.cluster_max_zoom ) {
 				this.clusterer.clusteringEnabled = true;
 				this.clusterer.refresh( true );
 			}
@@ -1276,14 +825,14 @@ GeoMashup = {
 
 	objectLinkHtml : function(object_id) {
 		return ['<a href="#',
-			this.opts.name,
-			'" onclick="frames[\'',
-			this.opts.name,
-			'\'].GeoMashup.clickObjectMarker(',
-			object_id,
-			');">',
-			this.objects[object_id].title,
-			'</a>'].join('');
+		this.opts.name,
+		'" onclick="frames[\'',
+		this.opts.name,
+		'\'].GeoMashup.clickObjectMarker(',
+		object_id,
+		');">',
+		this.objects[object_id].title,
+		'</a>'].join('');
 	},
 
 	/**
@@ -1341,6 +890,6 @@ GeoMashup = {
 	},
 
 	createMap : function(container, opts) {
-		// Provider override
+	// Provider override
 	}
 };

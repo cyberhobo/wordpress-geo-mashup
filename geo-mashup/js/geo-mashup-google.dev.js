@@ -9,16 +9,23 @@
 /*global jQuery, google, G_DEFAULT_ICON, mxn, ClusterMarker, MarkerClusterer */
 /*jslint browser:true, white: true, vars: true, sloppy: true, evil: true */
 
-GeoMashup.createCategoryLine = function ( category ) {
-	category.line = new google.maps.Polyline(category.points, category.color);
-	google.maps.Event.addListener( category.line, 'click', function () {
+GeoMashup.createTermLine = function ( term_data ) {
+
+	term_data.line = new google.maps.Polyline( term_data.points, term_data.color);
+
+	google.maps.Event.addListener( term_data.line, 'click', function () {
 		GeoMashup.map.zoomIn();
 	} );
-	this.doAction( 'categoryLine', this.opts, category.line );
-	this.map.addOverlay(category.line);
-	if (this.map.getZoom() > category.max_line_zoom) {
-		category.line.hide();
+
+	this.doAction( 'termLine', term_data.line );
+	this.doAction( 'categoryLine', GeoMashup.opts, term_data.line );
+
+	this.map.addOverlay( term_data.line );
+
+	if ( this.map.getZoom() > term_data.max_line_zoom ) {
+		term_data.line.hide();
 	}
+
 };
 
 GeoMashup.openMarkerInfoWindow = function( marker, content_node, window_opts ) {
@@ -202,19 +209,49 @@ GeoMashup.loadFullPost = function( point ) {
 };
 
 GeoMashup.addObjectIcon = function( obj ) {
-	if (typeof customGeoMashupCategoryIcon === 'function') {
-		obj.icon = customGeoMashupCategoryIcon(this.opts, obj.categories);
+
+	// Back compat
+	if ( typeof customGeoMashupCategoryIcon === 'function' && obj.terms && obj.terms.hasOwnProperty( 'category' ) ) {
+		obj.icon = customGeoMashupCategoryIcon( GeoMashup.opts, obj.terms.category );
 	} 
+
 	if (!obj.icon) {
-		if (obj.categories.length > 1) {
-			obj.icon = new google.maps.Icon(this.multiple_category_icon);
-		} else if (obj.categories.length === 1) {
-			obj.icon = new google.maps.Icon(this.categories[obj.categories[0]].icon);
-		} else {
-			obj.icon = new google.maps.Icon(this.base_color_icon);
-			obj.icon.image = this.opts.url_path + '/images/mm_20_red.png';
-		} 
+
+		
+		jQuery.each( obj.terms, function( taxonomy, terms ) {
+			var single_icon;
+
+			if ( terms.length > 1 ) {
+
+				obj.icon = new google.maps.Icon( GeoMashup.multiple_term_icon );
+				return false; // continue
+
+			} else if ( terms.length === 1 ) {
+
+				single_icon = GeoMashup.term_manager.getTermData( taxonomy, terms[0], 'icon' );
+
+				if ( obj.icon && obj.icon.image !== single_icon.image ) {
+
+					// We have two different icons in different taxonomies
+					obj.icon = new google.maps.Icon( GeoMashup.multiple_term_icon );
+					return false;
+
+				} else {
+
+					obj.icon = GeoMashup.clone( single_icon );
+
+				}
+
+			} 
+
+		} );
+
+		if ( !obj.icon ) {
+			obj.icon = GeoMashup.colorIcon( 'red' );
+		}
+
 		this.doAction( 'objectIcon', this.opts, obj );
+
 	}
 };
 
@@ -458,8 +495,8 @@ GeoMashup.createMap = function(container, opts) {
 	this.base_color_icon.shadowSize = new google.maps.Size(22, 20);
 	this.base_color_icon.iconAnchor = new google.maps.Point(6, 20);
 	this.base_color_icon.infoWindowAnchor = new google.maps.Point(5, 1);
-	this.multiple_category_icon = new google.maps.Icon(this.base_color_icon);
-	this.multiple_category_icon.image = opts.url_path + '/images/mm_20_mixed.png';
+	this.multiple_term_icon = new google.maps.Icon( this.base_color_icon );
+	this.multiple_term_icon.image = opts.url_path + '/images/mm_20_mixed.png';
 
 	// Falsify options to make tests simpler
 	this.forEach( opts, function( key, value ) {
@@ -532,8 +569,10 @@ GeoMashup.createMap = function(container, opts) {
 		opts.object_name = 'post';
 	}
 	this.opts = opts;
-	filter.url = opts.siteurl + '/?geo_mashup_content=geo-query&map_name=' + encodeURIComponent( opts.name );
-	if ( opts.lang ) {
+	filter.url = opts.siteurl +
+		( opts.siteurl.indexOf( '?' ) > 0 ? '&' : '?' ) +
+		'geo_mashup_content=geo-query&map_name=' + encodeURIComponent( opts.name );
+	if ( opts.lang && filter.url.indexOf( 'lang=' ) === -1 ) {
 		filter.url += '&lang=' + encodeURIComponent( opts.lang );
 	}
 	this.doAction( 'geoQueryUrl', this.opts, filter );
@@ -581,7 +620,9 @@ GeoMashup.createMap = function(container, opts) {
 		}
 	}
 
-	this.buildCategoryHierarchy();
+	if ( this.term_manager ) {
+		this.term_manager.load();
+	}
 
 	if ( initial_zoom !== 'auto' ) {
 		if (opts.center_lat && opts.center_lng) {

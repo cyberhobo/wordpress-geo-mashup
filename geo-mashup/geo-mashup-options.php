@@ -23,6 +23,7 @@ class GeoMashupOptions {
 		'overall' => array (
 			'version' => '',
 			'google_key' => '',
+			'googlev3_key' => '',
 			'mashup_page' => '',
 			'category_link_separator' => '::',
 			'category_link_text' => 'map',
@@ -31,6 +32,7 @@ class GeoMashupOptions {
 			'copy_geodata' => 'false',
 			'theme_stylesheet_with_maps' => 'false',
 			'located_post_types' => array( 'post', 'page' ),
+			'include_taxonomies' => array( 'category' ),
 			'located_object_name' => array( 
 				'post' => 'deprecated',
 				'user' => 'false',
@@ -39,15 +41,15 @@ class GeoMashupOptions {
 			'adsense_code' => 'partner-pub-5088093001880917',
 			'geonames_username' => 'geomashup',
 	 		'map_api' => 'googlev3',
-			'import_custom_field' => '' ),
+			'import_custom_field' => '',
+			'enable_geo_search' => 'false' ),
 		'global_map' => array (
 			'width' => '400',
 			'height' => '400',
 			'map_type' => 'G_NORMAL_MAP',
 			'zoom' => 'auto',
 			'background_color' => 'c0c0c0',
-			'category_color' => array ( ),
-			'category_line_zoom' => array ( ),
+			'term_options' => array(),
 			'map_control' => 'GSmallZoomControl3D',
 			'add_map_type_control' => array(),
 			'add_overview_control' => 'false',
@@ -142,7 +144,7 @@ class GeoMashupOptions {
 	 * @since 1.2
 	 * @var array
 	 */
-	private $freeform_option_keys = array ( 'category_color', 'category_line_zoom', 'add_map_type_control', 'located_post_types' );
+	private $freeform_option_keys = array ( 'term_options', 'add_map_type_control', 'located_post_types', 'include_taxonomies' );
 
 	/**
 	 * Valid map types.
@@ -176,7 +178,7 @@ class GeoMashupOptions {
 	 * @since 1.2
 	 * @var array
 	 */
-	private $validation_errors = array();
+	public $validation_errors = array();
 
 	/**
 	 * PHP5 constructor
@@ -219,10 +221,22 @@ class GeoMashupOptions {
 				unset ( $settings[$old_key] );
 			}
 		}
+
+		// In 1.4 different post types can be located, not just posts
 		if ( isset( $settings['overall']['located_object_name']['post']) and 'true' == $settings['overall']['located_object_name']['post'] ) {
 			$settings['overall']['located_object_name']['post'] = 'deprecated';
 			if ( empty( $settings['overall']['located_post_types']['post'] ) )
 				$settings['overall']['located_post_types'] = array( 'post', 'page' );
+		}
+
+		// In 1.5 we set options for any taxonomy, not just category
+		if ( isset( $settings['global_map']['category_color'] ) ) { 
+			$settings['global_map']['term_options']['category']['color'] = $settings['global_map']['category_color']; 
+			unset( $settings['global_map']['category_color'] );
+		}
+		if ( isset( $settings['global_map']['category_line_zoom'] ) ) {
+			$settings['global_map']['term_options']['category']['line_zoom'] = $settings['global_map']['category_line_zoom']; 
+			unset( $settings['global_map']['category_line_zoom'] );
 		}
 		return $settings;
 	}
@@ -418,6 +432,7 @@ class GeoMashupOptions {
 			case 'import_custom_field':
 				if ( empty ( $value ) ) return true;
 			case 'google_key':
+			case 'googlev3_key':
 			case 'version':
 			case 'mashup_page':
 				if ( !is_string ( $value ) ) {
@@ -467,6 +482,7 @@ class GeoMashupOptions {
 			case 'user':
 			case 'comment':
 			case 'enable_reverse_geocoding':
+			case 'enable_geo_search':
 				if ( empty ( $value ) ) {
 					// fail quietly - it will be converted to false
 					return false;
@@ -482,9 +498,9 @@ class GeoMashupOptions {
 			case 'global_map':
 			case 'single_map':
 			case 'context_map':
-			case 'category_color':
-			case 'category_line_zoom':
+			case 'term_options':
 			case 'located_post_types':
+			case 'include_taxonomies':
 			case 'located_object_name':
 				if ( !is_array ( $value ) ) {
 					array_push ( $this->validation_errors, '"'. $value . '" ' . __('is invalid for', 'GeoMashup') . ' ' . $key .

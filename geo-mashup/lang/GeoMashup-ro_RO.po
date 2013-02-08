@@ -3,16 +3,16 @@ msgstr ""
 "Project-Id-Version: Geo Mashup 1.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2011-07-09 22:56-0800\n"
-"PO-Revision-Date: 2012-03-06 19:13+0200\n"
-"X-Poedit-Language: Romanian\n"
-"X-Poedit-Country: Romania\n"
-"Language-Team: Web Geeks\n"
+"PO-Revision-Date: 2013-02-03 19:35-0800\n"
+"Language-Team: \n"
 "Last-Translator: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Poedit-KeywordsList: _e;__\n"
 "X-Poedit-Basepath: .\n"
+"Language: ro_RO\n"
+"X-Generator: Poedit 1.5.4\n"
 "X-Poedit-SearchPath-0: ..\n"
 
 #: ../edit-form.php:127
@@ -21,7 +21,7 @@ msgstr "Adresa"
 
 #: ../edit-form.php:128
 msgid "Saved Name"
-msgstr "Numele salvate"
+msgstr "Numele salvat"
 
 #: ../edit-form.php:129
 msgid "Geo Date"
@@ -29,15 +29,16 @@ msgstr "Data Geo"
 
 #: ../edit-form.php:157
 msgid "Loading Google map. Check Geo Mashup options if the map fails to load."
-msgstr "Harta Google de încărcare. Verificaţi Geo Mashup Opţiuni dacă harta nu reuşeşte să se încarce."
+msgstr ""
+"Se încarcă harta. Verificaţi opţiunile Geo Mashup dacă harta nu se încarcă."
 
 #: ../edit-form.php:163
 msgid "Location Map Image"
-msgstr "Poziţia hartă imagine"
+msgstr "Imagine Hartă"
 
 #: ../edit-form.php:169
 msgid "Find a new location:"
-msgstr "Găsi o noua locaţie:"
+msgstr "Găseşte o nouă locaţie:"
 
 #: ../edit-form.php:173
 msgid "or select from"
@@ -45,11 +46,11 @@ msgstr "sau selectaţi din"
 
 #: ../edit-form.php:175
 msgid "[Saved Locations]"
-msgstr "[Salvate Locatii]"
+msgstr "[Locaţii salvate]"
 
 #: ../edit-form.php:198
 msgid "Add Location"
-msgstr "Adăugaţi locaţia"
+msgstr "Adăugaţi Locaţia"
 
 #: ../edit-form.php:199
 msgid "Delete"
@@ -64,88 +65,137 @@ msgid "help"
 msgstr "ajutor"
 
 #: ../edit-form.php:206
-msgid "<em>Saved Name</em> is an optional name you may use to add entries to the Saved Locations menu."
-msgstr "<em>Salvat nume</em> este un nume opţional, puteţi utiliza pentru a adăuga intrări la meniul salvat de locaţii."
+msgid ""
+"<em>Saved Name</em> is an optional name you may use to add entries to the "
+"Saved Locations menu."
+msgstr ""
+"<em>Numele salvat</em> este un nume opţional pe care-l puteţi folosi pentru "
+"a adăuga intrări în meniul de Locaţii Salvate."
 
 #: ../edit-form.php:207
-msgid "<em>Geo Date</em> associates a date (most formats work) and time with a location. Leave the default value if uncertain."
-msgstr "<em>Geo data</em> asociază o dată (majoritatea formatelor de lucru) şi timp cu o locaţie. Lăsaţi valoarea implicită, dacă incertă."
+msgid ""
+"<em>Geo Date</em> associates a date (most formats work) and time with a "
+"location. Leave the default value if uncertain."
+msgstr ""
+"<em>Data Geo</em> asociază o dată (majoritatea formatelor funcţionează) şi o "
+"oră cu o locaţie. Lăsaţi valoarea implicită dacă nu sunteţi sigur."
 
 #: ../edit-form.php:209
 msgid "Put a green pin at a new location. There are many ways to do it:"
-msgstr "Pune un pin verde la o nouă locaţie. Există multe moduri de a face:"
+msgstr ""
+"Pune un ac verde la o nouă locaţie. Există multe moduri de a face asta:"
 
 #: ../edit-form.php:211
 msgid "Search for a location name."
-msgstr "De căutare pentru un nume de locaţie."
+msgstr "Caută un nume de locaţie."
 
 #: ../edit-form.php:212
-msgid "For multiple search results, mouse over pins to see location names, and click a result pin to select that location."
-msgstr "Pentru mai multe rezultate de căutare, mouse-ul peste pini pentru a vedea numele de locaţie, şi faceţi clic pe un rezultat pin pentru a selecta acea locaţie."
+msgid ""
+"For multiple search results, mouse over pins to see location names, and "
+"click a result pin to select that location."
+msgstr ""
+"Pentru mai multe rezultate la căutare, treceţi mouse-ul peste pini pentru a "
+"vedea numele de locaţiei şi faceţi clic pe un ac rezultat pentru a selecta "
+"acea locaţie."
 
 #: ../edit-form.php:213
-msgid "Search for a decimal latitude and longitude separated by a comma, like <em>40.123,-105.456</em>. Seven decimal places are stored. Negative latitude is used for the southern hemisphere, and negative longitude for the western hemisphere."
-msgstr "De căutare pentru o zecimală latitudine şi longitudine, separate prin virgulă, cum ar fi <em>40.123,-105.456</em>. Şapte zecimale sunt stocate. Latitudine negativ este utilizat pentru emisfera sudică, şi longitudine negative pentru emisfera de Vest."
+msgid ""
+"Search for a decimal latitude and longitude separated by a comma, like "
+"<em>40.123,-105.456</em>. Seven decimal places are stored. Negative latitude "
+"is used for the southern hemisphere, and negative longitude for the western "
+"hemisphere."
+msgstr ""
+"Caută o latitudine şi longitudine zecimale separate prin virgulă, cum ar fi "
+"<em>40.123,-105.456</em>. Şapte zecimale sunt stocate. Latitudinea negativă "
+"este utilizată pentru emisfera de Sud şi longitudinea negativă pentru "
+"emisfera de Vest."
 
 #: ../edit-form.php:214
 msgid "Search for a street address, like <em>123 main st, anytown, acity</em>."
-msgstr "De căutare pentru o adresă de stradă, ca <em>st principal 123, anytown, acity</em>."
+msgstr "Caută o adresă, cum ar fi <em>123 main st, anytown, acity</em>."
 
 #: ../edit-form.php:215
-msgid "Click on the location. Zoom in if necessary so you can refine the location by dragging it or clicking a new location."
-msgstr "Faceţi clic pe locaţia. Zoom dacă este necesar, astfel încât aveţi posibilitatea să rafinaţi locaţia prin glisarea acestuia sau făcând clic pe o locație nouă."
+msgid ""
+"Click on the location. Zoom in if necessary so you can refine the location "
+"by dragging it or clicking a new location."
+msgstr ""
+"Faceţi clic pe locaţie. Faceţi zoom dacă este necesar astfel încât să "
+"rafinaţi locaţia prin glisarea acesteia sau făcând clic pe o locație nouă."
 
 #: ../edit-form.php:217
-msgid "To execute a search, type search text into the Find Location box and hit the enter key. If you type a name next to \"Save As\", the location will be saved under that name and added to the Saved Locations dropdown list."
-msgstr ", locaţia va fi salvat sub această denumire şi adaugă la lista verticală salvat de locaţii."
+msgid ""
+"To execute a search, type search text into the Find Location box and hit the "
+"enter key. If you type a name next to \"Save As\", the location will be "
+"saved under that name and added to the Saved Locations dropdown list."
+msgstr ""
+"Pentru a căuta, introduceţi textul în căsuţa de Căutare Locaţie şi apăsaţi "
+"Enter. Dacă tastaţi un nume lângă \"Salvează Ca\", locaţia va fi salvată sub "
+"această denumire şi adaugată la lista de Locaţii Salvate."
 
 #: ../edit-form.php:218
-msgid "To remove the location (green pin), clear the search box and hit the enter key."
-msgstr "Pentru a elimina locaţia (pin verde), goliţi caseta de căutare şi a lovit tasta enter."
+msgid ""
+"To remove the location (green pin), clear the search box and hit the enter "
+"key."
+msgstr ""
+"Pentru a şterge locaţia (acul verde), goliţi căsuţa de căutare şi apăsaţi "
+"Enter."
 
 #: ../edit-form.php:219
 msgid "When you are satisfied with the location, save or update."
-msgstr "Atunci când sunteţi mulţumit cu locaţia, salvare sau actualizare."
+msgstr "Atunci când sunteţi mulţumit de locaţie, salvaţi sau actualizaţi."
 
 #: ../edit-form.php:223
-msgid "To add or update location choose a saved location, or find a new location using one of these formats:"
-msgstr "Pentru a adăuga sau pentru a actualiza poziţia alege o locaţie salvate, sau a găsi o locaţie nouă utilizând unul dintre aceste formate:"
+msgid ""
+"To add or update location choose a saved location, or find a new location "
+"using one of these formats:"
+msgstr ""
+"Pentru a adăuga sau actualiza locaţia, alegeţi o locaţie salvată, sau găsiţi "
+"o locaţie nouă utilizând unul dintre aceste formate:"
 
 #: ../edit-form.php:225
 msgid "A place name like <em>Yellowstone National Park</em>"
-msgstr "Un nume de loc ca <em>Parcul Național Yellowstone</em>"
+msgstr "Un nume de loc ca <em>Yellowstone National Park</em>"
 
 #: ../edit-form.php:226
 msgid "A decimal latitude and longitude, like <em>40.123,-105.456</em>."
-msgstr "O zecimală latitudine şi longitudine, cum ar fi <em>40.123,-105.456</em>."
+msgstr ""
+"O latitudine şi longitudine zecimală, cum ar fi <em>40.123,-105.456</em>."
 
 #: ../edit-form.php:227
-msgid "A full or partial street address, like <em>123 main st, anytown, acity 12345 USA</em>."
-msgstr "Un complet sau parţial adresa străzii, ca <em>123 principal st, anytown, acity 12345 SUA</em>."
+msgid ""
+"A full or partial street address, like <em>123 main st, anytown, acity 12345 "
+"USA</em>."
+msgstr ""
+"O adresă completă sau parţială, cum ar fi <em>123 main st, anytown, acity "
+"12345 USA</em>."
 
 #: ../edit-form.php:229
-msgid "When you save or update, the closest match available will be saved as the location."
-msgstr "Când salvaţi sau actualizează, meci cel mai apropiat disponibil va fi salvat ca locaţie."
+msgid ""
+"When you save or update, the closest match available will be saved as the "
+"location."
+msgstr ""
+"Când salvaţi sau actualizaţi, cea mai apropiată potrivire disponibilă va fi "
+"salvată ca locaţie."
 
 #: ../geo-mashup-db.php:620
 msgid "Activating Geo Mashup"
-msgstr "Activarea Geo Mashup"
+msgstr "Activare Geo Mashup"
 
 #: ../geo-mashup-db.php:685
 msgid "Geo Mashup database is up to date."
-msgstr "Geo Mashup de date este până la data."
+msgstr "Baza de date Geo Mashup este actualizată."
 
 #: ../geo-mashup-db.php:688
 msgid "Geo Mashup database upgrade failed."
-msgstr "Geo Mashup date upgrade nu a reuşit."
+msgstr "Actualizarea bazei de date Geo Mashup eşuată."
 
 #: ../geo-mashup-db.php:945
 msgid "No locations found with missing address fields."
-msgstr "Nu Locatii găsit cu lipsesc câmpuri adresă."
+msgstr "Nu au fost găsite locaţii cu câmpuri adresă lipsă."
 
 #: ../geo-mashup-db.php:948
 msgid "Locations to geocode: "
-msgstr "Locaţii pentru a realizat: "
+msgstr "Locaţii de codat: "
 
 #: ../geo-mashup-db.php:956
 msgid "Time limit: "
@@ -153,11 +203,11 @@ msgstr "Limită de timp: "
 
 #: ../geo-mashup-db.php:967
 msgid "Lookup error:"
-msgstr "Căutare eroare:"
+msgstr "Eroare la căutare:"
 
 #: ../geo-mashup-db.php:968
 msgid "Increasing delay to"
-msgstr "Creşterea întârziere"
+msgstr "Creşte întârzierea la"
 
 #: ../geo-mashup-db.php:971
 msgid "address"
@@ -169,122 +219,127 @@ msgstr "cod poştal"
 
 #: ../geo-mashup-db.php:977
 msgid "No address info found."
-msgstr "Nici o info de adresa găsit."
+msgstr "Nici o informaţie despre adresă."
 
 #: ../geo-mashup-db.php:980
 msgid "Time limit exceeded, retry to continue."
-msgstr "Termen depăşit, Reîncercare pentru a continua."
+msgstr "Limita de timp depăşită, încercaţi din nou."
 
 #: ../geo-mashup-db.php:1025
 msgid "Geodata duplication done."
-msgstr "GeoData duplicarea făcut."
+msgstr "Duplicarea Geodata realizată."
 
 #: ../geo-mashup-db.php:1064
 #, php-format
 msgid "Copying missing %s geodata from WordPress"
-msgstr "Copierea lipsă %s geodata la WordPress"
+msgstr "Copiere geodata %s lipsă din WordPress"
 
 #: ../geo-mashup-db.php:1075
 #, php-format
-msgid "Failed to duplicate WordPress location (%s). You can edit %s with id %s to update the location, and try again."
-msgstr "Duplicare locație WordPress (% s) nu a reușit. Aveţi posibilitatea să editaţi %s cu ID-ul %s pentru a actualiza locaţia şi încercaţi din nou."
+msgid ""
+"Failed to duplicate WordPress location (%s). You can edit %s with id %s to "
+"update the location, and try again."
+msgstr ""
+"Duplicare locație WordPress (%s) eşuată. Aveţi posibilitatea să editaţi %s "
+"cu ID-ul %s pentru a actualiza locaţia, şi încercaţi din nou."
 
 #: ../geo-mashup-db.php:1101
 #, php-format
 msgid "Copying missing %s geodata from Geo Mashup"
-msgstr "Copierea lipsă %s geodata din Geo Mashup"
+msgstr "Copiere geodata %s lipsă din Geo Mashup"
 
 #: ../geo-mashup-db.php:1113
 #, php-format
 msgid "Failed to duplicate Geo Mashup location for %s (%s)."
-msgstr "Nu a reuşit să dubleze Geo Mashup locaţie pentru %s (% s)."
+msgstr "Duplicare locație Geo Mashup eşuată pentru %s (%s)."
 
 #: ../geo-mashup-db.php:1154
 msgid "Converting old locations"
-msgstr "Conversia vechi Locatii"
+msgstr "Convertire locaţii vechi"
 
 #: ../geo-mashup-db.php:1167
 #, php-format
-msgid "Failed to convert location (%s). You can %sedit the post%s to update the location, and try again."
-msgstr "Conversia locaţie (% s) nu a reușit. Puteţi % sedit post % s pentru a actualiza locaţia şi încercaţi din nou."
+msgid ""
+"Failed to convert location (%s). You can %s edit the post %s to update the "
+"location, and try again."
+msgstr ""
+"Convertire locaţie (%s) eşuată. Puteţi %s edita articolul %s pentru a "
+"actualiza locaţia, şi încercaţi din nou."
 
 #: ../geo-mashup-db.php:1177
 msgid "Converting saved locations"
-msgstr "Conversia salvat Locatii"
+msgstr "Convertire locaţii salvate"
 
 #: ../geo-mashup-db.php:1186
 msgid "OK: "
-msgstr "ok: "
+msgstr "OK: "
 
 #: ../geo-mashup-db.php:1190
 #, php-format
-msgid "Failed to convert saved location (%s). You'll have to save it again, sorry."
-msgstr "Conversia locaţia salvată (% s) nu a reușit. Va trebui să îl salvaţi din nou, îmi pare rău."
+msgid ""
+"Failed to convert saved location (%s). You'll have to save it again, sorry."
+msgstr ""
+"Convertire locaţie salvată (%s) eşuată. Va trebui să o salvaţi din nou."
 
 #: ../geo-mashup-db.php:1209
 msgid "Failed to initialize geo dates from post dates: "
-msgstr "Nu a reușit inițializarea geo datează din datele post: "
+msgstr "Nu a reușit inițializarea datelor geo din datele articolelor: "
 
 #: ../geo-mashup-db.php:1212
 #, php-format
 msgid "Initialized %d geo dates from corresponding post dates."
-msgstr "Inițializat %d geo datează din datele post corespunzătoare."
+msgstr "Inițializare date geo %d din datele articolelor corespunzătoare."
 
 #: ../geo-mashup-db.php:1752
 msgid "A location must have an ID or coordinates to be saved."
-msgstr "O locaţie trebuie să aibă un ID sau coordonate pentru a fi salvate."
+msgstr "O locaţie trebuie să aibă un ID sau coordonate pentru a fi salvată."
 
-#: ../geo-mashup-geocoders.php:149
-#: ../geo-mashup-geocoders.php:351
+#: ../geo-mashup-geocoders.php:149 ../geo-mashup-geocoders.php:351
 #: ../geo-mashup-geocoders.php:414
 msgid "Reverse geocoding requires numeric coordinates."
-msgstr "Geocodingul inversă necesită coordonate numerice."
+msgstr "Geocodarea inversă necesită coordonate numerice."
 
 #: ../geo-mashup-geocoders.php:313
 #, php-format
 msgid "The geocoding request failed with status %s."
-msgstr "Geocodingul cererea nu a reuşit cu starea % s."
+msgstr "Geocodarea nu a reuşit cu statusul %s."
 
-#: ../geo-mashup-options.php:360
-#: ../geo-mashup-options.php:368
-#: ../geo-mashup-options.php:374
-#: ../geo-mashup-options.php:384
-#: ../geo-mashup-options.php:393
-#: ../geo-mashup-options.php:402
-#: ../geo-mashup-options.php:424
-#: ../geo-mashup-options.php:429
-#: ../geo-mashup-options.php:442
-#: ../geo-mashup-options.php:474
-#: ../geo-mashup-options.php:490
-#: ../geo-mashup-options.php:503
+#: ../geo-mashup-options.php:360 ../geo-mashup-options.php:368
+#: ../geo-mashup-options.php:374 ../geo-mashup-options.php:384
+#: ../geo-mashup-options.php:393 ../geo-mashup-options.php:402
+#: ../geo-mashup-options.php:424 ../geo-mashup-options.php:429
+#: ../geo-mashup-options.php:442 ../geo-mashup-options.php:474
+#: ../geo-mashup-options.php:490 ../geo-mashup-options.php:503
 #: ../geo-mashup-options.php:512
 msgid "is invalid for"
-msgstr "nu este validă pentru"
+msgstr "nu este valid pentru"
 
-#: ../geo-mashup-options.php:361
-#: ../geo-mashup-options.php:375
+#: ../geo-mashup-options.php:361 ../geo-mashup-options.php:375
 msgid ", which must be a valid map type (see documentation)"
-msgstr ", care trebuie să fie o hartă valabil de tip (a se vedea documentaţia)"
+msgstr ", care trebuie să fie un tip de hartă valid (consultaţi documentaţia)"
 
 #: ../geo-mashup-options.php:369
 msgid ", which must be an array of valid map types (see documentation)"
-msgstr ", care trebuie să fie o serie de tipuri de hartă valabil (consultaţi documentaţia)"
+msgstr ""
+", care trebuie să fie o listă de tipuri de hartă valide (consultaţi "
+"documentaţia)"
 
 #: ../geo-mashup-options.php:385
 msgid ", which must be a valid map control (see documentation)"
-msgstr ", care trebuie să fie un control hartă valabil (consultaţi documentaţia)"
+msgstr ""
+", care trebuie să fie un control de hartă valid (consultaţi documentaţia)"
 
 #: ../geo-mashup-options.php:394
 msgid ", which must be a valid map provider."
-msgstr ", care trebuie să fie un furnizor de hartă valabil."
+msgstr ", care trebuie să fie un furnizor de hartă valid."
 
 #: ../geo-mashup-options.php:403
 msgid ", which must be a valid clustering library."
-msgstr ", care trebuie să fie o bibliotecă cluster valabil."
+msgstr ", care trebuie să fie o bibliotecă validă."
 
 #: ../geo-mashup-options.php:425
 msgid ", which must be a string"
-msgstr ", care trebuie să fie un şir"
+msgstr ", care trebuie să fie un text"
 
 #: ../geo-mashup-options.php:430
 msgid ", which must not contain XML tags."
@@ -296,11 +351,11 @@ msgstr ", care trebuie să fie un număr"
 
 #: ../geo-mashup-options.php:475
 msgid ", which must be \"true\" or \"false\""
-msgstr ", Care trebuie să fie \"\adevărat\" sau \"fals\""
+msgstr ", care trebuie să fie \"true\" sau \"false\""
 
 #: ../geo-mashup-options.php:491
 msgid ", which must be an array"
-msgstr ", care trebuie să fie o matrice"
+msgstr ", care trebuie să fie o listă"
 
 #: ../geo-mashup-options.php:504
 msgid ", which must be a number from 0 to "
@@ -308,73 +363,74 @@ msgstr ", care trebuie să fie un număr de la 0 la "
 
 #: ../geo-mashup-options.php:513
 msgid ", which is a deprecated option"
-msgstr ", care este o opţiune învechite"
+msgstr ", care este o opţiune depreciată"
 
 #: ../geo-mashup-ui-managers.php:156
 msgid "Object location not saved - invalid request."
-msgstr "Obiect locaţia nu salvat - cerere nevalidă."
+msgstr "Obiectul locaţie nu a fost salvat - cerere invalidă."
 
-#: ../geo-mashup-ui-managers.php:303
-#: ../geo-mashup-ui-managers.php:492
+#: ../geo-mashup-ui-managers.php:303 ../geo-mashup-ui-managers.php:492
 msgid "Location"
 msgstr "Locaţie"
 
 #: ../geo-mashup-ui-managers.php:607
 msgid "Address not found - try making it less detailed"
-msgstr "Adresa nu a întemeia - încercaţi făcându-l mai detaliate"
+msgstr "Adresa nu a fost găsită - încercaţi cu mai puţine detalii"
 
 #: ../geo-mashup-ui-managers.php:789
 msgid "Written from (location)"
-msgstr "Scris de (locaţie)"
+msgstr "Scris din (locaţie)"
 
 #: ../geo-mashup-ui-managers.php:791
 msgid "Loading..."
-msgstr "Încărcare..."
+msgstr "Se încarcă..."
 
 #: ../geo-mashup.php:395
 msgid "No object id posted."
-msgstr "Nici un id obiect postat."
+msgstr "Nici un ID obiect postat."
 
 #: ../geo-mashup.php:412
 msgid "Location updated."
-msgstr "Amplasarea actualizată."
+msgstr "Locaţie actualizată."
 
 #: ../geo-mashup.php:414
 msgid "Location deleted."
-msgstr "Poziţia elimină."
+msgstr "Locaţie ştearsă."
 
 #: ../geo-mashup.php:416
 msgid "Location added."
-msgstr "Poziţia adaugă."
+msgstr "Locaţie adaugată."
 
 #: ../geo-mashup.php:851
 msgid "Geo Mashup found no objects to map in this context"
-msgstr "Geo Mashup găsit nu obiecte pentru hartă în acest context"
+msgstr "Geo Mashup nu a găsit obiecte pentru hartă în acest context"
 
 #: ../geo-mashup.php:869
 msgid "Geo Mashup found no current object to map"
-msgstr "Geo Mashup găsit nici obiectul curent la hartă"
+msgstr "Geo Mashup nu a găsit nici un obiect curent pentru hartă"
 
 #: ../geo-mashup.php:873
 msgid "Geo Mashup omitted a map for an object with no location"
-msgstr "Geo Mashup omis o hartă pentru un obiect cu nici o locaţie"
+msgstr "Geo Mashup a omis o hartă pentru un obiect fără locaţie"
 
 #: ../geo-mashup.php:880
 msgid "Geo Mashup map omitted to avoid nesting maps"
-msgstr "Geo Mashup hartă omis să evite hărţi cuiburi"
+msgstr "Harta Geo Mashup a omis să evite hărţi înlănţuite"
 
 #: ../geo-mashup.php:907
 msgid "Geo Mashup omitted a map with no located objects found."
-msgstr "Geo Mashup omis o hartă cu nu află obiecte găsite."
+msgstr "Geo Mashup a omis o hartă fără obiecte localizate."
 
 #: ../geo-mashup.php:1061
-msgid "You must add a description to this category to use this Geo Mashup feature."
-msgstr "Trebuie să adăugaţi o descriere această categorie pentru a utiliza această caracteristică Geo Mashup."
+msgid ""
+"You must add a description to this category to use this Geo Mashup feature."
+msgstr ""
+"Trebuie să adăugaţi o descriere la această categorie pentru a utiliza "
+"această facilitate Geo Mashup."
 
-#: ../geo-mashup.php:1089
-#: ../options.php:160
+#: ../geo-mashup.php:1089 ../options.php:160
 msgid "Geo Mashup Options"
-msgstr "Geo Mashup opţiuni"
+msgstr "Opţiuni Geo Mashup"
 
 #: ../geo-mashup.php:1089
 msgid "Geo Mashup"
@@ -382,13 +438,21 @@ msgstr "Geo Mashup"
 
 #: ../geo-mashup.php:1109
 #, php-format
-msgid "Geo Mashup requires a Google API key in the <a href=\"%s\">settings</a> before it will work."
-msgstr "Geo Mashup nevoie de o cheie Google API în <a href=\"%s\"> setările </a> înainte de a va funcţiona."
+msgid ""
+"Geo Mashup requires a Google API key in the <a href=\"%s\">settings</a> "
+"before it will work."
+msgstr ""
+"Geo Mashup are nevoie de o cheie Google API în <a href=\"%s\">setări</a> "
+"pentru a funcţiona."
 
 #: ../geo-mashup.php:1113
 #, php-format
-msgid "Geo Mashup needs to upgrade its database, visit the <a href=\"%s\">settings</a> to do it now."
-msgstr "Geo Mashup trebuie să actualiza baza de date, vizitaţi <a href=\"%s\"> setările </a> pentru a face acest lucru acum."
+msgid ""
+"Geo Mashup needs to upgrade its database, visit the <a href=\"%s\">settings</"
+"a> to do it now."
+msgstr ""
+"Geo Mashup trebuie să actualizeze baza de date, vizitaţi <a href=\"%s"
+"\">setări</a> pentru a face acest lucru acum."
 
 #: ../geo-mashup.php:1134
 msgid "Settings"
@@ -396,11 +460,11 @@ msgstr "Setări"
 
 #: ../geo-mashup.php:1151
 msgid "Documentation"
-msgstr "Documentaţia"
+msgstr "Documentaţie"
 
 #: ../geo-mashup.php:1153
 msgid "Donate"
-msgstr "Dona"
+msgstr "Donaţi"
 
 #: ../geo-mashup.php:1310
 msgid "Show on map"
@@ -408,7 +472,7 @@ msgstr "Arată pe hartă"
 
 #: ../geo-mashup.php:1321
 msgid "Geotag Icon"
-msgstr "Geotag Icon"
+msgstr "Icoană Geo"
 
 #: ../options.php:38
 msgid "Options updated."
@@ -416,23 +480,29 @@ msgstr "Opţiuni actualizate."
 
 #: ../options.php:44
 msgid "Copied existing geodata, see log for details."
-msgstr "Copiate geodata existente, a se vedea jurnal pentru detalii."
+msgstr "Date geodata copiate, consultaţi jurnalul pentru detalii."
 
 #: ../options.php:55
 msgid "Database upgraded, see log for details."
-msgstr "Bază de date actualizat, consultaţi jurnal pentru detalii."
+msgstr "Bază de date actualizată, consultaţi jurnalul pentru detalii."
 
 #: ../options.php:62
 msgid "Log deleted."
-msgstr "Jurnal elimină."
+msgstr "Jurnal şters."
 
 #: ../options.php:68
 msgid "Saved options may be corrupted, try updating again. Corrupt values: "
-msgstr "Opţiuni salvate poate fi corupt, încercaţi actualizarea din nou. Valorile corupt: "
+msgstr ""
+"Opţiunile salvate pot fi corupte, încercaţi actualizarea din nou. Valorile "
+"corupte: "
 
 #: ../options.php:76
-msgid "Some invalid options will not be used. If you've just upgraded, do an update to initialize new options."
-msgstr "Unele opţiuni incorecte nu va fi utilizată. Dacă aţi actualizat doar, face o actualizare pentru a iniţializa noi opţiuni."
+msgid ""
+"Some invalid options will not be used. If you've just upgraded, do an update "
+"to initialize new options."
+msgstr ""
+"Unele opţiuni invalide nu vor fi utilizate. Dacă aţi făcut upgrade recent, "
+"faceţi o actualizare pentru a iniţializa noile opţiuni."
 
 #: ../options.php:105
 msgid "Roadmap"
@@ -440,7 +510,7 @@ msgstr "Foaia de parcurs"
 
 #: ../options.php:106
 msgid "Satellite"
-msgstr "Prin satelit"
+msgstr "Satelit"
 
 #: ../options.php:107
 msgid "Hybrid"
@@ -452,39 +522,39 @@ msgstr "Teren"
 
 #: ../options.php:109
 msgid "Earth Plugin"
-msgstr "Plugin de pământ"
+msgstr "Plugin Earth"
 
 #: ../options.php:112
 msgid "Small Zoom"
-msgstr "Zoom mici"
+msgstr "Zoom Mic"
 
 #: ../options.php:113
 msgid "Small Zoom 3D"
-msgstr "Mici Zoom 3D"
+msgstr "Zoom Mic 3D"
 
 #: ../options.php:114
 msgid "Small Pan/Zoom"
-msgstr "Mici Pan/Zoom"
+msgstr "Mutare/Zoom Mic"
 
 #: ../options.php:115
 msgid "Large Pan/Zoom"
-msgstr "Mare Pan/Zoom"
+msgstr "Mutare/Zoom Mare"
 
 #: ../options.php:116
 msgid "Large Pan/Zoom 3D"
-msgstr "Mare 3D Pan/Zoom"
+msgstr "Mutare/Zoom Mare 3D"
 
 #: ../options.php:119
 msgid "Yes"
-msgstr "da"
+msgstr "Da"
 
 #: ../options.php:120
 msgid "No"
-msgstr "nu"
+msgstr "Nu"
 
 #: ../options.php:121
 msgid "Only"
-msgstr "Numai"
+msgstr "Doar"
 
 #: ../options.php:124
 msgid "Google v2"
@@ -504,11 +574,11 @@ msgstr "auto"
 
 #: ../options.php:135
 msgid "Cluster Marker"
-msgstr "Marcator de cluster"
+msgstr "Marcator cumulat"
 
 #: ../options.php:136
 msgid "Marker Clusterer"
-msgstr "Marker Clusterer"
+msgstr "Cumulator de Marcatoare"
 
 #: ../options.php:163
 msgid "Overall"
@@ -516,11 +586,11 @@ msgstr "Total"
 
 #: ../options.php:164
 msgid "Single Maps"
-msgstr "Hărţi singur"
+msgstr "Hărţi singulare"
 
 #: ../options.php:165
 msgid "Global Maps"
-msgstr "Hărţi global"
+msgstr "Hărţi globale"
 
 #: ../options.php:166
 msgid "Contextual Maps"
@@ -528,7 +598,7 @@ msgstr "Hărţi contextuale"
 
 #: ../options.php:174
 msgid "Overall Geo Mashup Settings"
-msgstr "General Geo Mashup setările"
+msgstr "Setări generale Geo Mashup"
 
 #: ../options.php:178
 msgid "Map Provider"
@@ -536,43 +606,44 @@ msgstr "Furnizor de hartă"
 
 #: ../options.php:191
 msgid "Some features still work only with Google v2."
-msgstr "Unele caracteristici încă funcţionează numai cu Google v2."
+msgstr "Unele caracteristici încă funcţionează doar cu Google v2."
 
 #: ../options.php:197
 msgid "Google API Key"
-msgstr "Google API-cheie"
+msgstr "Cheie Google API"
 
 #: ../options.php:204
 msgid "Get yours here"
-msgstr "Lua al tău aici"
+msgstr "Luaţi o cheie de aici"
 
 #: ../options.php:207
 msgid "This setting is required for Geo Mashup to work."
-msgstr "Această setare este necesară pentru Geo Mashup la locul de muncă."
+msgstr "Această setare este necesară pentru funcţionarea Geo Mashup."
 
 #: ../options.php:214
 msgid "Generated links go here"
-msgstr "Link-uri generate de du-te aici"
+msgstr "Link-urile generate apar aici"
 
 #: ../options.php:215
 msgid "Global Mashup Page"
-msgstr "Global Mashup pagină"
+msgstr "Pagină Mashup Global"
 
 #: ../options.php:229
 msgid "No pages available."
-msgstr "Nu pagini disponibile."
+msgstr "Nu sunt pagini disponibile."
 
 #: ../options.php:233
 msgid "Geo Mashup will use this page for generated location links"
-msgstr "Geo Mashup va utiliza această pagină pentru link-uri generate de locaţie"
+msgstr ""
+"Geo Mashup va utiliza această pagină pentru link-urile locaţiilor generate"
 
 #: ../options.php:238
 msgid "Collect Location For"
-msgstr "Colecta locaţie pentru"
+msgstr "Colectează Locaţie Pentru"
 
 #: ../options.php:251
 msgid "Users"
-msgstr "Utilizatorii"
+msgstr "Utilizatori"
 
 #: ../options.php:256
 msgid "Comments"
@@ -580,239 +651,229 @@ msgstr "Comentarii"
 
 #: ../options.php:260
 msgid "Copy Geodata Meta Fields"
-msgstr "Câmpurile Geodata Meta copie"
+msgstr "Copiază câmpurile Meta Geodata"
 
 #: ../options.php:271
 #, php-format
-msgid "Copy coordinates to and from %sgeodata meta fields%s, for integration with the Geolocation and other plugins."
-msgstr "Coordonatele copie la şi de la % sgeodata meta câmpurile % s, pentru integrarea cu Geolocation şi alte plugin-uri."
+msgid ""
+"Copy coordinates to and from %s geodata meta fields %s, for integration with "
+"the Geolocation and other plugins."
+msgstr ""
+"Copiază coordonatele în şi din %s câmpurile meta geodata %s, pentru "
+"integrarea cu Geolocation şi alte plugin-uri."
 
 #: ../options.php:277
 msgid "Geocode Custom Field"
-msgstr "Câmp personalizat realizat"
+msgstr "Codare Câmp Personalizat"
 
 #: ../options.php:285
-msgid "Custom fields with this key will be geocoded and the resulting location saved for the post."
-msgstr "Câmpuri particularizate cu această cheie va fi geocoded şi locaţia rezultate salvate pentru post."
+msgid ""
+"Custom fields with this key will be geocoded and the resulting location "
+"saved for the post."
+msgstr ""
+"Câmpurile personalizate cu această cheie vor fi codate şi locaţia rezultată "
+"va fi salvată pentru articol."
 
 #: ../options.php:290
 msgid "Enable Reverse Geocoding"
-msgstr "Permite Geocoding inversă"
+msgstr "Activare Geocodare Inversă"
 
 #: ../options.php:298
 msgid "Try to look up missing address fields for new locations."
-msgstr "Încercaţi să căutaţi lipsesc câmpuri adresă pentru noi locatii."
+msgstr "Încercaţi să căutaţi câmpurile adresă lipsă pentru noile locaţii."
 
 #: ../options.php:304
 msgid "Bulk Reverse Geocode"
-msgstr "Vrac realizat inversă"
+msgstr "Geocodare inversă în masă"
 
 #: ../options.php:306
 msgid "Start"
 msgstr "Start"
 
 #: ../options.php:308
-msgid "Try to look up missing address fields for existing locations. Could be slow."
-msgstr "Încercaţi să căutaţi lipsesc câmpuri adresă pentru locaţii existente. Ar putea fi lent."
+msgid ""
+"Try to look up missing address fields for existing locations. Could be slow."
+msgstr ""
+"Încercare de căutare a câmpurilor de adresă lipsă pentru locaţiile "
+"existente. Ar putea fi lentă."
 
 #: ../options.php:314
 msgid "Use Theme Style Sheet with Maps"
-msgstr "Utilizaţi foaia de stil tema cu hărţi"
+msgstr "Utilizaţi foaia de stil a temei pentru hărţi"
 
 #: ../options.php:327
 msgid "Add Category Links"
-msgstr "Adăugare categorie link-uri"
+msgstr "Adăugare link-uri categorie"
 
 #: ../options.php:335
-msgid "Add map links to category lists. Categories must have descriptions for this to work."
-msgstr "Adăugaţi linkuri hartă la categoria liste. Categorii trebuie să aibă descrieri pentru a lucra."
+msgid ""
+"Add map links to category lists. Categories must have descriptions for this "
+"to work."
+msgstr ""
+"Adăugaţi linkuri hartă la listele de categorii. Categoriile trebuie să aibă "
+"descrieri pentru a funcţiona."
 
 #: ../options.php:340
 msgid "Category Link Separator"
-msgstr "Categoria Link Separator"
+msgstr "Separator Link Categorie"
 
 #: ../options.php:351
 msgid "Category Link Text"
-msgstr "Categoria Link Text"
+msgstr "Text Link Categoria"
 
 #: ../options.php:361
 msgid "Category Link Zoom Level"
-msgstr "Categoria Link nivel de panoramare"
+msgstr "Nivel de Zoom Link Categorie"
 
-#: ../options.php:373
-#: ../options.php:516
-#: ../options.php:655
-#: ../options.php:895
+#: ../options.php:373 ../options.php:516 ../options.php:655 ../options.php:895
 msgid "0 is zoomed all the way out."
-msgstr "0 este micşorată tot drumul."
+msgstr "0 este zoom complet în sus."
 
 #: ../options.php:378
 msgid "GeoNames ID"
-msgstr "GeoNames ID"
+msgstr "ID GeoNames"
 
 #: ../options.php:386
 #, php-format
-msgid "Your %sGeoNames username%s, used with GeoNames API requests. Leave the default value to use Geo Mashup's."
-msgstr "Dumneavoastră numele %sGeoNames utilizatorului%s, utilizate cu cererile de GeoNames API. Lăsaţi valoarea implicită pentru a utiliza Geo Mashup lui."
+msgid ""
+"Your %sGeoNames username%s, used with GeoNames API requests. Leave the "
+"default value to use Geo Mashup's."
+msgstr ""
+"%sNumele de utilizator GeoNames%s, utilizat cu API GeoNames. Lăsaţi valoarea "
+"implicită pentru a utiliza Geo Mashup."
 
 #: ../options.php:393
 msgid "AdSense For Search ID"
-msgstr "AdSense pentru căutare ID"
+msgstr "AdSense pentru ID căutare"
 
 #: ../options.php:401
-msgid "Your client ID, used with the Google Bar. Leave the default value to use Geo Mashup's :)."
-msgstr "Client ID-ul, utilizat cu bara de Google. Lăsaţi valoarea implicită pentru a utiliza Geo Mashup lui:)."
+msgid ""
+"Your client ID, used with the Google Bar. Leave the default value to use Geo "
+"Mashup's :)."
+msgstr ""
+"ID-ul de Client, utilizat cu Google Bar. Lăsaţi valoarea implicită pentru a "
+"utiliza Geo Mashup."
 
-#: ../options.php:407
-#: ../options.php:541
-#: ../options.php:545
-#: ../options.php:782
+#: ../options.php:407 ../options.php:541 ../options.php:545 ../options.php:782
 #: ../options.php:941
 msgid "Update Options"
-msgstr "Opţiuni de actualizare"
+msgstr "Actualizare Opţiuni"
 
 #: ../options.php:410
 msgid "Default settings for maps of a single located post."
-msgstr "Setările implicite pentru hărţi de un singur post localizat."
+msgstr "Setările implicite pentru hărţile unui singur articol localizat."
 
-#: ../options.php:413
-#: ../options.php:548
-#: ../options.php:788
+#: ../options.php:413 ../options.php:548 ../options.php:788
 msgid "Map Width"
-msgstr "Hartă lăţime"
+msgstr "Lăţime Hartă"
 
-#: ../options.php:420
-#: ../options.php:555
-#: ../options.php:795
+#: ../options.php:420 ../options.php:555 ../options.php:795
 msgid "Pixels, or append %."
 msgstr "Pixeli, sau adăugaţi %."
 
-#: ../options.php:424
-#: ../options.php:559
-#: ../options.php:799
+#: ../options.php:424 ../options.php:559 ../options.php:799
 msgid "Map Height"
-msgstr "Înălțimea hartă"
+msgstr "Înălțimea Hartă"
 
-#: ../options.php:431
-#: ../options.php:566
-#: ../options.php:806
+#: ../options.php:431 ../options.php:566 ../options.php:806
 msgid "px"
 msgstr "px"
 
-#: ../options.php:435
-#: ../options.php:570
-#: ../options.php:810
+#: ../options.php:435 ../options.php:570 ../options.php:810
 msgid "Map Control"
 msgstr "Control hartă"
 
-#: ../options.php:449
-#: ../options.php:584
-#: ../options.php:824
+#: ../options.php:449 ../options.php:584 ../options.php:824
 msgid "Default Map Type"
 msgstr "Tipul implicit de hartă"
 
-#: ../options.php:463
-#: ../options.php:598
-#: ../options.php:838
+#: ../options.php:463 ../options.php:598 ../options.php:838
 msgid "Add Map Type Control"
-msgstr "Adăugarea hartă tip Control"
+msgstr "Adăugarea control tip hartă"
 
-#: ../options.php:478
-#: ../options.php:613
-#: ../options.php:853
+#: ../options.php:478 ../options.php:613 ../options.php:853
 msgid "Add Overview Control"
-msgstr "Adăugaţi prezentare generală Control"
+msgstr "Adăugaţi control vizualizare de ansamblu"
 
-#: ../options.php:487
-#: ../options.php:624
-#: ../options.php:864
+#: ../options.php:487 ../options.php:624 ../options.php:864
 msgid "Add Google Bar"
 msgstr "Adăugaţi Google Bar"
 
-#: ../options.php:496
-#: ../options.php:635
-#: ../options.php:875
+#: ../options.php:496 ../options.php:635 ../options.php:875
 msgid "Enable Scroll Wheel Zoom"
-msgstr "Permite Scroll Wheel Zoom"
+msgstr "Permite zoom cu rotiţa de scroll"
 
-#: ../options.php:504
-#: ../options.php:643
-#: ../options.php:883
+#: ../options.php:504 ../options.php:643 ../options.php:883
 msgid "Default Zoom Level"
-msgstr "Nivelul implicit de Zoom"
+msgstr "Nivelul implicit de zoom"
 
-#: ../options.php:521
-#: ../options.php:733
-#: ../options.php:921
+#: ../options.php:521 ../options.php:733 ../options.php:921
 msgid "Click To Load"
-msgstr "Faceţi clic pe încărcare"
+msgstr "Clic pentru încărcare"
 
-#: ../options.php:531
-#: ../options.php:743
-#: ../options.php:931
+#: ../options.php:531 ../options.php:743 ../options.php:931
 msgid "Click To Load Text"
-msgstr "Faceţi clic pentru a încărca Text"
+msgstr "Clic pentru a încărcare text"
 
 #: ../options.php:544
 msgid "Default settings for global maps of located items."
-msgstr "Setările implicite pentru hărţi globale de elemente situat."
+msgstr "Setările implicite pentru hărţi globale cu elemente localizate."
 
 #: ../options.php:661
 msgid "Cluster Markers Until Zoom Level"
-msgstr "Marcatorii de cluster până la nivel de panoramare"
+msgstr "Marcatorii cumulaţi până la nivelul de zoom"
 
 #: ../options.php:670
 msgid "Highest zoom level to cluster markers, or blank for no clustering."
-msgstr "Cel mai mare zoom nivel la cluster markeri, sau gol pentru clustering nu."
+msgstr ""
+"Cel mai mare nivel de zoom până la marcatorii cumulaţi, sau gol pentru a nu "
+"cumula."
 
-#: ../options.php:676
-#: ../options.php:900
+#: ../options.php:676 ../options.php:900
 msgid "Marker Selection Behaviors"
-msgstr "Marcator de selecţie comportamente"
+msgstr "Comportament selecţie marcatori"
 
-#: ../options.php:681
-#: ../options.php:905
+#: ../options.php:681 ../options.php:905
 msgid "Open info window"
-msgstr "Fereastra de informaţii deschise"
+msgstr "Deschide fereastra de informaţii"
 
-#: ../options.php:685
-#: ../options.php:909
+#: ../options.php:685 ../options.php:909
 msgid "Highlight"
 msgstr "Evidenţiere"
 
-#: ../options.php:689
-#: ../options.php:913
+#: ../options.php:689 ../options.php:913
 msgid "Center"
-msgstr "Centrul de"
+msgstr "Centru"
 
-#: ../options.php:693
-#: ../options.php:917
+#: ../options.php:693 ../options.php:917
 msgid "Show Geo Attachments"
-msgstr "Arată Geo ataşări"
+msgstr "Arată ataşamente Geo"
 
 #: ../options.php:697
 msgid "Automatic Selection"
-msgstr "Selectarea automată"
+msgstr "Selectare automată"
 
 #: ../options.php:705
 msgid "Selects the linked or most recent item when the map loads."
-msgstr "Selectează elementul legat sau cele mai recente atunci când harta."
+msgstr ""
+"Selectează elementul legat sau cel mai recent element atunci când se încarcă "
+"harta."
 
 #: ../options.php:710
 msgid "Show Only Most Recent Items"
-msgstr "Afişare elemente numai cele mai recente"
+msgstr "Afişează doar elementele cele mai recente"
 
 #: ../options.php:717
 msgid "Number of items to show, leave blank for all"
-msgstr "Numărul de elemente pentru a arăta, lăsaţi necompletat pentru toate"
+msgstr "Numărul de elemente de afişat, lăsaţi necompletat pentru toate"
 
 #: ../options.php:721
 msgid "Show Future Posts"
-msgstr "Arată viitor posturi"
+msgstr "Arată articolele viitoare"
 
 #: ../options.php:754
 msgid "Category"
-msgstr "Categoria"
+msgstr "Categorie"
 
 #: ../options.php:754
 msgid "Color"
@@ -820,11 +881,15 @@ msgstr "Culoare"
 
 #: ../options.php:755
 msgid "Show Connecting Line Until Zoom Level (0-20 or none)"
-msgstr "Arată conectarea linie până la nivel de panoramare (0-20 sau nici unul)"
+msgstr "Arată linia de legătură până la nivelul de zoom (0-20 sau nici unul)"
 
 #: ../options.php:785
-msgid "Default settings for contextual maps, which include just the items shown on a page, for example."
-msgstr "Setările implicite pentru hărţi contextuală, care includ doar elementele afişate pe o pagină, de exemplu."
+msgid ""
+"Default settings for contextual maps, which include just the items shown on "
+"a page, for example."
+msgstr ""
+"Setările implicite pentru hărţi contextuale, care includ doar elementele "
+"afişate pe o pagină, de exemplu."
 
 #: ../options.php:946
 msgid "Update Log"
@@ -832,33 +897,39 @@ msgstr "Actualizare jurnal"
 
 #: ../options.php:950
 msgid "Delete Log"
-msgstr "Ştergere jurnal"
+msgstr "Şterge jurnal"
 
 #: ../options.php:951
 msgid "You can keep this log as a record, future entries will be appended."
-msgstr "Puteţi să vă păstraţi acest jurnal ca o înregistrare, intrări viitor va fi adăugat."
+msgstr ""
+"Puteţi să păstraţi acest jurnal ca o înregistrare, intrările viitoare vor fi "
+"adăugate."
 
 #: ../options.php:966
 msgid "View Update Log"
-msgstr "Vizualizare jurnal de actualizare"
+msgstr "Arată jurnalul de actualizare"
 
 #: ../options.php:968
 msgid "Geo Mashup Documentation"
-msgstr "Documentația Geo Mashup"
+msgstr "Documentație Geo Mashup"
 
 #: ../default-templates/comment.php:50
 #, php-format
 msgid "<cite class=\"fn\">%s</cite> <span class=\"says\">says:</span>"
-msgstr "<cite class=\"fn\">%s </cite> <span class=\"says\"> spune: </span>"
+msgstr "<cite class=\"fn\">%s </cite> <span class=\"says\">spune: </span>"
 
 #: ../default-templates/comment.php:53
 #, php-format
 msgid "%1$s at %2$s"
-msgstr "%1$ s în %2$ s"
+msgstr "%1$s la %2$s"
 
 #: ../default-templates/map-frame.php:51
-msgid "This map requires JavaScript. You may have to enable it in your settings."
-msgstr "Această hartă necesită JavaScript. Trebuie să o activaţi în setările."
+msgid ""
+"This map requires JavaScript. You may have to enable it in your browser's "
+"settings."
+msgstr ""
+"Această hartă necesită JavaScript. Trebuie să o activaţi în setările "
+"browserului."
 
 #: ../default-templates/user.php:40
 msgid "Display Name"
@@ -866,5 +937,4 @@ msgstr "Nume afişat"
 
 #: ../default-templates/user.php:45
 msgid "Website"
-msgstr "Site-ul Web"
-
+msgstr "Site Web"

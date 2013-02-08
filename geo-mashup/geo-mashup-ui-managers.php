@@ -23,7 +23,7 @@ class GeoMashupUIManager {
 	 * @since 1.3
 	 *
 	 * @param string $name The class name of the manager.
-	 * @return GeoMashupUIManager The singleton object.
+	 * @return GeoMashupUIPostManager|GeoMashupUIUserManager|GeoMashupUICommentManager The singleton object.
 	 */
 	public static function &get_instance( $name ) {
 		static $instances = array();
@@ -70,11 +70,12 @@ class GeoMashupUIManager {
 				true );
 
 		$map_api = $geo_mashup_options->get( 'overall', 'map_api' );
+		$copy_geodata = $geo_mashup_options->get( 'overall', 'copy_geodata' );
 		$geonames_username = $geo_mashup_options->get( 'overall', 'geonames_username' );
 		$ajax_nonce = wp_create_nonce('geo-mashup-ajax-edit');
 		$ajax_url = admin_url( 'admin-ajax.php' );
 		$geo_mashup_url_path = GEO_MASHUP_URL_PATH;
-		wp_localize_script( 'mxn-core', 'geo_mashup_location_editor_settings', compact( 'map_api', 'ajax_url', 'geo_mashup_url_path', 'geonames_username' ) );
+		wp_localize_script( 'mxn-core', 'geo_mashup_location_editor_settings', compact( 'map_api', 'copy_geodata', 'ajax_url', 'geo_mashup_url_path', 'geonames_username' ) );
 		$required_scripts = array( 'jquery');
 		if ( 'google' == $map_api ) {
 			wp_register_script( 
@@ -100,9 +101,12 @@ class GeoMashupUIManager {
 				
 			$required_scripts[] = 'mxn-google-2-gm';
 		} else if ( 'googlev3' == $map_api ) {
+			$scheme = ( empty( $_SERVER['HTTPS'] ) ? 'http' : 'https' );
 			wp_register_script( 
 					'google-maps-3',
-					'http://maps.google.com/maps/api/js?sensor=false&amp;language=' . GeoMashup::get_language_code(), 
+					$scheme .
+						'://maps.google.com/maps/api/js?sensor=false&amp;language=' .
+						GeoMashup::get_language_code(),
 					null, 
 					'', 
 					true );
