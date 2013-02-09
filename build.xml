@@ -129,9 +129,19 @@
 			<arg value="${source}/js/geo-mashup.dev.js"/>
 			<arg value="${source}/js/geo-mashup-google.dev.js"/>
 			<arg value="${source}/js/geo-mashup-mxn.dev.js"/>
+			<arg value="${source}/js/taxonomy.dev.js"/>
 			<arg value="-t=tools/jsdoc-toolkit/templates/jsdoc"/>
 			<arg value="-d=${docs.dir}"/>
 		</java>
+	</target>
+
+	<target name="phpdoc">
+		<!-- document our sources -->
+		<echo>--- PHPDOC ---</echo>
+		<property name="docs.dir" location="${build.base}/phpdocs-${version}"/>
+		<exec executable="phpdoc">
+			<arg line='-d ${source} -i "tests/*" -t ${docs.dir}'/>
+		</exec>
 	</target>
 	
 </project>
