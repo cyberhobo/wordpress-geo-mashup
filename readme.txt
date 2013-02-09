@@ -4,7 +4,7 @@ Donate Link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: map, maps, google maps, google map, mapping, mashup, geo, google, geocms
 Requires at least: 3.4
 Tested up to: 3.5.1
-Stable tag: 1.5
+Stable tag: 1.5.1
  
 Include Google and OpenStreetMap maps in posts and pages, and map posts, pages, and other objects on global maps. Make WordPress into a GeoCMS.
 
@@ -112,10 +112,13 @@ for the best way to keep your custom files safe moving forward.
 
 Features are generally added in one-dot releases, while two-dot releases contain fixes and small updates.
 
+= 1.5 Feb 9 2013 =
+[milestone 1.5.1 changes](http://code.google.com/p/wordpress-geo-mashup/issues/list?can=1&q=Milestone%3D1.5.1)
+
 = 1.5 Feb 7 2013 =
 [milestone 1.5 changes](http://code.google.com/p/wordpress-geo-mashup/issues/list?can=1&q=Milestone%3D1.5)
 
-== 1.4.12 Dec 6 2012 =
+= 1.4.12 Dec 6 2012 =
 [milestone 1.4.12 changes](http://code.google.com/p/wordpress-geo-mashup/issues/list?can=1&q=Milestone%3D1.4.12)
 
 = 1.4.11 Dec 5 2012 =
