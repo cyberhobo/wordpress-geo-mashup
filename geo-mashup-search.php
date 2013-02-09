@@ -81,7 +81,7 @@ class GeoMashupSearch {
 
 		$geo_query_args = wp_array_slice_assoc( 
 			$this->query_vars, 
-			array( 'object_name', 'sort', 'exclude_object_ids' )
+			array( 'object_name', 'sort', 'exclude_object_ids', 'limit' )
 		);
 
 		if ( !empty( $near_lat ) and !empty( $near_lng ) ) {
