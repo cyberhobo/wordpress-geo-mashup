@@ -520,6 +520,15 @@ jQuery.extend( GeoMashup, {
 			return loaded_terms[taxonomy].terms[term_id][property];
 		};
 
+		/**
+		 * Find a term in a hierarchy.
+		 *
+		 * @methodOf GeoMashup
+		 * @since 1.5
+		 * @param search_id
+		 * @param {object|string} hierarchy Optional hierarchy structure or taxonomy name, defaults to 'category'.
+		 * @returns {object} Hierarchy tree rooted at the search term or null if not found.
+		 */
 		term_manager.searchTermHierarchy = function( search_id, hierarchy ) {
 			var child_search, term_id;
 
