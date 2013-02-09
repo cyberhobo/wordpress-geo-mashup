@@ -12,11 +12,11 @@
 	</taskdef>
 	
 	<!-- set global properties for this build -->
-	<property name="source" location="geo-mashup"/>
+	<property name="source" location="."/>
 	<property name="build.base" location="build"/>
 	<exec executable="bash" outputproperty="version">
 		<arg value="-c"/>
-		<arg value="grep 'Version:' geo-mashup/geo-mashup.php | sed -E 's/^.*Version: (.*)$/\1/'"/>
+		<arg value="grep 'Version:' geo-mashup.php | sed -E 's/^.*Version: (.*)$/\1/'"/>
 	</exec>
 	
 	<target name="build">
@@ -27,7 +27,7 @@
 		</tstamp>
 		<property name="build.ver" value="${version}.${build.number}"/>
 		<property name="build.ver.dir" location="${build.base}/${build.ver}"/>
-		<property name="build.dir" location="${build.ver.dir}/geo-mashup"/>
+		<property name="build.dir" location="${build.ver.dir}"/>
 		
 		<!-- make our build directory -->
 		<mkdir dir="${build.dir}"/>
@@ -36,7 +36,12 @@
 		<echo>--- COPY SOURCES ---</echo>
 		<copy todir="${build.dir}">
 			<fileset dir="${source}">
-				<exclude name="*checklist.txt*"/>
+				<include name="**"/>
+				<exclude name="release-checklist.txt"/>
+				<exclude name="build/**"/>
+				<exclude name="build.*"/>
+				<exclude name="tools/**"/>
+				<exclude name="tests/**"/>
 			</fileset>
 		</copy>
 		
@@ -116,7 +121,9 @@
 			</sequential>
 		</for>
 		
-		<zip destfile="${build.base}/geo-mashup-${build.ver}.zip" basedir="${build.ver.dir}"/>
+		<zip destfile="${build.base}/geo-mashup-${build.ver}.zip">
+			<zipfileset dir="${build.ver.dir}" prefix="geo-mashup"/>
+		</zip> 
 		
 	</target>
 
