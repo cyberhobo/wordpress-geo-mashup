@@ -859,9 +859,6 @@ function geo_mashup_options_page() {
 						<table>
 							<tr><th><?php echo $taxonomy_object->label; ?></th><th><?php _e('Color', 'GeoMashup'); ?></th>
 								<th><?php _e('Show Connecting Line Until Zoom Level (0-20 or none)','GeoMashup'); ?></th></tr>
-							<?php add_filter( 'get_terms_args', create_function( '$args', 'var_dump( $args ); unset( $args["cache_domain"] ); return $args;' ), 100 ); ?>
-							<?php //var_dump( $GLOBALS['sitepress']->get_active_languages() ); ?>
-							<?php //$GLOBALS['sitepress']->switch_lang( 'all' ); ?>
 							<?php $terms = get_terms( $include_taxonomy, array( 'hide_empty' => false ) ); ?>
 							<?php if ( is_array($terms) ) : ?>
 								<?php foreach( $terms as $term ) : ?>
