@@ -744,11 +744,12 @@ class GeoMashup {
 	/**
 	 * Augment an object location for display.
 	 *
+	 * Adds term data, object type, author, and label.
 	 * @since 1.5
 	 *
 	 * @param string $object_name The object type, e.g. 'post', 'user', etc.
-	 * @param array $object_location The object location data.
-	 * @return array The 
+	 * @param object $object_location The object location data.
+	 * @return array The augmented object location data.
 	 */
 	private static function augment_map_object_location( $object_name, $object_location ) {
 		global $geo_mashup_options;
@@ -767,9 +768,15 @@ class GeoMashup {
 				$include_taxonomies = $geo_mashup_options->get( 'overall', 'include_taxonomies' );
 			
 			foreach( $include_taxonomies as $include_taxonomy ) {
+				$term_ids_by_taxonomy[$include_taxonomy] = array();
 				// Not using wp_get_object_terms(), which doesn't allow for persistent caching
 				$tax_terms = get_the_terms( $object_location->object_id, $include_taxonomy );
-				$term_ids_by_taxonomy[$include_taxonomy] = empty( $tax_terms ) ? array() : wp_list_pluck( $tax_terms, 'term_id' );
+				if ( $tax_terms ) {
+					// terms are sometimes indexed in order, sometimes by id, so wp_list_pluck() doesn't work
+					foreach ( $tax_terms as $term ) {
+						$term_ids_by_taxonomy[$include_taxonomy][] = $term->term_id;
+					}
+				}
 			}
 
 			// Add post author name
