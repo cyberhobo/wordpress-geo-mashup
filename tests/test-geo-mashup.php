@@ -1,5 +1,7 @@
 <?php
 
+require_once( "sitepress-mock.php" );
+
 class GeoMashup_Unit_Tests extends WP_UnitTestCase {
 
 	const DELTA = 0.0001;
@@ -308,11 +310,7 @@ class GeoMashup_Unit_Tests extends WP_UnitTestCase {
 			$do_lookups = false
 		);
 
-		$where_filter = create_function( 
-			'$where', 
-			'return $where .= \' AND post_title="' . $posts[1]->post_title . '"\';'
-		);
-		$this->add_filter( 'posts_where', $where_filter );
+		$GLOBALS['sitepress'] = new SitePressMock( $posts[1]->post_title );
 
 		// An open query should only return post index 1 of the 3
 		$results = GeoMashupDB::get_object_locations();
