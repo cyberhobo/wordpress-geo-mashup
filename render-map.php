@@ -112,7 +112,7 @@ class GeoMashupRenderMap {
 	 * @since 1.5
 	 */
 	private static function enqueue_styles() {
-		global $geo_mashup_options;
+		global $geo_mashup_options, $geo_mashup_custom;
 
 		// Include theme stylesheet if requested
 		if ( $geo_mashup_options->get('overall', 'theme_stylesheet_with_maps' ) == 'true' ) {
@@ -368,7 +368,6 @@ class GeoMashupRenderMap {
 	 *                        remove template-only data.
 	 */
 	private static function extract_template_properties( &$map_data ) {
-		global $geo_mashup_options;
 
 		// Set properties for the template
 		self::map_property( 'name', $map_data['name'] );
