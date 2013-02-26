@@ -1480,13 +1480,13 @@ class GeoMashup {
 		global $post, $comment, $user;
 
 		$location = self::current_location( $output, $object_name );
-		if ( empty( $location ) ) {
-			if ( !$location and $post and !in_array( $object_name, array( 'comment', 'user' ) ) )
-				$location = GeoMashupDB::get_object_location( 'post', $post->ID, ARRAY_A );
+		if ( !$location ) {
+			if ( $post and !in_array( $object_name, array( 'comment', 'user' ) ) )
+				$location = GeoMashupDB::get_object_location( 'post', $post->ID, $output );
 			if ( !$location and $comment and !in_array( $object_name, array( 'post', 'user' ) ) )
-				$location = GeoMashupDB::get_object_location( 'comment', $comment->comment_ID, ARRAY_A );
+				$location = GeoMashupDB::get_object_location( 'comment', $comment->comment_ID, $output );
 			if ( !$location and $user and !in_array( $object_name, array( 'post', 'comment' ) ) )
-				$location = GeoMashupDB::get_object_location( 'user', $user->ID, ARRAY_A );
+				$location = GeoMashupDB::get_object_location( 'user', $user->ID, $output );
 		}
 		return $location;
 	}
@@ -1500,7 +1500,7 @@ class GeoMashup {
 	 * @return string The information requested, empty string if none.
 	 */
 	public static function location_info( $args = '' ) {
-		/** @var $fields string  */
+		/** @var $fields string|array  */
 		/** @var $separator string  */
 		/** @var $format string  */
 		/** @var $object_name string  */
@@ -1565,19 +1565,13 @@ class GeoMashup {
 	 * @return string The URL, empty if no current location is found.
 	 */
 	public static function show_on_map_link_url( $args = null ) {
-		global $geo_mashup_options, $post;
+		global $geo_mashup_options;
 
 		$defaults = array( 'zoom' => '' );
 		$args = wp_parse_args( $args, $defaults );
 
 		$url = '';
 		$location = self::current_location_guess();
-
-		if ( !$location and $post ) {
-
-			// Could be in a WP_Query loop that set the global post
-			$location = GeoMashupDb::get_post_location( $post->ID );
-		}
 
 		if ( $location ) {
 			$url = get_page_link($geo_mashup_options->get('overall', 'mashup_page'));

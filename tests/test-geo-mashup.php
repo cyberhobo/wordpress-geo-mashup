@@ -480,6 +480,29 @@ class GeoMashup_Unit_Tests extends WP_UnitTestCase {
 		wp_reset_postdata();
 	}
 
+	/**
+	 * issue 629
+	 */
+	function test_map_link_outside_loop() {
+		global $geo_mashup_options;
+
+		$page_id = $this->factory->post->create( array( 'post_type' => 'page' ) );
+		$geo_mashup_options->set_valid_options( array(
+			array( 'overall' => array(
+				'mashup_page' => $page_id,
+			) ),
+		) );
+		$post_id = $this->factory->post->create();
+		$location = $this->rand_location();
+		GeoMashupDB::set_object_location( 'post', $post_id, $location, false );
+
+		$test_query = new WP_Query( array( 'p' => $post_id ) );
+		$this->assertTrue( $test_query->have_posts() );
+		$test_query->the_post();
+		$this->assertFalse( $test_query->have_posts() );
+		$this->assertContains( 'center_lat=' . substr( $location->lat, 0, 5 ), GeoMashup::show_on_map_link() );
+	}
+
 	private function get_nv_test_location() {
 		$location = GeoMashupDB::blank_location();
 		$location->lat = 40;
