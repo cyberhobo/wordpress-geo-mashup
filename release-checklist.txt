@@ -26,4 +26,5 @@ If any step fails, fix before continuing, repeating any necessary prior steps.
 	1. Upload ZIP to Google code.
 	1. Deploy to WordPress SVN (cd build/x.x.x.x; plugin-deploy.sh).
 	1. Tag WP copy (geo-mashup-tag-wp.sh x.x.x).
+	1. Update github (git push github master; git push --tags github master)
 	1. Prune issues.
