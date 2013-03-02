@@ -652,11 +652,11 @@ class GeoMashupDB {
 		if ( self::installed_version() != GEO_MASHUP_DB_VERSION ) {
 			$sql = "
 				CREATE TABLE $location_table_name (
-					id MEDIUMINT( 9 ) NOT NULL AUTO_INCREMENT,
-					lat FLOAT( 11,7 ) NOT NULL,
-					lng FLOAT( 11,7 ) NOT NULL,
+					id BIGINT( 20 ) NOT NULL AUTO_INCREMENT,
+					lat DOUBLE( 11,7 ) NOT NULL,
+					lng DOUBLE( 11,7 ) NOT NULL,
 					address TINYTEXT NULL,
-					saved_name VARCHAR( 100 ) NULL,
+					saved_name VARCHAR( 200 ) NULL,
 					geoname TINYTEXT NULL, 
 					postal_code TINYTEXT NULL,
 					country_code VARCHAR( 2 ) NULL,
@@ -672,7 +672,7 @@ class GeoMashupDB {
 				CREATE TABLE $relationships_table_name (
 					object_name VARCHAR( 80 ) NOT NULL,
 					object_id BIGINT( 20 ) NOT NULL,
-					location_id MEDIUMINT( 9 ) NOT NULL,
+					location_id BIGINT( 20 ) NOT NULL,
 					geo_date DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
 					PRIMARY KEY  ( object_name, object_id, location_id ),
 					KEY object_name ( object_name, object_id ),

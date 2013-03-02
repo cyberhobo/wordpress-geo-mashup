@@ -202,7 +202,7 @@ class GeoMashup {
 		define('GEO_MASHUP_MAX_ZOOM', 20);
 		// Make numeric versions: -.02 for alpha, -.01 for beta
 		define('GEO_MASHUP_VERSION', '1.5.3');
-		define('GEO_MASHUP_DB_VERSION', '1.3');
+		define('GEO_MASHUP_DB_VERSION', '1.4');
 	}
 
 	/**
