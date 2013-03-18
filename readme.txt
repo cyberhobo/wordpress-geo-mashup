@@ -67,7 +67,7 @@ to the community.
 
 * German by [Thomas Morvay](http://internet-dienste.biz/) added in version 1.5.4
 * Slovak by B. Radenovich of [Web Hosting Watch](http://webhostingw.com) updated in version 1.5.4
-* Romanian by Florin Dumitru added in version 1.5
+* Romanian by [Florin Dumitru](http://www.fitnesstimisoara.ro/) added in version 1.5
 * Irish by [Vikas Arora](http://www.apoto.com) added in version 1.4.11
 * Russian by [Tony](http://tohapro.com) added in version 1.4.10
 * Hindi by [Outshine Solutions](http://outshinesolutions.com) added in version 1.4.9
