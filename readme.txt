@@ -65,10 +65,10 @@ to the community.
 
 = Translations =
 
+* Slovak by B. Radenovich of [Web Hosting Watch](http://webhostingw.com) updated in version 1.5.4
 * Romanian by Florin Dumitru added in version 1.5
 * Irish by [Vikas Arora](http://www.apoto.com) added in version 1.4.11
 * Russian by [Tony](http://tohapro.com) added in version 1.4.10
-* Slovak by B. Radenovich of [Web Hosting Watch](http://webhostingw.com) added in version 1.4.10
 * Hindi by [Outshine Solutions](http://outshinesolutions.com) added in version 1.4.9
 * Polish by [Kamil](http://wbartoszycach.pl) added in version 1.4.7
 * Portugese by [Antonio Xeira](http://flyingsouth.thehappytoadfish.com/) added in version 1.4.2
