@@ -88,6 +88,12 @@ customGeoMashupSinglePostIcon, customGeoMashupMultiplePostImage;
  * </p>
  */
 GeoMashup = {
+	/**
+	 * Access to the options for this map.
+	 * Properties reflect the <a href="http://code.google.com/p/wordpress-geo-mashup/wiki/TagReference#Map">map tag parameters</a>.
+	 * @property {GeoMashupOptions}
+	 */
+	opts: {},
 	actions : {},
 	objects : {},
 	object_count : 0,
