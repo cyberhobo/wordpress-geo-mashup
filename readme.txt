@@ -65,6 +65,7 @@ to the community.
 
 = Translations =
 
+* German by [Thomas Morvay](http://internet-dienste.biz/) added in version 1.5.4
 * Slovak by B. Radenovich of [Web Hosting Watch](http://webhostingw.com) updated in version 1.5.4
 * Romanian by Florin Dumitru added in version 1.5
 * Irish by [Vikas Arora](http://www.apoto.com) added in version 1.4.11
@@ -77,7 +78,6 @@ to the community.
 * French updated in version 1.3.7
 * Spanish by [Reven](http://www.reven.org/blog/2010/03/15/traduccion-de-geo-mashup/) added in version 1.3.3
 * Swedish by [Joakim Green](http://www.joakimgreen.com/) added in version 1.3.3
-* German by [Thomas Morvay](http://internet-dienste.biz/) added in version 1.3.2
 * Belorussian by [FatCow](http://www.fatcow.com) added in version 1.2.8
 
 [Translators welcome](https://code.google.com/p/wordpress-geo-mashup/wiki/Translating).
