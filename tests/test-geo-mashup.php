@@ -550,8 +550,8 @@ class GeoMashup_Unit_Tests extends WP_UnitTestCase {
 			) ),
 		) );
 		$post_id = $this->factory->post->create();
-		// Use 3 decimal places in location to get 5 good characters to check in link
-		$location = $this->rand_location( 3 );
+		// Use 4 decimal places in location to get 5 good total characters to check in link
+		$location = $this->rand_location( 4 );
 		GeoMashupDB::set_object_location( 'post', $post_id, $location, false );
 
 		$test_query = new WP_Query( array( 'p' => $post_id ) );
