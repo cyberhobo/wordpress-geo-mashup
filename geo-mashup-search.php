@@ -336,7 +336,8 @@ class GeoMashupSearchHandling {
 		$geo_search->load_template( 'search-results' );
 		$content .= ob_get_clean();
 
-		// This filter shouldn't run more than once per request, so don't bother adding it again
+		// Add the filter back - it's possbible that content preprocessors will cause it to be run again
+		add_filter( 'the_content', array( __CLASS__, 'filter_the_content' ) );
 
 		return $content;
 	}
