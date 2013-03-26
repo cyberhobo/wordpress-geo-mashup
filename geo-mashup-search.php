@@ -18,7 +18,7 @@ class GeoMashupSearch {
 	 * Plugin URL path.
 	 * @deprecated Use GEO_MASHUP_URL_PATH.
 	 */
-	static public $url_path;
+	public $url_path;
 
 	private $results;
 	private $result;
@@ -68,6 +68,7 @@ class GeoMashupSearch {
 			'sort' => 'distance_km ASC',
 		);
 		$this->query_vars = wp_parse_args( $args, $default_args );
+		/** @var $units */
 		extract( $this->query_vars );
 
 		$this->results = array();
@@ -133,12 +134,18 @@ class GeoMashupSearch {
 	 * WordPress filter to add geo mashup search results to page content
 	 * when requested.
 	 *
-	 * @param string $content
+	 * @param string $template
 	 * @return string Content including search results if requested.
 	 */
 	public function load_template( $template = 'search-results' ) {
 
 		// Define variables for the template
+		/** @var $object_name */
+		/** @var $object_ids */
+		/** @var $units */
+		/** @var $location_text */
+		/** @var $radius */
+		/** @var $sort */
 		extract( $this->query_vars );
 		$search_text = $location_text;
 		$distance_factor = $this->distance_factor;
@@ -189,11 +196,12 @@ class GeoMashupSearch {
 	/**
 	 * Get a comma separated list of the post IDs found.
 	 *
-	 * @return string ID list.
+	 * @return array|null User data if found.
 	 */
 	public function get_userdata() {
 		$this->current_result++;
 		$this->result = $this->results[$this->current_result];
+		$user = null;
 		if ( $this->result ) {
 			$user = get_userdata( $this->result->object_id );
 		}
@@ -230,6 +238,9 @@ class GeoMashupSearch {
 			'echo' => true
 		);
 		$args = wp_parse_args( $args, $default_args );
+		/** @var $decimal_places */
+		/** @var $append_units */
+		/** @var $echo */
 		extract( $args );
 		$factor = ( 'km' == $this->units ) ? 1 : self::MILES_PER_KILOMETER;
 		$distance = round( $this->result->distance_km * $factor, $decimal_places );
@@ -365,6 +376,10 @@ class GeoMashupSearchWidget extends WP_Widget {
 			wp_enqueue_script( 'geo-mashup-search-find-me' );
 		}
 
+		/** @var $before_widget */
+		/** @var $after_widget */
+		/** @var $before_title */
+		/** @var $after_title */
 		extract( $args );
 		$title = apply_filters( 'widget_title', $instance['title'] );
 		echo $before_widget . $before_title . $title . $after_title;
