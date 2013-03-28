@@ -57,7 +57,7 @@ if ( $multisite ) {
 }
 unset( $multisite );
 
-require dirname( __FILE__ ) . '/functions.php';
+require_once dirname( __FILE__ ) . '/functions.php';
 
 // Preset WordPress options defined in bootstrap file.
 // Used to activate themes, plugins, as well as  other settings.

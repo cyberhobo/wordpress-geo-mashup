@@ -18,6 +18,7 @@ class WP_UnitTestCase extends PHPUnit_Framework_TestCase {
 		$this->factory = new WP_UnitTest_Factory;
 		$this->clean_up_global_scope();
 		$this->start_transaction();
+		add_filter( 'wp_die_handler', array( $this, 'get_wp_die_handler' ) );
 	}
 
 	function tearDown() {
@@ -25,6 +26,7 @@ class WP_UnitTestCase extends PHPUnit_Framework_TestCase {
 		$wpdb->query( 'ROLLBACK' );
 		remove_filter( 'dbdelta_create_queries', array( $this, '_create_temporary_tables' ) );
 		remove_filter( 'query', array( $this, '_drop_temporary_tables' ) );
+		remove_filter( 'wp_die_handler', array( $this, 'get_wp_die_handler' ) );
 	}
 
 	function clean_up_global_scope() {
@@ -61,6 +63,14 @@ class WP_UnitTestCase extends PHPUnit_Framework_TestCase {
 		if ( 'DROP TABLE' === substr( $query, 0, 10 ) )
 			return 'DROP TEMPORARY TABLE ' . substr( $query, 10 );
 		return $query;
+	}
+
+	function get_wp_die_handler( $handler ) {
+		return array( $this, 'wp_die_handler' );
+	}
+
+	function wp_die_handler( $message ) {
+		throw new WPDieException( $message );
 	}
 
 	function assertWPError( $actual, $message = '' ) {

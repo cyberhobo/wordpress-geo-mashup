@@ -3,6 +3,7 @@
 class WP_UnitTest_Factory {
 	function __construct() {
 		$this->post = new WP_UnitTest_Factory_For_Post( $this );
+		$this->attachment = new WP_UnitTest_Factory_For_Attachment( $this );
 		$this->comment = new WP_UnitTest_Factory_For_Comment( $this );
 		$this->user = new WP_UnitTest_Factory_For_User( $this );
 		$this->term = new WP_UnitTest_Factory_For_Term( $this );
@@ -38,6 +39,13 @@ class WP_UnitTest_Factory_For_Post extends WP_UnitTest_Factory_For_Thing {
 	function get_object_by_id( $post_id ) {
 		return get_post( $post_id );
 	}
+}
+
+class WP_UnitTest_Factory_For_Attachment extends WP_UnitTest_Factory_For_Post {
+
+		function create_object( $file, $parent = 0, $args = array() ) {
+			return wp_insert_attachment( $args, $file, $parent );
+		}
 }
 
 class WP_UnitTest_Factory_For_User extends WP_UnitTest_Factory_For_Thing {
