@@ -9,7 +9,7 @@
  */
 
  /* Maps fill the frame, makes percentage height maps a bit easier */
- html, body { height: 100%; }
+ html, body { height: 100%; overflow: hidden; }
 
 /* Post date and tags/categories */
 .meta { font-size:60%; }

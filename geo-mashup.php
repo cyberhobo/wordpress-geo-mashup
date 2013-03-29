@@ -1171,8 +1171,7 @@ class GeoMashup {
 			$content = "<div class=\"gm-map\">$map_image</div>";
 		} else {
 			$content =  "<div class=\"gm-map\"><iframe name=\"{$map_data['name']}\" src=\"{$iframe_src}\" " .
-				"height=\"{$map_data['height']}\" width=\"{$map_data['width']}\" marginheight=\"0\" marginwidth=\"0\" ".
-				"scrolling=\"no\" frameborder=\"0\"></iframe></div>";
+				"height=\"{$map_data['height']}\" width=\"{$map_data['width']}\" seamless=\"seamless\"></iframe></div>";
 		}
 		$map_number++;
 		return $content;
