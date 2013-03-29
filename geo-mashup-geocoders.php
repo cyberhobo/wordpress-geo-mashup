@@ -99,8 +99,21 @@ abstract class GeoMashupHttpGeocoder {
 	 */
 	static protected function url_utf8_encode( $text ) {
 
-		if ( !mb_check_encoding( $text, 'UTF-8' ) )
-			$text = mb_convert_encoding( $text, 'UTF-8' );
+		if ( function_exists( 'mb_check_encoding' ) ) {
+			if ( !mb_check_encoding( $text, 'UTF-8' ) )
+				$text = mb_convert_encoding( $text, 'UTF-8' );
+		} else {
+			$msg = sprintf(
+				__( '%s Multibyte string functions %s are not installed.', 'GeoMashup' ),
+				'<a href="http://www.php.net/manual/en/mbstring.installation.php" title="">',
+				'</a>'
+			);
+			$msg .= ' ' . sprintf(
+				__( 'Geocoding will only work if "%s" is UTF-8 text.', 'GeoMashup' ),
+				$text
+			);
+			trigger_error( $msg, E_USER_WARNING );
+		}
 
 		return urlencode( $text );
 	}

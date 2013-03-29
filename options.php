@@ -53,7 +53,19 @@ function geo_mashup_options_page() {
 		echo '<div class="updated fade">' . $log . '</div>';
 	}
 
+
 	if ( isset( $_POST['geo_mashup_run_tests'] ) ) {
+		if ( !function_exists( 'mb_check_encoding' ) ) {
+			echo '<div class="updated fade">';
+			printf(
+				__( '%s Multibyte string functions %s are not installed.', 'GeoMashup' ),
+				'<a href="http://www.php.net/manual/en/mbstring.installation.php" title="">',
+				'</a>'
+			);
+			echo ' ';
+			_e( 'Geocoding and other web services may not work properly.', 'GeoMashup' );
+			echo '</div>';
+		}
 		$test_transient = get_transient( 'geo_mashup_test' );
 		if ( !$test_transient ) {
 			echo '<div class="updated fade">';
