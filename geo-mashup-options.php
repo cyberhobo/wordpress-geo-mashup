@@ -170,7 +170,7 @@ class GeoMashupOptions {
 	 * @since 1.2
 	 * @var array
 	 */
-	private $corrupt_options = '';
+	public $corrupt_options = '';
 
 	/**
 	 * Validation messages.
@@ -186,7 +186,6 @@ class GeoMashupOptions {
 	 * Should be used only in this file.
 	 * 
 	 * @since 1.2
-	 * @return void
 	 */
 	function __construct() {
 		$shared_google_api_key = get_option ( 'google_api_key' );
@@ -199,7 +198,6 @@ class GeoMashupOptions {
 			$settings = $this->convert_old_settings ( $settings );
 			$this->options = $this->valid_options ( $settings, $this->default_options, $add_missing = true );
 		} else {
-			$failed_options = $settings;
 			if ( is_string ( $settings ) && !empty ( $settings ) ) {
 				$this->corrupt_options = $settings;
 			}

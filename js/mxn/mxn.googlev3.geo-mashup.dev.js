@@ -1,4 +1,4 @@
-mxn.addProxyMethods( mxn.Mapstraction, [ 'enableGeoMashupExtras', 'setMapTypes' ]);
+mxn.addProxyMethods( mxn.Mapstraction, [ 'enableGeoMashupExtras', 'setMapTypes' ], false );
 
 mxn.register( 'googlev3', {
 	Mapstraction: {
@@ -52,5 +52,36 @@ mxn.register( 'googlev3', {
 				}
 			} );
 		}
+	},
+
+	/**
+	 * Override info bubbles to use a single google info window object.
+	 *
+	 * This prevents multiple info windows from popping up when markerclusterer
+	 * adds and removes markers from the map.
+	 *
+	 * Maybe mapstraction would also benefit a from single-bubble option that does this?
+	 */
+	Marker: {
+		openBubble: function() {
+			var marker = this;
+			if (!this.map.hasOwnProperty('geo_mashup_infowindow') || this.map.geo_mashup_infowindow === null) {
+				this.map.geo_mashup_infowindow = new google.maps.InfoWindow();
+				google.maps.event.addListener(this.map.geo_mashup_infowindow, 'closeclick', function(closedWindow) {
+					marker.closeBubble();
+				});
+			}
+			this.openInfoBubble.fire( { 'marker': this } );
+			this.map.geo_mashup_infowindow.setContent( this.infoBubble );
+			this.map.geo_mashup_infowindow.open( this.map, this.proprietary_marker );
+		},
+
+		closeBubble: function() {
+			if (this.map.hasOwnProperty('geo_mashup_infowindow') && this.map.geo_mashup_infowindow !== null) {
+				this.map.geo_mashup_infowindow.close();
+				this.closeInfoBubble.fire( { 'marker': this } );
+			}
+		}
+
 	}
 });

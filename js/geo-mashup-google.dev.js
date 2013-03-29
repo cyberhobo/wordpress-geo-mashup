@@ -350,12 +350,10 @@ GeoMashup.extendLocationBounds = function( latlng ) {
 };
 
 GeoMashup.addMarkers = function( markers ) {
-	if ( ( ! this.clusterer ) || 'clustermarker' === this.opts.cluster_lib ) {
-		// No clustering, or ClusterMarker need the markers added to the map 
-		this.forEach( markers, function( i, marker ) {
-			this.map.addOverlay( marker );
-		} );
-	}
+	// No clustering, or ClusterMarker need the markers added to the map
+	this.forEach( markers, function( i, marker ) {
+		this.map.addOverlay( marker );
+	} );
 	if ( this.clusterer && markers.length > 0 ) {
 		this.clusterer.addMarkers( markers );
 		this.recluster();
@@ -473,13 +471,7 @@ GeoMashup.isMarkerVisible = function( marker ) {
 };
 
 GeoMashup.recluster = function( ) {
-	if (this.clusterer) { 
-		if ( 'clustermarker' === this.opts.cluster_lib ) {
-			this.clusterer.refresh();
-		} else {
-			this.clusterer.resetViewport();
-		}
-	}
+	this.clusterer.refresh();
 };
 
 GeoMashup.createMap = function(container, opts) {
@@ -582,28 +574,22 @@ GeoMashup.createMap = function(container, opts) {
 	google.maps.Event.bind(this.map, "moveend", this, this.adjustViewport);
 
 	if (opts.cluster_max_zoom) {
-		if ( 'clustermarker' === opts.cluster_lib ) {
-			clusterer_opts = { 
-				'iconOptions' : {},
-				'fitMapMaxZoom' : opts.cluster_max_zoom,
-				'clusterMarkerTitle' : '%count',
-				'intersectPadding' : 3	
-			};
-			/**
-			 * Clusterer options are being set.
-			 * @name GeoMashup#clusterOptions
-			 * @event
-			 * @param {GeoMashupOptions} properties Geo Mashup configuration data
-			 * @param {Object} clusterer_opts Modifiable clusterer options for 
-			 *   <a href="http://googlemapsapi.martinpearman.co.uk/readarticle.php?article_id=4">ClusterMarker</a>.
-			 */
-			this.doAction( 'clusterOptions', this.opts, clusterer_opts );
-			this.clusterer = new ClusterMarker( this.map, clusterer_opts );
-		} else {
-			clusterer_opts = {maxZoom: parseInt( opts.cluster_max_zoom, 10 )};
-			this.doAction( 'clusterOptions', this.opts, clusterer_opts );
-			this.clusterer = new MarkerClusterer( this.map, [], clusterer_opts );
-		}
+		clusterer_opts = {
+			'iconOptions' : {},
+			'fitMapMaxZoom' : opts.cluster_max_zoom,
+			'clusterMarkerTitle' : '%count',
+			'intersectPadding' : 3
+		};
+		/**
+		 * Clusterer options are being set.
+		 * @name GeoMashup#clusterOptions
+		 * @event
+		 * @param {GeoMashupOptions} properties Geo Mashup configuration data
+		 * @param {Object} clusterer_opts Modifiable clusterer options for
+		 *   <a href="http://googlemapsapi.martinpearman.co.uk/readarticle.php?article_id=4">ClusterMarker</a>.
+		 */
+		this.doAction( 'clusterOptions', this.opts, clusterer_opts );
+		this.clusterer = new ClusterMarker( this.map, clusterer_opts );
 	}
 
 	if ( opts.zoom !== 'auto' && typeof opts.zoom === 'string' ) {

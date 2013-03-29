@@ -67,4 +67,31 @@ jQuery( function( $ ) {
 			} );
 		} );
 	} );
+
+	asyncTest( "googlev3 clustering", 10, function() {
+		loadTestFrame( gm_test_data.global_urls['googlev3'], function() {
+			var gm = window.frames[gm_test_data.name].GeoMashup;
+
+			equal( gm.opts.cluster_max_zoom, '9', 'cluster max zoom is 9' );
+			ok( gm.map.getZoom() > 9, 'map starts zoomed past max cluster zoom' );
+			ok( gm.clusterer, 'clusterer exists' );
+			equal( gm.clusterer.getTotalMarkers(), 5, 'clusterer is managing all markers' );
+			equal( gm.clusterer.getMaxZoom(), 9, 'clusterer max zoom is 9' );
+
+			var after_zoom_tests = function() {
+				var clusters = gm.clusterer.clusters_;
+				equal( clusters.length, 1, 'there 1 cluster at this zoom level 9' );
+				ok( clusters[0].map_, 'the cluster is on the map' );
+				equal( clusters[0].getMarkers().length, 5, 'all five markers are in the cluster' );
+				ok( !gm.map.markers[0].proprietary_marker.map, 'first marker is not on the map' );
+				ok( !gm.map.markers[4].proprietary_marker.map, 'last marker is not on the map' );
+				gm.map.changeZoom.removeHandler( after_zoom_tests, this );
+				start();
+			};
+
+			gm.map.changeZoom.addHandler( after_zoom_tests, this );
+
+			gm.map.setZoom( 9 );
+		});
+	});
 } );

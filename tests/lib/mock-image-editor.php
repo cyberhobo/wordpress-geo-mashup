@@ -6,6 +6,7 @@ if (class_exists( 'WP_Image_Editor' ) ) :
 
 		public static $load_return = true;
 		public static $test_return = true;
+		public static $save_return = array();
 
 		public function load() {
 			return self::$load_return;
@@ -32,7 +33,7 @@ if (class_exists( 'WP_Image_Editor' ) ) :
 
 		}
 		public function save( $destfilename = null, $mime_type = null ) {
-
+			return self::$save_return;
 		}
 		public function stream( $mime_type = null ) {
 

@@ -64,4 +64,5 @@ if ( $multisite ) {
 	populate_network( 1, WP_TESTS_DOMAIN, WP_TESTS_EMAIL, $title, '/', $subdomain_install );
 }
 
+$hash = get_option( 'db_version' ) . ' ' . (int) $multisite . ' ' . sha1_file( $config_file_path );
 file_put_contents( WP_TESTS_VERSION_FILE, $hash );
