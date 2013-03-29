@@ -361,10 +361,10 @@ class GeoMashup_Unit_Tests extends WP_UnitTestCase {
 			$error = get_post_meta( $post_id, 'geocoding_error', true );
 			if ( $error ) {
 
-				// Failed geocoding leaves the first result
+				// Failed geocoding due to lack of internet leaves the first result
 				$location = GeoMashupDB::get_object_location( 'post', $post_id );
-				$this->assertEquals( 48, intval( $location->lat ) );
-				$this->assertEquals( 2, intval( $location->lng ) );
+				$this->assertEquals( 48, intval( $location->lat, $error ) );
+				$this->assertEquals( 2, intval( $location->lng ), $error );
 
 			} else {
 
