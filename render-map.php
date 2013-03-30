@@ -291,9 +291,16 @@ class GeoMashupRenderMap {
 						true );
 
 				GeoMashup::register_script(
+						'geo-mashup-modernizr',
+						'js/modernizr.js',
+						array(),
+						'2.6.2',
+						true );
+
+				GeoMashup::register_script(
 					'geo-mashup-markerclusterer',
 					'js/geo-mashup-markerclusterer.js',
-					array( 'geo-mashup-mxn' ),
+					array( 'geo-mashup-mxn', 'geo-mashup-modernizr' ),
 					GEO_MASHUP_VERSION,
 					true );
 				$mashup_dependencies[] = 'markerclusterer';

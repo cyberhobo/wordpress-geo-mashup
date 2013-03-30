@@ -3,7 +3,7 @@
  * @fileOverview
  */
 
-/**global GeoMashup, MarkerClusterer */
+/**global GeoMashup, MarkerClusterer, Modernizr */
 
 /**
  * Override addMarkers to kick off clustering.
@@ -16,38 +16,35 @@ GeoMashup.addMarkers = function( markers ) {
 			minimumClusterSize: 4,
 			maxZoom: parseInt( this.opts.cluster_max_zoom ),
 			zoomOnClick: true,
-			styles: [
-				{
-					fontFamily: 'Ubuntu Condensed,Trebuchet MS,Verdana,sans-serif',
-					textColor: 'white',
-					height: 45,
-					width: 45,
-					url: this.opts.url_path + '/images/cluster.png'
-				}
+			styles: []
+		},
+		base_style = {
+			fontFamily: 'Ubuntu Condensed,Trebuchet MS,Verdana,sans-serif',
+			textColor: 'white'
+		},
+		sizes = [ 45, 52, 63, 75, 90 ];
 
-			]
-		};
+	function icon_url( size ) {
+		var url = GeoMashup.opts.url_path;
+		if ( Modernizr.backgroundsize ) {
+			url += '/images/cluster.png';
+		} else {
+			url += '/images/cluster-' + size + '.png';
+		}
+		return url;
+	}
+
 	this.forEach( markers, function( i, marker ) {
 		this.map.addMarker( marker );
 		proprietary_markers.push( marker.proprietary_marker );
 	} );
 
-	options.styles.push( this.clone( options.styles[0]) );
-	options.styles[1].width = 52;
-	options.styles[1].height = 52;
-	options.styles[1].textSize = 12;
-	options.styles.push( this.clone( options.styles[0]) );
-	options.styles[2].width = 63;
-	options.styles[2].height = 63;
-	options.styles[2].textSize = 13;
-	options.styles.push( this.clone( options.styles[0]) );
-	options.styles[3].width = 75;
-	options.styles[3].height = 75;
-	options.styles[3].textSize = 14;
-	options.styles.push( this.clone( options.styles[0]) );
-	options.styles[4].width = 90;
-	options.styles[4].height = 90;
-	options.styles[4].textSize = 15;
+	this.forEach( sizes, function( i, size ) {
+		options.styles[i] = this.clone( base_style );
+		options.styles[i].width = size;
+		options.styles[i].height = size;
+		options.styles[i].url = icon_url( size );
+	} );
 	/**
 	 * The MarkerClustererPlus object is being created. Use this to change the options.
 	 * @name GeoMashup#markerClustererOptions
