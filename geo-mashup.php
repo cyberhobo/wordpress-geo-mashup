@@ -1173,7 +1173,7 @@ class GeoMashup {
 				"height=\"{$map_data['height']}\" width=\"{$map_data['width']}\" seamless=\"seamless\"></iframe></div>";
 		}
 		$map_number++;
-		return $content;
+		return apply_filters( 'geo_mashup_map_content', $content, $map_data );
 	}
 
 	/**
