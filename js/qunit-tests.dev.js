@@ -1,5 +1,5 @@
 /*global QUnit, asyncTest, ok, equal, start, jQuery, gm_test_data */
-/*jslint browser: true */
+/*jslint browser: true, nomen: true */
 
 jQuery( function( $ ) {
 	var location_count = parseInt( gm_test_data.location_count, 10 );
@@ -69,7 +69,7 @@ jQuery( function( $ ) {
 	} );
 
 	asyncTest( "googlev3 clustering", 10, function() {
-		loadTestFrame( gm_test_data.global_urls['googlev3'], function() {
+		loadTestFrame( gm_test_data.global_urls.googlev3, function() {
 			var gm = window.frames[gm_test_data.name].GeoMashup;
 
 			equal( gm.opts.cluster_max_zoom, '9', 'cluster max zoom is 9' );
