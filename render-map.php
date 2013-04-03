@@ -129,9 +129,9 @@ class GeoMashupRenderMap {
 			$style_url_path = $geo_mashup_custom->file_url( 'map-style.css' );
 		}
 		if ( empty( $style_url_path ) ) {
-			GeoMashup::register_style( 'geo-mashup-map-style', 'css/map-style-default.css' );
+			GeoMashup::register_style( 'geo-mashup-map-style', 'css/map-style-default.css', GEO_MASHUP_VERSION );
 		} else {
-			 wp_register_style( 'geo-mashup-map-style', $style_url_path );
+			 wp_register_style( 'geo-mashup-map-style', $style_url_path, GEO_MASHUP_VERSION );
 		}
 		wp_enqueue_style( 'geo-mashup-map-style' );
 		self::enqueue_style( 'geo-mashup-map-style' );
