@@ -1169,8 +1169,10 @@ class GeoMashup {
 		} else if ( $static ) {
 			$content = "<div class=\"gm-map\">$map_image</div>";
 		} else {
+			$frame_height = $map_data['height'] . ( '%' === substr( $map_data['height'], -1 ) ? '' : 'px' );
+			$frame_width = $map_data['width'] . ( '%' === substr( $map_data['width'], -1 ) ? '' : 'px' );
 			$content =  "<div class=\"gm-map\"><iframe name=\"{$map_data['name']}\" src=\"{$iframe_src}\" " .
-				"height=\"{$map_data['height']}\" width=\"{$map_data['width']}\" seamless=\"seamless\"></iframe></div>";
+				"style=\"height: $frame_height; width: $frame_width; border: none;\"></iframe></div>";
 		}
 		$map_number++;
 		return apply_filters( 'geo_mashup_map_content', $content, $map_data );
