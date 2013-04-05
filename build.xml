@@ -57,6 +57,7 @@
 					<exclude name="*mapiconmaker.dev.js"/>
 					<exclude name="*qunit.dev.js"/>
 					<exclude name="*qunit-close-enough.dev.js"/>
+					<exclude name="*modernizr.dev.js"/>
 					<exclude name="mxn/*"/>
 				</fileset>
 			</path>
