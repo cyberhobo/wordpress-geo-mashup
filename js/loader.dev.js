@@ -14,11 +14,13 @@ GeoMashupLoader = {
 		html.push(name);
 		html.push('" src="');
 		html.push(frame_url);
-		html.push('" height="');
+		html.push('" style="height:');
 		html.push(height);
-		html.push('" width="');
+		html.push( height.slice( -1 ) === '%' ? '' : 'px' );
+		html.push('; width:');
 		html.push(width);
-		html.push('" marginheight="0" marginwidth="0" frameborder="0" scrolling="no"></iframe>');
+		html.push( width.slice( -1 ) === '%' ? '' : 'px' );
+		html.push('; overflow: hidden; border: none;"></iframe>');
 		element.innerHTML = html.join('');
 	}
 };
