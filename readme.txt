@@ -2,8 +2,8 @@
 Contributors: cyberhobo
 Donate Link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=11045324
 Tags: map, maps, google maps, google map, mapping, mashup, geo, google, geocms
-Requires at least: 3.4
-Tested up to: 3.5.1
+Requires at least: 3.5
+Tested up to: 3.6-beta2
 Stable tag: 1.5.3
  
 Include Google and OpenStreetMap maps in posts and pages, and map posts, pages, and other objects on global maps. Make WordPress into a GeoCMS.
@@ -28,6 +28,7 @@ Some popular features are:
 	They can show just one category, custom taxonomy term, or custom post type, for example
 	Clicking on a post marker shows a customizable summary of the post or page in an info window
   * A Geo Search widget enables searching for content by distance from a search location
+  * Marker clustering for Google maps
   * Location can be saved for all post types (including pages) users, and comments
   * Synchronize [Geodata](http://codex.wordpress.org/Geodata) with the Geo location mobile client and other plugins
   * Support for both standard WordPress [shortcodes](http://codex.wordpress.org/Shortcode_API) and [template tags](http://codex.wordpress.org/Template_Tags/How_to_Pass_Tag_Parameters) to add maps to your site.
@@ -111,6 +112,9 @@ for the best way to keep your custom files safe moving forward.
 == Change Log ==
 
 Features are generally added in one-dot releases, while two-dot releases contain fixes and small updates.
+
+= 1.6.0 May 1 2013 =
+[milestone 1.6 changes](http://code.google.com/p/wordpress-geo-mashup/issues/list?can=1&q=Milestone%3D1.6)
 
 = 1.5.3 Feb 25 2013 =
 [milestone 1.5.3 changes](http://code.google.com/p/wordpress-geo-mashup/issues/list?can=1&q=Milestone%3D1.5.3)
