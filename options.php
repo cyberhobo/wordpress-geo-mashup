@@ -174,9 +174,9 @@ function geo_mashup_options_page() {
 		var selector = '#geo-mashup-settings-form',
 			$obscure_settings = $('.obscure').hide();
 		$( selector ).tabs( {
-			selected: <?php echo $selected_tab ?>,
-			select: function ( event, ui ) {
-				$( '#geo-mashup-selected-tab' ).val( ui.index );
+			active: <?php echo $selected_tab ?>,
+			activate: function ( event, ui ) {
+				$( '#geo-mashup-selected-tab' ).val( ui.newTab.index() );
 			}
 		} );
 		$( '#import_custom_field' ).suggest( ajaxurl + '?action=geo_mashup_suggest_custom_keys', {
