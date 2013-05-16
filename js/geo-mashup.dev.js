@@ -844,7 +844,7 @@ GeoMashup = {
 	/**
 	 * Whether a marker is currently visible on the map.
 	 * @param {Marker} marker
-	 * @param {Boolean} False if the marker is hidden or outside the current viewport.
+	 * @return {Boolean} False if the marker is hidden or outside the current viewport.
 	 */
 	isMarkerVisible : function( marker ) {
 		// Provider override
