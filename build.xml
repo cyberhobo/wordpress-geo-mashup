@@ -137,7 +137,8 @@
 			<arg value="${source}/js/geo-mashup.dev.js"/>
 			<arg value="${source}/js/geo-mashup-google.dev.js"/>
 			<arg value="${source}/js/geo-mashup-mxn.dev.js"/>
-			<arg value="${source}/js/taxonomy.dev.js"/>
+			<arg value="${source}/js/geo-mashup-markerclusterer.dev.js"/>
+            <arg value="${source}/js/taxonomy.dev.js"/>
 			<arg value="-t=tools/jsdoc-toolkit/templates/jsdoc"/>
 			<arg value="-d=${docs.dir}"/>
 		</java>

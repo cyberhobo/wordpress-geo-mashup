@@ -581,7 +581,10 @@ GeoMashup.createMap = function(container, opts) {
 			'intersectPadding' : 3
 		};
 		/**
-		 * Clusterer options are being set.
+		 * <a href="http://googlemapsapi.martinpearman.co.uk/readarticle.php?article_id=4">ClusterMarker</a>
+		 * options are being set on a Google v2 map.
+		 *
+		 * @see markerClustererOptions for Google v3.
 		 * @name GeoMashup#clusterOptions
 		 * @event
 		 * @param {GeoMashupOptions} properties Geo Mashup configuration data

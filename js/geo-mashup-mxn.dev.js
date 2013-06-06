@@ -97,15 +97,6 @@ GeoMashup.createTermLine = function ( term_data ) {
 	 */
 	this.doAction( 'categoryLine', this.opts, term_data.line );
 
-
-	/**
-	 * A term line will be added with the given options.
-	 * @name GeoMashup#termLineOptions
-	 * @event
-	 * @param {Object} options Modifiable <a href="http://mapstraction.github.com/mxn/build/latest/docs/symbols/mxn.Polyline.html#addData">Mapstraction</a>
-	 *   or <a href="http://code.google.com/apis/maps/documentation/javascript/v2/reference.html#GPolylineOptions">Google</a> Polyline options
-	 */
-	this.doAction( 'termLineOptions', options );
 	/**
 	 * A term line will be added with the given options.
 	 * @name GeoMashup#termLineOptions

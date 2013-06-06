@@ -46,7 +46,9 @@ GeoMashup.addMarkers = function( markers ) {
 		options.styles[i].url = icon_url( size );
 	} );
 	/**
-	 * The MarkerClustererPlus object is being created. Use this to change the options.
+	 * <a href="http://google-maps-utility-library-v3.googlecode.com/svn/trunk/markerclustererplus/docs/reference.html#MarkerClustererOptions">MarkerClustererPlus options</a>
+	 * are being set for a Google v3 map.
+	 *
 	 * @name GeoMashup#markerClustererOptions
 	 * @event
 	 * @param {Object} options Modifiable <a href="http://google-maps-utility-library-v3.googlecode.com/svn/trunk/markerclustererplus/docs/reference.html#MarkerClustererOptions">MarkerClustererOptions</a>.
