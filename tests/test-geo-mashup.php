@@ -561,6 +561,77 @@ class GeoMashup_Unit_Tests extends WP_UnitTestCase {
 		$this->assertContains( 'center_lat=' . substr( $location->lat, 0, 5 ), GeoMashup::show_on_map_link() );
 	}
 
+	/**
+	 * Issue 639
+	 */
+	function test_wp_query() {
+		$unlocated_post_ids = $this->factory->post->create_many( 2 );
+
+		$nv_location = GeoMashupDB::blank_location();
+		$nv_location->lat = 39.5;
+		$nv_location->lng = -119.0;
+		$nv_location->country_code = 'US';
+		$nv_location->admin_code = 'NV';
+		$nv_location->postal_code = '89403';
+		$nv_location->locality_name = 'Fallon';
+
+		$nv_post_ids = $this->factory->post->create_many( 2 );
+		GeoMashupDB::set_object_location( 'post', $nv_post_ids[0], $nv_location, false );
+		GeoMashupDB::set_object_location( 'post', $nv_post_ids[1], $nv_location, false );
+
+		$ca_location = GeoMashupDB::blank_location();
+		$ca_location->lat = 39.32;
+		$ca_location->lng = -120.19;
+		$ca_location->country_code = 'US';
+		$ca_location->admin_code = 'CA';
+		$ca_location->postal_code = '96161';
+		$ca_location->locality_name = 'Fallon';
+
+		$ca_post_id = $this->factory->post->create();
+		GeoMashupDB::set_object_location( 'post', $ca_post_id, $ca_location, false );
+
+		$all_post_query = new WP_Query( array(
+			'posts_per_page' => -1,
+		) );
+		$this->assertEquals( 5, $all_post_query->post_count );
+
+		$nv_query = new WP_Query( array(
+			'posts_per_page' => -1,
+			'geo_mashup_query' => array(
+				array(
+					'admin_code' => 'NV',
+				)
+			)
+		) );
+		$this->assertEquals( 2, $nv_query->post_count );
+		$this->assertContains( $nv_post_ids[0], wp_list_pluck( $nv_query->posts, 'ID' ) );
+		$this->assertContains( $nv_post_ids[1], wp_list_pluck( $nv_query->posts, 'ID' ) );
+
+		$zip_query = new WP_Query( array(
+			'posts_per_page' => -1,
+			'geo_mashup_query' => array(
+				array(
+					'postal_code' => '96161',
+				)
+			),
+		) );
+		$this->assertEquals( 1, $zip_query->post_count );
+		$this->assertEquals( $ca_post_id, $zip_query->posts[0]->ID );
+
+		$radius_query = new WP_Query( array(
+			'posts_per_page' => -1,
+			'geo_mashup_query' => array(
+				array(
+					'near_lat' => 39,
+					'near_lng' => -120,
+					'radius_km' => 10,
+				)
+			),
+		) );
+		$this->assertEquals( 1, $radius_query->post_count );
+		$this->assertEquals( $ca_post_id, $radius_query->posts[0]->ID );
+	}
+
 	private function get_nv_test_location() {
 		$location = GeoMashupDB::blank_location();
 		$location->lat = 40;

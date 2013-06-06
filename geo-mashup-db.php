@@ -1461,8 +1461,7 @@ class GeoMashupDB {
 	 * <code>
 	 * $results = GeoMashupDB::get_object_locations( array( 
 	 * 	'object_name' => 'user', 
-	 * 	'map_cat' => '3,4,8', 
-	 * 	'minlat' => 30, 
+	 * 	'minlat' => 30,
 	 * 	'maxlat' => 40, 
 	 * 	'minlon' => -106, 
 	 * 	'maxlat' => -103 ) 
