@@ -379,11 +379,11 @@ Mapstraction.prototype.dragging = function(on) {
 };
 
 /**
- * Change the current api on the fly
+ * Change the current API on the fly
+ * @param {Object} element The DOM element containing the map
  * @param {String} api The API to swap to
- * @param element
  */
-Mapstraction.prototype.swap = function(element,api) {
+Mapstraction.prototype.swap = function(element, api) {
 	if (this.api === api) {
 		return;
 	}
@@ -401,7 +401,7 @@ Mapstraction.prototype.swap = function(element,api) {
 	this.api = api;
 	this.onload[api] = [];
 	
-	if (this.maps[this.api] === undefined) {	
+	if (!this.maps.hasOwnProperty(this.api)) {
 		init.apply(this);
 
 		for (var i = 0; i < this.markers.length; i++) {
@@ -1503,7 +1503,6 @@ Marker.prototype.addData = function(options){
 					break;
 				case 'hover':
 					this.setHover(options.hover);
-					this.setHoverIcon(options.hoverIcon);
 					break;
 				case 'hoverIcon':
 					this.setHoverIcon(options.hoverIcon);

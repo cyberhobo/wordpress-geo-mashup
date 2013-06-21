@@ -11,9 +11,10 @@ Mapstraction: {
 				mapTypeId: google.maps.MapTypeId.ROADMAP,
 				mapTypeControl: false,
 				mapTypeControlOptions: null,
-				navigationControl: false,
-				navigationControlOptions: null,
-				scrollwheel: false
+				zoomControl: false,
+				zoomControlOptions: null,
+				scrollwheel: false,
+				disableDoubleClickZoom: true
 			};
 
 			// Background color can only be set at construction
@@ -36,12 +37,13 @@ Mapstraction: {
 			}
 			if (this.addControlsArgs) {
 				if (this.addControlsArgs.zoom) {
-					myOptions.navigationControl = true;
+					myOptions.zoomControl = true;
 					if (this.addControlsArgs.zoom == 'small') {
-						myOptions.navigationControlOptions = {style: google.maps.NavigationControlStyle.SMALL};
+						myOptions.zoomControlOptions = {style: google.maps.ZoomControlStyle.SMALL};
 					}
 					if (this.addControlsArgs.zoom == 'large') {
-						myOptions.navigationControlOptions = {style: google.maps.NavigationControlStyle.ZOOM_PAN};
+						myOptions.zoomControlOptions = {style: google.maps.ZoomControlStyle.LARGE};
+						myOptions.panControl = true;
 					}
 				}
 				if (this.addControlsArgs.map_type) {
@@ -112,9 +114,21 @@ Mapstraction: {
 		if (this.options.enableDragging) {
 			myOptions.draggable = true;
 		} 
+		else{
+			myOptions.draggable = false;
+		}
 		if (this.options.enableScrollWheelZoom){
 			myOptions.scrollwheel = true;
 		} 
+		else{
+			myOptions.scrollwheel = false;
+		}
+		if(this.options.disableDoubleClickZoom){
+			myOptions.disableDoubleClickZoom = true;
+		}
+		else{
+			myOptions.disableDoubleClickZoom = false;
+		}
 		map.setOptions(myOptions);
 	},
 
@@ -130,13 +144,17 @@ Mapstraction: {
 		var myOptions;
 		// remove old controls
 
-		// Google has a combined zoom and pan control.
-		if (args.zoom || args.pan) {
+		if (args.pan) {
+			map.setOptions({ panControl: true });
+		}
+		if (args.zoom) {
+			myOptions = { zoomControl: true };
 			if (args.zoom == 'large'){ 
-				this.addLargeControls();
+				myOptions.zoomControlOptions = {style: google.maps.ZoomControlStyle.LARGE};
 			} else { 
-				this.addSmallControls();
+				myOptions.zoomControlOptions = {style: google.maps.ZoomControlStyle.SMALL};
 			}
+			map.setOptions(myOptions);
 		}
 		if (args.scale){
 			myOptions = {
@@ -162,8 +180,8 @@ Mapstraction: {
 	addSmallControls: function() {
 		var map = this.maps[this.api];
 		var myOptions = {
-			navigationControl: true,
-			navigationControlOptions: {style: google.maps.NavigationControlStyle.SMALL}
+			zoomControl: true,
+			zoomControlOptions: {style: google.maps.ZoomControlStyle.SMALL}
 		};
 		map.setOptions(myOptions);
 
@@ -175,8 +193,9 @@ Mapstraction: {
 	addLargeControls: function() {
 		var map = this.maps[this.api];
 		var myOptions = {
-			navigationControl: true,
-			navigationControlOptions: {style:google.maps.NavigationControlStyle.DEFAULT}
+			zoomControl: true,
+			zoomControlOptions: {style:google.maps.ZoomControlStyle.LARGE},
+			panControl: true
 		};
 		map.setOptions(myOptions);
 		this.addControlsArgs.pan = true;
@@ -604,11 +623,11 @@ Polyline: {
 	},
 	
 	show: function() {
-		throw 'Not implemented';
+		this.proprietary_polyline.setVisible(true);
 	},
 
 	hide: function() {
-		throw 'Not implemented';
+		this.proprietary_polyline.setVisible(false);
 	}
 	
 }
