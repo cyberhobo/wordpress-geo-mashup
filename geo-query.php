@@ -55,11 +55,11 @@ class GeoMashupQuery {
 	 * @since 1.3
 	 */
 	public static function generate_object_html( ) {
-		global $geo_mashup_options, $geo_mashup_custom, $comments, $users;
+		global $comments, $users;
 
 		$object_ids = $_GET['object_ids'];
 		if ( !is_array( $object_ids ) ) {
-			$object_ids = split( ',', $object_ids );
+			$object_ids = explode( ',', $object_ids );
 		}
 		$object_name = ( isset( $_GET['object_name'] ) ) ? $_GET['object_name'] : 'post';
 		$template_base = ( isset( $_GET['template'] ) ) ? $_GET['template'] : '';
@@ -145,7 +145,7 @@ class GeoMashupQuery {
 	 * @param string|array $args Formatting options
 	 */
 	public static function list_comments( $args = '' ) {
-		global $wp_query, $comments, $in_comment_loop;
+		global $comments, $in_comment_loop;
 
 		if ( function_exists( 'wp_list_comments' ) ) {
 			wp_list_comments( $args, $comments );
@@ -202,7 +202,7 @@ class GeoMashupQuery {
 	 * @param string|array $args Formatting options
 	 */
 	public static function list_users( $args = '' ) {
-		global $wp_query, $users, $in_user_loop;
+		global $users, $in_user_loop;
 
 		if ( empty( $users ) ) {
 			return;
