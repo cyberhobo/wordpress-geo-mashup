@@ -561,6 +561,26 @@ class GeoMashup_Unit_Tests extends WP_UnitTestCase {
 		$this->assertContains( 'center_lat=' . substr( $location->lat, 0, 5 ), GeoMashup::show_on_map_link() );
 	}
 
+	/**
+	 * issue 650
+	 */
+	function test_map_dimension_postfix() {
+		$post_id = $this->factory->post->create();
+		GeoMashupDB::set_object_location( 'post', $post_id, $this->rand_location(), false );
+
+		$no_postfix_html = GeoMashup::map( 'map_content=global&width=300&height=300' );
+		$this->assertThat( $no_postfix_html, $this->stringContains( 'width: 300px;' ) );
+		$this->assertThat( $no_postfix_html, $this->stringContains( 'height: 300px;' ) );
+
+		$px_postfix_html = GeoMashup::map( 'map_content=global&width=300px&height=300px' );
+		$this->assertThat( $px_postfix_html, $this->stringContains( 'width: 300px;' ) );
+		$this->assertThat( $px_postfix_html, $this->stringContains( 'height: 300px;' ) );
+
+		$percent_postfix_html = GeoMashup::map( 'map_content=global&width=30%&height=30%' );
+		$this->assertThat( $percent_postfix_html, $this->stringContains( 'width: 30%;' ) );
+		$this->assertThat( $percent_postfix_html, $this->stringContains( 'height: 30%;' ) );
+	}
+
 	private function get_nv_test_location() {
 		$location = GeoMashupDB::blank_location();
 		$location->lat = 40;

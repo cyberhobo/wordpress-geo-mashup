@@ -16,10 +16,8 @@ GeoMashupLoader = {
 		html.push(frame_url);
 		html.push('" style="height:');
 		html.push(height);
-		html.push( height.slice( -1 ) === '%' ? '' : 'px' );
 		html.push('; width:');
 		html.push(width);
-		html.push( width.slice( -1 ) === '%' ? '' : 'px' );
 		html.push('; overflow: hidden; border: none;"></iframe>');
 		element.innerHTML = html.join('');
 	}

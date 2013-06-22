@@ -1106,15 +1106,20 @@ class GeoMashup {
 			return '<!-- ' . __( 'Geo Mashup omitted a map with no located objects found.', 'GeoMashup' ) . '-->';
 		unset( $map_data['load_empty_map'] );
 
+		$width_units = ( '%' === substr( $map_data['width'], -1 ) ) ? '%' : 'px';
+		$width = intval( $map_data['width'] );
+		$width_style = $width . $width_units;
+		$height_units = ( '%' === substr( $map_data['width'], -1 ) ) ? '%' : 'px';
+		$height = intval( $map_data['height'] );
+		$height_style = $height . $height_units;
+
 		$map_image = '';
 		if ( $static ) {
 			// Static maps have a limit of 50 markers: http://code.google.com/apis/maps/documentation/staticmaps/#Markers
 			$atts['limit'] = empty( $atts['limit'] ) ? 50 : $atts['limit'];
 
 			if ( !empty( $map_data['object_data']['objects'] ) ) {
-				$image_width = str_replace( '%', '', $map_data['width'] );
-				$image_height = str_replace( '%', '', $map_data['height'] );
-				$map_image = '<img src="http://maps.google.com/maps/api/staticmap?size='.$image_width.'x'.$image_height;
+				$map_image = '<img src="http://maps.google.com/maps/api/staticmap?size='.$width.'x'.$height;
 				if ( count( $map_data['object_data']['objects'] ) == 1) {
 					$map_image .= '&amp;center=' . $map_data['object_data']['objects'][0]['lat'] . ',' .
 						$map_data['object_data']['objects'][0]['lng'];
@@ -1154,11 +1159,11 @@ class GeoMashup {
 				$content .= "<a href=\"{$iframe_src}\">$click_to_load_text</a>";
 			} else {
 				self::$add_loader_script = true;
-				$style = "height:{$map_data['height']}px;width:{$map_data['width']}px;background-color:#ddd;".
-					"background-image:url(".GEO_MASHUP_URL_PATH."/images/wp-gm-pale.png);".
-					"background-repeat:no-repeat;background-position:center;cursor:pointer;";
+				$style = "height: {$height_style}; width: {$width_style}; background-color: #ddd;".
+					"background-image: url(".GEO_MASHUP_URL_PATH."/images/wp-gm-pale.png);".
+					"background-repeat: no-repeat;background-position:center; cursor: pointer;";
 				$content = "<div class=\"gm-map\" style=\"$style\" " .
-					"onclick=\"GeoMashupLoader.addMapFrame(this,'$iframe_src','{$map_data['height']}','{$map_data['width']}','{$map_data['name']}')\">";
+					"onclick=\"GeoMashupLoader.addMapFrame(this,'$iframe_src','{$height_style}','{$width_style}','{$map_data['name']}')\">";
 				if ( $static ) {
 					// TODO: test whether click to load really works with a static map
 					$content .= $map_image . '</div>';
@@ -1169,10 +1174,8 @@ class GeoMashup {
 		} else if ( $static ) {
 			$content = "<div class=\"gm-map\">$map_image</div>";
 		} else {
-			$frame_height = $map_data['height'] . ( '%' === substr( $map_data['height'], -1 ) ? '' : 'px' );
-			$frame_width = $map_data['width'] . ( '%' === substr( $map_data['width'], -1 ) ? '' : 'px' );
 			$content =  "<div class=\"gm-map\"><iframe name=\"{$map_data['name']}\" src=\"{$iframe_src}\" " .
-				"style=\"height: $frame_height; width: $frame_width; border: none; overflow: hidden;\"></iframe></div>";
+				"style=\"height: $height_style; width: $width_style; border: none; overflow: hidden;\"></iframe></div>";
 		}
 		$map_number++;
 		return apply_filters( 'geo_mashup_map_content', $content, $map_data );
