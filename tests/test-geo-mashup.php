@@ -568,17 +568,17 @@ class GeoMashup_Unit_Tests extends WP_UnitTestCase {
 		$post_id = $this->factory->post->create();
 		GeoMashupDB::set_object_location( 'post', $post_id, $this->rand_location(), false );
 
-		$no_postfix_html = GeoMashup::map( 'map_content=global&width=300&height=300' );
-		$this->assertThat( $no_postfix_html, $this->stringContains( 'width: 300px;' ) );
-		$this->assertThat( $no_postfix_html, $this->stringContains( 'height: 300px;' ) );
+		$html = GeoMashup::map( 'map_content=global&width=400&height=300px' );
+		$this->assertThat( $html, $this->stringContains( 'width: 400px;' ) );
+		$this->assertThat( $html, $this->stringContains( 'height: 300px;' ) );
 
-		$px_postfix_html = GeoMashup::map( 'map_content=global&width=300px&height=300px' );
-		$this->assertThat( $px_postfix_html, $this->stringContains( 'width: 300px;' ) );
-		$this->assertThat( $px_postfix_html, $this->stringContains( 'height: 300px;' ) );
+		$html = GeoMashup::map( 'map_content=global&width=40%&height=300' );
+		$this->assertThat( $html, $this->stringContains( 'width: 40%;' ) );
+		$this->assertThat( $html, $this->stringContains( 'height: 300px;' ) );
 
-		$percent_postfix_html = GeoMashup::map( 'map_content=global&width=30%&height=30%' );
-		$this->assertThat( $percent_postfix_html, $this->stringContains( 'width: 30%;' ) );
-		$this->assertThat( $percent_postfix_html, $this->stringContains( 'height: 30%;' ) );
+		$html = GeoMashup::map( 'map_content=global&width=400px&height=30%' );
+		$this->assertThat( $html, $this->stringContains( 'width: 400px;' ) );
+		$this->assertThat( $html, $this->stringContains( 'height: 30%;' ) );
 	}
 
 	private function get_nv_test_location() {

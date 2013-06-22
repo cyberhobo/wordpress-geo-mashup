@@ -1109,7 +1109,7 @@ class GeoMashup {
 		$width_units = ( '%' === substr( $map_data['width'], -1 ) ) ? '%' : 'px';
 		$width = intval( $map_data['width'] );
 		$width_style = $width . $width_units;
-		$height_units = ( '%' === substr( $map_data['width'], -1 ) ) ? '%' : 'px';
+		$height_units = ( '%' === substr( $map_data['height'], -1 ) ) ? '%' : 'px';
 		$height = intval( $map_data['height'] );
 		$height_style = $height . $height_units;
 
