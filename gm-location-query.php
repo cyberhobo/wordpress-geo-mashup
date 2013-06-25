@@ -62,7 +62,7 @@ class GM_Location_Query {
 	 *
 	 * @param string $primary_table
 	 * @param string $primary_id_column
-	 * @return array columns, join, where, having
+	 * @return array columns, join, where, groupby
 	 */
 	public function get_sql( $primary_table, $primary_id_column ) {
 		/** @var wpdb $wpdb */
@@ -81,7 +81,7 @@ class GM_Location_Query {
 		$where = array(
 			$wpdb->prepare( "$relationship_table.object_name=%s", $this->query_args['object_name'] ),
 		);
-		$having = '';
+		$groupby= '';
 
 		// Check for a radius query
 		if ( ! empty( $this->query_args['radius_mi'] ) ) {
@@ -95,7 +95,7 @@ class GM_Location_Query {
 			$cols .= ", 6371 * 2 * ASIN( SQRT( POWER( SIN( RADIANS( $near_lat - $location_table.lat ) / 2 ), 2 ) +
 				COS( RADIANS( $near_lat ) ) * COS( RADIANS( $location_table.lat ) ) *
 				POWER( SIN( RADIANS( $near_lng - $location_table.lng ) / 2 ), 2 ) ) ) as distance_km";
-			$having = "distance_km < $radius_km";
+			$groupby = "$primary_table.$primary_id_column HAVING distance_km < $radius_km";
 			// approx 111 km per degree latitude
 			$this->query_args['min_lat'] = $near_lat - ( $radius_km / 111 );
 			$this->query_args['max_lat'] = $near_lat + ( $radius_km / 111 );
@@ -120,7 +120,7 @@ class GM_Location_Query {
 		$where_fields = array( 'admin_code', 'country_code', 'postal_code', 'geoname', 'locality_name' );
 		foreach ( $where_fields as $field ) {
 			if ( $this->query_args[$field] )
-				$where[] = $wpdb->prepare( "$primary_table.$field = %s", $this->query_args[$field] );
+				$where[] = $wpdb->prepare( "$location_table.$field = %s", $this->query_args[$field] );
 		}
 
 		if ( ! empty( $where ) )
@@ -128,7 +128,7 @@ class GM_Location_Query {
 		else
 			$where = '';
 
-		return compact( 'cols', 'join', 'where', 'having' );
+		return array( $cols, $join, $where, $groupby );
 	}
 
 }

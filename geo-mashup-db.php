@@ -51,6 +51,15 @@ class GeoMashupDB {
 	public static function init() {
 		global $geo_mashup_options;
 
+		// Enable the geo_mashup_query var
+		add_filter( 'query_vars', array( 'GeoMashupDB', 'query_vars' ) );
+		add_filter( 'posts_fields', array( 'GeoMashupDB', 'posts_fields' ), 10, 2 );
+		add_filter( 'posts_join', array( 'GeoMashupDB', 'posts_join' ), 10, 2 );
+		add_filter( 'posts_where', array( 'GeoMashupDB', 'posts_where' ), 10, 2 );
+		add_filter( 'posts_groupby', array( 'GeoMashupDB', 'posts_groupby' ), 10, 2 );
+		add_filter( 'posts_orderby', array( 'GeoMashupDB', 'posts_orderby' ), 10, 2 );
+		add_action( 'parse_query', array( 'GeoMashupDB', 'parse_query' ) );
+
 		// Some caching plugins don't implement this
 		if ( function_exists( 'wp_cache_add_global_groups' ) )
 			wp_cache_add_global_groups( array( 'geo_mashup_object_locations', 'geo_mashup_locations' ) );
@@ -279,8 +288,9 @@ class GeoMashupDB {
 	 * @since 1.4
 	 * 
 	 * @param string $meta_type 'post','user','comment'
-	 * @param int $object_id 
-	 * @param array $location The location to copy from.
+	 * @param int $object_id
+	 * @param string $geo_date
+	 * @param int $location_id The location to copy from.
 	 */
 	public static function copy_to_geodata( $meta_type, $object_id, $geo_date, $location_id ) {
 
@@ -321,7 +331,6 @@ class GeoMashupDB {
 	 *
 	 * @since 1.2
 	 * 
-	 * @param string $new_version If provided, overwrites any currently installed version.
 	 * @return string The installed database version.
 	 */
 	public static function installed_version() {
@@ -391,6 +400,7 @@ class GeoMashupDB {
 	 * Use the public wrapper GeoMashup::join_post_queries()
 	 * 
 	 * @since 1.3
+	 * @deprecated Use the geo_mashup_query query var
 	 *
 	 * @param bool $new_value If provided, replaces the current active state.
 	 * @return bool The current state.
@@ -399,27 +409,10 @@ class GeoMashupDB {
 		static $active = null;
 
 		if ( is_bool( $new_value ) ) {
-			if ( $new_value ) {
-
-				add_filter( 'query_vars', array( 'GeoMashupDB', 'query_vars' ) );
-				add_filter( 'posts_fields', array( 'GeoMashupDB', 'posts_fields' ) );
-				add_filter( 'posts_join', array( 'GeoMashupDB', 'posts_join' ) );
-				add_filter( 'posts_where', array( 'GeoMashupDB', 'posts_where' ) );
-				add_filter( 'posts_orderby', array( 'GeoMashupDB', 'posts_orderby' ) );
-				add_action( 'parse_query', array( 'GeoMashupDB', 'parse_query' ) );
-
-			} else if ( ! is_null( $active ) ) {
-
-				remove_filter( 'query_vars', array( 'GeoMashupDB', 'query_vars' ) );
-				remove_filter( 'posts_fields', array( 'GeoMashupDB', 'posts_fields' ) );
-				remove_filter( 'posts_join', array( 'GeoMashupDB', 'posts_join' ) );
-				remove_filter( 'posts_where', array( 'GeoMashupDB', 'posts_where' ) );
-				remove_filter( 'posts_orderby', array( 'GeoMashupDB', 'posts_orderby' ) );
-				remove_action( 'parse_query', array( 'GeoMashupDB', 'parse_query' ) );
-			}
- 
+			_deprecated_function( __METHOD__, '1.7', 'the geo_mashup_query query var' );
 			$active = $new_value;
 		}
+
 		return $active;
 	}
 
@@ -432,30 +425,47 @@ class GeoMashupDB {
 	 * @since 1.3
 	 */
 	public static function query_vars( $public_query_vars ) {
-		$public_query_vars[] = 'geo_mashup_date';
-		$public_query_vars[] = 'geo_mashup_saved_name';
-		$public_query_vars[] = 'geo_mashup_country_code';
-		$public_query_vars[] = 'geo_mashup_postal_code';
-		$public_query_vars[] = 'geo_mashup_admin_code';
-		$public_query_vars[] = 'geo_mashup_locality';
+		$public_query_vars[] = 'geo_mashup_query';
+
+		if ( self::join_post_queries() ) {
+			$public_query_vars[] = 'geo_mashup_date';
+			$public_query_vars[] = 'geo_mashup_saved_name';
+			$public_query_vars[] = 'geo_mashup_country_code';
+			$public_query_vars[] = 'geo_mashup_postal_code';
+			$public_query_vars[] = 'geo_mashup_admin_code';
+			$public_query_vars[] = 'geo_mashup_locality';
+		}
+
 		return $public_query_vars;
 	}
 
 	/**
-	 * Set or get custom orderby field.
+	 * Set or get custom data associated with a WP_Query object.
 	 *
-	 * @since 1.3
-	 * 
-	 * @param string $new_value Replace any current value.
-	 * @return string Current orderby field.
+	 * @since 1.7
+	 *
+	 * @param WP_Query $query
+	 * @param string $key Optional - return all data for the query if missing.
+	 * @param mixed $value Optional - set or overwrite data for the key if present.
+	 * @return mixed Extension data if present.
 	 */
-	private static function query_orderby( $new_value = null ) {
-		static $orderby = null;
+	private static function query_extension( $query, $key = null, $value = null ) {
+		static $extensions = array();
 
-		if ( !is_null( $new_value ) ) {
-			$orderby = $new_value;
-		}
-		return $orderby;
+		$hash = spl_object_hash( $query );
+
+		if ( is_null( $key ) )
+			return $extensions;
+
+		if ( !isset( $extensions[$hash] ) )
+			$extensions[$hash] = array();
+
+		if ( !is_null( $value ) )
+			$extensions[$hash][$key] = $value;
+		else if ( !isset( $extensions[$hash][$key] ) )
+			return null;
+
+		return $extensions[$hash][$key];
 	}
 
 	/**
@@ -471,33 +481,41 @@ class GeoMashupDB {
 	public static function parse_query( $query ) {
 		global $wpdb;
 
-		if ( empty( $query->query_vars['orderby'] ) ) 
+		$geo_mashup_query = $query->get( 'geo_mashup_query' );
+		if ( $geo_mashup_query ) {
+			self::query_extension( $query, 'geo_mashup_query', new GM_Location_Query( $geo_mashup_query ) );
+			if ( 'distance' == $query->get( 'orderby' ) )
+				self::query_extension( $query, 'orderby', 'distance_km' );
+			return;
+		}
+
+		if ( !self::join_post_queries() )
 			return;
 
 		// Check for geo mashup fields in the orderby before they are removed as invalid
 		switch ( $query->query_vars['orderby'] ) {
 			case 'geo_mashup_date':
-				self::query_orderby( $wpdb->prefix . 'geo_mashup_location_relationships.geo_date' );
+				self::query_extension( $query, 'orderby', $wpdb->prefix . 'geo_mashup_location_relationships.geo_date' );
 				break;
 
 			case 'geo_mashup_locality':
-				self::query_orderby( $wpdb->prefix . 'geo_mashup_locations.locality_name' );
+				self::query_extension( $query, 'orderby', $wpdb->prefix . 'geo_mashup_locations.locality_name' );
 				break;
 
 			case 'geo_mashup_saved_name':
-				self::query_orderby( $wpdb->prefix . 'geo_mashup_locations.saved_name' );
+				self::query_extension( $query, 'orderby', $wpdb->prefix . 'geo_mashup_locations.saved_name' );
 				break;
 
 			case 'geo_mashup_country_code':
-				self::query_orderby( $wpdb->prefix . 'geo_mashup_locations.country_code' );
+				self::query_extension( $query, 'orderby', $wpdb->prefix . 'geo_mashup_locations.country_code' );
 				break;
 
 			case 'geo_mashup_admin_code':
-				self::query_orderby( $wpdb->prefix . 'geo_mashup_locations.admin_code' );
+				self::query_extension( $query, 'orderby', $wpdb->prefix . 'geo_mashup_locations.admin_code' );
 				break;
 
 			case 'geo_mashup_postal_code':
-				self::query_orderby( $wpdb->prefix . 'geo_mashup_locations.postal_code' );
+				self::query_extension( $query, 'orderby', $wpdb->prefix . 'geo_mashup_locations.postal_code' );
 				break;
 		}
 	}
@@ -510,13 +528,38 @@ class GeoMashupDB {
 	 * 
 	 * @since 1.3
 	 */
-	public static function posts_fields( $fields ) {
+	public static function posts_fields( $fields, $query ) {
 		global $wpdb;
 
-		$fields .= ',' . $wpdb->prefix . 'geo_mashup_location_relationships.geo_date' .
-			',' . $wpdb->prefix . 'geo_mashup_locations.*';
+		$geo_mashup_query = self::query_extension( $query, 'geo_mashup_query' );
+		if ( $geo_mashup_query ) {
+			list( $_fields, $_join, $_where, $_having ) = $geo_mashup_query->get_sql( $wpdb->posts, 'ID' );
+			$fields .= $_fields;
+		} elseif ( self::join_post_queries() ) {
+			$fields .= ',' . $wpdb->prefix . 'geo_mashup_location_relationships.geo_date' .
+				',' . $wpdb->prefix . 'geo_mashup_locations.*';
+		}
 
 		return $fields;
+	}
+
+	/**
+	 * WordPress filter to join Geo Mashup tables to WordPress post queries.
+	 *
+	 * posts_groupby {@link http://codex.wordpress.org/Plugin_API/Filter_Reference filter}
+	 * called by WordPress.
+	 *
+	 * @since 1.3
+	 */
+	public static function posts_groupby( $groupby, $query ) {
+		global $wpdb;
+
+		$geo_mashup_query = self::query_extension( $query, 'geo_mashup_query' );
+		if ( $geo_mashup_query ) {
+			list( ,,, $groupby ) = $geo_mashup_query->get_sql( $wpdb->posts, 'ID' );
+		}
+
+		return $groupby;
 	}
 
 	/**
@@ -527,13 +570,19 @@ class GeoMashupDB {
 	 * 
 	 * @since 1.3
 	 */
-	public static function posts_join( $join ) {
+	public static function posts_join( $join, $query ) {
 		global $wpdb;
 
-		$gmlr = $wpdb->prefix . 'geo_mashup_location_relationships';
-		$gml = $wpdb->prefix . 'geo_mashup_locations';
-		$join .= " INNER JOIN $gmlr ON ($gmlr.object_name = 'post' AND $gmlr.object_id = $wpdb->posts.ID)" .
-			" INNER JOIN $gml ON ($gml.id = $gmlr.location_id) ";
+		$geo_mashup_query = self::query_extension( $query, 'geo_mashup_query' );
+		if ( $geo_mashup_query ) {
+			list( $_fields, $_join, $_where, $_having ) = $geo_mashup_query->get_sql( $wpdb->posts, 'ID' );
+			$join .= $_join;
+		} elseif ( self::join_post_queries() ) {
+			$gmlr = $wpdb->prefix . 'geo_mashup_location_relationships';
+			$gml = $wpdb->prefix . 'geo_mashup_locations';
+			$join .= " INNER JOIN $gmlr ON ($gmlr.object_name = 'post' AND $gmlr.object_id = $wpdb->posts.ID)" .
+				" INNER JOIN $gml ON ($gml.id = $gmlr.location_id) ";
+		}
 
 		return $join;
 	}
@@ -546,8 +595,17 @@ class GeoMashupDB {
 	 * 
 	 * @since 1.3
 	 */
-	public static function posts_where( $where ) {
+	public static function posts_where( $where, $query ) {
 		global $wpdb;
+
+		$geo_mashup_query = self::query_extension( $query, 'geo_mashup_query' );
+		if ( $geo_mashup_query ) {
+			list( $_fields, $_join, $_where, $_having ) = $geo_mashup_query->get_sql( $wpdb->posts, 'ID' );
+			return $where . $_where;
+		}
+
+		if ( !self::join_post_queries() )
+			return $where;
 
 		$gmlr = $wpdb->prefix . 'geo_mashup_location_relationships';
 		$gml = $wpdb->prefix . 'geo_mashup_locations';
@@ -587,16 +645,15 @@ class GeoMashupDB {
 	 * 
 	 * @since 1.3
 	 */
-	public static function posts_orderby( $orderby ) {
+	public static function posts_orderby( $orderby, $query ) {
 		global $wpdb;
 
-		if ( self::query_orderby() ) {
+		$orderby_replacement = self::query_extension( $query, 'orderby' );
+		if ( $orderby_replacement ) {
 
 			// Now our "invalid" value has been replaced by post_date, we change it back
-			$orderby = str_replace( "$wpdb->posts.post_date", self::query_orderby(), $orderby );
+			$orderby = str_replace( "$wpdb->posts.post_date", $orderby_replacement, $orderby );
 
-			// Reset for subsequent queries
-			self::query_orderby( false );
 		}
 		return $orderby;
 	}

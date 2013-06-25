@@ -598,9 +598,7 @@ class GeoMashup_Unit_Tests extends WP_UnitTestCase {
 		$nv_query = new WP_Query( array(
 			'posts_per_page' => -1,
 			'geo_mashup_query' => array(
-				array(
-					'admin_code' => 'NV',
-				)
+				'admin_code' => 'NV',
 			)
 		) );
 		$this->assertEquals( 2, $nv_query->post_count );
@@ -610,9 +608,7 @@ class GeoMashup_Unit_Tests extends WP_UnitTestCase {
 		$zip_query = new WP_Query( array(
 			'posts_per_page' => -1,
 			'geo_mashup_query' => array(
-				array(
-					'postal_code' => '96161',
-				)
+				'postal_code' => '96161',
 			),
 		) );
 		$this->assertEquals( 1, $zip_query->post_count );
@@ -621,11 +617,9 @@ class GeoMashup_Unit_Tests extends WP_UnitTestCase {
 		$radius_query = new WP_Query( array(
 			'posts_per_page' => -1,
 			'geo_mashup_query' => array(
-				array(
-					'near_lat' => 39,
-					'near_lng' => -120,
-					'radius_km' => 10,
-				)
+				'near_lat' => 39,
+				'near_lng' => -120,
+				'radius_km' => 50,
 			),
 		) );
 		$this->assertEquals( 1, $radius_query->post_count );

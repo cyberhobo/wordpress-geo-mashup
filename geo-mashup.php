@@ -111,6 +111,7 @@ class GeoMashup {
 	private static function load_dependencies() {
 		global $geo_mashup_options;
 		include_once( GEO_MASHUP_DIR_PATH . '/geo-mashup-options.php' );
+		include_once( GEO_MASHUP_DIR_PATH . '/gm-location-query.php' );
 		include_once( GEO_MASHUP_DIR_PATH . '/geo-mashup-db.php' );
 		include_once( GEO_MASHUP_DIR_PATH . '/geo-mashup-ui-managers.php' );
 
