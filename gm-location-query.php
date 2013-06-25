@@ -8,15 +8,6 @@
 class GM_Location_Query {
 
 	/**
-	 * Standard response when the query should not return any rows.
-	 *
-	 * @since 1.7.0
-	 * @access private
-	 * @var string
-	 */
-	private static $no_results = array( 'join' => '', 'where' => ' AND 0 = 1' );
-
-	/**
 	 * @var array query args
 	 */
 	private $query_args;
