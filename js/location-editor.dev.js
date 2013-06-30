@@ -1,8 +1,6 @@
 /**
+ * @fileOverview
  * The default Geo Mashup location editor AJAX interface.
- *
- * @package GeoMashup
- * @subpackage Client
  */
 
 /*global jQuery */
@@ -14,18 +12,17 @@
 var GeoMashupLocationEditor, geo_mashup_location_editor;
 
 /**
- * The public interface for the location editor.
+ * @namespace The public interface for the location editor.
  *
- * The camel case name is against convention, since it is not 
- * a constructor, and is deprecated. Use geo_mashup_location_editor.
- *
- * The object is created with event properties defined. Other members are 
+ * The object is created with event properties defined. Other members are
  * added when the editor loads.
+ *
+ * Events use the Mapstraction mxn.Event interface.
  *
  * @public
  * @since 1.4
  */
-geo_mashup_location_editor = GeoMashupLocationEditor = {
+geo_mashup_location_editor = {
 
 	/**
 	 * The object id being edited
@@ -43,22 +40,30 @@ geo_mashup_location_editor = GeoMashupLocationEditor = {
 
 	/**
 	 * An event fired when the map is created.
+	 * @event
+	 * @name geo_mashup_location_editor#mapCreated
 	 */
 	mapCreated: new mxn.Event( 'mapCreated', this ),
 
 	/**
 	 * An event fired when the editor has loaded.
+	 * @event
+	 * @name geo_mashup_location_editor#loaded
 	 */
 	loaded: new mxn.Event( 'loaded', this ),
 
 	/**
 	 * An event fired when a marker is created.
+	 * @event
+	 * @name geo_mashup_location_editor#markerCreated
 	 * @param object Marker filter.
 	 */
 	markerCreated: new mxn.Event( 'markerCreated', this ),
 
 	/**
 	 * An event fired when a marker is selected.
+	 * @event
+	 * @name geo_mashup_location_editor#markerSelected
 	 * @param object Marker filter.
 	 */
 	markerSelected: new mxn.Event( 'markerSelected', this )
@@ -915,3 +920,10 @@ var
 	}
 
 } );
+
+
+/**
+* @deprecated GeoMashupLocationEditor The camel case name is against convention, since it is not
+* a constructor, and is deprecated. Use geo_mashup_location_editor.
+*/
+GeoMashupLocationEditor = geo_mashup_location_editor;
