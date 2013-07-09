@@ -326,6 +326,9 @@ class GeoMashupSearchHandling {
 		if ( $ignore )
 			return $content;
 
+		// Remove slashes added to form input
+		$_POST = stripslashes_deep( $_POST );
+
 		// Remove this filter to prevent recursion
 		remove_filter( 'the_content', array( __CLASS__, 'filter_the_content' ) );
 

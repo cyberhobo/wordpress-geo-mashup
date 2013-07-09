@@ -581,6 +581,45 @@ class GeoMashup_Unit_Tests extends WP_UnitTestCase {
 		$this->assertThat( $html, $this->stringContains( 'height: 30%;' ) );
 	}
 
+	function test_search() {
+		require_once GEO_MASHUP_DIR_PATH . '/geo-mashup-search.php';
+		$not_found_post = $this->factory->post->create_and_get();
+		GeoMashupDB::set_object_location( 'post', $not_found_post->ID, $this->get_nv_test_location(), false );
+
+		$found_post = $this->factory->post->create_and_get();
+		$location = GeoMashupDB::blank_location();
+		$location->lat = 45.61806;
+		$location->lng = 5.226046;
+		GeoMashupDB::set_object_location( 'post', $found_post->ID, $location, false );
+
+		$search_args = array(
+			'location_text' => "l'isle d'abeau, France",
+			'object_name' => 'post',
+			'radius' => 30,
+			'units' => 'km',
+			'geo_mashup_search_submit' => 'Search',
+		);
+		$search = new GeoMashupSearch( $search_args );
+		$this->assertTrue( $search->have_posts(), 'Search did not find any posts (internet required).' );
+		$this->assertContains( $found_post->ID, $search->get_the_IDs(), 'Search did not find the target post.' );
+		$this->assertNotContains( $not_found_post->ID, $search->get_the_IDs(), 'Search found the wrong post.' );
+
+		ob_start();
+		$search->load_template();
+		$output = ob_get_clean();
+
+		$this->assertThat(
+			$output,
+			$this->stringContains( $search_args['location_text'] ),
+			'Default results template does not contain search text.'
+		);
+		$this->assertThat(
+			$output,
+			$this->stringContains( $found_post->post_title ),
+			'Default results template does not contain found post title.'
+		);
+	}
+
 	private function get_nv_test_location() {
 		$location = GeoMashupDB::blank_location();
 		$location->lat = 40;

@@ -26,7 +26,7 @@
 	<select id="<?php echo $widget_id; ?>-categories" name="map_cat">
 	<?php foreach ( $categories as $cat ) : ?>
 		<option value="<?php echo $cat->term_id; ?>"<?php
-			if ( $widget->get_default_value( $_REQUEST, 'map_cat' ) == $cat->term_id )
+			if ( $widget->get_default_value( $_POST, 'map_cat' ) == $cat->term_id )
 				echo ' selected="selected"';
 		?>><?php echo $cat->name; ?></option>
 	<?php endforeach; ?>
@@ -39,7 +39,7 @@
 	<select id="<?php echo $widget_id; ?>-radius" name="radius">
 	<?php foreach ( $radii as $radius ) : ?>
 		<option value="<?php echo $radius; ?>"<?php
-			if ( $widget->get_default_value( $_REQUEST, 'radius' ) == $radius )
+			if ( $widget->get_default_value( $_POST, 'radius' ) == $radius )
 					echo ' selected="selected"';
 		?>><?php echo $radius; ?></option>
 	<?php endforeach; ?>
@@ -51,8 +51,8 @@
 	
 	<label for="<?php echo $widget_id; ?>-input"><?php _e( empty( $radii ) ? 'near' : 'of', 'GeoMashup' ); ?></label>
 	<input id="<?php echo $widget_id; ?>-input" class="geo-mashup-search-input" name="location_text" type="text" value="<?php
-		if ( !empty( $_REQUEST['location_text'] ) ) {
-			echo esc_attr( $_REQUEST['location_text'] );
+		if ( !empty( $_POST['location_text'] ) ) {
+			echo esc_attr( $_POST['location_text'] );
 		} else if ( !empty( $instance['default_search_text'] ) ) {
 			echo esc_attr( $instance['default_search_text'] );
 		}
