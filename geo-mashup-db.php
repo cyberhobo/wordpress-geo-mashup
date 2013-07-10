@@ -1680,8 +1680,11 @@ class GeoMashupDB {
 				add_filter( 'get_translatable_documents', array( __CLASS__, 'wpml_filter_get_translatable_documents' ) );
 
 				// Apply post query filters, changing posts table references to our alias
-				$table_string = str_replace( $wpdb->posts . '.', 'o.', $GLOBALS['sitepress']->posts_join_filter( $table_string ) );
-				$where = str_replace( $wpdb->posts . '.', 'o.', $GLOBALS['sitepress']->posts_where_filter( $where ) );
+				// As of WPML 2.9 these calls can trigger undefined variable notices
+				$table_string = $GLOBALS['sitepress']->posts_join_filter( $table_string, null );
+				$table_string = str_replace( $wpdb->posts . '.', 'o.', $table_string );
+				$where = $GLOBALS['sitepress']->posts_where_filter( $where, null );
+				$where = str_replace( $wpdb->posts . '.', 'o.', $where );
 
 				remove_filter( 'get_translatable_documents', array( __CLASS__, 'wpml_filter_get_translatable_documents' ) );
 			}
