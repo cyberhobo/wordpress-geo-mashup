@@ -603,8 +603,8 @@ class GeoMashup {
 	public static function get_searchable_post_types() {
 		global $geo_mashup_options;
 		$located_types = $geo_mashup_options->get( 'overall', 'located_post_types' );
-		$searchable_types = get_post_types( array('exclude_from_search' => false) );
-		return array_merge( $located_types, $searchable_types );
+		$searchable_types = array_keys( get_post_types( array('exclude_from_search' => false) ) );
+		return array_unique( array_merge( $located_types, $searchable_types ) );
 	}
 
 	/**
