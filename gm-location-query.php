@@ -7,10 +7,33 @@
  */
 class GM_Location_Query {
 
+	static private $no_results = array( '', '', '', '' );
+
 	/**
 	 * @var array query args
 	 */
 	private $query_args;
+
+	/**
+	 * Gets the default query arguments.
+	 * @return array
+	 */
+	static public function get_defaults() {
+		return array(
+			'object_name' => 'post',
+			'minlat' => null,
+			'maxlat' => null,
+			'minlon' => null,
+			'maxlon' => null,
+			'radius_km' => null,
+			'radius_mi' => null,
+			'near_lat' => null,
+			'near_lng' => null,
+			'admin_code' => null,
+			'country_code' => null,
+			'locality_name' => null,
+		);
+	}
 
 	/**
 	 * Constructor.
@@ -28,22 +51,10 @@ class GM_Location_Query {
 	 *  )
 	 */
 	public function __construct( $loc_query ) {
-		$default_args = array(
-			'object_name' => 'post',
-			'minlat' => null,
-			'maxlat' => null,
-			'minlon' => null,
-			'maxlon' => null,
-			'radius_km' => null,
-			'radius_mi' => null,
-			'near_lat' => null,
-			'near_lng' => null,
-			'admin_code' => null,
-			'country_code' => null,
-			'locality_name' => null,
-		);
+		$default_args = self::get_defaults();
 		$this->query_args = wp_parse_args( $loc_query, $default_args );
 	}
+
 
 	/**
 	 * Generates SQL clauses to be appended to a main query.
@@ -85,13 +96,13 @@ class GM_Location_Query {
 			$radius_km = floatval( $this->query_args['radius_km'] );
 			$cols .= ", 6371 * 2 * ASIN( SQRT( POWER( SIN( RADIANS( $near_lat - $location_table.lat ) / 2 ), 2 ) +
 				COS( RADIANS( $near_lat ) ) * COS( RADIANS( $location_table.lat ) ) *
-				POWER( SIN( RADIANS( $near_lng - $location_table.lng ) / 2 ), 2 ) ) ) as distance_km";
+				POWER( SIN( RADIANS( $near_lng - $location_table.lng ) / 2 ), 2 ) ) ) AS distance_km";
 			$groupby = "$primary_table.$primary_id_column HAVING distance_km < $radius_km";
 			// approx 111 km per degree latitude
-			$this->query_args['min_lat'] = $near_lat - ( $radius_km / 111 );
-			$this->query_args['max_lat'] = $near_lat + ( $radius_km / 111 );
-			$this->query_args['min_lon'] = $near_lng - ( $radius_km / ( abs( cos( deg2rad( $near_lat ) ) ) * 111 ) );
-			$this->query_args['max_lon'] = $near_lng + ( $radius_km / ( abs( cos( deg2rad( $near_lat ) ) ) * 111 ) );
+			$this->query_args['minlat'] = $near_lat - ( $radius_km / 111 );
+			$this->query_args['maxlat'] = $near_lat + ( $radius_km / 111 );
+			$this->query_args['minlon'] = $near_lng - ( $radius_km / ( abs( cos( deg2rad( $near_lat ) ) ) * 111 ) );
+			$this->query_args['maxlon'] = $near_lng + ( $radius_km / ( abs( cos( deg2rad( $near_lat ) ) ) * 111 ) );
 		}
 
 		// Ignore nonsense bounds
@@ -103,10 +114,10 @@ class GM_Location_Query {
 		}
 
 		// Build bounding where clause
-		if ( is_numeric( $this->query_args['minlat'] ) ) $where[] = "lat > {$this->query_args['minlat']}";
-		if ( is_numeric( $this->query_args['minlon'] ) ) $where[] = "lng > {$this->query_args['minlon']}";
-		if ( is_numeric( $this->query_args['maxlat'] ) ) $where[] = "lat < {$this->query_args['maxlat']}";
-		if ( is_numeric( $this->query_args['maxlon'] ) ) $where[] = "lng < {$this->query_args['maxlon']}";
+		if ( is_numeric( $this->query_args['minlat'] ) ) $where[] = "$location_table.lat > {$this->query_args['minlat']}";
+		if ( is_numeric( $this->query_args['minlon'] ) ) $where[] = "$location_table.lng > {$this->query_args['minlon']}";
+		if ( is_numeric( $this->query_args['maxlat'] ) ) $where[] = "$location_table.lat < {$this->query_args['maxlat']}";
+		if ( is_numeric( $this->query_args['maxlon'] ) ) $where[] = "$location_table.lng < {$this->query_args['maxlon']}";
 
 		$where_fields = array( 'admin_code', 'country_code', 'postal_code', 'geoname', 'locality_name' );
 		foreach ( $where_fields as $field ) {
@@ -114,10 +125,10 @@ class GM_Location_Query {
 				$where[] = $wpdb->prepare( "$location_table.$field = %s", $this->query_args[$field] );
 		}
 
-		if ( ! empty( $where ) )
-			$where = ' AND ( ' . implode( " AND ", $where ) . ' )';
-		else
-			$where = '';
+		if ( count( $where ) === 1 and empty( $groupby ) )
+			return self::$no_results;
+
+		$where = ' AND ( ' . implode( " AND ", $where ) . ' )';
 
 		return array( $cols, $join, $where, $groupby );
 	}

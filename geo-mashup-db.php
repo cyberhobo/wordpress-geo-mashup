@@ -1515,37 +1515,8 @@ class GeoMashupDB {
 			$wheres[] = 'comment_approved = \'1\'';
 		}
 
-		// Check for a radius query
-		if ( ! empty( $query_args['radius_mi'] ) ) {
-			$query_args['radius_km'] = 1.609344 * floatval( $query_args['radius_mi'] );
-		}
-		if ( ! empty( $query_args['radius_km'] ) and is_numeric( $query_args['near_lat'] ) and is_numeric( $query_args['near_lng'] ) ) {
-			// Earth radius = 6371 km, 3959 mi
-			$near_lat = floatval( $query_args['near_lat'] );
-			$near_lng = floatval( $query_args['near_lng'] );
-			$radius_km = floatval( $query_args['radius_km'] );
-			$field_string .= ", 6371 * 2 * ASIN( SQRT( POWER( SIN( RADIANS( $near_lat - gml.lat ) / 2 ), 2 ) + COS( RADIANS( $near_lat ) ) * COS( RADIANS( gml.lat ) ) * POWER( SIN( RADIANS( $near_lng - gml.lng ) / 2 ), 2 ) ) ) as distance_km";
-			$having = "HAVING distance_km < $radius_km";
-			// approx 111 km per degree latitude
-			$query_args['min_lat'] = $near_lat - ( $radius_km / 111 );
-			$query_args['max_lat'] = $near_lat + ( $radius_km / 111 );
-			$query_args['min_lon'] = $near_lng - ( $radius_km / ( abs( cos( deg2rad( $near_lat ) ) ) * 111 ) );
-			$query_args['max_lon'] = $near_lng + ( $radius_km / ( abs( cos( deg2rad( $near_lat ) ) ) * 111 ) );
-		}
-
-		// Ignore nonsense bounds
-		if ( $query_args['minlat'] && $query_args['maxlat'] && $query_args['minlat'] > $query_args['maxlat'] ) {
-			$query_args['minlat'] = $query_args['maxlat'] = null;
-		}
-		if ( $query_args['minlon'] && $query_args['maxlon'] && $query_args['minlon'] > $query_args['maxlon'] ) {
-			$query_args['minlon'] = $query_args['maxlon'] = null;
-		}
-
-		// Build bounding where clause
-		if ( is_numeric( $query_args['minlat'] ) ) $wheres[] = "lat > {$query_args['minlat']}";
-		if ( is_numeric( $query_args['minlon'] ) ) $wheres[] = "lng > {$query_args['minlon']}";
-		if ( is_numeric( $query_args['maxlat'] ) ) $wheres[] = "lat < {$query_args['maxlat']}";
-		if ( is_numeric( $query_args['maxlon'] ) ) $wheres[] = "lng < {$query_args['maxlon']}";
+		$location_args = wp_array_slice_assoc( $query_args, array_keys( GM_Location_Query::get_defaults() ) );
+		$location_query = new GM_Location_Query( $location_args );
 
 		// Handle inclusion and exclusion of terms
 		if ( ! empty( $query_args['tax_query'] ) and is_array( $query_args['tax_query'] ) )
@@ -1635,14 +1606,12 @@ class GeoMashupDB {
 		if ( ! empty( $query_args['exclude_object_ids'] ) ) 
 			$wheres[] = 'gmlr.object_id NOT IN ( ' . $wpdb->escape( $query_args['exclude_object_ids'] ) . ' )';
 
-		$no_where_fields = array( 'object_name', 'object_id', 'geo_date' );
-		foreach ( self::blank_object_location( ARRAY_A ) as $field => $blank ) {
-			if ( !in_array( $field, $no_where_fields) && isset( $query_args[$field] ) ) {
-				$wheres[] = $wpdb->prepare( "gml.$field = %s", $query_args[$field] );
-			}
-		}
-
-		$where = ( empty( $wheres ) ) ? '' :  'WHERE ' . implode( ' AND ', $wheres ); 
+		list( $l_cols, $l_join, $l_where, $l_groupby ) = $location_query->get_sql( 'o', $object_store['id_column'] );
+		$field_string .= $l_cols;
+		$table_string .= $l_join;
+		if ( empty( $groupby ) and !empty( $l_groupby ) )
+			$groupby = 'GROUP BY ' . $l_groupby;
+		$where = ( empty( $wheres ) ) ? '' :  'WHERE ' . implode( ' AND ', $wheres ) . $l_where;
 		$sort = ( isset( $query_args['sort'] ) ) ? $query_args['sort'] : $object_store['sort'];
 		$sort = ( empty( $sort ) ) ? '' : 'ORDER BY ' . $wpdb->escape( $sort );
 		$offset = absint( $query_args['map_offset'] );
@@ -1653,7 +1622,7 @@ class GeoMashupDB {
 			$limit = '';
 
 		if ( ! $query_args['suppress_filters'] ) {
-			$field_string	= apply_filters( 'geo_mashup_locations_fields', $field_string );
+			$field_string = apply_filters( 'geo_mashup_locations_fields', $field_string );
 			$table_string = apply_filters( 'geo_mashup_locations_join', $table_string );
 			$where = apply_filters( 'geo_mashup_locations_where', $where );
 			$sort = apply_filters( 'geo_mashup_locations_orderby', $sort );

@@ -33,7 +33,6 @@ class GM_Post_Query {
 		if ( isset( $wp_query->_gm_orderby ) )
 			$clauses['orderby'] = $wp_query->_gm_orderby;
 
-
 		return $clauses;
 	}
 }
