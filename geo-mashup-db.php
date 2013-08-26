@@ -207,7 +207,6 @@ class GeoMashupDB {
 
 		$existing_location = self::get_object_location( $meta_type, $object_id );
 
-		$restore_insert_id = $wpdb->insert_id; // Work around a little WP bug in add_meta #15465
 		$location = array();
 
 		// Do nothing unless both latitude and longitude exist for the object
@@ -259,8 +258,11 @@ class GeoMashupDB {
 				}
 				$location = self::blank_location( ARRAY_A );
 				self::geocode( implode( ',', $geocode_values ), $location );
-				if ( self::$geocode_error ) 
+				if ( self::$geocode_error ) {
 					update_metadata( $meta_type, $object_id, 'geocoding_error', self::$geocode_error->get_error_message() );
+					if ( empty( $location['lat'] ) or empty( $location['lng'] ) )
+						return;
+				}
 			}
 		}
 
@@ -277,7 +279,6 @@ class GeoMashupDB {
 		$geo_date = get_metadata( $meta_type, $object_id, 'geo_date', true );
 		self::set_object_location( $meta_type, $object_id, $location, null, $geo_date );
 		self::add_geodata_sync_hooks();
-		$wpdb->insert_id = $restore_insert_id;
 	}
 
 	/**
