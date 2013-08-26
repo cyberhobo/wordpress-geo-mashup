@@ -624,6 +624,9 @@ class GeoMashup_Unit_Tests extends WP_UnitTestCase {
 		) );
 		$this->assertEquals( 1, $radius_query->post_count );
 		$this->assertEquals( $ca_post_id, $radius_query->posts[0]->ID );
+		$radius_query->the_post();
+		$this->assertTrue( $GLOBALS['post']->distance_km >= 0, 'Distance field is not present or negative.' );
+		$this->assertTrue( $GLOBALS['post']->distance_km < 50, 'Distance field is greater than radius.' );
 	}
 
 	private function get_nv_test_location() {
