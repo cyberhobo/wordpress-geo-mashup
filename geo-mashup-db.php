@@ -352,7 +352,8 @@ class GeoMashupDB {
 	 * 	'sort' => 'foo_order ASC' )
 	 * ); 
 	 * </code>
-	 * Would add the necessary information for a custom table of foo objects.
+	 * Would add the necessary information for a custom table of foo objects. By convention the
+	 * object name is the singular form of the table name without a prefix.
 	 *
 	 * @since 1.3
 	 * 
@@ -391,6 +392,23 @@ class GeoMashupDB {
 			$objects[$object_name] = $new_storage;
 		} 
 		return ( isset( $objects[$object_name] ) ) ? $objects[$object_name] : false;
+	}
+
+	/**
+	 * Return a conventional object name given a table name.
+	 *
+	 * @since 1.7
+	 *
+	 * @param string $table
+	 * @return string
+	 */
+	public static function table_to_object_name( $table ) {
+		global $wpdb;
+		$object_name = str_replace( $wpdb->prefix, '', $table );
+		if ( 's' === substr( $object_name, -1 ) ) {
+			$object_name = substr( $object_name, 0, strlen( $object_name ) - 1 );
+		}
+		return $object_name;
 	}
 
 	/**

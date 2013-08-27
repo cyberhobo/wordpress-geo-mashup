@@ -629,6 +629,34 @@ class GeoMashup_Unit_Tests extends WP_UnitTestCase {
 		$this->assertTrue( $GLOBALS['post']->distance_km < 50, 'Distance field is greater than radius.' );
 	}
 
+	function test_gm_location_query() {
+		global $wpdb;
+
+		$unlocated_user_ids = $this->factory->user->create_many( 2 );
+		$nv_user_id = $this->factory->user->create();
+		$nv_location = $this->get_nv_test_location();
+		GeoMashupDB::set_object_location( 'user', $nv_user_id, $nv_location, false );
+
+		$location_query = new GM_Location_Query( array(
+			'minlat' => $nv_location->lat - 1,
+			'maxlat' => $nv_location->lat + 1,
+			'minlon' => $nv_location->lng - 1,
+			'maxlon' => $nv_location->lng + 1,
+		) );
+		list( $cols, $join, $where, $groupby ) = $location_query->get_sql( $wpdb->users, 'ID' );
+		$this->assertEmpty( $cols, 'Got a column value for a non-radius query.' );
+		$this->assertEmpty( $groupby, 'Got a groupby value for a non-radius query.' );
+
+		$sql = "SELECT {$wpdb->users}.ID
+			FROM {$wpdb->users}{$join}
+			WHERE 1=1{$where}
+		";
+
+		$results = $wpdb->get_results( $sql );
+		$this->assertCount( 1, $results );
+		$this->assertEquals( $nv_user_id, $results[0]->ID );
+	}
+
 	private function get_nv_test_location() {
 		$location = GeoMashupDB::blank_location();
 		$location->lat = 40;

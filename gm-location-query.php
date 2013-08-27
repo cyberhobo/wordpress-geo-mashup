@@ -20,7 +20,7 @@ class GM_Location_Query {
 	 */
 	static public function get_defaults() {
 		return array(
-			'object_name' => 'post',
+			'object_name' => null,
 			'minlat' => null,
 			'maxlat' => null,
 			'minlon' => null,
@@ -72,6 +72,9 @@ class GM_Location_Query {
 
 		if ( empty( $this->query_args ) )
 			return self::$no_results;
+
+		if ( empty( $this->query_args['object_name'] ) )
+			$this->query_args['object_name'] = GeoMashupDB::table_to_object_name( $primary_table );
 
 		$location_table = $wpdb->prefix . 'geo_mashup_locations';
 		$relationship_table = $wpdb->prefix . 'geo_mashup_location_relationships';
