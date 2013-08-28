@@ -657,6 +657,16 @@ class GeoMashup_Unit_Tests extends WP_UnitTestCase {
 		$this->assertEquals( $nv_user_id, $results[0]->ID );
 	}
 
+	function test_long_map_url() {
+		$post_ids = $this->generate_rand_located_posts( 3 );
+		$post_ids = array_merge( $post_ids, range( $post_ids[2], $post_ids[2] + 3000, 3 ) );
+		$html = GeoMashup::map( array(
+			'map_content' => 'global',
+			'object_ids' => implode( ',', $post_ids ),
+		) );
+		$this->assertStringMatchesFormat( '%soids=.%s', $html, 'Long id list was not compressed.' );
+	}
+
 	private function get_nv_test_location() {
 		$location = GeoMashupDB::blank_location();
 		$location->lat = 40;

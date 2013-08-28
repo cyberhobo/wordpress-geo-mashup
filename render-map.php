@@ -145,18 +145,24 @@ class GeoMashupRenderMap {
 	 */
 	public static function get_map_data() {
 
+		$map_data = null;
+
 		if ( isset( $_GET['map_data_key'] ) ) {
 			// Map data is cached in a transient
 			$map_data = get_transient( 'gmm' . $_GET['map_data_key'] );
-			if ( !$map_data ) {
-				$map_parameters = get_transient( 'gmp' . $_GET['map_data_key'] );
-				if ( $map_parameters )
-					$map_data = GeoMashup::build_map_data( $map_parameters );
-				else
-					$map_data = false;
+		}
+
+		if ( !$map_data and isset( $_GET['map_content'] ) ) {
+
+			// Try building the map data from the query string
+			if ( isset( $_GET['oids'] ) ) {
+				if ( !class_exists( 'GM_Int_list' ) )
+					include GEO_MASHUP_DIR_PATH . '/gm-int-list.php';
+				$list = new GM_Int_List( $_GET['oids'] );
+				$_GET['object_ids'] = $list->expanded();
+				unset( $_GET['oids'] );
 			}
-		} else {
-			// Try building map data from the query string
+
 			$map_data = GeoMashup::build_map_data( $_GET );
 		}
 

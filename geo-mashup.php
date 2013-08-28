@@ -1137,7 +1137,6 @@ class GeoMashup {
 
 		$atts_md5 =  md5( serialize( $atts ) );
 		set_transient( 'gmm' . $atts_md5, $map_data, 20 );
-		set_transient( 'gmp' . $atts_md5, $atts, 60*60*24 );
 
 		$src_args = array(
 			'geo_mashup_content' => 'render-map',
@@ -1147,7 +1146,16 @@ class GeoMashup {
 		if ( !empty( $atts['lang'] ) )
 			$src_args['lang'] = $atts['lang'];
 
-		$iframe_src = self::build_home_url( $src_args );
+		if ( isset( $atts['object_ids'] ) and strlen( $atts['object_ids'] ) > 1800 ) {
+			// Try to shorten the URL a bit
+			if ( !class_exists( 'GM_Int_list' ) )
+				include GEO_MASHUP_DIR_PATH . '/gm-int-list.php';
+			$id_list = new GM_Int_List( $atts['object_ids'] );
+			$atts['oids'] = $id_list->compressed();
+			unset( $atts['object_ids'] );
+		}
+
+		$iframe_src = self::build_home_url( $src_args + $atts );
 
 		$content = "";
 
