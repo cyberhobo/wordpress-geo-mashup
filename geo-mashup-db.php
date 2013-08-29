@@ -1073,7 +1073,7 @@ class GeoMashupDB {
 	private static function duplicate_geodata_type( $meta_type ) {
 		global $wpdb;
 		$object_storage = self::object_storage( $meta_type );
-		$meta_type = $wpdb->escape( $meta_type );
+		$meta_type = esc_sql( $meta_type );
 		$meta_type_id = $meta_type . '_id';
 		$meta_table = $meta_type . 'meta';
 		// Copy from meta table to geo mashup
@@ -1332,7 +1332,7 @@ class GeoMashupDB {
 		}
 		$wheres = array( );
 		foreach( $names as $name ) {
-			$wheres[] = $wpdb->escape( $name ) . ' IS NOT NULL';
+			$wheres[] = esc_sql( $name ) . ' IS NOT NULL';
 		}
 		$names = implode( ',', $names );
 
@@ -1340,17 +1340,17 @@ class GeoMashupDB {
 			$where = (array) $where;
 		}
 
-		$select_string = 'SELECT DISTINCT ' . $wpdb->escape( $names ) . "
+		$select_string = 'SELECT DISTINCT ' . esc_sql( $names ) . "
 			FROM {$wpdb->prefix}geo_mashup_locations gml
 			JOIN {$wpdb->prefix}geo_mashup_location_relationships gmlr ON gmlr.location_id = gml.id";
 
 		if ( is_array( $where ) && !empty( $where ) ) {
 			foreach ( $where as $name => $value ) {
-				$wheres[] = $wpdb->escape( $name ) . ' = \'' . $wpdb->escape( $value ) .'\'';
+				$wheres[] = esc_sql( $name ) . ' = \'' . esc_sql( $value ) .'\'';
 			}
 			$select_string .= ' WHERE ' . implode( ' AND ', $wheres );
 		}
-		$select_string .= ' ORDER BY ' . $wpdb->escape( $names );
+		$select_string .= ' ORDER BY ' . esc_sql( $names );
 
 		return $wpdb->get_results( $select_string );
 	}
@@ -1617,13 +1617,13 @@ class GeoMashupDB {
 		} 
 
 		if ( ! empty( $query_args['object_id'] ) ) {
-			$wheres[] = 'gmlr.object_id = ' . $wpdb->escape( $query_args['object_id'] );
+			$wheres[] = 'gmlr.object_id = ' . esc_sql( $query_args['object_id'] );
 		} else if ( ! empty( $query_args['object_ids'] ) ) {
-			$wheres[] = 'gmlr.object_id IN ( ' . $wpdb->escape( $query_args['object_ids'] ) .' )';
+			$wheres[] = 'gmlr.object_id IN ( ' . esc_sql( $query_args['object_ids'] ) .' )';
 		}
 
 		if ( ! empty( $query_args['exclude_object_ids'] ) ) 
-			$wheres[] = 'gmlr.object_id NOT IN ( ' . $wpdb->escape( $query_args['exclude_object_ids'] ) . ' )';
+			$wheres[] = 'gmlr.object_id NOT IN ( ' . esc_sql( $query_args['exclude_object_ids'] ) . ' )';
 
 		list( $l_cols, $l_join, $l_where, $l_groupby ) = $location_query->get_sql( 'o', $object_store['id_column'] );
 		$field_string .= $l_cols;
@@ -1632,7 +1632,7 @@ class GeoMashupDB {
 			$groupby = 'GROUP BY ' . $l_groupby;
 		$where = ( empty( $wheres ) ) ? '' :  'WHERE ' . implode( ' AND ', $wheres ) . $l_where;
 		$sort = ( isset( $query_args['sort'] ) ) ? $query_args['sort'] : $object_store['sort'];
-		$sort = ( empty( $sort ) ) ? '' : 'ORDER BY ' . $wpdb->escape( $sort );
+		$sort = ( empty( $sort ) ) ? '' : 'ORDER BY ' . esc_sql( $sort );
 		$offset = absint( $query_args['map_offset'] );
 		$limit = absint( $query_args['limit'] );
 		if ( $limit or $offset )
@@ -1999,7 +1999,7 @@ class GeoMashupDB {
 			INNER JOIN {$wpdb->term_relationships} tr ON tr.object_id = p.ID 
 			INNER JOIN {$wpdb->term_taxonomy} tt ON tt.term_taxonomy_id = tr.term_taxonomy_id
 			INNER JOIN {$wpdb->prefix}geo_mashup_location_relationships gmlr ON gmlr.object_id = p.ID AND gmlr.object_name = 'post'
-			WHERE tt.term_id = " . $wpdb->escape( $category_id ) ."
+			WHERE tt.term_id = " . esc_sql( $category_id ) ."
 			AND p.post_status='publish'";
 		return $wpdb->get_var( $select_string );
 	}
@@ -2109,7 +2109,7 @@ class GeoMashupDB {
 		if ( isset( $_GET['q'] ) ) {
 			$limit = (int) apply_filters( 'postmeta_form_limit', 30 );
 			$stub = trim( array_pop( explode( ',', $_GET['q'] ) ) );
-			$like = $wpdb->escape( $stub );
+			$like = esc_sql( $stub );
 			$keys = $wpdb->get_col( "
 				SELECT meta_key
 				FROM $wpdb->postmeta
