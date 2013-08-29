@@ -990,6 +990,33 @@ jQuery.extend( GeoMashup, {
 			} );
 		};
 
+		/**
+		 * Get the current visibility of a term.
+		 * @methodof GeoMashup
+		 * @since 1.7
+		 *
+		 * @param term_id
+		 * @param taxonomy
+		 * @returns {*}
+		 */
+		term_manager.isTermVisible = function( term_id, taxonomy ) {
+
+			if ( !loaded_terms[taxonomy] || !loaded_terms[taxonomy].terms[term_id] ) {
+				return false;
+			}
+
+			return loaded_terms[taxonomy].terms[term_id].visible;
+		}
+
+		term_manager.isTermLineVisible = function( term_id, taxonomy ) {
+
+			if ( !loaded_terms[taxonomy] || !loaded_terms[taxonomy].terms[term_id] ) {
+				return false;
+			}
+
+			return GeoMashup.isLineVisible( loaded_terms[taxonomy].terms[term_id].line );
+		}
+
 		return term_manager;
 	}()),
 

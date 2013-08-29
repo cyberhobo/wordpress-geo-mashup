@@ -17,7 +17,7 @@ jQuery( function( $ ) {
 
 	$.each( gm_test_data.test_apis, function( i, api ) {
 
-		asyncTest( api + " global loads", 9, function() {
+		asyncTest( api + " global loads", 11, function() {
 			loadTestFrame( gm_test_data.global_urls[api], function() {
 				var gm = window.frames[gm_test_data.name].GeoMashup;
 				ok( gm, 'GeoMashup object is available' );
@@ -26,6 +26,8 @@ jQuery( function( $ ) {
 				equal( gm.map.markers.length, location_count, 'a marker is created for each location' );
 				ok( gm.map.polylines, 'polylines are available' );
 				equal( gm.map.polylines.length, 1, 'a polyline is created for each term with line zoom set' );
+				ok( gm.term_manager.isTermVisible( 2, 'test_tax' ), 'term 2 is visible' );
+				ok( gm.term_manager.isTermLineVisible( 2, 'test_tax' ), 'term 2 line is visible' );
 				equal( gm.map.getZoom(), 10, 'initial zoom is as specified (10)' );
 				QUnit.close(
 					gm.map.getCenter().lat,

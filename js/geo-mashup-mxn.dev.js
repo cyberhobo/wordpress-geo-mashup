@@ -77,7 +77,7 @@ GeoMashup.loadFullPost = function( point ) {
 GeoMashup.createTermLine = function ( term_data ) {
 
 	// Polylines are close, but the openlayers implementation at least cannot hide or remove a polyline
-	var options = {color: term_data.color, width: 5, opacity: 0.5};
+	var options = {color: term_data.color, width: 5, opacity: 0.5, visible: true};
 
 	term_data.line = new mxn.Polyline(term_data.points);
 	/**
@@ -120,12 +120,7 @@ GeoMashup.createTermLine = function ( term_data ) {
 	this.map.addPolylineWithData( term_data.line, options );
 
 	if (this.map.getZoom() > term_data.max_line_zoom) {
-		try {
-			term_data.line.hide();
-		} catch( e ) {
-			// Not implemented?
-			this.map.removePolyline( term_data.line );
-		}
+		this.hideLine( term_data.line );
 	}
 };
 
@@ -418,6 +413,7 @@ GeoMashup.hideLine = function( line ) {
 	} catch( e ) {
 		this.map.removePolyline( line );
 	}
+	line.setAttribute( 'visible', false );
 };
 
 GeoMashup.showLine = function( line ) {
@@ -426,7 +422,12 @@ GeoMashup.showLine = function( line ) {
 	} catch( e ) {
 		this.map.addPolyline( line );
 	}
+	line.setAttribute( 'visible', true );
 };
+
+GeoMashup.isLineVisible = function( line ) {
+	return line.getAttribute( 'visible' );
+}
 
 GeoMashup.newLatLng = function( lat, lng ) {
 	return new mxn.LatLonPoint( lat, lng );
