@@ -74,10 +74,10 @@ GeoMashup.loadFullPost = function( point ) {
 	}
 };
 
-GeoMashup.createTermLine = function ( term_data ) {
+GeoMashup.createTermLine = function ( taxonomy, term_id, term_data ) {
 
 	// Polylines are close, but the openlayers implementation at least cannot hide or remove a polyline
-	var options = {color: term_data.color, width: 5, opacity: 0.5, visible: true};
+	var options = {color: term_data.color, width: 5, opacity: 0.5, visible: true, taxonomy: taxonomy, term_id: term_id};
 
 	term_data.line = new mxn.Polyline(term_data.points);
 	/**
@@ -85,8 +85,11 @@ GeoMashup.createTermLine = function ( term_data ) {
 	 * @name GeoMashup#termLine
 	 * @event
 	 * @param {Polyline} line
+	 * @param {String} taxonomy
+	 * @param {String} term_id
+	 * @param {Object} term_data Other properties of the term
 	 */
-	this.doAction( 'termLine', term_data.line );
+	this.doAction( 'termLine', term_data.line, taxonomy, term_id, term_data );
 	/**
 	 * A category line was created.
 	 * @name GeoMashup#categoryLine
@@ -104,18 +107,21 @@ GeoMashup.createTermLine = function ( term_data ) {
 	 * @event
 	 * @param {Object} options Modifiable <a href="http://mapstraction.github.com/mxn/build/latest/docs/symbols/mxn.Polyline.html#addData">Mapstraction</a>
 	 *   or <a href="http://code.google.com/apis/maps/documentation/javascript/v2/reference.html#GPolylineOptions">Google</a> Polyline options
+	 * @param {String} taxonomy
+	 * @param {String} term_id
+	 * @param {Object} term_data Other properties of the term
 	 */
-	this.doAction( 'termLineOptions', options );
+	this.doAction( 'termLineOptions', options, taxonomy, term_id, term_data );
 	/**
 	 * A term line will be added with the given options.
-	 * @name GeoMashup#termLineOptions
+	 * @name GeoMashup#categoryLineOptions
 	 * @event
 	 * @deprecated Use GeoMashup#termLineOptions
 	 * @param {GeoMashupOptions} properties Geo Mashup configuration data
 	 * @param {Object} options Modifiable <a href="http://mapstraction.github.com/mxn/build/latest/docs/symbols/mxn.Polyline.html#addData">Mapstraction</a>
 	 *   or <a href="http://code.google.com/apis/maps/documentation/javascript/v2/reference.html#GPolylineOptions">Google</a> Polyline options
 	 */
-	this.doAction( 'termLineOptions', this.opts, options );
+	this.doAction( 'categoryLineOptions', this.opts, options );
 
 	this.map.addPolylineWithData( term_data.line, options );
 

@@ -138,7 +138,7 @@ jQuery.extend( GeoMashup, {
 				$.each( tax_data.terms, function ( term_id, term_data ) {
 						
 					if ( term_data.max_line_zoom >= 0 ) {
-						GeoMashup.createTermLine( term_data );
+						GeoMashup.createTermLine( taxonomy, term_id, term_data );
 					}
 
 				} );
@@ -1109,7 +1109,7 @@ jQuery.extend( GeoMashup, {
 		return 'gm-cat-index-' + category_id;
 	},
 
-	createTermLine: function( term_data ) {
+	createTermLine: function( taxonomy, term_id, term_data ) {
 		//provider override
 	}
 
