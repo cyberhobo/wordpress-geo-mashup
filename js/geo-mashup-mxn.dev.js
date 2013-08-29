@@ -433,7 +433,7 @@ GeoMashup.showLine = function( line ) {
 
 GeoMashup.isLineVisible = function( line ) {
 	return line.getAttribute( 'visible' );
-}
+};
 
 GeoMashup.newLatLng = function( lat, lng ) {
 	return new mxn.LatLonPoint( lat, lng );

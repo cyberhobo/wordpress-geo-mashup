@@ -1006,7 +1006,7 @@ jQuery.extend( GeoMashup, {
 			}
 
 			return loaded_terms[taxonomy].terms[term_id].visible;
-		}
+		};
 
 		term_manager.isTermLineVisible = function( term_id, taxonomy ) {
 
@@ -1015,7 +1015,7 @@ jQuery.extend( GeoMashup, {
 			}
 
 			return GeoMashup.isLineVisible( loaded_terms[taxonomy].terms[term_id].line );
-		}
+		};
 
 		return term_manager;
 	}()),
