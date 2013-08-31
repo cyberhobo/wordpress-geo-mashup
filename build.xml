@@ -20,7 +20,7 @@
 	</exec>
 	
 	<target name="test">
-		<exec executable="phpunit" />
+		<exec executable="phpunit" failonerror="true" />
 	</target>
 		
 	<target name="build" depends="test">
