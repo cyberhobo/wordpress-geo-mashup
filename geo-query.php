@@ -59,7 +59,7 @@ class GeoMashupQuery {
 
 		$object_ids = $_GET['object_ids'];
 		if ( !is_array( $object_ids ) ) {
-			$object_ids = split( ',', $object_ids );
+			$object_ids = explode( ',', $object_ids );
 		}
 		$object_name = ( isset( $_GET['object_name'] ) ) ? $_GET['object_name'] : 'post';
 		$template_base = ( isset( $_GET['template'] ) ) ? $_GET['template'] : '';

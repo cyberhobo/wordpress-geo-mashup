@@ -124,7 +124,7 @@ class GM_Location_Query {
 
 		$where_fields = array( 'admin_code', 'country_code', 'postal_code', 'geoname', 'locality_name' );
 		foreach ( $where_fields as $field ) {
-			if ( $this->query_args[$field] )
+			if ( !empty( $this->query_args[$field] ) )
 				$where[] = $wpdb->prepare( "$location_table.$field = %s", $this->query_args[$field] );
 		}
 
