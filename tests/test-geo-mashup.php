@@ -620,6 +620,112 @@ class GeoMashup_Unit_Tests extends WP_UnitTestCase {
 		);
 	}
 
+	/**
+	 * Issue 639
+	 */
+	function test_wp_query() {
+		$unlocated_post_ids = $this->factory->post->create_many( 2 );
+
+		$nv_location = GeoMashupDB::blank_location();
+		$nv_location->lat = 39.5;
+		$nv_location->lng = -119.0;
+		$nv_location->country_code = 'US';
+		$nv_location->admin_code = 'NV';
+		$nv_location->postal_code = '89403';
+		$nv_location->locality_name = 'Fallon';
+
+		$nv_post_ids = $this->factory->post->create_many( 2 );
+		GeoMashupDB::set_object_location( 'post', $nv_post_ids[0], $nv_location, false );
+		GeoMashupDB::set_object_location( 'post', $nv_post_ids[1], $nv_location, false );
+
+		$ca_location = GeoMashupDB::blank_location();
+		$ca_location->lat = 39.32;
+		$ca_location->lng = -120.19;
+		$ca_location->country_code = 'US';
+		$ca_location->admin_code = 'CA';
+		$ca_location->postal_code = '96161';
+		$ca_location->locality_name = 'Fallon';
+
+		$ca_post_id = $this->factory->post->create();
+		GeoMashupDB::set_object_location( 'post', $ca_post_id, $ca_location, false );
+
+		$all_post_query = new WP_Query( array(
+			'posts_per_page' => -1,
+		) );
+		$this->assertEquals( 5, $all_post_query->post_count );
+
+		$nv_query = new WP_Query( array(
+			'posts_per_page' => -1,
+			'geo_mashup_query' => array(
+				'admin_code' => 'NV',
+			)
+		) );
+		$this->assertEquals( 2, $nv_query->post_count );
+		$this->assertContains( $nv_post_ids[0], wp_list_pluck( $nv_query->posts, 'ID' ) );
+		$this->assertContains( $nv_post_ids[1], wp_list_pluck( $nv_query->posts, 'ID' ) );
+
+		$zip_query = new WP_Query( array(
+			'posts_per_page' => -1,
+			'geo_mashup_query' => array(
+				'postal_code' => '96161',
+			),
+		) );
+		$this->assertEquals( 1, $zip_query->post_count );
+		$this->assertEquals( $ca_post_id, $zip_query->posts[0]->ID );
+
+		$radius_query = new WP_Query( array(
+			'posts_per_page' => -1,
+			'geo_mashup_query' => array(
+				'near_lat' => 39,
+				'near_lng' => -120,
+				'radius_km' => 50,
+			),
+		) );
+		$this->assertEquals( 1, $radius_query->post_count );
+		$this->assertEquals( $ca_post_id, $radius_query->posts[0]->ID );
+		$radius_query->the_post();
+		$this->assertTrue( $GLOBALS['post']->distance_km >= 0, 'Distance field is not present or negative.' );
+		$this->assertTrue( $GLOBALS['post']->distance_km < 50, 'Distance field is greater than radius.' );
+	}
+
+	function test_gm_location_query() {
+		global $wpdb;
+
+		$unlocated_user_ids = $this->factory->user->create_many( 2 );
+		$nv_user_id = $this->factory->user->create();
+		$nv_location = $this->get_nv_test_location();
+		GeoMashupDB::set_object_location( 'user', $nv_user_id, $nv_location, false );
+
+		$location_query = new GM_Location_Query( array(
+			'minlat' => $nv_location->lat - 1,
+			'maxlat' => $nv_location->lat + 1,
+			'minlon' => $nv_location->lng - 1,
+			'maxlon' => $nv_location->lng + 1,
+		) );
+		list( $cols, $join, $where, $groupby ) = $location_query->get_sql( $wpdb->users, 'ID' );
+		$this->assertEmpty( $cols, 'Got a column value for a non-radius query.' );
+		$this->assertEmpty( $groupby, 'Got a groupby value for a non-radius query.' );
+
+		$sql = "SELECT {$wpdb->users}.ID
+			FROM {$wpdb->users}{$join}
+			WHERE 1=1{$where}
+		";
+
+		$results = $wpdb->get_results( $sql );
+		$this->assertCount( 1, $results );
+		$this->assertEquals( $nv_user_id, $results[0]->ID );
+	}
+
+	function test_long_map_url() {
+		$post_ids = $this->generate_rand_located_posts( 3 );
+		$post_ids = array_merge( $post_ids, range( $post_ids[2], $post_ids[2] + 3000, 3 ) );
+		$html = GeoMashup::map( array(
+			'map_content' => 'global',
+			'object_ids' => implode( ',', $post_ids ),
+		) );
+		$this->assertStringMatchesFormat( '%soids=.%s', $html, 'Long id list was not compressed.' );
+	}
+
 	private function get_nv_test_location() {
 		$location = GeoMashupDB::blank_location();
 		$location->lat = 40;

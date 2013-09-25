@@ -3,7 +3,7 @@
 Plugin Name: Geo Mashup
 Plugin URI: http://code.google.com/p/wordpress-geo-mashup/ 
 Description: Save location for posts and pages, or even users and comments. Display these locations on Google and OSM maps. Make WordPress into your GeoCMS.
-Version: 1.6.2
+Version: 1.7.0-beta2
 Author: Dylan Kuhn
 Author URI: http://www.cyberhobo.net/
 Minimum WordPress Version Required: 3.0
@@ -111,6 +111,8 @@ class GeoMashup {
 	private static function load_dependencies() {
 		global $geo_mashup_options;
 		include_once( GEO_MASHUP_DIR_PATH . '/geo-mashup-options.php' );
+		include_once( GEO_MASHUP_DIR_PATH . '/gm-location-query.php' );
+		include_once( GEO_MASHUP_DIR_PATH . '/post-query.php' );
 		include_once( GEO_MASHUP_DIR_PATH . '/geo-mashup-db.php' );
 		include_once( GEO_MASHUP_DIR_PATH . '/geo-mashup-ui-managers.php' );
 
@@ -200,7 +202,7 @@ class GeoMashup {
 		define('GEO_MASHUP_DIRECTORY', dirname( GEO_MASHUP_PLUGIN_NAME ) );
 		define('GEO_MASHUP_URL_PATH', trim( plugin_dir_url( __FILE__ ), '/' ) );
 		define('GEO_MASHUP_MAX_ZOOM', 20);
-		define('GEO_MASHUP_VERSION', '1.6.2');
+		define('GEO_MASHUP_VERSION', '1.7.0-beta2');
 		define('GEO_MASHUP_DB_VERSION', '1.3');
 	}
 
@@ -681,7 +683,7 @@ class GeoMashup {
 			if (!empty($loc)) {
 				$title = esc_html(convert_chars(strip_tags(get_bloginfo('name'))." - ".$wp_query->post->post_title));
 				echo '<meta name="ICBM" content="' . esc_attr( $loc->lat . ', ' . $loc->lng ) . '" />' . "\n";
-				echo '<meta name="DC.title" content="' . esc_attr( $title ) . '" />' . "\n";
+				echo '<meta name="dcterms.title" content="' . esc_attr( $title ) . '" />' . "\n";
 				echo '<meta name="geo.position" content="' .  esc_attr( $loc->lat . ';' . $loc->lng ) . '" />' . "\n";
 			}
 		}
@@ -1140,7 +1142,6 @@ class GeoMashup {
 
 		$atts_md5 =  md5( serialize( $atts ) );
 		set_transient( 'gmm' . $atts_md5, $map_data, 20 );
-		set_transient( 'gmp' . $atts_md5, $atts, 60*60*24 );
 
 		$src_args = array(
 			'geo_mashup_content' => 'render-map',
@@ -1150,7 +1151,16 @@ class GeoMashup {
 		if ( !empty( $atts['lang'] ) )
 			$src_args['lang'] = $atts['lang'];
 
-		$iframe_src = self::build_home_url( $src_args );
+		if ( isset( $atts['object_ids'] ) and strlen( $atts['object_ids'] ) > 1800 ) {
+			// Try to shorten the URL a bit
+			if ( !class_exists( 'GM_Int_list' ) )
+				include GEO_MASHUP_DIR_PATH . '/gm-int-list.php';
+			$id_list = new GM_Int_List( $atts['object_ids'] );
+			$atts['oids'] = $id_list->compressed();
+			unset( $atts['object_ids'] );
+		}
+
+		$iframe_src = self::build_home_url( $src_args + $atts );
 
 		$content = "";
 

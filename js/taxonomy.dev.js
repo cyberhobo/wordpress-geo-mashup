@@ -138,7 +138,7 @@ jQuery.extend( GeoMashup, {
 				$.each( tax_data.terms, function ( term_id, term_data ) {
 						
 					if ( term_data.max_line_zoom >= 0 ) {
-						GeoMashup.createTermLine( term_data );
+						GeoMashup.createTermLine( taxonomy, term_id, term_data );
 					}
 
 				} );
@@ -990,6 +990,33 @@ jQuery.extend( GeoMashup, {
 			} );
 		};
 
+		/**
+		 * Get the current visibility of a term.
+		 * @methodof GeoMashup
+		 * @since 1.7
+		 *
+		 * @param term_id
+		 * @param taxonomy
+		 * @returns {*}
+		 */
+		term_manager.isTermVisible = function( term_id, taxonomy ) {
+
+			if ( !loaded_terms[taxonomy] || !loaded_terms[taxonomy].terms[term_id] ) {
+				return false;
+			}
+
+			return loaded_terms[taxonomy].terms[term_id].visible;
+		};
+
+		term_manager.isTermLineVisible = function( term_id, taxonomy ) {
+
+			if ( !loaded_terms[taxonomy] || !loaded_terms[taxonomy].terms[term_id] ) {
+				return false;
+			}
+
+			return GeoMashup.isLineVisible( loaded_terms[taxonomy].terms[term_id].line );
+		};
+
 		return term_manager;
 	}()),
 
@@ -1082,7 +1109,7 @@ jQuery.extend( GeoMashup, {
 		return 'gm-cat-index-' + category_id;
 	},
 
-	createTermLine: function( term_data ) {
+	createTermLine: function( taxonomy, term_id, term_data ) {
 		//provider override
 	}
 

@@ -486,6 +486,14 @@ GeoMashup = {
 	},
 
 	/**
+	 * Get a line's current visibility.
+	 * @param {Poloyline} line
+	 */
+	isLineVisible : function( line ) {
+		// Provider override
+	},
+
+	/**
 	 * Create a new geo coordinate object.
 	 * @param {Number} lat Latitude
 	 * @param {Number} lng Longitude

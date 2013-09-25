@@ -341,6 +341,10 @@ GeoMashup.showLine = function( line ) {
 	line.show();
 };
 
+GeoMashup.isLineVisible = function( line ) {
+	return line.isHidden();
+};
+
 GeoMashup.newLatLng = function( lat, lng ) {
 	return new google.maps.LatLng( lat, lng );
 };
