@@ -49,6 +49,7 @@
 			</fileset>
 		</copy>
 		
+
 		<!-- lint our javascripts -->
 		<echo>--- LINT ---</echo>
 		
@@ -77,6 +78,11 @@
 		</for>
 
 	
+		<echo>--- POT ---</echo>
+		<exec executable="php">
+			<arg line="tools/wp-i18n-tools/makepot.php wp-plugin ${build.dir} ${build.dir}/lang/geo-mashup.pot geo-mashup"/>
+		</exec>
+		
 		<!-- minify our sources -->
 		<echo>--- MIN ---</echo>
 		<for param="file">
