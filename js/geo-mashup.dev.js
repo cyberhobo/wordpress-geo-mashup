@@ -83,7 +83,7 @@ customGeoMashupSinglePostIcon, customGeoMashupMultiplePostImage;
  * <p><strong>Note: Events are Actions</strong></p>
  *
  * <p>Actions available for use with GeoMashup.addAction() are documented as events.
- * See the <a href="http://code.google.com/p/wordpress-geo-mashup/wiki/Documentation#Custom_JavaScript">custom javascript documentation</a>
+ * See the <a href="http://code.google.com/p/wordpress-geo-mashup/wiki/JavaScriptApi">javascript API documentation</a>
  * for an example.
  * </p>
  */
