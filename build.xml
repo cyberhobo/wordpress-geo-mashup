@@ -160,7 +160,7 @@
 		<echo>--- PHPDOC ---</echo>
 		<property name="docs.dir" location="${build.base}/phpdocs-${version}"/>
 		<exec executable="phpdoc">
-			<arg line='-d ${source} -i "tests/*" -t ${docs.dir}'/>
+			<arg line='-d ${source} -i "tests/*,tools/*,build/*" -t ${docs.dir}'/>
 		</exec>
 	</target>
 	
