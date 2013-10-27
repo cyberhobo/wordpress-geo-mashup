@@ -189,9 +189,9 @@ GeoMashup.addGlowMarker = function( marker ) {
 	var point = marker.location, 
 		glow_options = {
 			clickable : true,
-			icon : this.opts.url_path + '/images/mm_20_glow.png',
-			iconSize : [ 22, 30 ],
-			iconAnchor : [ 11, 27 ] 
+			icon : this.opts.url_path + '/images/mm_36_glow.png',
+			iconSize : [ 30, 36 ],
+			iconAnchor : [ 15, 36 ]
 		};
 
 	if ( this.glow_marker ) {
@@ -394,7 +394,7 @@ GeoMashup.clickObjectMarker = function( object_id, try_count ) {
 
 GeoMashup.colorIcon = function( color_name ) {
 	var icon = this.clone( this.base_color_icon );
-	icon.image = this.opts.url_path + '/images/mm_20_' + color_name + '.png';
+	icon.image = this.opts.url_path + '/images/mm_36_' + color_name + '.png';
 	return icon;
 };
 
@@ -459,7 +459,7 @@ GeoMashup.makeMarkerMultiple = function( marker ) {
 		plus_image = customGeoMashupMultiplePostImage(this.opts, marker);
 	}
 	if (!plus_image) {
-		plus_image = this.opts.url_path + '/images/mm_20_plus.png';
+		plus_image = this.opts.url_path + '/images/mm_36_plus.png';
 	}
 	original_image = marker.iconUrl;
 	marker.setIcon( plus_image );
@@ -536,14 +536,14 @@ GeoMashup.createMap = function(container, opts) {
 
 	this.container = container;
 	this.base_color_icon = {};
-	this.base_color_icon.image = opts.url_path + '/images/mm_20_black.png';
-	this.base_color_icon.iconShadow = opts.url_path + '/images/mm_20_shadow.png';
-	this.base_color_icon.iconSize = [12, 20];
-	this.base_color_icon.shadowSize =  [22, 20];
-	this.base_color_icon.iconAnchor = [6, 20];
-	this.base_color_icon.infoWindowAnchor = [5, 1];
+	this.base_color_icon.image = opts.url_path + '/images/mm_36_black.png';
+	this.base_color_icon.iconShadow = '';
+	this.base_color_icon.iconSize = [30, 36];
+	this.base_color_icon.shadowSize = [0,0];
+	this.base_color_icon.iconAnchor = [15, 36];
+	this.base_color_icon.infoWindowAnchor = [15, 2];
 	this.multiple_term_icon = this.clone( this.base_color_icon );
-	this.multiple_term_icon.image = opts.url_path + '/images/mm_20_mixed.png';
+	this.multiple_term_icon.image = opts.url_path + '/images/mm_36_mixed.png';
 
 	// Falsify options to make tests simpler
 	this.forEach( opts, function( key, value ) {
