@@ -25,7 +25,7 @@ class GeoMashupUIManager {
 	 * @param string $name The class name of the manager.
 	 * @return GeoMashupUIPostManager|GeoMashupUIUserManager|GeoMashupUICommentManager The singleton object.
 	 */
-	public static function &get_instance( $name ) {
+	public static function get_instance( $name ) {
 		static $instances = array();
 
 		if ( ! isset( $instances[$name] ) ) {
@@ -323,10 +323,11 @@ class GeoMashupUserUIManager extends GeoMashupUIManager {
 	 * @since 1.3
 	 * @uses parent::get_instance()
 	 *
+     * @param string $name The class name, this class by default.
 	 * @return GeoMashupPostUIManager The instance.
 	 */
-	public static function get_instance() {
-		return parent::get_instance( 'GeoMashupUserUIManager' );
+	public static function get_instance( $name = __CLASS__ ) {
+		return parent::get_instance( $name );
 	}
 
 	/**
@@ -346,7 +347,7 @@ class GeoMashupUserUIManager extends GeoMashupUIManager {
 	 *
 	 * init {@link http://codex.wordpress.org/Plugin_API/Action_Reference action}
 	 * called by WordPress.
-	 * 
+	 *
 	 * @since 1.3
 	 * @global array $geo_mashup_options 
 	 * @global string $pagenow The WordPress-supplied requested filename.
@@ -398,19 +399,6 @@ class GeoMashupUserUIManager extends GeoMashupUIManager {
 	}
 
 	/**
-	 * Save a posted user location.
-	 * 
-	 * @since 1.3
-	 * @uses parent::save_posted_object_location()
-	 *
-	 * @param id $user_id 
-	 * @return bool|WP_Error
-	 */
-	public function save_posted_object_location( $user_id ) {
-		return parent::save_posted_object_location( 'user', $user_id );
-	}
-
-	/**
 	 * When a user is saved, also save any posted location.
 	 *
 	 * save_user {@link http://codex.wordpress.org/Plugin_API/Action_Reference action}
@@ -434,7 +422,7 @@ class GeoMashupUserUIManager extends GeoMashupUIManager {
 			return $user_id;
 		}
 
-		return $this->save_posted_object_location( $user_id );
+		return $this->save_posted_object_location( 'user', $user_id );
 	}
 }
 
@@ -465,9 +453,10 @@ class GeoMashupPostUIManager extends GeoMashupUIManager {
 	 * @since 1.3
 	 * @uses parent::get_instance()
 	 *
+     * @param string $name The class name, this class by default.
 	 * @return GeoMashupPostUIManager The instance.
 	 */
-	public static function get_instance() {
+	public static function get_instance( $name = __CLASS__ ) {
 		return parent::get_instance( 'GeoMashupPostUIManager' );
 	}
 
@@ -600,19 +589,6 @@ class GeoMashupPostUIManager extends GeoMashupUIManager {
 	}
 
 	/**
-	 * Save a posted post or page location.
-	 * 
-	 * @since 1.3
-	 * @uses parent::save_posted_object_location()
-	 *
-	 * @param id $post_id 
-	 * @return bool|WP_Error
-	 */
-	public function save_posted_object_location( $post_id ) {
-		return parent::save_posted_object_location( 'post', $post_id );
-	}
-
-	/**
 	 * When a post is saved, save any posted location for it.
 	 * 
 	 * save_post {@link http://codex.wordpress.org/Plugin_API/Action_Reference action}
@@ -647,7 +623,7 @@ class GeoMashupPostUIManager extends GeoMashupUIManager {
 
 		delete_transient( 'gm_uploaded_kml_url' );
 
-		return $this->save_posted_object_location( $post_id );
+		return $this->save_posted_object_location( 'post', $post_id );
 	}
 
 	/**
