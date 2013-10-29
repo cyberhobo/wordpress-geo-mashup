@@ -150,6 +150,7 @@ class GeoMashupSearch {
 		$search_text = $location_text;
 		$distance_factor = $this->distance_factor;
 		$near_location = $this->near_location;
+		$result_count = $this->result_count;
 		$geo_mashup_search = &$this;
 
 		$approximate_zoom = absint( log( 10000 / $this->max_km, 2 ) );

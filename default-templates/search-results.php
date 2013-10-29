@@ -10,6 +10,7 @@
  *
  * Variables in scope:
  * $geo_mashup_search  object   The managing search object
+ * $result_count       int      The number of objects found
  * $search_text        string   The search text entered in the form
  * $radius             int      The search radius
  * $units              string   'mi' or 'km'
