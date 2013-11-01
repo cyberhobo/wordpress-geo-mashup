@@ -273,7 +273,7 @@ class GeoMashupUIManager {
 					$post_location = intval( $selected_items[0] );
 				} else { 
 					$post_location['id'] = $_POST['geo_mashup_location_id'];
-					list( $lat, $lng ) = split( ',', $_POST['geo_mashup_location'] );
+					list( $lat, $lng ) = explode( ',', $_POST['geo_mashup_location'] );
 					$post_location['lat'] = trim( $lat );
 					$post_location['lng'] = trim( $lng );
 					$post_location['geoname'] = $_POST['geo_mashup_geoname'];
@@ -399,6 +399,23 @@ class GeoMashupUserUIManager extends GeoMashupUIManager {
 	}
 
 	/**
+	 * Handle old non-strict method calls with only one argument.
+	 *
+	 * @param string $object_name
+	 * @param null|int $object_id
+	 * @return bool|WP_Error
+	 */
+	public function save_posted_object_location( $object_name, $object_id = null ) {
+		// resolve old non-strict one argument calls
+		if ( is_null( $object_id ) )
+			$object_id = intval( $object_name );
+
+		// We only know how to save posts
+		$object_name = 'user';
+		return parent::save_posted_object_location( $object_name, $object_id );
+	}
+
+	/**
 	 * When a user is saved, also save any posted location.
 	 *
 	 * save_user {@link http://codex.wordpress.org/Plugin_API/Action_Reference action}
@@ -422,7 +439,7 @@ class GeoMashupUserUIManager extends GeoMashupUIManager {
 			return $user_id;
 		}
 
-		return $this->save_posted_object_location( 'user', $user_id );
+		return $this->save_posted_object_location( $user_id );
 	}
 }
 
@@ -589,6 +606,23 @@ class GeoMashupPostUIManager extends GeoMashupUIManager {
 	}
 
 	/**
+	 * Handle old non-strict method calls with only one argument.
+	 *
+	 * @param string $object_name
+	 * @param null|int $object_id
+	 * @return bool|WP_Error
+	 */
+	public function save_posted_object_location( $object_name, $object_id = null ) {
+		// resolve old non-strict one argument calls
+		if ( is_null( $object_id ) )
+			$object_id = intval( $object_name );
+
+		// We only know how to save posts
+		$object_name = 'post';
+		return parent::save_posted_object_location( $object_name, $object_id );
+	}
+
+	/**
 	 * When a post is saved, save any posted location for it.
 	 * 
 	 * save_post {@link http://codex.wordpress.org/Plugin_API/Action_Reference action}
@@ -623,7 +657,7 @@ class GeoMashupPostUIManager extends GeoMashupUIManager {
 
 		delete_transient( 'gm_uploaded_kml_url' );
 
-		return $this->save_posted_object_location( 'post', $post_id );
+		return $this->save_posted_object_location( $post_id );
 	}
 
 	/**
