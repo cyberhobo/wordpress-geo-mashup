@@ -1193,7 +1193,7 @@ class GeoMashupDB {
 			$start_time = time();
 			foreach ( $unconverted_metadata as $postmeta ) {
 				$post_id = $postmeta->post_id;
-				list( $lat, $lng ) = split( ',', $postmeta->meta_value );
+				list( $lat, $lng ) = explode( ',', $postmeta->meta_value );
 				$location = array( 'lat' => trim( $lat ), 'lng' => trim( $lng ) );
 				$do_lookups = ( ( time() - $start_time ) < 10 ) ? true : false;
 				$set_id = self::set_object_location( 'post', $post_id, $location, $do_lookups );
@@ -1215,7 +1215,7 @@ class GeoMashupDB {
 			$msg = __( 'Converting saved locations', 'GeoMashup' );
 			self::activation_log( $msg );
 			foreach ( $geo_locations as $saved_name => $coordinates ) {
-				list( $lat, $lng, $converted ) = split( ',', $coordinates );
+				list( $lat, $lng, $converted ) = explode( ',', $coordinates );
 				$location = array( 'lat' => trim( $lat ), 'lng' => trim( $lng ), 'saved_name' => $saved_name );
 				$do_lookups = ( ( time() - $start_time ) < 15 ) ? true : false;
 				$set_id = self::set_location( $location, $do_lookups );
