@@ -326,10 +326,13 @@ class GeoMashup {
 	 * @param bool $in_footer Whether the script can be loaded in the footer.
 	 */
 	public static function register_script( $handle, $src, $deps = array(), $ver = false, $in_footer = false ) {
-		// Use the .dev version if SCRIPT_DEBUG is set or there is no minified version
-		if ( ( defined( 'SCRIPT_DEBUG' ) and SCRIPT_DEBUG ) or !is_readable( path_join( GEO_MASHUP_DIR_PATH, $src ) ) )
-			$src = preg_replace( '/(\.\w*)$/', '.dev$1', $src );
-		wp_register_script( 
+		// Use the minified version if SCRIPT_DEBUG is not set and it exists
+		if ( ( !defined( 'SCRIPT_DEBUG' ) or !SCRIPT_DEBUG ) and '.js' === substr( $src, -3 ) ) {
+			$min_src = substr( $src, 0, -3 ) . '.min.js';
+			if ( is_readable( $min_src ) )
+				$src = $min_src;
+		}
+		wp_register_script(
 				$handle, 
 				plugins_url( $src, __FILE__ ), 
 				$deps, 
@@ -349,9 +352,12 @@ class GeoMashup {
 	 * @param string $media Stylesheet media target.
 	 */
 	public static function register_style( $handle, $src, $deps = array(), $ver = false, $media = 'all' ) {
-		// Use the .dev version if SCRIPT_DEBUG is set or there is no minified version
-		if ( ( defined( 'SCRIPT_DEBUG' ) and SCRIPT_DEBUG ) or !is_readable( path_join( GEO_MASHUP_DIR_PATH, $src ) ) )
-			$src = preg_replace( '/(\.\w*)$/', '.dev$1', $src );
+		// Use the minified version if SCRIPT_DEBUG is not set and it exists
+		if ( ( !defined( 'SCRIPT_DEBUG' ) or !SCRIPT_DEBUG ) and '.css' === substr( $src, -4 ) ) {
+			$min_src = substr( $src, 0, -3 ) . '.min.css';
+			if ( is_readable( $min_src ) )
+				$src = $min_src;
+		}
 
 		wp_register_style( $handle, plugins_url( $src, __FILE__ ), $deps, $ver, $media );
 	}
