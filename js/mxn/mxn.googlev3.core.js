@@ -4,108 +4,121 @@ Mapstraction: {
 	
 	init: function(element, api){		
 		var me = this;
-		if ( google && google.maps ){
-			// by default add road map and no controls
-			var myOptions = {
-				disableDefaultUI: true,
-				mapTypeId: google.maps.MapTypeId.ROADMAP,
-				mapTypeControl: false,
-				mapTypeControlOptions: null,
-				zoomControl: false,
-				zoomControlOptions: null,
-				scrollwheel: false,
-				disableDoubleClickZoom: true
-			};
-
-			// Background color can only be set at construction
-			// To provide some control, adopt any explicit element style
-			var backgroundColor = null;
-			if ( element.currentStyle ) {
-				backgroundColor = element.currentStyle['background-color'];
-			}
-			else if ( window.getComputedStyle ) {
-				backgroundColor = document.defaultView.getComputedStyle(element, null).getPropertyValue('background-color');
-			}
-			// Only set the background if a style has been explicitly set, ruling out the "transparent" default
-			if ( backgroundColor && 'transparent' !== backgroundColor ) {
-				myOptions.backgroundColor = backgroundColor;
-			}
-
-			// find controls
-			if (!this.addControlsArgs && loadoptions.addControlsArgs) {
-				this.addControlsArgs = loadoptions.addControlsArgs;
-			}
-			if (this.addControlsArgs) {
-				if (this.addControlsArgs.zoom) {
-					myOptions.zoomControl = true;
-					if (this.addControlsArgs.zoom == 'small') {
-						myOptions.zoomControlOptions = {style: google.maps.ZoomControlStyle.SMALL};
-					}
-					if (this.addControlsArgs.zoom == 'large') {
-						myOptions.zoomControlOptions = {style: google.maps.ZoomControlStyle.LARGE};
-						myOptions.panControl = true;
-					}
-				}
-				if (this.addControlsArgs.map_type) {
-					myOptions.mapTypeControl = true;
-					myOptions.mapTypeControlOptions = {style: google.maps.MapTypeControlStyle.DEFAULT};
-				}
-				if (this.addControlsArgs.overview) {
-					myOptions.overviewMapControl = true;
-					myOptions.overviewMapControlOptions = {opened: true};
-				}
-			}
 		
-			var map = new google.maps.Map(element, myOptions);
-			
-			var fireOnNextIdle = [];
-			
-			google.maps.event.addListener(map, 'idle', function() {
-				var fireListCount = fireOnNextIdle.length;
-				if (fireListCount > 0) {
-					var fireList = fireOnNextIdle.splice(0, fireListCount);
-					var handler;
-					while((handler = fireList.shift())){
-						handler();
-					}
+		if (typeof google.maps.Map === 'undefined') {
+			throw new Error(api + ' map script not imported');
+		}
+
+		var myOptions = {
+			disableDefaultUI: true,
+			mapTypeId: google.maps.MapTypeId.ROADMAP,
+			mapTypeControl: false,
+			mapTypeControlOptions: null,
+			navigationControl: false,
+			navigationControlOptions: null,
+			scrollwheel: false,
+			disableDoubleClickZoom: true
+		};
+
+		// Background color can only be set at construction
+		// To provide some control, adopt any explicit element style
+		var backgroundColor = null;
+		if ( element.currentStyle ) {
+			backgroundColor = element.currentStyle['background-color'];
+		}
+		else if ( window.getComputedStyle ) {
+			backgroundColor = document.defaultView.getComputedStyle(element, null).getPropertyValue('background-color');
+		}
+		// Only set the background if a style has been explicitly set, ruling out the "transparent" default
+		if ( backgroundColor && 'transparent' !== backgroundColor ) {
+			myOptions.backgroundColor = backgroundColor;
+		}
+
+		// find controls
+		if (!this.addControlsArgs && loadoptions.addControlsArgs) {
+			this.addControlsArgs = loadoptions.addControlsArgs;
+		}
+		if (this.addControlsArgs) {
+			if (this.addControlsArgs.zoom) {
+				myOptions.navigationControl = true;
+				if (this.addControlsArgs.zoom == 'small') {
+					myOptions.navigationControlOptions = {style: google.maps.NavigationControlStyle.SMALL};
 				}
+				if (this.addControlsArgs.zoom == 'large') {
+					myOptions.navigationControlOptions = {style: google.maps.NavigationControlStyle.ZOOM_PAN};
+				}
+			}
+			if (this.addControlsArgs.map_type) {
+				myOptions.mapTypeControl = true;
+				myOptions.mapTypeControlOptions = {style: google.maps.MapTypeControlStyle.DEFAULT};
+			}
+			if (this.addControlsArgs.overview) {
+				myOptions.overviewMapControl = true;
+				myOptions.overviewMapControlOptions = {opened: true};
+			}
+		}
+	
+		var map = new google.maps.Map(element, myOptions);
+		
+		var fireOnNextIdle = [];
+		
+		google.maps.event.addListener(map, 'idle', function() {
+			var fireListCount = fireOnNextIdle.length;
+			if (fireListCount > 0) {
+				var fireList = fireOnNextIdle.splice(0, fireListCount);
+				var handler;
+				while((handler = fireList.shift())){
+					handler();
+				}
+			}
+		});
+		
+		// deal with click
+		google.maps.event.addListener(map, 'click', function(location){
+			me.click.fire({'location': 
+				new mxn.LatLonPoint(location.latLng.lat(),location.latLng.lng())
 			});
-			
-			// deal with click
-			google.maps.event.addListener(map, 'click', function(location){
-				me.click.fire({'location': 
-					new mxn.LatLonPoint(location.latLng.lat(),location.latLng.lng())
-				});
-			});
+		});
 
-			// deal with zoom change
-			google.maps.event.addListener(map, 'zoom_changed', function(){
-				// zoom_changed fires before the zooming has finished so we 
-				// wait for the next idle event before firing our changezoom
-				// so that method calls report the correct values
+		// deal with zoom change
+		google.maps.event.addListener(map, 'zoom_changed', function(){
+			// zoom_changed fires before the zooming has finished so we 
+			// wait for the next idle event before firing our changezoom
+			// so that method calls report the correct values
+			fireOnNextIdle.push(function() {
+				me.changeZoom.fire();
+			});
+		});
+		
+		// deal with map movement
+		var is_dragging = false;
+
+		google.maps.event.addListener(map, 'dragstart', function() {
+			is_dragging = true;
+		});
+
+		google.maps.event.addListener(map, 'dragend', function(){
+			me.moveendHandler(me);
+			me.endPan.fire();
+			is_dragging = false;
+		});
+		
+		google.maps.event.addListener(map, 'center_changed', function() {
+			if (!is_dragging) {
 				fireOnNextIdle.push(function() {
-					me.changeZoom.fire();
+					me.endPan.fire();
 				});
-			});
-
-			// deal with map movement
-			google.maps.event.addListener(map, 'dragend', function(){
-				me.moveendHandler(me);
-				me.endPan.fire();
-			});
-			
-			// deal with initial tile loading
-			var loadListener = google.maps.event.addListener(map, 'tilesloaded', function(){
-				me.load.fire();
-				google.maps.event.removeListener( loadListener );
-			});			
-			
-			this.maps[api] = map;
-			this.loaded[api] = true;
-		}
-		else {
-			alert(api + ' map script not imported');
-		}
+			}
+		});
+		
+		// deal with initial tile loading
+		var loadListener = google.maps.event.addListener(map, 'tilesloaded', function(){
+			me.load.fire();
+			google.maps.event.removeListener( loadListener );
+		});			
+		
+		this.maps[api] = map;
+		this.loaded[api] = true;
 	},
 	
 	applyOptions: function(){
@@ -140,23 +153,50 @@ Mapstraction: {
   	},
 
 	addControls: function( args ) {
+		/* args = { 
+		 *     pan:      true,
+		 *     zoom:     'large' || 'small',
+		 *     overview: true,
+		 *     scale:    true,
+		 *     map_type: true,
+		 * }
+		 */
+
 		var map = this.maps[this.api];
 		var myOptions;
-		// remove old controls
 
-		if (args.pan) {
-			map.setOptions({ panControl: true });
-		}
-		if (args.zoom) {
-			myOptions = { zoomControl: true };
-			if (args.zoom == 'large'){ 
-				myOptions.zoomControlOptions = {style: google.maps.ZoomControlStyle.LARGE};
-			} else { 
-				myOptions.zoomControlOptions = {style: google.maps.ZoomControlStyle.SMALL};
-			}
+		// Google has a combined zoom and pan control.
+
+		if ('pan' in args && args.pan) {
+			myOptions = { panControl: true };
 			map.setOptions(myOptions);
+			this.addControlsArgs.pan = true;
+			
 		}
-		if (args.scale){
+		
+		else if (!('pan' in args) || ('pan' in args && !args.pan)) {
+			myOptions = { panControl: false };
+			map.setOptions(myOptions);
+			this.addControlsArgs.pan = false;
+		}
+		
+		if ('zoom' in args) {
+			if (args.zoom == 'small') {
+				this.addSmallControls();
+			}
+			
+			else if (args.zoom == 'large') {
+				this.addLargeControls();
+			}
+		}
+		
+		else {
+			myOptions = { zoomControl: false };
+			map.setOptions(myOptions);
+			this.addControlsArgs.zoom = false;
+		}
+
+		if ('scale' in args && args.scale){
 			myOptions = {
 				scaleControl:true,
 				scaleControlOptions: {style:google.maps.ScaleControlStyle.DEFAULT}				
@@ -164,16 +204,36 @@ Mapstraction: {
 			map.setOptions(myOptions);
 			this.addControlsArgs.scale = true;
 		}
-		if (args.map_type){
+		
+		else {
+			myOptions = { scaleControl: false };
+			map.setOptions(myOptions);
+			this.addControlsArgs.scale = false;
+		}
+
+		if ('map_type' in args && args.map_type){
 			this.addMapTypeControls();
 		}
-		if (args.overview) {
+
+		else {
+			myOptions = { mapTypeControl : false };
+			map.setOptions(myOptions);
+			this.addControlsArgs.map_type = false;
+		}
+		
+		if ('overview' in args) {
 			myOptions = {
 				overviewMapControl: true,
 				overviewMapControlOptions: {opened: true}
 			};
 			map.setOptions(myOptions);
 			this.addControlsArgs.overview = true;
+		}
+		
+		else {
+			myOptions = { overviewMapControl: false };
+			map.setOptions(myOptions);
+			this.addControlsArgs.overview = false;
 		}
 	},
 
@@ -184,18 +244,15 @@ Mapstraction: {
 			zoomControlOptions: {style: google.maps.ZoomControlStyle.SMALL}
 		};
 		map.setOptions(myOptions);
-
-		this.addControlsArgs.pan = false;
-		this.addControlsArgs.scale = false;						
 		this.addControlsArgs.zoom = 'small';
 	},
 
 	addLargeControls: function() {
 		var map = this.maps[this.api];
 		var myOptions = {
+			panControl: true,
 			zoomControl: true,
-			zoomControlOptions: {style:google.maps.ZoomControlStyle.LARGE},
-			panControl: true
+			zoomControlOptions: {style:google.maps.ZoomControlStyle.LARGE}
 		};
 		map.setOptions(myOptions);
 		this.addControlsArgs.pan = true;
@@ -224,13 +281,11 @@ Mapstraction: {
 	},
 
 	removeMarker: function(marker) {
-		// doesn't really remove them, just hides them
-		marker.hide();
+		marker.proprietary_marker.setMap(null);
 	},
 	
 	declutterMarkers: function(opts) {
-		var map = this.maps[this.api];
-		// TODO: Add provider code
+		throw new Error('Mapstraction.declutterMarkers is not currently supported by provider ' + this.api);
 	},
 
 	addPolyline: function(polyline, old) {
@@ -322,7 +377,7 @@ Mapstraction: {
 		var map = this.maps[this.api];
 		var gLatLngBounds = map.getBounds();
 		if (!gLatLngBounds) {
-			throw 'Bounds not available, map must be initialized';
+			throw 'Mapstraction.getBounds; bounds not available, map must be initialized';
 		}
 		var sw = gLatLngBounds.getSouthWest();
 		var ne = gLatLngBounds.getNorthEast();
@@ -349,7 +404,7 @@ Mapstraction: {
 	},
 
 	setImagePosition: function(id, oContext) {
-		// do nothing
+		throw new Error('Mapstraction.declutterMarkers is not currently supported by provider ' + this.api);
 	},
 	
 	addOverlay: function(url, autoCenterAndZoom) {
@@ -360,16 +415,26 @@ Mapstraction: {
 		layer.setMap(map);
 	},
 
-	addTileLayer: function(tile_url, opacity, copyright_text, min_zoom, max_zoom, map_type) {
+addTileLayer: function(tile_url, opacity, label, attribution, min_zoom, max_zoom, map_type, subdomains) {
 		var map = this.maps[this.api];
-		var tilelayers = [];
 		var z_index = this.tileLayers.length || 0;
-		tilelayers[0] = {
+		var tilelayer = {
 			getTileUrl: function (coord, zoom) {
-				url = tile_url;
-				url = url.replace(/\{Z\}/g, zoom);
-				url = url.replace(/\{X\}/g, coord.x);
-				url = url.replace(/\{Y\}/g, coord.y);
+				var url = mxn.util.sanitizeTileURL(tile_url);
+				if (typeof subdomains !== 'undefined') {
+					url = mxn.util.getSubdomainTileURL(url, subdomains);
+				}
+				var x = coord.x;
+				var maxX = Math.pow(2, zoom);
+				while (x < 0) {
+					x += maxX;
+				}
+				while (x >= maxX) {
+					x -= maxX;
+				}
+				url = url.replace(/\{Z\}/gi, zoom);
+				url = url.replace(/\{X\}/gi, x);
+				url = url.replace(/\{Y\}/gi, coord.y);
 				return url;
 			},
 			tileSize: new google.maps.Size(256, 256),
@@ -377,9 +442,12 @@ Mapstraction: {
 			minZoom: min_zoom,
 			maxZoom: max_zoom,
 			opacity: opacity,
-			name: copyright_text
+			name: label
 		};
-		var tileLayerOverlay = new google.maps.ImageMapType(tilelayers[0]);
+
+		var tileLayerOverlay = new google.maps.ImageMapType(tilelayer);
+		this.tileLayers.push( [tile_url, tileLayerOverlay, true, z_index] );
+
 		if (map_type) {
 			map.mapTypes.set('tile' + z_index, tileLayerOverlay);
 			var mapTypeIds = [
@@ -397,7 +465,7 @@ Mapstraction: {
 		else {
 			map.overlayMapTypes.insertAt(z_index, tileLayerOverlay);
 		}
-		this.tileLayers.push( [tile_url, tileLayerOverlay, true, z_index] );
+		
 		return tileLayerOverlay;
 	},
 
@@ -419,9 +487,7 @@ Mapstraction: {
 	},
 
 	getPixelRatio: function() {
-		var map = this.maps[this.api];
-
-		// TODO: Add provider code	
+		throw new Error('Mapstraction.getPixelRatio is not currently supported by provider ' + this.api);
 	},
 	
 	mousePosition: function(element) {
@@ -599,27 +665,40 @@ Marker: {
 Polyline: {
 
 	toProprietary: function() {
-		var points = [];
+		var coords = [];
+
 		for (var i = 0, length = this.points.length; i < length; i++) {
-			points.push(this.points[i].toProprietary('googlev3'));
+			coords.push(this.points[i].toProprietary('googlev3'));
 		}
 		
 		var polyOptions = {
-			path: points,
-			strokeColor: this.color || '#000000',
-			strokeOpacity: this.opacity || 1.0, 
-			strokeWeight: this.width || 3
+			path: coords,
+			strokeColor: this.color,
+			strokeOpacity: this.opacity, 
+			strokeWeight: this.width
 		};
 		
 		if (this.closed) {
-			polyOptions.fillColor = this.fillColor || '#000000';
+			if (!(this.points[0].equals(this.points[this.points.length - 1]))) {
+				coords.push(coords[0]);
+			}
+		}
+
+		else if (this.points[0].equals(this.points[this.points.length - 1])) {
+			this.closed = true;
+		}
+
+		if (this.closed) {
+			polyOptions.fillColor = this.fillColor;
 			polyOptions.fillOpacity = polyOptions.strokeOpacity;
 			
-			return new google.maps.Polygon(polyOptions);
+			this.proprietary_polyline = new google.maps.Polygon(polyOptions);
 		}
 		else {
-			return new google.maps.Polyline(polyOptions);
+			this.proprietary_polyline = new google.maps.Polyline(polyOptions);
 		}
+		
+		return this.proprietary_polyline;
 	},
 	
 	show: function() {
@@ -629,7 +708,6 @@ Polyline: {
 	hide: function() {
 		this.proprietary_polyline.setVisible(false);
 	}
-	
 }
 
 });

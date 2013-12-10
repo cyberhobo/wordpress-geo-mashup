@@ -5,51 +5,39 @@ mxn.register('openlayers', {
 		init: function(element, api){
 			var me = this;
 			
+			if (typeof OpenLayers.Map === 'undefined') {
+				throw new Error(api + ' map script not imported');
+			}
+
+			this.controls = {
+				pan: null,
+				zoom: null,
+				overview: null,
+				scale: null,
+				map_type: null
+			};
+
 			var map = new OpenLayers.Map(
 				element.id,
 				{
-					maxExtent: new OpenLayers.Bounds(-20037508.34,-20037508.34,20037508.34,20037508.34),
-					maxResolution: 156543,
-					numZoomLevels: 18,
-					units: 'm',
-					projection: 'EPSG:900913'
+					projection: 'EPSG:900913',
+					controls: [
+						new OpenLayers.Control.Navigation(),
+						new OpenLayers.Control.ArgParser(),
+						new OpenLayers.Control.Attribution()
+					]
 				}
 			);
-			
+				
 			// initialize layers map (this was previously in mxn.core.js)
 			this.layers = {};
 
-			this.layers.osm = new OpenLayers.Layer.TMS(
-				'OpenStreetMap',
-				[
-					"http://a.tile.openstreetmap.org/",
-					"http://b.tile.openstreetmap.org/",
-					"http://c.tile.openstreetmap.org/"
-				],
-				{
-					type:'png',
-					getURL: function (bounds) {
-						var res = this.map.getResolution();
-						var x = Math.round ((bounds.left - this.maxExtent.left) / (res * this.tileSize.w));
-						var y = Math.round ((this.maxExtent.top - bounds.top) / (res * this.tileSize.h));
-						var z = this.map.getZoom();
-						var limit = Math.pow(2, z);
-						if (y < 0 || y >= limit) {
-							return null;
-						} else {
-							x = ((x % limit) + limit) % limit;
-							var path = z + "/" + x + "/" + y + "." + this.type;
-							var url = this.url;
-							if (url instanceof Array) {
-								url = this.selectUrl(path, url);
-							}
-							return url + path;
-						}
-					},
-					displayOutsideMaxExtent: true
-				}
-			);
-						
+			// create OSM layer using all 3 hostnames
+			this.layers.osm = new OpenLayers.Layer.OSM("OpenStreetMap",
+			  ["http://a.tile.openstreetmap.org/${z}/${x}/${y}.png",
+			   "http://b.tile.openstreetmap.org/${z}/${x}/${y}.png",
+			   "http://c.tile.openstreetmap.org/${z}/${x}/${y}.png"]);
+		
 			// deal with click
 			map.events.register('click', map, function(evt){
 				var lonlat = map.getLonLatFromViewPortPx(evt.xy);
@@ -62,19 +50,19 @@ mxn.register('openlayers', {
 			map.events.register('zoomend', map, function(evt){
 				me.changeZoom.fire();
 			});
-			
+		
 			// deal with map movement
 			map.events.register('moveend', map, function(evt){
 				me.moveendHandler(me);
 				me.endPan.fire();
 			});
-			
+		
 			// deal with initial tile loading
 			var loadfire = function(e) {
 				me.load.fire();
 				this.events.unregister('loadend', this, loadfire);
 			};
-			
+		
 			for (var layerName in this.layers) {
 				if (this.layers.hasOwnProperty(layerName)) {
 					if (this.layers[layerName].visibility === true) {
@@ -82,7 +70,7 @@ mxn.register('openlayers', {
 					}
 				}
 			}
-			
+		
 			map.addLayer(this.layers.osm);
 			this.tileLayers.push(["http://a.tile.openstreetmap.org/", this.layers.osm, true]);
 			this.maps[api] = map;
@@ -116,9 +104,18 @@ mxn.register('openlayers', {
 		},
 
 		addControls: function( args ) {
+			/* args = { 
+			 *     pan:      true,
+			 *     zoom:     'large' || 'small',
+			 *     overview: true,
+			 *     scale:    true,
+			 *     map_type: true,
+			 * }
+			 */
+
 			var map = this.maps[this.api];	
 			// FIXME: OpenLayers has a bug removing all the controls says crschmidt
-			for (var i = map.controls.length; i>1; i--) {
+			/*for (var i = map.controls.length; i>1; i--) {
 				map.controls[i-1].deactivate();
 				map.removeControl(map.controls[i-1]);
 			}
@@ -135,70 +132,264 @@ mxn.register('openlayers', {
 				if ( args.pan){
 					map.addControl(new OpenLayers.Control.PanPanel()); 
 				}
+			}*/
+
+			if ('zoom' in args) {
+				if (args.zoom == 'large') {
+					this.controls.zoom = this.addLargeControls();
+				}
+				
+				else if (args.zoom == 'small') {
+					this.controls.zoom = this.addSmallControls();
+				}
 			}
-			if ( args.overview ) {
-				map.addControl(new OpenLayers.Control.OverviewMap());
+
+			else {
+				if (this.controls.zoom !== null) {
+					this.controls.zoom.deactivate();
+					map.removeControl(this.controls.zoom);
+					this.controls.zoom = null;
+				}
 			}
-			if ( args.map_type ) {
-				map.addControl(new OpenLayers.Control.LayerSwitcher());
+
+			// See notes for addSmallControls and addLargeControls for why we suppress
+			// the PanPanel if the 'zoom' arg is set ...
+			if ('pan' in args && args.pan && ((!'zoom' in args) || ('zoom' in args && args.zoom == 'small'))) {
+				if (this.controls.pan === null) {
+					this.controls.pan = new OpenLayers.Control.PanPanel();
+					map.addControl(this.controls.pan);
+				}
 			}
-			if ( args.scale ) {
-				map.addControl(new OpenLayers.Control.ScaleLine());
+
+			else {
+				if (this.controls.pan !== null) {
+					this.controls.pan.deactivate();
+					map.removeControl(this.controls.pan);
+					this.controls.pan = null;
+				}
+			}
+			
+			if ('overview' in args && args.overview) {
+				if (this.controls.overview === null) {
+					this.controls.overview = new OpenLayers.Control.OverviewMap();
+					map.addControl(this.controls.overview);
+				}
+			}
+
+			else {
+				if (this.controls.overview !== null) {
+					this.controls.overview.deactivate();
+					map.removeControl(this.controls.overview);
+					this.controls.overview = null;
+				}
+			}
+			
+			if ('map_type' in args && args.map_type) {
+				this.controls.map_type = this.addMapTypeControls();
+			}
+			
+			else {
+				if (this.controls.map_type !== null) {
+					this.controls.map_type.deactivate();
+					map.removeControl(this.controls.map_type);
+					this.controls.map_type = null;
+				}
+			}
+
+			if ('scale' in args && args.scale) {
+				if (this.controls.scale === null) {
+					this.controls.scale = new OpenLayers.Control.ScaleLine();
+					map.addControl(this.controls.scale);
+				}
+			}
+
+			else {
+				if (this.controls.scale !== null) {
+					this.controls.scale.deactivate();
+					map.removeControl(this.controls.scale);
+					this.controls.scale = null;
+				}
 			}
 		},
 
 		addSmallControls: function() {
 			var map = this.maps[this.api];
-			this.addControlsArgs.pan = false;
-			this.addControlsArgs.scale = false;						
-			this.addControlsArgs.zoom = 'small';
-			map.addControl(new OpenLayers.Control.ZoomBox());
-			map.addControl(new OpenLayers.Control.LayerSwitcher({
-				'ascending':false
-			}));			
+
+			if (this.controls.zoom !== null) {
+				this.controls.zoom.deactivate();
+				map.removeControl(this.controls.zoom);
+			}
+			// ZoomPanel == ZoomIn + ZoomOut + ZoomToMaxExtent
+			this.controls.zoom = new OpenLayers.Control.ZoomPanel();
+			map.addControl(this.controls.zoom);
+			return this.controls.zoom;
 		},
 
 		addLargeControls: function() {
 			var map = this.maps[this.api];
-			map.addControl(new OpenLayers.Control.PanZoomBar());
-			this.addControlsArgs.pan = true;
-			this.addControlsArgs.zoom = 'large';
+			if (this.controls.zoom !== null) {
+				this.controls.zoom.deactivate();
+				map.removeControl(this.controls.zoom);
+			}
+			// PanZoomBar == PanPanel + ZoomBar
+			this.controls.zoom = new OpenLayers.Control.PanZoomBar();
+			map.addControl(this.controls.zoom);
+			return this.controls.zoom;
 		},
 
 		addMapTypeControls: function() {
 			var map = this.maps[this.api];
-			map.addControl( new OpenLayers.Control.LayerSwitcher({
-				'ascending':false
-			}) );
-			this.addControlsArgs.map_type = true;
+			var control = null;
+			
+			if (this.controls.map_type === null) {
+				control = new OpenLayers.Control.LayerSwitcher({ 'ascending':false });
+				map.addControl(control);
+			}
+			
+			else {
+				control = this.controls.map_type;
+			}
+			
+			return control;
 		},
 
 		setCenterAndZoom: function(point, zoom) { 
 			var map = this.maps[this.api];
 			var pt = point.toProprietary(this.api);
-			map.setCenter(point.toProprietary(this.api), zoom);
+			map.setCenter(pt, zoom);
 		},
 
 		addMarker: function(marker, old) {
 			var map = this.maps[this.api];
 			var pin = marker.toProprietary(this.api);
+
 			if (!this.layers.markers) {
-				this.layers.markers = new OpenLayers.Layer.Markers('markers');
+				var default_style = new OpenLayers.Style({
+					'cursor'       : 'pointer',
+					'graphicZIndex': 2
+				});
+				var select_style = default_style;
+				var style_map = new OpenLayers.StyleMap({
+					'default': default_style,
+					'select' : select_style
+				});
+				this.layers.markers = new OpenLayers.Layer.Vector('markers', {
+					// events            : null,
+					// isBaseLayer       : false,
+					// isFixed           : false,
+					// features          : [],
+					// filter            : null,
+					// selectedFeatures  : [],
+					// unrenderedFeatures: {},
+					reportError          : true,
+					// style             : {},
+					styleMap             : style_map,
+					// strategies        : [],
+					// protocol          : null,
+					// renderers         : [],
+					// renderer          : null,
+					// rendererOptions   : {},
+					rendererOptions      : {
+						yOrdering: true,
+						zIndexing: true
+					}
+					// geometryType      : 'OpenLayers.Geometry.Point',
+					// drawn             : false,
+					// ratio             : 1.0
+				});
 				map.addLayer(this.layers.markers);
+				select = new OpenLayers.Control.SelectFeature(this.layers.markers, {
+					// events        : null,
+					// multipleKey   : 'altKey',
+					// toggleKey     : 'ctrlKey',
+					multiple         : true,
+					clickout         : true,
+					// toggle        : true,
+					hover            : false,
+					highlightOnly    : true,
+					// box           : true,
+					// onBeforeSelect: null,
+					onSelect         : function(feature) {
+						feature.mapstraction_marker.click.fire();
+						select.unselect(feature);
+					},
+					// onUnselect    : null,
+					// scope         : {},
+					// geometryTypes : ['OpenLayers.Geometry.Point'],
+					// layer         : null,
+					// layers        : [],
+					// callbacks     : {},
+					// selectStyle   : {},
+					// renderIntent  : '',
+					// handlers      : {},
+					overFeature      : function(feature) {
+						var marker = feature.mapstraction_marker;
+						if (!!marker.hoverIconUrl) {
+							marker.setUrl(marker.hoverIconUrl);
+						}
+						if (marker.hover && !!marker.popup) {
+							marker.map.addPopup(marker.popup);
+							marker.popup.show();
+						}
+					},
+					outFeature       : function(feature) {
+						var marker = feature.mapstraction_marker;
+						if (!!marker.hoverIconUrl) {
+							var iconUrl = marker.iconUrl || 'http://openlayers.org/dev/img/marker-gold.png';
+							marker.setUrl(iconUrl);
+						}
+						if (marker.hover && !!marker.popup) {
+							marker.popup.hide();
+							marker.map.removePopup(marker.popup);
+						}
+					},
+					autoActivate     : true
+				});
+				drag = new OpenLayers.Control.DragFeature(this.layers.markers, {
+					// geometryTypes: ['OpenLayers.Geometry.Point'],
+					// onStart         : null,
+					// onDrag          : null,
+					// onComplete      : null,
+					// onEnter         : null,
+					// onLeave         : null,
+					documentDrag    : true,
+					// layer           : null,
+					// feature         : null,
+					// dragCallbacks   : {},
+					// featureCallbacks: {},
+					// lastPixel       : null,
+					autoActivate    : true
+				});
+				drag.handlers.drag.stopDown     = false;
+				drag.handlers.drag.stopUp       = false;
+				drag.handlers.drag.stopClick    = false;
+				drag.handlers.feature.stopDown  = false;
+				drag.handlers.feature.stopUp    = false;
+				drag.handlers.feature.stopClick = false;
+				drag.onStart = function(feature,pixel) {
+					if (feature.mapstraction_marker.draggable !== true) {
+						drag.handlers.drag.deactivate();
+					}
+				};
+				
+				map.addControls([select, drag]);
+				
+				//Not actually needed, as not referenced anywhere else, but just for completeness:
+				this.controls.drag = drag;
+				this.controls.select = select;
 			}
-			this.layers.markers.addMarker(pin);
+			this.layers.markers.addFeatures([pin]);
 			return pin;
 		},
 
 		removeMarker: function(marker) {
 			var map = this.maps[this.api];
 			var pin = marker.proprietary_marker;
-			this.layers.markers.removeMarker(pin);
-			pin.destroy();
+			this.layers.markers.removeFeatures([pin]);
 		},
 
 		declutterMarkers: function(opts) {
-			throw 'Not supported';
+			throw new Error('Mapstraction.declutterMarkers is not currently supported by provider ' + this.api);
 		},
 
 		addPolyline: function(polyline, old) {
@@ -273,42 +464,12 @@ mxn.register('openlayers', {
 		},
 
 		setMapType: function(type) {
-			var map = this.maps[this.api];
-			throw 'Not implemented (setMapType)';
-
-			// switch(type) {
-			//	 case mxn.Mapstraction.ROAD:
-			//	 map.setMapTypeId(google.maps.MapTypeId.ROADMAP);
-			//	 break;
-			//	 case mxn.Mapstraction.SATELLITE:
-			//	 map.setMapTypeId(google.maps.MapTypeId.SATELLITE);
-			//	 break;
-			//	 case mxn.Mapstraction.HYBRID:
-			//	 map.setMapTypeId(google.maps.MapTypeId.HYBRID);
-			//	 break;
-			//	 default:
-			//	 map.setMapTypeId(google.maps.MapTypeId.ROADMAP);
-			// }	 
+			// Only Open Street Map road map is implemented, so you can't change the Map Type
 		},
 
 		getMapType: function() {
-			var map = this.maps[this.api];
-			// TODO: implement actual layer support
+			// Only Open Street Map road map is implemented, so you can't change the Map Type
 			return mxn.Mapstraction.ROAD;
-
-			// var type = map.getMapTypeId();
-			// switch(type) {
-			//	 case google.maps.MapTypeId.ROADMAP:
-			//	 return mxn.Mapstraction.ROAD;
-			//	 case google.maps.MapTypeId.SATELLITE:
-			//	 return mxn.Mapstraction.SATELLITE;
-			//	 case google.maps.MapTypeId.HYBRID:
-			//	 return mxn.Mapstraction.HYBRID;
-			//	 //case google.maps.MapTypeId.TERRAIN:
-			//	 //		return something;
-			//	 default:
-			//	 return null;
-			// }
 		},
 
 		getBounds: function () {
@@ -323,7 +484,7 @@ mxn.register('openlayers', {
 			return new mxn.BoundingBox(mxn_sw.lat, mxn_sw.lon, mxn_ne.lat, mxn_ne.lon);
 		},
 
-		setBounds: function(bounds){
+		setBounds: function(bounds) {
 			var map = this.maps[this.api];
 			var sw = bounds.getSouthWest();
 			var ne = bounds.getNorthEast();
@@ -356,18 +517,18 @@ mxn.register('openlayers', {
 		},
 
 		setImagePosition: function(id, oContext) {
-			// do nothing
+			throw new Error('Mapstraction.setImagePosition is not currently supported by provider ' + this.api);
 		},
 
 		addOverlay: function(url, autoCenterAndZoom) {
 			var map = this.maps[this.api];
 			var kml = new OpenLayers.Layer.GML("kml", url,{
-				'format': OpenLayers.Format.KML,
+				'format'       : OpenLayers.Format.KML,
 				'formatOptions': new OpenLayers.Format.KML({
-					'extractStyles': true,
+					'extractStyles'    : true,
 					'extractAttributes': true
 				}),
-				'projection': new OpenLayers.Projection('EPSG:4326')
+				'projection'   : new OpenLayers.Projection('EPSG:4326')
 			});
 			if (autoCenterAndZoom) {
 				var setExtent = function() {
@@ -379,20 +540,31 @@ mxn.register('openlayers', {
 			map.addLayer(kml);
 		},
 
-		addTileLayer: function(tile_url, opacity, copyright_text, min_zoom, max_zoom, map_type) {
+		addTileLayer: function(tile_url, opacity, label, attribution, min_zoom, max_zoom, map_type, subdomains) {
 			var map = this.maps[this.api];
-			var new_tile_url = tile_url.replace(/\{Z\}/g,'${z}');
-			new_tile_url = new_tile_url.replace(/\{X\}/g,'${x}');
-			new_tile_url = new_tile_url.replace(/\{Y\}/g,'${y}');
-			var overlay = new OpenLayers.Layer.XYZ(copyright_text,
-				new_tile_url,
-				{sphericalMercator: false, opacity: opacity}
-			);
+			var new_tile_url = tile_url.replace(/\{Z\}/gi,'${z}').replace(/\{X\}/gi,'${x}').replace(/\{Y\}/gi,'${y}');
+			
+			if (typeof subdomains !== 'undefined') {
+				//make a new array of each subdomain.
+				var domain = [];
+				for(i = 0; i < subdomains.length; i++)
+				{
+					domain.push(mxn.util.getSubdomainTileURL(new_tile_url, subdomains[i]));
+				}
+			}	
+			
+			var overlay = new OpenLayers.Layer.OSM("OpenCycleMap", domain || new_tile_url);	
+			
+			if(!opacity) {
+				overlay.addOptions({opacity: opacity});
+			}
+			
 			if(!map_type) {
 				overlay.addOptions({displayInLayerSwitcher: false, isBaseLayer: false});
 			}
 			map.addLayer(overlay);
-			this.tileLayers.push( [tile_url, overlay, false] );			
+			OpenLayers.Util.onImageLoadErrorColor = "transparent"; //Otherwise missing tiles default to pink!			
+			this.tileLayers.push( [tile_url, overlay, true] );			
 		},
 
 		toggleTileLayer: function(tile_url) {
@@ -403,13 +575,12 @@ mxn.register('openlayers', {
 					this.tileLayers[f][1].setVisibility(this.tileLayers[f][2]);
 				}
 			}	   
-			// TODO: Add provider code
 		},
 
 		getPixelRatio: function() {
 			var map = this.maps[this.api];
 
-			// TODO: Add provider code	
+			throw new Error('Mapstraction.getPixelRatio is not currently supported by provider ' + this.api);
 		},
 
 		mousePosition: function(element) {
@@ -442,6 +613,7 @@ mxn.register('openlayers', {
 			var lat = (olPoint.lat / 20037508.34) * 180;
 			lat = 180/Math.PI * (2 * Math.atan(Math.exp(lat * Math.PI / 180)) - Math.PI / 2);
 			this.lon = lon;
+			this.lng = this.lon;
 			this.lat = lat;
 		}
 
@@ -450,167 +622,165 @@ mxn.register('openlayers', {
 	Marker: {
 
 		toProprietary: function() {
-			var size, anchor, popup;
-			if(this.iconSize) {
+			var size, anchor, style, marker, position;
+			if (!!this.iconSize) {
 				size = new OpenLayers.Size(this.iconSize[0], this.iconSize[1]);
 			}
 			else {
-				size = new OpenLayers.Size(21,25);
+				size = new OpenLayers.Size(21, 25);
 			}
 
-			if(this.iconAnchor) {
+			if (!!this.iconAnchor) {
 				anchor = new OpenLayers.Pixel(-this.iconAnchor[0], -this.iconAnchor[1]);
 			}
 			else {
-				anchor = new OpenLayers.Pixel(-(size.w/2), -size.h);
+				anchor = new OpenLayers.Pixel(-(size.w / 2), -size.h);
 			}
 
-			if(this.iconUrl) {
+			if (!!this.iconUrl) {
 				this.icon = new OpenLayers.Icon(this.iconUrl, size, anchor);
 			}
 			else {
 				this.icon = new OpenLayers.Icon('http://openlayers.org/dev/img/marker-gold.png', size, anchor);
 			}
-			var marker = new OpenLayers.Marker(this.location.toProprietary("openlayers"), this.icon);
 
-			if(this.infoBubble) {
-				popup = new OpenLayers.Popup.FramedCloud(null,
-					this.location.toProprietary("openlayers"),
-					new OpenLayers.Size(100,100),
+			style = {
+				cursor         : 'pointer',
+				externalGraphic: ((!!this.iconUrl) ? this.iconUrl : 'http://openlayers.org/dev/img/marker-gold.png'),
+				graphicTitle   : ((!!this.labelText) ? this.labelText : ''),
+				graphicHeight  : size.h,
+				graphicWidth   : size.w,
+				graphicOpacity : 1.0,
+				graphicXOffset : anchor.x,
+				graphicYOffset : anchor.y,
+				graphicZIndex  : (!!this.attributes.zIndex ? this.attributes.zIndex : 2)//,
+				// title       : this.labelText
+			};
+
+			position = this.location.toProprietary('openlayers');
+			marker = new OpenLayers.Feature.Vector(
+			 new OpenLayers.Geometry.Point(position.lon,	position.lat),
+				null,
+				style);
+
+			if (!!this.infoBubble) {
+				this.popup = new OpenLayers.Popup.FramedCloud(
+					null,
+					position,
+					new OpenLayers.Size(100, 100),
 					this.infoBubble,
 					this.icon,
-					true
-				);
-				var theMap = this.map;
-				if(this.hover) {
-					marker.events.register("mouseover", marker, function(event) {
-						theMap.addPopup(popup);
-						popup.show();
-					});
-					marker.events.register("mouseout", marker, function(event) {
-						popup.hide();
-						theMap.removePopup(popup);
-					});
-				}
-				else {
-					var shown = false;
-					marker.events.register("mousedown", marker, function(event) {
-						if (shown) {
-							popup.hide();
-							theMap.removePopup(popup);
-							shown = false;
-						} else {
-							theMap.addPopup(popup);
-							popup.show();
-							shown = true;
-						}
-					});
-				}
-				this.popup = popup;
+					true);
+				this.popup.autoSize = true;
+				this.popup.panMapIfOutOfView = true;
+				this.popup.fixedRelativePosition = false;
+				this.popup.feature = marker;
 			}
-			
-			//fire click event for marker
-			marker.events.register("click",marker,function(event) {
-				marker.mapstraction_marker.click.fire();
-			});
-
-			if(this.hoverIconUrl) {
-				var icon = this.iconUrl || 'http://openlayers.org/dev/img/marker-gold.png';
-				var hovericon = this.hoverIconUrl;
-				marker.events.register("mouseover", marker, function(event) {
-					marker.setUrl(hovericon);
-				});
-				marker.events.register("mouseout", marker, function(event) {
-					marker.setUrl(icon);
-				});
+			else {
+				this.popup = null;
 			}
 
-			if(this.infoDiv){
+			if (this.infoDiv){
 				// TODO
 			}
 			return marker;
 		},
 
 		openBubble: function() {		
-			if ( this.infoBubble ) {
+			if (!!this.infoBubble) {
 				// Need to create a new popup in case setInfoBubble has been called
-				this.popup = new OpenLayers.Popup.FramedCloud(null,
+				this.popup = new OpenLayers.Popup.FramedCloud(
+					null,
 					this.location.toProprietary("openlayers"),
-					new OpenLayers.Size(100,100),
+					new OpenLayers.Size(100, 100),
 					this.infoBubble,
 					this.icon,
-					true
-				);
+					true);
+				this.popup.autoSize = true;
+				this.popup.panMapIfOutOfView = true;
+				this.popup.fixedRelativePosition = false;
+				this.popup.feature = this.propriety_marker;
 			}
 
-			if ( this.popup ) {
-				this.map.addPopup( this.popup, true );
+			if (!!this.popup) {
+				this.map.addPopup(this.popup, true);
 			}
+			this.openInfoBubble.fire( { 'marker': this } );
 		},
 
 		closeBubble: function() {
-			if ( this.popup ) {
+			if (!!this.popup) {
 				this.popup.hide();
-				this.map.removePopup( this.popup );
+				this.map.removePopup(this.popup);
+				this.popup = null;
 			}
+			this.closeInfoBubble.fire( { 'marker': this } );
 		},
 
 		hide: function() {
-			this.proprietary_marker.display( false );
+			delete this.proprietary_marker.style.display;
+			this.proprietary_marker.layer.redraw();		
 		},
 
 		show: function() {
-			this.proprietary_marker.display( true );
+			this.proprietary_marker.style.display = 'true';
+			this.proprietary_marker.layer.redraw();
 		},
 
 		update: function() {
-			// TODO: Add provider code
+			throw new Error('Marker.update is not currently supported by provider ' + this.api);
 		}
-
 	},
 
 	Polyline: {
 
 		toProprietary: function() {
-			var olpolyline;
-			var olpoints = [];
+			var coords = [];
 			var ring;
 			var style = {
-				strokeColor: this.color || "#000000",
-				strokeOpacity: this.opacity || 1,
-				strokeWidth: this.width || 1,
-				fillColor: this.fillColor || "#000000",
-				fillOpacity: this.getAttribute('fillOpacity') || 0.2
+				strokeColor  : this.color,
+				strokeOpacity: this.opacity,
+				strokeWidth  : this.width,
+				fillColor    : this.fillColor,
+				fillOpacity  : this.opacity
 			};
 
-			//TODO Handle closed attribute
-
 			for (var i = 0, length = this.points.length ; i< length; i++){
-				olpoint = this.points[i].toProprietary("openlayers");
-				olpoints.push(new OpenLayers.Geometry.Point(olpoint.lon, olpoint.lat));
+				var point = this.points[i].toProprietary("openlayers");
+				coords.push(new OpenLayers.Geometry.Point(point.lon, point.lat));
+			}
+
+			if (this.closed) {
+				if (!(this.points[0].equals(this.points[this.points.length - 1]))) {
+					coords.push(coords[0]);
+				}
+			}
+
+			else if (this.points[0].equals(this.points[this.points.length - 1])) {
+				this.closed = true;
 			}
 
 			if (this.closed) {
 				// a closed polygon
-				ring = new OpenLayers.Geometry.LinearRing(olpoints);
+				ring = new OpenLayers.Geometry.LinearRing(coords);
 			} else {
 				// a line
-				ring = new OpenLayers.Geometry.LineString(olpoints);
+				ring = new OpenLayers.Geometry.LineString(coords);
 			}
 
-			olpolyline = new OpenLayers.Feature.Vector(ring, null, style);
-
-			return olpolyline;
+			this.proprietary_polyline = new OpenLayers.Feature.Vector(ring, null, style);
+			return this.proprietary_polyline;
 		},
 
 		show: function() {
-			throw 'Not implemented';
-		},
+			delete this.proprietary_polyline.style.display;
+			this.proprietary_polyline.layer.redraw();		
+			},
 
 		hide: function() {
-			throw 'Not implemented';
+			this.proprietary_polyline.style.display = 'none';
+			this.proprietary_polyline.layer.redraw();		
 		}
-
 	}
 
 });
