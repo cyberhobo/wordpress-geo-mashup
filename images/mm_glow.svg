@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="220" height="260">
+    <desc iVinci="yes" version="4.4" gridStep="10" showGrid="no" snapToGrid="no" codePlatform="0"/>
+    <g id="Layer1">
+        <g id="Shape1">
+            <desc type="0" basicInfo-basicType="0" basicInfo-roundedRectRadius="12" basicInfo-polygonSides="6" basicInfo-starPoints="5" bounding="rect(-81.5,-102.5,163,205)" text="" font-familyName="Helvetica" font-pixelSize="20" font-bold="0" font-underline="0" font-alignment="1" strokeStyle="0" markerStart="0" markerEnd="0" shadowEnabled="0" shadowOffsetX="0" shadowOffsetY="2" shadowBlur="4" shadowOpacity="160" blurEnabled="0" blurRadius="4" transform="matrix(1.16631,0,0,1.16631,110.554,130.047)" pers-center="0,0" pers-size="0,0" pers-start="0,0" pers-end="0,0" locked="0" mesh="" flag=""/>
+            <path id="shapePath1" d="M109.971,249.594 C109.971,249.594 15.5,158.954 15.5,100.306 C15.5,38.3273 63.3188,10.5 109.971,10.5 C156.624,10.5 205.609,37.3273 205.609,100.306 C205.609,159.287 109.971,249.594 109.971,249.594 Z" style="stroke:url(#radialGradientStroke1);stroke-width:17;stroke-linejoin:miter;stroke-miterlimit:2;stroke-linecap:round;fill:none;"/><defs><radialGradient id="radialGradientStroke1" gradientUnits="userSpaceOnUse" cx="110.554" cy="117.047" r="145.082" fx="110.554" fy="251.047"><stop offset="0" stop-color="#fffaff" stop-opacity="1"/><stop offset="1" stop-color="#fff900" stop-opacity="1"/></radialGradient></defs>
+        </g>
+    </g>
+</svg>
