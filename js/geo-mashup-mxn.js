@@ -645,12 +645,11 @@ GeoMashup.createMap = function(container, opts) {
 	this.doAction( 'geoQueryUrl', this.opts, filter );
 	this.geo_query_url = filter.url;
 
-	// TODO: Try to deleselect markers with clicks? Need to make sure we don't get other object's clicks.
-	this.map.changeZoom.addHandler( function( old_zoom, new_zoom ) {
-		GeoMashup.adjustZoom( old_zoom, new_zoom );
+	this.map.changeZoom.addHandler( function() {
+		GeoMashup.adjustZoom();
 		GeoMashup.adjustViewport();
-	} );
-	this.map.endPan.addHandler( function() {GeoMashup.adjustViewport();} );
+	}, this );
+	this.map.endPan.addHandler( function() {GeoMashup.adjustViewport();}, this );
 
 	// No clustering available
 
