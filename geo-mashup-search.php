@@ -245,6 +245,7 @@ class GeoMashupSearch {
 		extract( $args );
 		$factor = ( 'km' == $this->units ) ? 1 : self::MILES_PER_KILOMETER;
 		$distance = round( $this->result->distance_km * $factor, $decimal_places );
+		$distance = number_format_i18n($distance, $decimal_places);
 		if ( $append_units )
 			$distance .= ' ' . $this->units;
 		if ( $echo )
