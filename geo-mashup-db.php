@@ -167,7 +167,6 @@ class GeoMashupDB {
 		if ( !in_array( $meta_key, self::$geodata_keys ) )
 			return $ok;
 		if ( isset( self::$copied_to_geodata['user-' . $object_id] ) )
-
 			return false;
 		else
 			return $ok;
@@ -235,7 +234,7 @@ class GeoMashupDB {
 				return;
 			$location['lat'] = $lat;
 
-		} else if ( 'post' == $meta_type and in_array( $meta_key, $import_custom_keys ) ) {
+		} else if ( in_array( $meta_key, $import_custom_keys ) ) {
 
 			$lat_lng = preg_split( '/\s*[, ]\s*/', trim( $meta_value ) );
 			if ( count( $lat_lng ) == 2 and is_numeric( $lat_lng[0] ) and is_numeric( $lat_lng[1] ) ) {
