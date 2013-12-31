@@ -2,7 +2,7 @@
 /**
  * Class for working with PO files
  *
- * @version $Id: po.php 780 2013-06-19 12:12:28Z markoheijnen $
+ * @version $Id: po.php 812 2013-10-18 17:34:16Z markoheijnen $
  * @package pomo
  * @subpackage po
  */
@@ -356,7 +356,7 @@ class PO extends Gettext_Translations {
 			return true;
 		}
 		$line = $use_last_line? $last_line : fgets($f);
-		$line = gp_endswith( $line, "\r\n" )? rtrim( $line, "\r\n" ) . "\n" : $line;
+		$line = ( "\r\n" == substr( $line, -2 ) ) ? rtrim( $line, "\r\n" ) . "\n" : $line;
 		$last_line = $line;
 		$use_last_line = false;
 		return $line;
