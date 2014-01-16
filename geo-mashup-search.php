@@ -561,13 +561,13 @@ class GeoMashupSearchWidget extends WP_Widget {
 			<label for="<?php echo $this->get_field_id( 'results_page_id' ); ?>"
 					 title="<?php _e( 'The page where search results should be displayed.', 'GeoMashup' ); ?>">
 		<?php _e( 'Results Page:', 'GeoMashup' ); ?>
-				<select id="<?php echo $this->get_field_id( 'results_page_id' ); ?>" name="<?php echo $this->get_field_name( 'results_page_id' ); ?>">
-						 <?php foreach ( $pages as $page ) : ?>
-						<option value="<?php echo $page->ID; ?>"<?php echo $page->ID == $this->get_default_value( $instance, 'results_page_id' ) ? ' selected="selected"' : ''; ?>>
-						<?php echo $page->post_name; ?>
-						</option>
-						<?php endforeach; ?>
-				</select>
+				<?php
+				wp_dropdown_pages( array(
+					'id' => $this->get_field_id( 'results_page_id' ),
+					'name' => $this->get_field_name( 'results_page_id' ),
+					'selected' => $this->get_default_value( $instance, 'results_page_id' ),
+				) );
+				?>
 			</label>
 		</p>
 		<?php

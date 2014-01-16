@@ -288,20 +288,15 @@ function geo_mashup_options_page() {
 							<?php _e('Global Mashup Page', 'GeoMashup'); ?>
 						</th>
 						<td>
-							<select id="mashup_page" name="overall[mashup_page]"><?php 
-								$pages = get_pages(); 
-								if ( $pages ) : 
-									foreach ( $pages as $page ) : ?>
-									<option value="<?php echo esc_attr( $page->ID ); ?>"<?php
-										if ( $geo_mashup_options->get( 'overall', 'mashup_page' ) == $page->ID ) { 
-											echo ' selected="selected"';
-										}
-									?>><?php echo esc_html( $page->post_name ); ?></option>
-								<?php endforeach; ?>
-							<?php else : ?>
-								<option value=""><?php _e( 'No pages available.', 'GeoMashup' ); ?></option>
-							<?php endif; ?>
-							</select>
+							<?php
+							wp_dropdown_pages( array(
+								'name' => 'overall[mashup_page]',
+								'id' => 'mashup_page',
+								'show_option_none' => __( '&mdash; Select &mdash;' ),
+								'option_none_value' => 0,
+								'selected' => $geo_mashup_options->get( 'overall', 'mashup_page' ),
+							) );
+							?>
 							<span class="description"><?php
 								_e( 'Geo Mashup will use this page for generated location links', 'GeoMashup' );
 							?></span>
