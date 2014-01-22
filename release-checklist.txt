@@ -20,11 +20,9 @@ If any step fails, fix before continuing, repeating any necessary prior steps.
 	  1. Make an archive copy of current wiki docs.
 	  1. Merge current and beta wiki docs.
 	  1. Empty beta wiki docs.
-	1. Tag the new release in the Google code repository (git push; git tag x.x.x; git push --tags).
-	1. Upload ZIP to Google code.
+	1. Tag the new release (git push all; git tag x.x.x; git push --tags all).
 	1. Deploy to WordPress SVN (cd build/x.x.x.x; plugin-deploy.sh).
 	1. Tag WP copy (geo-mashup-tag-wp.sh x.x.x).
-	1. Update github (git push github master; git push --tags github master)
 	  1. Generate PHP and JS docs and post on code.cyberhobo.net. (rm -rf build; ant phpdoc; ant jsdoc;)
 	  1. Update PHP and JS docs links in wiki.
 	1. Prune issues.
