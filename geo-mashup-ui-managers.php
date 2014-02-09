@@ -179,9 +179,16 @@ class GeoMashupUIManager {
 				true );
 
 			GeoMashup::register_script(
+					'mxn-leaflet-kml',
+					'js/leaflet/KML.js',
+					array( 'mxn-leaflet' ),
+					GEO_MASHUP_VERSION,
+					true );
+
+			GeoMashup::register_script(
 				'mxn-leaflet-gm',
 				'js/mxn/mxn.leaflet.geo-mashup.js',
-				array( 'mxn-leaflet' ),
+				array( 'mxn-leaflet-kml' ),
 				GEO_MASHUP_VERSION,
 				true );
 

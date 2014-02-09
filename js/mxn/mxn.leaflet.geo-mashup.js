@@ -11,3 +11,18 @@ L.DomEvent.getMousePosition = function (e, container) {
 		e.clientX - rect.left - container.clientLeft,
 		e.clientY - rect.top - container.clientTop);
 };
+
+mxn.register( 'leaflet', {
+	Mapstraction: {
+		addOverlay: function( url, autoCenterAndZoom ) {
+			var map = this.maps[this.api];
+			var kml = new L.KML( url, { async: true } );
+			if ( autoCenterAndZoom ) {
+				kml.on( 'loaded', function( e ) {
+					map.fitBounds( e.target.getBounds() );
+				} );
+			}
+			map.addLayer( kml );
+		}
+	}
+} );
