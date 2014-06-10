@@ -2110,7 +2110,8 @@ class GeoMashupDB {
 		global $wpdb;
 		if ( isset( $_GET['q'] ) ) {
 			$limit = (int) apply_filters( 'postmeta_form_limit', 30 );
-			$stub = trim( array_pop( explode( ',', $_GET['q'] ) ) );
+			$terms = explode( ',', $_GET['q'] );
+			$stub = trim( array_pop( $terms ) );
 			$like = esc_sql( $stub );
 			$keys = $wpdb->get_col( "
 				SELECT meta_key
