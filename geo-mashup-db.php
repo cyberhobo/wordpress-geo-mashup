@@ -249,7 +249,7 @@ class GeoMashupDB {
 						$value = get_metadata( $meta_type, $object_id, $import_custom_key, true );
 
 						// All keys must have a value - do nothing if not
-						if ( $value ) 
+						if ( $value !== false )
 							$geocode_values[] = $value;
 						else
 							return;
