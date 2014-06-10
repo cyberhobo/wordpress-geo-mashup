@@ -246,13 +246,13 @@ class GeoMashupDB {
 					if ( $meta_key == $import_custom_key ) {
 						$geocode_values[] = $meta_value;
 					} else {
-						$value = get_metadata( $meta_type, $object_id, $import_custom_key, true );
 
 						// All keys must have a value - do nothing if not
-						if ( $value !== false )
-							$geocode_values[] = $value;
-						else
+						if ( !metadata_exists( $meta_type, $object_id, $import_custom_key ) )
 							return;
+
+						$geocode_values[] = get_metadata( $meta_type, $object_id, $import_custom_key, true );
+
 					}
 				}
 				$location = self::blank_location( ARRAY_A );
