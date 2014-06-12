@@ -764,7 +764,7 @@ class GeoMashup_Unit_Tests extends WP_UnitTestCase {
 
 		update_user_meta( $user_id, 'geo', 'Paris, France' );
 
-		$error = get_post_meta( $user_id, 'geocoding_error', true );
+		$error = get_user_meta( $user_id, 'geocoding_error', true );
 		if ( $error ) {
 
 			// If we can't geocode, no location is saved

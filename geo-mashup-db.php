@@ -259,8 +259,7 @@ class GeoMashupDB {
 				self::geocode( implode( ',', $geocode_values ), $location );
 				if ( self::$geocode_error ) {
 					update_metadata( $meta_type, $object_id, 'geocoding_error', self::$geocode_error->get_error_message() );
-					if ( empty( $location['lat'] ) or empty( $location['lng'] ) )
-						return;
+					return;
 				}
 			}
 		}
