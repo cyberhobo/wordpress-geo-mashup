@@ -76,7 +76,6 @@ jQuery( function( $ ) {
 				gm.adjustZoom();
 
 				var after_zoom_in_test = function() {
-					console.log( gm.map.getZoom() );
 					ok( gm.term_manager.isTermVisible( 2, 'test_tax' ), 'term 2 is visible after zoom in' );
 					ok( !gm.term_manager.isTermLineVisible( 2, 'test_tax' ), 'term 2 line is not visible after zoom in' );
 
