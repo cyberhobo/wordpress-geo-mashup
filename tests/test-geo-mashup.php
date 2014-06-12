@@ -171,7 +171,7 @@ class GeoMashup_Unit_Tests extends WP_UnitTestCase {
 		$post_locs = array();
 		$post_locs[0] = GeoMashupDB::set_object_location( 'post', $posts[0], $coordinates[0], $do_lookups = false );
 		$post_locs[1] = GeoMashupDB::set_object_location( 'post', $posts[1], $coordinates[1], $do_lookups = false );
-		
+
 		$no_results = GeoMashupDB::get_object_locations( array(
 			'object_name' => 'post',
 			'near_lat' => 0,
@@ -191,7 +191,7 @@ class GeoMashup_Unit_Tests extends WP_UnitTestCase {
 		$this->assertTrue( count( $one_result ) === 1 );
 		$this->assertEquals( $coordinates[0]['lat'], $one_result[0]->lat, '', self::DELTA );
 		$this->assertEquals( $coordinates[0]['lng'], $one_result[0]->lng, '', self::DELTA );
-		$this->assertEquals( $one_result->object_id, $post_locs[0]->ID );
+		$this->assertEquals( $posts[0], $one_result[0]->object_id );
 
 		$two_results = GeoMashupDB::get_object_locations( array(
 			'object_name' => 'post',
@@ -203,7 +203,7 @@ class GeoMashup_Unit_Tests extends WP_UnitTestCase {
 		$this->assertTrue( count( $two_results ) === 2 );
 		$this->assertEquals( $coordinates[1]['lat'], $two_results[1]->lat, '', self::DELTA );
 		$this->assertEquals( $coordinates[1]['lng'], $two_results[1]->lng, '', self::DELTA );
-		$this->assertEquals( $post_locs[1]->ID, $two_results->object_id );
+		$this->assertEquals( $posts[1], $two_results[1]->object_id );
 	}
 
 	/**
