@@ -783,7 +783,7 @@ class GeoMashup_Unit_Tests extends WP_UnitTestCase {
 
 				// Failed geocoding due to lack of internet leaves the first result
 				$location = GeoMashupDB::get_object_location( 'user', $user_id );
-				$this->assertEquals( 48, intval( $location->lat, $error ) );
+				$this->assertEquals( 48, intval( $location->lat ), $error );
 				$this->assertEquals( 2, intval( $location->lng ), $error );
 
 			} else {
