@@ -181,11 +181,12 @@ class GeoMashup_Unit_Tests extends WP_UnitTestCase {
 		) );
 		$this->assertTrue( count( $no_results ) === 0 );
 
+		$delta = mt_rand( 1, 1000 ) / 10000000;
 		$one_result = GeoMashupDB::get_object_locations( array(
 			'object_name' => 'post',
-			'near_lat' => $coordinates[0]['lat'],
-			'near_lng' => $coordinates[0]['lng'],
-			'radius_km' => 10,
+			'near_lat' => $coordinates[0]['lat'] + $delta,
+			'near_lng' => $coordinates[0]['lng'] + $delta,
+			'radius_km' => 0.5,
 			'sort' => 'distance_km ASC',
 		) );
 		$this->assertTrue( count( $one_result ) === 1 );
@@ -195,8 +196,8 @@ class GeoMashup_Unit_Tests extends WP_UnitTestCase {
 
 		$two_results = GeoMashupDB::get_object_locations( array(
 			'object_name' => 'post',
-			'near_lat' => $coordinates[0]['lat'],
-			'near_lng' => $coordinates[0]['lng'],
+			'near_lat' => $coordinates[0]['lat'] + $delta,
+			'near_lng' => $coordinates[0]['lng'] + $delta,
 			'radius_km' => 20,
 			'sort' => 'distance_km ASC',
 		) );
