@@ -647,6 +647,27 @@ class GeoMashup_Unit_Tests extends WP_UnitTestCase {
 		);
 	}
 
+	function test_small_search() {
+		require_once GEO_MASHUP_DIR_PATH . '/geo-mashup-search.php';
+
+		$found_post = $this->factory->post->create_and_get();
+		$location = GeoMashupDB::blank_location();
+		$location->lat = 45.61806;
+		$location->lng = 5.226046;
+		GeoMashupDB::set_object_location( 'post', $found_post->ID, $location, false );
+
+		$search_args = array(
+			'location_text' => "45.6181, 5.226",
+			'object_name' => 'post',
+			'radius' => 0.5,
+			'units' => 'km',
+			'geo_mashup_search_submit' => 'Search',
+		);
+		$search = new GeoMashupSearch( $search_args );
+		$this->assertTrue( $search->have_posts(), 'Search did not find any posts.' );
+		$this->assertContains( $found_post->ID, $search->get_the_IDs(), 'Search did not find the target post.' );
+	}
+
 	/**
 	 * Issue 639
 	 */

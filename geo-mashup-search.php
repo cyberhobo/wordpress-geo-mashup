@@ -109,7 +109,7 @@ class GeoMashupSearch {
 		$radius_km = $this->max_km;
 
 		if ( ! empty( $radius ) )
-			$radius_km = absint( $radius ) / $this->distance_factor;
+			$radius_km = abs( $radius ) / $this->distance_factor;
 
 		$geo_query_args['radius_km'] = $radius_km;
 		$geo_query_args['near_lat'] = $this->near_location['lat'];
