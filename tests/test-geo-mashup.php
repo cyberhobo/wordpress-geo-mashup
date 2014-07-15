@@ -819,6 +819,19 @@ class GeoMashup_Unit_Tests extends WP_UnitTestCase {
 		}
 	}
 
+
+	/**
+	 * Issue 691
+	 */
+	function test_map_content_with_object_ids() {
+		$post_ids = $this->generate_rand_located_posts( 3 );
+		$html = GeoMashup::map( array(
+			'object_name' => 'post',
+			'object_ids' => implode( ',', $post_ids ),
+		) );
+		$this->assertContains( 'map_content=global', $html, 'Expected global map content when object_ids are passed.' );
+	}
+
 	private function get_nv_test_location() {
 		$location = GeoMashupDB::blank_location();
 		$location->lat = 40;

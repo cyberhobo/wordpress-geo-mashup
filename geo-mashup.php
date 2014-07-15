@@ -1017,7 +1017,13 @@ class GeoMashup {
 
 		}
 
-		if ( empty ( $map_content ) ) {
+		if ( empty( $map_content ) and !empty( $atts['object_ids'] ) ) {
+
+			$map_content = 'global';
+
+		}
+
+		if ( empty( $map_content ) ) {
 
 			if ( empty( $context_object_id ) ) {
 				$map_content = 'contextual';
