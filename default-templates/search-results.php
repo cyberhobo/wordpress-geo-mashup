@@ -44,6 +44,7 @@
 		'center_lng' => $near_location['lng'],
 		'search_lat' => $near_location['lat'],
 		'search_lng' => $near_location['lng'],
+		'map_content' => 'global',
 		'object_name'=> $object_name,
 		'zoom' => 	$approximate_zoom + 1 // Adjust to taste
 		) ); ?>

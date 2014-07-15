@@ -156,6 +156,43 @@ class GeoMashupUIManager {
 					true );
 					
 			$required_scripts[] = 'mxn-openlayers-gm';
+		} elseif ( 'leaflet' == $map_api ) {
+
+			wp_register_script(
+					'leaflet',
+					'http://cdn.leafletjs.com/leaflet-0.7.1/leaflet.js',
+					null,
+					'0.7',
+					true );
+
+			wp_enqueue_style(
+					'leaflet',
+					'http://cdn.leafletjs.com/leaflet-0.7.1/leaflet.css',
+					null,
+					'0.7' );
+
+			GeoMashup::register_script(
+				'mxn-leaflet',
+				'js/mxn/mxn.leaflet.core.js',
+				array( 'mxn-core', 'leaflet' ),
+				GEO_MASHUP_VERSION,
+				true );
+
+			GeoMashup::register_script(
+					'mxn-leaflet-kml',
+					'js/leaflet/KML.js',
+					array( 'mxn-leaflet' ),
+					GEO_MASHUP_VERSION,
+					true );
+
+			GeoMashup::register_script(
+				'mxn-leaflet-gm',
+				'js/mxn/mxn.leaflet.geo-mashup.js',
+				array( 'mxn-leaflet-kml' ),
+				GEO_MASHUP_VERSION,
+				true );
+
+			$required_scripts[] = 'mxn-leaflet-gm';
 		}
 
 		GeoMashup::register_script( 

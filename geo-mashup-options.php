@@ -400,7 +400,7 @@ class GeoMashupOptions {
 				return true;
 
 			case 'map_api':
-				$valid_apis = array( 'google', 'openlayers', 'googlev3' );
+				$valid_apis = array( 'google', 'openlayers', 'googlev3', 'leaflet' );
 				if ( !in_array ( $value, $valid_apis ) ) {
 					array_push ( $this->validation_errors, '"'. $value . '" ' . __('is invalid for', 'GeoMashup') . ' ' . $key .
 						__(', which must be a valid map provider.', 'GeoMashup') );

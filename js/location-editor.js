@@ -612,13 +612,13 @@ var
 	 */
 	showGeoNames = function (data) {
 		var i, result_latlng, marker;
-		if (data) {
+		if (data && data.geonames ) {
 			for (i=0; i<data.geonames.length && i<100 && data.geonames[i]; i += 1) {
 				result_latlng = new mxn.LatLonPoint( data.geonames[i].lat, data.geonames[i].lng );
 				marker = createMarker( result_latlng, new GeoAddress(data.geonames[i]) );
 			}
-			geo_mashup_location_editor.hideBusyIcon();
 		}
+		geo_mashup_location_editor.hideBusyIcon();
 	},
 
 	/**

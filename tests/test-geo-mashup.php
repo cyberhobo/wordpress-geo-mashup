@@ -171,7 +171,7 @@ class GeoMashup_Unit_Tests extends WP_UnitTestCase {
 		$post_locs = array();
 		$post_locs[0] = GeoMashupDB::set_object_location( 'post', $posts[0], $coordinates[0], $do_lookups = false );
 		$post_locs[1] = GeoMashupDB::set_object_location( 'post', $posts[1], $coordinates[1], $do_lookups = false );
-		
+
 		$no_results = GeoMashupDB::get_object_locations( array(
 			'object_name' => 'post',
 			'near_lat' => 0,
@@ -181,29 +181,30 @@ class GeoMashup_Unit_Tests extends WP_UnitTestCase {
 		) );
 		$this->assertTrue( count( $no_results ) === 0 );
 
+		$delta = mt_rand( 1, 1000 ) / 10000000;
 		$one_result = GeoMashupDB::get_object_locations( array(
 			'object_name' => 'post',
-			'near_lat' => $coordinates[0]['lat'],
-			'near_lng' => $coordinates[0]['lng'],
-			'radius_km' => 10,
+			'near_lat' => $coordinates[0]['lat'] + $delta,
+			'near_lng' => $coordinates[0]['lng'] + $delta,
+			'radius_km' => 0.5,
 			'sort' => 'distance_km ASC',
 		) );
 		$this->assertTrue( count( $one_result ) === 1 );
 		$this->assertEquals( $coordinates[0]['lat'], $one_result[0]->lat, '', self::DELTA );
 		$this->assertEquals( $coordinates[0]['lng'], $one_result[0]->lng, '', self::DELTA );
-		$this->assertEquals( $one_result->object_id, $post_locs[0]->ID );
+		$this->assertEquals( $posts[0], $one_result[0]->object_id );
 
 		$two_results = GeoMashupDB::get_object_locations( array(
 			'object_name' => 'post',
-			'near_lat' => $coordinates[0]['lat'],
-			'near_lng' => $coordinates[0]['lng'],
+			'near_lat' => $coordinates[0]['lat'] + $delta,
+			'near_lng' => $coordinates[0]['lng'] + $delta,
 			'radius_km' => 20,
 			'sort' => 'distance_km ASC',
 		) );
 		$this->assertTrue( count( $two_results ) === 2 );
 		$this->assertEquals( $coordinates[1]['lat'], $two_results[1]->lat, '', self::DELTA );
 		$this->assertEquals( $coordinates[1]['lng'], $two_results[1]->lng, '', self::DELTA );
-		$this->assertEquals( $post_locs[1]->ID, $two_results->object_id );
+		$this->assertEquals( $posts[1], $two_results[1]->object_id );
 	}
 
 	/**
@@ -256,6 +257,18 @@ class GeoMashup_Unit_Tests extends WP_UnitTestCase {
 		$this->assertEquals( $geo_date, $out->geo_date );
 		$this->assertEquals( $loc->lat, $out->lat, '', self::DELTA );
 		$this->assertEquals( $loc->lng, $out->lng, '', self::DELTA );
+
+		$user_id = $this->factory->user->create();
+		$loc = $this->rand_location();
+		$geo_date = '2013-12-30 00:00:00';
+		update_user_meta( $user_id, 'geo_date', $geo_date );
+		update_user_meta( $user_id, 'geo_latitude', $loc->lat );
+		update_user_meta( $user_id, 'geo_longitude', $loc->lng );
+
+		$out = GeoMashupDB::get_object_location( 'user', $user_id );
+		$this->assertEquals( $geo_date, $out->geo_date );
+		$this->assertEquals( $loc->lat, $out->lat, '', self::DELTA );
+		$this->assertEquals( $loc->lng, $out->lng, '', self::DELTA );
 	}
 
 	function test_copy_to_geodata() {
@@ -277,6 +290,20 @@ class GeoMashup_Unit_Tests extends WP_UnitTestCase {
 		$this->assertEquals( $loc->lng, $sync_lng, '', self::DELTA ); 
 
 		$geo_date = get_post_meta( $post_id, 'geo_date', true );
+		$this->assertFalse( empty( $geo_date ) );
+
+		$user_id = $this->factory->user->create();
+
+		$loc = $this->rand_location();
+		$loc_id = GeoMashupDB::set_object_location( 'user', $user_id, $loc, $do_lookups = false );
+
+		$sync_lat = get_user_meta( $user_id, 'geo_latitude', true );
+		$this->assertEquals( $loc->lat, $sync_lat, '', self::DELTA );
+
+		$sync_lng = get_user_meta( $user_id, 'geo_longitude', true );
+		$this->assertEquals( $loc->lng, $sync_lng, '', self::DELTA );
+
+		$geo_date = get_user_meta( $user_id, 'geo_date', true );
 		$this->assertFalse( empty( $geo_date ) );
 	}
 
@@ -620,6 +647,27 @@ class GeoMashup_Unit_Tests extends WP_UnitTestCase {
 		);
 	}
 
+	function test_small_search() {
+		require_once GEO_MASHUP_DIR_PATH . '/geo-mashup-search.php';
+
+		$found_post = $this->factory->post->create_and_get();
+		$location = GeoMashupDB::blank_location();
+		$location->lat = 45.61806;
+		$location->lng = 5.226046;
+		GeoMashupDB::set_object_location( 'post', $found_post->ID, $location, false );
+
+		$search_args = array(
+			'location_text' => "45.6181, 5.226",
+			'object_name' => 'post',
+			'radius' => 0.5,
+			'units' => 'km',
+			'geo_mashup_search_submit' => 'Search',
+		);
+		$search = new GeoMashupSearch( $search_args );
+		$this->assertTrue( $search->have_posts(), 'Search did not find any posts.' );
+		$this->assertContains( $found_post->ID, $search->get_the_IDs(), 'Search did not find the target post.' );
+	}
+
 	/**
 	 * Issue 639
 	 */
@@ -724,6 +772,64 @@ class GeoMashup_Unit_Tests extends WP_UnitTestCase {
 			'object_ids' => implode( ',', $post_ids ),
 		) );
 		$this->assertStringMatchesFormat( '%soids=.%s', $html, 'Long id list was not compressed.' );
+	}
+
+	function test_user_import_fields() {
+		// This test calls geocoding services, but allows for failure
+		global $geo_mashup_options;
+
+		$geo_mashup_options->set_valid_options( array( 'overall' => array( 'import_custom_field' => 'geo' ) ) );
+		GeoMashupDB::add_geodata_sync_hooks();
+
+		$user_id = $this->factory->user->create();
+		$this->assertEmpty( GeoMashupDB::get_object_location( 'user', $user_id ) );
+
+		update_user_meta( $user_id, 'geo', 'Paris, France' );
+
+		$error = get_user_meta( $user_id, 'geocoding_error', true );
+		if ( $error ) {
+
+			// If we can't geocode, no location is saved
+			$this->assertEmpty( GeoMashupDB::get_object_location( 'user', $user_id ) );
+
+		} else {
+
+			$location = GeoMashupDB::get_object_location( 'user', $user_id );
+			$this->assertEquals( 48, intval( $location->lat ) );
+			$this->assertEquals( 2, intval( $location->lng ) );
+
+			// A second update overwrites if successful
+			update_user_meta( $user_id, 'geo', 'Paris, Texas' );
+			$error = get_user_meta( $user_id, 'geocoding_error', true );
+			if ( $error ) {
+
+				// Failed geocoding due to lack of internet leaves the first result
+				$location = GeoMashupDB::get_object_location( 'user', $user_id );
+				$this->assertEquals( 48, intval( $location->lat ), $error );
+				$this->assertEquals( 2, intval( $location->lng ), $error );
+
+			} else {
+
+				// Location is updated to Paris, TX
+				$location = GeoMashupDB::get_object_location( 'user', $user_id );
+				$this->assertEquals( 33, intval( $location->lat ) );
+				$this->assertEquals( -95, intval( $location->lng ) );
+
+			}
+		}
+	}
+
+
+	/**
+	 * Issue 691
+	 */
+	function test_map_content_with_object_ids() {
+		$post_ids = $this->generate_rand_located_posts( 3 );
+		$html = GeoMashup::map( array(
+			'object_name' => 'post',
+			'object_ids' => implode( ',', $post_ids ),
+		) );
+		$this->assertContains( 'map_content=global', $html, 'Expected global map content when object_ids are passed.' );
 	}
 
 	private function get_nv_test_location() {

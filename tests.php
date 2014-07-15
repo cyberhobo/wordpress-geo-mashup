@@ -162,7 +162,7 @@ $global_data = array(
 	),
 );
 
-$test_apis = array( 'googlev3', 'openlayers' );
+$test_apis = array( 'googlev3', 'openlayers', 'leaflet' );
 
 $global_urls = array();
 

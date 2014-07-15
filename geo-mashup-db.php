@@ -167,7 +167,6 @@ class GeoMashupDB {
 		if ( !in_array( $meta_key, self::$geodata_keys ) )
 			return $ok;
 		if ( isset( self::$copied_to_geodata['user-' . $object_id] ) )
-
 			return false;
 		else
 			return $ok;
@@ -235,7 +234,7 @@ class GeoMashupDB {
 				return;
 			$location['lat'] = $lat;
 
-		} else if ( 'post' == $meta_type and in_array( $meta_key, $import_custom_keys ) ) {
+		} else if ( in_array( $meta_key, $import_custom_keys ) ) {
 
 			$lat_lng = preg_split( '/\s*[, ]\s*/', trim( $meta_value ) );
 			if ( count( $lat_lng ) == 2 and is_numeric( $lat_lng[0] ) and is_numeric( $lat_lng[1] ) ) {
@@ -247,21 +246,20 @@ class GeoMashupDB {
 					if ( $meta_key == $import_custom_key ) {
 						$geocode_values[] = $meta_value;
 					} else {
-						$value = get_metadata( $meta_type, $object_id, $import_custom_key, true );
 
 						// All keys must have a value - do nothing if not
-						if ( $value ) 
-							$geocode_values[] = $value;
-						else
+						if ( !metadata_exists( $meta_type, $object_id, $import_custom_key ) )
 							return;
+
+						$geocode_values[] = get_metadata( $meta_type, $object_id, $import_custom_key, true );
+
 					}
 				}
 				$location = self::blank_location( ARRAY_A );
 				self::geocode( implode( ',', $geocode_values ), $location );
 				if ( self::$geocode_error ) {
 					update_metadata( $meta_type, $object_id, 'geocoding_error', self::$geocode_error->get_error_message() );
-					if ( empty( $location['lat'] ) or empty( $location['lng'] ) )
-						return;
+					return;
 				}
 			}
 		}
@@ -2111,7 +2109,8 @@ class GeoMashupDB {
 		global $wpdb;
 		if ( isset( $_GET['q'] ) ) {
 			$limit = (int) apply_filters( 'postmeta_form_limit', 30 );
-			$stub = trim( array_pop( explode( ',', $_GET['q'] ) ) );
+			$terms = explode( ',', $_GET['q'] );
+			$stub = trim( array_pop( $terms ) );
 			$like = esc_sql( $stub );
 			$keys = $wpdb->get_col( "
 				SELECT meta_key

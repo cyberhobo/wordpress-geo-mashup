@@ -327,6 +327,46 @@ class GeoMashupRenderMap {
 					GEO_MASHUP_VERSION, 
 					true );
 			$mashup_dependencies[] = 'mxn-googlev3-gm';
+
+		} else if ( 'leaflet' == $map_data['map_api'] ) {
+
+			wp_register_script(
+					'leaflet',
+					'http://cdn.leafletjs.com/leaflet-0.6.4/leaflet.js',
+					null,
+					'0.6.4',
+					true );
+
+			wp_register_style(
+					'leaflet',
+					'http://cdn.leafletjs.com/leaflet-0.6.4/leaflet.css',
+					null,
+					'0.6.4' );
+
+			self::enqueue_style( 'leaflet' );
+
+			GeoMashup::register_script(
+					'mxn-leaflet',
+					'js/mxn/mxn.leaflet.core.js',
+					array( 'mxn-core', 'leaflet' ),
+					GEO_MASHUP_VERSION,
+					true );
+
+			GeoMashup::register_script(
+					'mxn-leaflet-kml',
+					'js/leaflet/KML.js',
+					array( 'mxn-leaflet' ),
+					GEO_MASHUP_VERSION,
+					true );
+
+			GeoMashup::register_script(
+					'mxn-leaflet-gm',
+					'js/mxn/mxn.leaflet.geo-mashup.js',
+					array( 'mxn-leaflet-kml' ),
+					GEO_MASHUP_VERSION,
+					true );
+
+			$mashup_dependencies[] = 'mxn-leaflet-gm';
 		}
 
 		// Geo Mashup scripts
@@ -348,7 +388,6 @@ class GeoMashupRenderMap {
 					true );
 			$feature_dependencies[] = 'geo-mashup-taxonomy';
 		}
-
 
 		GeoMashup::register_script(
 				$mashup_script, 

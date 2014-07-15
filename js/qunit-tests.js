@@ -68,6 +68,25 @@ jQuery( function( $ ) {
 				start();
 			} );
 		} );
+
+		asyncTest( api + " line responds to zoom", 2, function() {
+			loadTestFrame( gm_test_data.global_urls[api], function() {
+				var gm = window.frames[gm_test_data.name].GeoMashup;
+				// Just in case a provider doesn't fire an initial change zoom event
+				gm.adjustZoom();
+
+				var after_zoom_in_test = function() {
+					ok( gm.term_manager.isTermVisible( 2, 'test_tax' ), 'term 2 is visible after zoom in' );
+					ok( !gm.term_manager.isTermLineVisible( 2, 'test_tax' ), 'term 2 line is not visible after zoom in' );
+
+					gm.map.changeZoom.removeHandler( after_zoom_in_test, this );
+					start();
+				};
+
+				gm.map.changeZoom.addHandler( after_zoom_in_test, this );
+				gm.map.setZoom( 11 );
+			} );
+		} );
 	} );
 
 	asyncTest( "googlev3 clustering", 10, function() {

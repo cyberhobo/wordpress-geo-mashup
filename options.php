@@ -154,7 +154,8 @@ function geo_mashup_options_page() {
 	$mapApis = Array(
 		'google' => __( 'Google v2', 'GeoMashup' ),
 		'googlev3' => __( 'Google v3', 'GeoMashup' ),
-		'openlayers' => __( 'OpenLayers', 'GeoMashup' )
+		'openlayers' => __( 'OpenLayers', 'GeoMashup' ),
+		'leaflet' => __( 'Leaflet', 'GeoMashup' ),
 	);
 
 	$zoomOptions = Array( 'auto' => __( 'auto', 'GeoMashup' ) );

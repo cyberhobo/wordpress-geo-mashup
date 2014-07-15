@@ -55,15 +55,16 @@
 		
 		<for param="file">
 			<path>
-				<fileset dir="${build.dir}/js" includes="**/*.dev.js">
-					<exclude name="*datepicker.dev.js"/>
-					<exclude name="*markerclusterer.dev.js"/>
-					<exclude name="*ClusterMarker.dev.js"/>
-					<exclude name="*mapiconmaker.dev.js"/>
-					<exclude name="*qunit.dev.js"/>
-					<exclude name="*qunit-close-enough.dev.js"/>
-					<exclude name="*modernizr.dev.js"/>
+				<fileset dir="${build.dir}/js" includes="**/*.js">
+					<exclude name="*datepicker.js"/>
+					<exclude name="*markerclusterer.js"/>
+					<exclude name="*ClusterMarker.js"/>
+					<exclude name="*mapiconmaker.js"/>
+					<exclude name="*qunit.js"/>
+					<exclude name="*qunit-close-enough.js"/>
+					<exclude name="*modernizr.js"/>
 					<exclude name="mxn/*"/>
+                    <exclude name="leaflet/*"/>
 				</fileset>
 			</path>
 			<sequential>
@@ -87,10 +88,10 @@
 		<echo>--- MIN ---</echo>
 		<for param="file">
 			<path>
-				<fileset dir="${build.dir}/js" includes="**/*.dev.js"/>
+				<fileset dir="${build.dir}/js" includes="**/*.js"/>
 			</path>
 			<sequential>
-				<propertyregex override="yes" property="minfile" input="@{file}" regexp="(.*)\.dev\.js" replace="\1.js"/>
+				<propertyregex override="yes" property="minfile" input="@{file}" regexp="(.*)\.js" replace="\1.min.js"/>
 				<java jar="tools/yui-compressor/yuicompressor-2.4.2.jar" fork="true" failonerror="true">
 					<arg value="-o"/>
 					<arg value="${minfile}"/>
@@ -100,10 +101,10 @@
 		</for>		
 		<for param="file">
 			<path>
-				<fileset dir="${build.dir}/css" includes="**/*.dev.css"/>
+				<fileset dir="${build.dir}/css" includes="**/*.css"/>
 			</path>
 			<sequential>
-				<propertyregex override="yes" property="minfile" input="@{file}" regexp="(.*)\.dev\.css" replace="\1.css"/>
+				<propertyregex override="yes" property="minfile" input="@{file}" regexp="(.*)\.css" replace="\1.min.css"/>
 				<java jar="tools/yui-compressor/yuicompressor-2.4.2.jar" fork="true" failonerror="true">
 					<arg value="-o"/>
 					<arg value="${minfile}"/>
@@ -116,7 +117,7 @@
 		<for param="file">
 			<path>
 				<fileset dir="${build.dir}/js/mxn" includes="*.js">
-					<exclude name="*.dev.js"/>
+					<exclude name="*.js"/>
 					<exclude name="license.js"/>
 				</fileset>
 			</path>
@@ -144,12 +145,12 @@
 		<property name="docs.dir" location="${build.base}/jsdocs-${version}"/>
 		<java jar="tools/jsdoc-toolkit/jsrun.jar" fork="true" failonerror="true">
 			<arg value="tools/jsdoc-toolkit/app/run.js"/>
-			<arg value="${source}/js/geo-mashup.dev.js"/>
-			<arg value="${source}/js/geo-mashup-google.dev.js"/>
-			<arg value="${source}/js/geo-mashup-mxn.dev.js"/>
-			<arg value="${source}/js/geo-mashup-markerclusterer.dev.js"/>
-			<arg value="${source}/js/taxonomy.dev.js"/>
-			<arg value="${source}/js/location-editor.dev.js"/>
+			<arg value="${source}/js/geo-mashup.js"/>
+			<arg value="${source}/js/geo-mashup-google.js"/>
+			<arg value="${source}/js/geo-mashup-mxn.js"/>
+			<arg value="${source}/js/geo-mashup-markerclusterer.js"/>
+			<arg value="${source}/js/taxonomy.js"/>
+			<arg value="${source}/js/location-editor.js"/>
 			<arg value="-t=tools/jsdoc-toolkit/templates/jsdoc"/>
 			<arg value="-d=${docs.dir}"/>
 		</java>
