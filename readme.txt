@@ -25,7 +25,7 @@ Geo Mashup, like WordPress, has a simple interface for basic features,
 templates for control of output, and APIs for endless customization options.
 Some popular features are:
 
-  * Use [Google Maps v3](https://developers.google.com/maps/documentation/javascript/reference) or [OpenStreetMap](http://openstreetmap.org) as a map provider.
+  * Use different map providers: [Google Maps v3](https://developers.google.com/maps/documentation/javascript/reference), [OpenStreetMap](http://openstreetmap.org), [Leaflet](http://leafletjs.com)
   * Global maps can present your posts in many ways
 	They can show just one category, custom taxonomy term, or custom post type, for example
 	Clicking on a post marker shows a customizable summary of the post or page in an info window
