@@ -657,7 +657,8 @@ class GeoMashup_Unit_Tests extends WP_UnitTestCase {
 		GeoMashupDB::set_object_location( 'post', $found_post->ID, $location, false );
 
 		$search_args = array(
-			'location_text' => "45.6181, 5.226",
+			'near_lat' => 45.6181,
+			'near_lng' => 5.226,
 			'object_name' => 'post',
 			'radius' => 0.5,
 			'units' => 'km',
