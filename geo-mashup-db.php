@@ -659,39 +659,39 @@ class GeoMashupDB {
 		if ( self::installed_version() != GEO_MASHUP_DB_VERSION ) {
 			$sql = "
 				CREATE TABLE $location_table_name (
-					id MEDIUMINT( 9 ) NOT NULL AUTO_INCREMENT,
-					lat FLOAT( 11,7 ) NOT NULL,
-					lng FLOAT( 11,7 ) NOT NULL,
+					id MEDIUMINT(9) NOT NULL AUTO_INCREMENT,
+					lat FLOAT(11,7) NOT NULL,
+					lng FLOAT(11,7) NOT NULL,
 					address TINYTEXT NULL,
-					saved_name VARCHAR( 100 ) NULL,
+					saved_name VARCHAR(100) NULL,
 					geoname TINYTEXT NULL, 
 					postal_code TINYTEXT NULL,
-					country_code VARCHAR( 2 ) NULL,
-					admin_code VARCHAR( 20 ) NULL,
-					sub_admin_code VARCHAR( 80 ) NULL,
+					country_code VARCHAR(2) NULL,
+					admin_code VARCHAR(20) NULL,
+					sub_admin_code VARCHAR(80) NULL,
 					locality_name TINYTEXT NULL,
-					PRIMARY KEY  ( id ),
-					UNIQUE KEY saved_name ( saved_name ),
-					UNIQUE KEY latlng ( lat, lng ),
-					KEY lat ( lat ),
-					KEY lng ( lng )
+					PRIMARY KEY  (id),
+					UNIQUE KEY saved_name (saved_name),
+					UNIQUE KEY latlng (lat,lng),
+					KEY lat (lat),
+					KEY lng (lng)
 				) $charset_collate;
 				CREATE TABLE $relationships_table_name (
-					object_name VARCHAR( 80 ) NOT NULL,
-					object_id BIGINT( 20 ) NOT NULL,
-					location_id MEDIUMINT( 9 ) NOT NULL,
+					object_name VARCHAR(80) NOT NULL,
+					object_id BIGINT(20) NOT NULL,
+					location_id MEDIUMINT(9) NOT NULL,
 					geo_date DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
-					PRIMARY KEY  ( object_name, object_id, location_id ),
-					KEY object_name ( object_name, object_id ),
-					KEY object_date_key ( object_name, geo_date )
+					PRIMARY KEY  (object_name,object_id,location_id),
+					KEY object_name (object_name,object_id),
+					KEY object_date_key (object_name,geo_date)
 				) $charset_collate;
 				CREATE TABLE $administrative_names_table_name (
-					country_code VARCHAR( 2 ) NOT NULL,
-					admin_code VARCHAR( 20 ) NOT NULL,
-					isolanguage VARCHAR( 7 ) NOT NULL,
-					geoname_id MEDIUMINT( 9 ) NULL,
-					name VARCHAR( 200 ) NOT NULL,
-					PRIMARY KEY admin_id ( country_code, admin_code, isolanguage )
+					country_code VARCHAR(2) NOT NULL,
+					admin_code VARCHAR(20) NOT NULL,
+					isolanguage VARCHAR(7) NOT NULL,
+					geoname_id MEDIUMINT(9) NULL,
+					name VARCHAR(200) NOT NULL,
+					PRIMARY KEY  (country_code,admin_code,isolanguage)
 				) $charset_collate;";
 			require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
 			// Capture error messages - some are ok
