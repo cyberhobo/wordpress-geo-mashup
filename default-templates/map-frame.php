@@ -45,13 +45,13 @@
 				width:<?php echo GeoMashupRenderMap::map_property( 'width' ); ?>;
 				height:<?php echo GeoMashupRenderMap::map_property( 'height' ); ?>;
 				<?php if ( GeoMashupRenderMap::map_property( 'background_color' ) ) : ?>
-				background-color: <?php echo GeoMashupRenderMap::map_property( 'background_color' ); ?>;
+				background-color: <?php echo esc_attr( GeoMashupRenderMap::map_property( 'background_color' ) ); ?>;
 				<?php endif; ?>
 			}
 		</style>
 	</head>
 	<body>
-	<div id="geo-mashup">
+	<div id="geo-mashup" class="<?php echo GeoMashupRenderMap::map_property( 'name' ); ?>">
 		<noscript>
 			<p><?php _e( 'This map requires JavaScript. You may have to enable it in your browser\'s settings.', 'GeoMashup' ); ?></p>
 		</noscript>
