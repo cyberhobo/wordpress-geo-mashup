@@ -30,8 +30,11 @@ function geo_mashup_options_page() {
 		
 		if ( empty( $_POST['overall']['located_post_types'] ) ) 
 			$_POST['overall']['located_post_types']  = array();
-		
-		if ( empty( $_POST['overall']['include_taxonomies'] ) ) 
+
+		if ( empty( $_POST['overall']['located_object_name'] ) )
+			$_POST['overall']['located_object_name']  = array();
+
+		if ( empty( $_POST['overall']['include_taxonomies'] ) )
 			$_POST['overall']['include_taxonomies']  = array();
 
 		if ( 'true' != $geo_mashup_options->get( 'overall', 'copy_geodata' ) and isset( $_POST['overall']['copy_geodata'] ) )

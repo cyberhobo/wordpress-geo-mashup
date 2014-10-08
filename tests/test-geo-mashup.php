@@ -752,7 +752,7 @@ class GeoMashup_Unit_Tests extends WP_UnitTestCase {
 			'maxlon' => $nv_location->lng + 1,
 		) );
 		list( $cols, $join, $where, $groupby ) = $location_query->get_sql( $wpdb->users, 'ID' );
-		$this->assertEmpty( $cols, 'Got a column value for a non-radius query.' );
+		$this->assertNotContains( 'distance_km', $cols, 'Got a distance_km column for a non-radius query.' );
 		$this->assertEmpty( $groupby, 'Got a groupby value for a non-radius query.' );
 
 		$sql = "SELECT {$wpdb->users}.ID

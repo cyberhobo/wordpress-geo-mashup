@@ -79,7 +79,15 @@ class GM_Location_Query {
 		$location_table = $wpdb->prefix . 'geo_mashup_locations';
 		$relationship_table = $wpdb->prefix . 'geo_mashup_location_relationships';
 
-		$cols = '';
+		$cols = ", $location_table.lat" .
+			", $location_table.lng" .
+			", $location_table.address" .
+			", $location_table.saved_name " .
+			", $location_table.postal_code " .
+			", $location_table.admin_code " .
+			", $location_table.sub_admin_code " .
+			", $location_table.country_code " .
+			", $location_table.locality_name ";
 		$join = " INNER JOIN $relationship_table ON $relationship_table.object_id = $primary_table.$primary_id_column
 			INNER JOIN $location_table ON $location_table.id = $relationship_table.location_id";
 
