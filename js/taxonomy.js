@@ -635,7 +635,9 @@ jQuery.extend( GeoMashup, {
 						);
 					});
 				}
-				
+
+				$term_index.append( $list );
+
 				if ( children ) {
 
 					group_count = 0;
@@ -647,22 +649,25 @@ jQuery.extend( GeoMashup, {
 
 						if ( loaded_term ) {
 							$li.append( $( '<img />' ).attr( 'src', loaded_term.icon.image ) )
-								.append( $( '<span></span>' ).addClass( 'gm-sub-' + tax + '-title' ).text( loaded_term.name ) );
+								.append(
+									$( '<span></span>' )
+										.addClass( 'gm-sub-' + tax + '-title' )
+										.text( term_properties[taxonomy].terms[child_id].name )
+								);
 						}
 
-						$li.append( buildTermIndex( child_id, taxonomy, grandchildren, false ) );
-						
+						$li.append( buildTermIndex( child_id, taxonomy, grandchildren, false ) ).appendTo( $sub_list );
+
 						group_count += 1;
 						if ( tab_index_group_size && group_count%tab_index_group_size === 0) {
-							$list.append( $sub_list );
+							$term_index.append( $sub_list );
 							$sub_list = $( '<ul></ul>' ).addClass( 'gm-sub-' + tax + '-index');
 						}
 					});
-					$list.append( $sub_list );
+					$term_index.append( $sub_list );
 
 				}
 
-				$term_index.append( $list );
 
 				return $term_index;
 			}
