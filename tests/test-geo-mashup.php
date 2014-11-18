@@ -680,6 +680,7 @@ class GeoMashup_Unit_Tests extends WP_UnitTestCase {
 		$nv_location->lng = -119.0;
 		$nv_location->country_code = 'US';
 		$nv_location->admin_code = 'NV';
+		$nv_location->sub_admin_code = 'LUV';
 		$nv_location->postal_code = '89403';
 		$nv_location->locality_name = 'Fallon';
 
@@ -712,6 +713,16 @@ class GeoMashup_Unit_Tests extends WP_UnitTestCase {
 		$this->assertEquals( 2, $nv_query->post_count );
 		$this->assertContains( $nv_post_ids[0], wp_list_pluck( $nv_query->posts, 'ID' ) );
 		$this->assertContains( $nv_post_ids[1], wp_list_pluck( $nv_query->posts, 'ID' ) );
+
+		$sub_query = new WP_Query( array(
+			'posts_per_page' => -1,
+			'geo_mashup_query' => array(
+				'sub_admin_code' => 'LUV',
+			)
+		) );
+		$this->assertEquals( 2, $sub_query->post_count );
+		$this->assertContains( $nv_post_ids[0], wp_list_pluck( $sub_query->posts, 'ID' ) );
+		$this->assertContains( $nv_post_ids[1], wp_list_pluck( $sub_query->posts, 'ID' ) );
 
 		$zip_query = new WP_Query( array(
 			'posts_per_page' => -1,

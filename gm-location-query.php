@@ -30,6 +30,7 @@ class GM_Location_Query {
 			'near_lat' => null,
 			'near_lng' => null,
 			'admin_code' => null,
+			'sub_admin_code' => null,
 			'country_code' => null,
 			'locality_name' => null,
 		);
@@ -130,7 +131,7 @@ class GM_Location_Query {
 		if ( is_numeric( $this->query_args['maxlat'] ) ) $where[] = "$location_table.lat < {$this->query_args['maxlat']}";
 		if ( is_numeric( $this->query_args['maxlon'] ) ) $where[] = "$location_table.lng < {$this->query_args['maxlon']}";
 
-		$where_fields = array( 'admin_code', 'country_code', 'postal_code', 'geoname', 'locality_name' );
+		$where_fields = array( 'sub_admin_code', 'admin_code', 'country_code', 'postal_code', 'geoname', 'locality_name' );
 		foreach ( $where_fields as $field ) {
 			if ( !empty( $this->query_args[$field] ) )
 				$where[] = $wpdb->prepare( "$location_table.$field = %s", $this->query_args[$field] );
