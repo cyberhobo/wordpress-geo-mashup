@@ -190,7 +190,8 @@ function geo_mashup_options_page() {
 				// Remove the trailing comma
 				$(this).val( $(this).val().replace( /,\s*$/, '' ) );
 			}
-		} ).keypress( function( e ) {
+		} );
+		$( 'input.overall-submit' ).keypress( function( e ) {
 			if ( ( e.keyCode && e.keyCode === 13 ) || ( e.which && e.which === 13 ) ) {
 				e.preventDefault();
 				$( '#overall-submit' ).click();
@@ -247,7 +248,7 @@ function geo_mashup_options_page() {
 							<?php if ( 'google' == $map_api ) : ?>
 								<span class="description">
 									<a href="https://developers.google.com/maps/documentation/javascript/v2/reference"><?php
-									_e( 'Google v2 support expires soon.', 'GeoMashup' );
+									_e( 'Google v2 has expired and will be removed in version 1.9.', 'GeoMashup' );
 									?></a>
 								</span>
 							<?php endif; ?>
@@ -258,9 +259,10 @@ function geo_mashup_options_page() {
 						<th width="33%" scope="row"><?php _e('Google API Key', 'GeoMashup'); ?></th>
 						<td<?php if ( empty( $google_key ) ) echo ' class="error"'; ?>>
 							<input id="google_key" 
-								name="overall[google_key]" 
-								type="text" 
-								size="40" 
+								name="overall[google_key]"
+								class="overall-submit"
+								type="text"
+								size="40"
 								value="<?php echo esc_attr( $geo_mashup_options->get ( 'overall', 'google_key' ) ); ?>" />
 							<a href="http://maps.google.com/apis/maps/signup.html"><?php _e('Get yours here', 'GeoMashup'); ?></a>
 							<?php if ( empty( $google_key ) ) : ?>
@@ -277,12 +279,17 @@ function geo_mashup_options_page() {
 						<td>
 							<input id="googlev3_key"
 								name="overall[googlev3_key]"
+								class="overall-submit"
 								type="text"
 								size="40"
 								value="<?php echo esc_attr( $geo_mashup_options->get ( 'overall', 'googlev3_key' ) ); ?>" />
 							<a href="https://developers.google.com/maps/documentation/javascript/tutorial#api_key"><?php _e('Get yours here', 'GeoMashup'); ?></a>
 							<p class="description">
-								<?php _e( 'Old Google v2 keys may not work with v3. A key is recommended but not required by Google.' ); ?>
+								<?php
+								_e( 'It\'s easiest to leave this blank and use Google v3 without a key, but Google recommends using one. ' .
+									'If you do, follow the instructions carefully - there are multiple steps.',
+									'GeoMashup'
+								); ?>
 							</p>
 						</td>
 					</tr>
@@ -379,6 +386,7 @@ function geo_mashup_options_page() {
 						<td>
 							<input id="import_custom_field"
 								name="overall[import_custom_field]"
+								class="overall-submit"
 								type="text"
 								size="35"
 								value="<?php echo esc_attr( $geo_mashup_options->get ( 'overall', 'import_custom_field' ) ); ?>" /><br/>
@@ -438,6 +446,7 @@ function geo_mashup_options_page() {
 						<td>
 							<input id="geonames_username_text"
 								name="overall[geonames_username]"
+								class="overall-submit"
 								type="text"
 								size="35"
 								value="<?php echo esc_attr( $geo_mashup_options->get ( 'overall', 'geonames_username' ) ); ?>" /><br/>
@@ -453,6 +462,7 @@ function geo_mashup_options_page() {
 						<td>
 							<input id="adsense_code_text"
 								name="overall[adsense_code]"
+								class="overall-submit"
 								type="text"
 								size="35"
 								value="<?php echo esc_attr( $geo_mashup_options->get ( 'overall', 'adsense_code' ) ); ?>" /><br/>
@@ -479,8 +489,9 @@ function geo_mashup_options_page() {
 						<td>
 							<input id="category_link_separator" 
 								name="overall[category_link_separator]" 
-								class="add-category-links-dep" 
-								type="text" 
+								class="add-category-links-dep"
+								class="overall-submit"
+								type="text"
 								size="3" 
 								value="<?php echo esc_attr( $geo_mashup_options->get( 'overall', 'category_link_separator' ) ); ?>" />
 						</td>
@@ -489,8 +500,9 @@ function geo_mashup_options_page() {
 						<th scope="row"><?php _e('Category Link Text', 'GeoMashup'); ?></th>
 						<td>
 							<input id="category_link_text" 
-								name="overall[category_link_text]" 
-								type="text" 
+								name="overall[category_link_text]"
+								class="overall-submit"
+								type="text"
 								size="5" 
 								value="<?php echo esc_attr( $geo_mashup_options->get( 'overall', 'category_link_text' ) ); ?>" />
 						</td>
