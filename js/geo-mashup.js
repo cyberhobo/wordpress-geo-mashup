@@ -863,7 +863,7 @@ GeoMashup = {
 	 * Recompile the list of objects currently visible on the map.
 	 */
 	updateVisibleList : function() {
-		var list_element, header_element, list_html, list_count = 0;
+		var list_element, header_element, list_html, list_items, list_titles, list_count = 0;
 
 		if (this.have_parent_access && this.opts.name) {
 			header_element = parent.document.getElementById(this.opts.name + "-visible-list-header");
@@ -874,21 +874,32 @@ GeoMashup = {
 		}
 		if (list_element) {
 			list_html = ['<ul class="gm-visible-list">'];
+			list_items = [];
+			list_titles = [];
 			this.forEach( this.objects, function (object_id, obj) {
 				if ( this.isObjectOn( obj ) && this.isMarkerVisible( obj.marker ) ) {
-					list_html.push('<li><img src="');
-					list_html.push(obj.icon.image);
-					list_html.push('" alt="');
-					list_html.push(obj.title);
-					list_html.push('" />');
-					list_html.push(this.objectLinkHtml(object_id));
-					list_html.push('</li>');
+					var list_item = [];
+					list_item.push('<li><img src="');
+					list_item.push(obj.icon.image);
+					list_item.push('" alt="');
+					list_item.push(obj.title);
+					list_item.push('" />');
+					list_item.push(this.objectLinkHtml(object_id));
+					list_item.push('</li>');
 					list_count += 1;
+					list_items[obj.title] = list_item.join('');
+					list_titles.push(obj.title);
 				}
 			});
+			list_titles.sort();
+			var list_merged = '';
+			list_titles.forEach( function(index, title){
+				list_merged += list_items[index];
+			});
+			list_html.push(list_merged);
 			list_html.push('</ul>');
 			list_element.innerHTML = list_html.join('');
-			/** 
+			/**
 			 * The visible posts list was updated.
 			 * @name GeoMashup#updatedVisibleList
 			 * @event
