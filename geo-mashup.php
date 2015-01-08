@@ -1837,7 +1837,10 @@ class GeoMashup {
 			if ( $near_location ) {
 				$args['near_lat'] = $near_location->lat;
 				$args['near_lng'] = $near_location->lng;
-				$args['exclude_object_ids'] = $object_id;
+				if ( empty( $args['exclude_object_ids'] ) )
+					$args['exclude_object_ids'] = $object_id;
+				else
+					$args['exclude_object_ids'] .= ',' . $object_id;
 			}
 		}
 
