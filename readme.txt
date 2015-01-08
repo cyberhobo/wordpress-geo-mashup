@@ -104,12 +104,17 @@ of all your content, including geographic data.
 There shouldn't be anything too unusual, but there is 
 [detailed documentation](http://code.google.com/p/wordpress-geo-mashup/wiki/Documentation#First_Time_Installation).
 
-== Upgrade Notice ==
+= Upgrading =
 
 The automatic upgrade is fine for most people, but
-if you've added or changed things in the Geo Mashup plugin folder, please look at the 
+if you've added or changed things in the Geo Mashup plugin folder, please look at the
 [upgrade considerations](http://code.google.com/p/wordpress-geo-mashup/wiki/UpgradeConsiderations)
 for the best way to keep your custom files safe moving forward.
+
+== Upgrade Notice ==
+
+= 1.8.3 =
+This version fixes a security related bug.  Upgrade immediately.
 
 == Change Log ==
 

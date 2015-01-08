@@ -9,15 +9,15 @@
  * to customize. For bonus points delete this message in the copy!
  *
  * Variables in scope:
- * $geo_mashup_search  object   The managing search object
- * $result_count       int      The number of objects found
- * $search_text        string   The search text entered in the form
- * $radius             int      The search radius
- * $units              string   'mi' or 'km'
- * $object_name        string   'post' or 'user' or 'comment'
- * $near_location      array    The location searched, including 'lat' and 'lng'
- * $distance_factor    float    The multiplier to convert the radius to kilometers
- * $approximate_zoom   int      A guess at a zoom level that will include all results
+ * @var $geo_mashup_search  object   The managing search object
+ * @var $result_count       int      The number of objects found
+ * @var $search_text        string   The search text entered in the form
+ * @var $radius             int      The search radius
+ * @var $units              string   'mi' or 'km'
+ * @var $object_name        string   'post' or 'user' or 'comment'
+ * @var $near_location      array    The location searched, including 'lat' and 'lng'
+ * @var $distance_factor    float    The multiplier to convert the radius to kilometers
+ * @var $approximate_zoom   int      A guess at a zoom level that will include all results
  *
  * Methods of $geo_mashup_search mimic WordPress Loop functions have_posts()
  * and the_post() (see http://codex.wordpress.org/The_Loop). This makes post
@@ -32,7 +32,7 @@
 ?>
 <div id="geo-mashup-search-results">
 
-	<h2><?php _e( 'Search results near', 'GeoMashup' ); ?> "<?php echo $search_text; ?>"</h2>
+	<h2><?php printf( __( 'Search results near "%s"', 'GeoMashup' ), esc_html( $search_text ) ); ?></h2>
 	
 	<?php if ( $geo_mashup_search->have_posts() ) : ?>
 
