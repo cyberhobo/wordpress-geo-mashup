@@ -593,11 +593,11 @@ var
 				marker = createMarker(latlng, new GeoAddress(response.Placemark[i]));
 			}
 
-			
-		} else {
+
+		} else if ( 'https' !== location.href.slice( 0, 5 ) || 'geomashup' !== geo_mashup_location_editor_settings.geonames_username ) {
 
 			// Do a GeoNames search as backup
-			geonames_request_url = 'http://api.geonames.org/search?type=json&maxRows=20&style=full&callback=?&username=' +
+			geonames_request_url = '//api.geonames.org/search?type=json&maxRows=20&style=full&callback=?&username=' +
 				geo_mashup_location_editor_settings.geonames_username + '&name=' + encodeURIComponent( $( '#geo_mashup_search' ).val() );
 			jQuery.getJSON( geonames_request_url, showGeoNames );
 			geo_mashup_location_editor.showBusyIcon();
@@ -685,14 +685,19 @@ var
 					geocoder.getLocations( search_text, showAddresses );
 
 				}
+			} else if ( 'https' === location.href.slice( 0, 5 ) && 'geomashup' === geo_mashup_location_editor_settings.geonames_username ) {
+
+				alert( 'No search service is available over HTTPS, see http://www.geonames.org/commercial-webservices.html.' );
+
 			} else {
+
 
 				// Do a GeoNames search 
 				if ( latlng ) {
-					geonames_request_url = 'http://api.geonames.org/findNearbyJSON?radius=50&style=full&callback=?&username=' +
+					geonames_request_url = '//api.geonames.org/findNearbyJSON?radius=50&style=full&callback=?&username=' +
 							geo_mashup_location_editor_settings.geonames_username + '&lat=' + latlng.lat + '&lng=' + latlng.lng;
 				} else {
-					geonames_request_url = 'http://api.geonames.org/search?type=json&maxRows=20&style=full&callback=?&username=' +
+					geonames_request_url = '//api.geonames.org/search?type=json&maxRows=20&style=full&callback=?&username=' +
 							geo_mashup_location_editor_settings.geonames_username + '&q=' + encodeURIComponent( $( '#geo_mashup_search' ).val() );
 				}
 				jQuery.getJSON( geonames_request_url, showGeoNames );

@@ -80,7 +80,7 @@ class GeoMashupUIManager {
 		if ( 'google' == $map_api ) {
 			wp_register_script( 
 			  'google-maps-2', 
-			  'http://maps.google.com/maps?file=api&amp;v=2&amp;sensor=false&amp;key=' . $geo_mashup_options->get( 'overall', 'google_key' ) . '&amp;hl=' . GeoMashup::get_language_code(),
+			  '//maps.google.com/maps?file=api&amp;v=2&amp;sensor=false&amp;key=' . $geo_mashup_options->get( 'overall', 'google_key' ) . '&amp;hl=' . GeoMashup::get_language_code(),
 			  null, 
 			  '', 
 			  true );
@@ -101,12 +101,9 @@ class GeoMashupUIManager {
 				
 			$required_scripts[] = 'mxn-google-2-gm';
 		} else if ( 'googlev3' == $map_api ) {
-			$scheme = ( empty( $_SERVER['HTTPS'] ) ? 'http' : 'https' );
-			wp_register_script( 
+			wp_register_script(
 					'google-maps-3',
-					$scheme .
-						'://maps.google.com/maps/api/js?sensor=false&amp;language=' .
-						GeoMashup::get_language_code(),
+					'//maps.google.com/maps/api/js?sensor=false&amp;language=' . GeoMashup::get_language_code(),
 					null, 
 					'', 
 					true );
@@ -129,14 +126,14 @@ class GeoMashupUIManager {
 		} else if ( 'openlayers' == $map_api ) {
 			wp_register_script( 
 					'openlayers', 
-					'http://openlayers.org/api/OpenLayers.js', 
+					'//cdnjs.cloudflare.com/ajax/libs/openlayers/2.13.1/OpenLayers.js',
 					null, 
 					'latest', 
 					true );
 					
 			wp_register_script( 
 					'openstreetmap', 
-					'http://www.openstreetmap.org/openlayers/OpenStreetMap.js',
+					'//www.openstreetmap.org/openlayers/OpenStreetMap.js',
 					 array( 'openlayers' ),
 					'latest',
 					 true );
@@ -160,14 +157,14 @@ class GeoMashupUIManager {
 
 			wp_register_script(
 					'leaflet',
-					'http://cdn.leafletjs.com/leaflet-0.7.1/leaflet.js',
+					'//cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.3/leaflet.js',
 					null,
 					'0.7',
 					true );
 
 			wp_enqueue_style(
 					'leaflet',
-					'http://cdn.leafletjs.com/leaflet-0.7.1/leaflet.css',
+					'//cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.3/leaflet.css',
 					null,
 					'0.7' );
 

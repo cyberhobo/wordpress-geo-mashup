@@ -188,7 +188,7 @@ class GeoMashupRenderMap {
 
 		if ( 'google' == $map_data['map_api'] ) {
 			// Google v2 base
-			$google_2_url = 'http://maps.google.com/maps?file=api&amp;v=2&amp;sensor=false&amp;key=' .
+			$google_2_url = '//maps.google.com/maps?file=api&amp;v=2&amp;sensor=false&amp;key=' .
 				$geo_mashup_options->get( 'overall', 'google_key' );
 			if ( ! empty( $language_code ) ) {
 				$google_2_url .= '&amp;hl=' . substr( $language_code, 0, 2 );
@@ -243,14 +243,14 @@ class GeoMashupRenderMap {
 		if ( 'openlayers' == $map_data['map_api'] ) {
 			wp_register_script( 
 					'openlayers', 
-					'http://openlayers.org/api/OpenLayers.js', 
+					'//cdnjs.cloudflare.com/ajax/libs/openlayers/2.13.1/OpenLayers.js',
 					null, 
 					'latest', 
 					true );
 					
 			wp_register_script( 
 					'openstreetmap', 
-					'http://www.openstreetmap.org/openlayers/OpenStreetMap.js', 
+					'//www.openstreetmap.org/openlayers/OpenStreetMap.js',
 					array( 'openlayers' ), 
 					'latest', 
 					true );
@@ -271,7 +271,7 @@ class GeoMashupRenderMap {
 					
 			$mashup_dependencies[] = 'mxn-openlayers-gm';
 		} else if ( 'googlev3' == $map_data['map_api'] ) {
-			$google_3_url = 'http://maps.google.com/maps/api/js?sensor=false';
+			$google_3_url = '//maps.google.com/maps/api/js?sensor=false';
 			$googlev3_key = $geo_mashup_options->get( 'overall', 'googlev3_key' );
 			if ( ! empty( $googlev3_key ) )
 				$google_3_url .= '&amp;key=' . $googlev3_key;
@@ -332,14 +332,14 @@ class GeoMashupRenderMap {
 
 			wp_register_script(
 					'leaflet',
-					'http://cdn.leafletjs.com/leaflet-0.6.4/leaflet.js',
+					'//cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.3/leaflet.js',
 					null,
 					'0.6.4',
 					true );
 
 			wp_register_style(
 					'leaflet',
-					'http://cdn.leafletjs.com/leaflet-0.6.4/leaflet.css',
+					'//cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.3/leaflet.css',
 					null,
 					'0.6.4' );
 

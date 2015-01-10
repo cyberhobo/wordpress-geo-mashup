@@ -2,6 +2,7 @@
 
 require_once( "sitepress-mock.php" );
 
+/** @group debug */
 class GeoMashup_Unit_Tests extends WP_UnitTestCase {
 
 	const DELTA = 0.0001;
