@@ -71,8 +71,8 @@ Mapstraction: {
 		};
 		
 		var subdomains = [1, 2, 3, 4];
-		this.addTileLayer (this.satellite_tile.url, 1.0, this.satellite_tile.name, this.satellite_tile.attribution, 0, 18, true, subdomains);
 		this.addTileLayer (this.road_tile.url, 1.0, this.road_tile.name, this.road_tile.attribution, 0, 18, true, subdomains);
+		this.addTileLayer (this.satellite_tile.url, 1.0, this.satellite_tile.name, this.satellite_tile.attribution, 0, 18, true, subdomains);
 
 		this.currentMapType = mxn.Mapstraction.ROAD;
 
@@ -310,7 +310,9 @@ Mapstraction: {
 		var url = mxn.util.sanitizeTileURL(tile_url);
 		
 		this.layers[label] = new L.TileLayer(url, options);
-		map.addLayer(this.layers[label]);
+		if(z_index==0) {
+			map.addLayer(this.layers[label]);
+		}
 		this.tileLayers.push([tile_url, this.layers[label], true, z_index]);
 
 		if (this.controls.map_type !== null) {
