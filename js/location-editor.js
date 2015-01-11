@@ -843,6 +843,9 @@ var
 			this.select(); 
 			map.resizeTo( $container.width(), $container.height() );
 		} )
+		.keyup( function(e) {  /* MJL  .keypress isn't always functional, use .keyup too */
+			return searchKey( e, this.value );
+		})
 		.keypress( function(e) {
 			return searchKey( e, this.value );
 		} );
