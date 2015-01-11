@@ -718,7 +718,7 @@ mxn.register('openlayers', {
 		},
 
 		hide: function() {
-			delete this.proprietary_marker.style.display;
+			this.proprietary_marker.style.display = 'none';
 			this.proprietary_marker.layer.redraw();		
 		},
 
