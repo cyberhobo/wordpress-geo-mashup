@@ -70,6 +70,14 @@ mxn.register( 'googlev3', {
 				google.maps.event.addListener(this.map.geo_mashup_infowindow, 'closeclick', function(closedWindow) {
 					marker.closeBubble();
 				});
+				if ( !this.proprietary_marker.map ) {
+					// Marker is clustered and needs to have the info window repositioned
+					google.maps.event.addListenerOnce( this.map.geo_mashup_infowindow, 'domready', function() {
+						marker.map.geo_mashup_infowindow.close();
+						marker.map.geo_mashup_infowindow.setPosition( marker.proprietary_marker.getPosition() );
+						marker.map.geo_mashup_infowindow.open( marker.map );
+					});
+				}
 			}
 			this.openInfoBubble.fire( { 'marker': this } );
 			this.map.geo_mashup_infowindow.setContent( this.infoBubble );
