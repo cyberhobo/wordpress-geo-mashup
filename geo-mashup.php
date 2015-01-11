@@ -1595,28 +1595,24 @@ class GeoMashup {
 		$defaults = array( 'zoom' => '' );
 		$args = wp_parse_args( $args, $defaults );
 
+		$args = array_filter( $args );
+
 		$url = '';
 		$location = self::current_location_guess();
 
 		if ( $location ) {
 			$url = get_page_link($geo_mashup_options->get('overall', 'mashup_page'));
-			if ( !$url ) {
-				return $url;
-			}
-			if ( strstr( $url, '?' ) ) {
-				$url .= '&amp;';
-			} else {
-				$url .= '?';
-			}
-			$open = '';
-			if ( $geo_mashup_options->get( 'global_map', 'auto_info_open' ) == 'true' ) {
-				$open = '&open_object_id=' . $location->object_id;
-			}
-			$zoom = '';
-			if ( !empty( $args['zoom'] ) ) {
-				$zoom = '&zoom=' . urlencode( $args['zoom'] );
-			}
-			$url .= htmlentities("center_lat={$location->lat}&center_lng={$location->lng}$open$zoom");
+
+			if ( !$url )
+				return '';
+
+			$args['center_lat'] = $location->lat;
+			$args['center_lng'] = $location->lng;
+
+			if ( $geo_mashup_options->get( 'global_map', 'auto_info_open' ) == 'true' )
+				$args['open_object_id'] = $location->object_id;
+
+			$url = htmlentities( add_query_arg( $args, $url ) );
 		}
 		return $url;
 	}
