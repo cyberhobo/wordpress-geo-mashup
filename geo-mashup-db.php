@@ -905,7 +905,6 @@ class GeoMashupDB {
 	 * @return bool Success.
 	 */
 	private static function reverse_geocode_location( &$location, $language = '' ) {
-		global $geo_mashup_options;
 
 		// Coordinates are required
 		if ( self::are_any_location_fields_empty( $location, array( 'lat', 'lng' ) ) ) 
@@ -936,14 +935,9 @@ class GeoMashupDB {
 		}
 
 		$have_empties = self::are_any_location_fields_empty( $location, $geocodable_fields );
-		if ( $have_empties ) {
-			// Choose a geocoding service based on the default API in use
-			if ( 'google' == substr( $geo_mashup_options->get( 'overall', 'map_api' ), 0, 6 ) ) {
-				$next_geocoder = new GeoMashupGoogleGeocoder();
-			} else if ( 'openlayers' == $geo_mashup_options->get( 'overall', 'map_api' ) ) {
-				$next_geocoder = new GeoMashupNominatimGeocoder();
-			}
-			$next_results = $next_geocoder->reverse_geocode( $location['lat'], $location['lng'] );
+		$alternate_geocoder = self::make_alternate_reverse_geocoder();
+		if ( $have_empties and $alternate_geocoder ) {
+			$next_results = $alternate_geocoder->reverse_geocode( $location['lat'], $location['lng'] );
 			if ( is_wp_error( $next_results ) or empty( $next_results ) )
 				self::$geocode_error = $next_results;
 			else
@@ -951,6 +945,17 @@ class GeoMashupDB {
 			$status = true;
 		}
 		return $status;
+	}
+
+	private static function make_alternate_reverse_geocoder() {
+		global $geo_mashup_options;
+		// Choose a geocoding service based on the default API in use
+		if ( 'google' == substr( $geo_mashup_options->get( 'overall', 'map_api' ), 0, 6 ) ) {
+			return new GeoMashupGoogleGeocoder();
+		} else if ( 'openlayers' == $geo_mashup_options->get( 'overall', 'map_api' ) ) {
+			return new GeoMashupNominatimGeocoder();
+		}
+		return null;
 	}
 
 	/**
