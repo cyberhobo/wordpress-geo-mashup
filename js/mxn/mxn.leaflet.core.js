@@ -310,6 +310,7 @@ Mapstraction: {
 		var url = mxn.util.sanitizeTileURL(tile_url);
 		
 		this.layers[label] = new L.TileLayer(url, options);
+		if(z_index==0)
 		map.addLayer(this.layers[label]);
 		this.tileLayers.push([tile_url, this.layers[label], true, z_index]);
 
