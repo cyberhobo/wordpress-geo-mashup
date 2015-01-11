@@ -522,11 +522,11 @@ mxn.register('openlayers', {
 
 		addOverlay: function(url, autoCenterAndZoom) {
 			var map = this.maps[this.api];
-			var kml = new OpenLayers.Layer.GML("kml", url,{
-				'format'       : OpenLayers.Format.KML,
-				'formatOptions': new OpenLayers.Format.KML({
-					'extractStyles'    : true,
-					'extractAttributes': true
+			var kml = new OpenLayers.Layer.Vector("kml", {
+				'strategies'   : [new OpenLayers.Strategy.Fixed()],
+				'protocol'     : new OpenLayers.Protocol.HTTP({
+					'url'   : url,
+					'format': new OpenLayers.Format.KML
 				}),
 				'projection'   : new OpenLayers.Projection('EPSG:4326')
 			});
