@@ -121,6 +121,10 @@ This version fixes a security related bug.  Upgrade immediately.
 Features are generally added in one-dot releases, while two-dot releases contain fixes and small updates.
 
 = 1.8.3 Jan 11 2015 =
+
+Thanks to Paolo Perego of [armoredcode.com](http://armoredcode.com) for finding and fixing an XSS bug in the
+geo search widget.
+
 [milestone 1.8.3 changes](http://code.google.com/p/wordpress-geo-mashup/issues/list?can=1&q=Milestone%3D1.8.3)
 
 = 1.8.2 Nov 17 2014 =
