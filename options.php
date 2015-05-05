@@ -73,7 +73,7 @@ function geo_mashup_options_page() {
 		if ( !$test_transient ) {
 			echo '<div class="updated fade">';
 			_e( 'WordPress transients may not be working. Try deactivating or reconfiguring caching plugins.', 'GeoMashup' );
-			echo ' <a href="https://code.google.com/p/wordpress-geo-mashup/issues/detail?id=425">issue 425</a>';
+			echo ' <a href="https://github.com/cyberhobo/wordpress-geo-mashup/issues/425">issue 425</a>';
 			echo '</div>';
 			unset( $_POST['geo_mashup_run_tests'] );
 		} else {
@@ -1096,19 +1096,19 @@ function geo_mashup_options_page() {
 		<?php else : ?>
 		<p><a href="<?php echo $_SERVER['REQUEST_URI']; ?>&amp;view_activation_log=1"><?php _e('View Update Log', 'GeoMashup'); ?></a></p>
 		<?php endif; ?>
-		<p><a href="http://code.google.com/p/wordpress-geo-mashup/wiki/Documentation"><?php _e('Geo Mashup Documentation', 'GeoMashup'); ?></a></p>
+		<p><a href="https://github.com/cyberhobo/wordpress-geo-mashup/wiki/Getting-Started"><?php _e('Geo Mashup Documentation', 'GeoMashup'); ?></a></p>
 		<p>
 			<a href="http://wpquestions.com/affiliates/register/name/cyberhobo">
 				<img src="<?php echo path_join( GEO_MASHUP_URL_PATH, 'images/wpquestions-logo.png' ); ?>" alt="WP Questions">
 			</a>
 		</p>
 		<p>Geo Mashup needs you: <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=11045324">donate</a>,
-		contribute <a href="http://wiki.geo-mashup.org/guides">a guide</a>
-		or <a href="http://code.google.com/p/wordpress-geo-mashup/source/checkout">code</a>,
-		share your experience in the <a href="http://groups.google.com/group/wordpress-geo-mashup-plugin">community discussion group</a>,
+		contribute <a href="https://github.com/cyberhobo/wordpress-geo-mashup/wiki/How-To-Guides">a guide</a>
+		or <a href="https://github.com/cyberhobo/wordpress-geo-mashup">code</a>,
+		share your experience in the <a href="https://wordpress.org/support/plugin/geo-mashup">volunteer support forum</a>,
 		or use this HTML to add a link to your site:
 		<input id="geo-mashup-credit-input" type="text" size="80" value="<?php
-			echo esc_attr( '<a href="http://code.google.com/p/wordpress-geo-mashup/" title="Geo Mashup"><img src="' . path_join( GEO_MASHUP_URL_PATH, 'images/gm-credit.png' ) . '" alt="Geo Mashup" /></a>' );
+			echo esc_attr( '<a href="https://wordpress.org/plugins/geo-mashup/" title="Geo Mashup"><img src="' . path_join( GEO_MASHUP_URL_PATH, 'images/gm-credit.png' ) . '" alt="Geo Mashup" /></a>' );
 			?>" /><br />
 		Thanks!
 		</p>

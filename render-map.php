@@ -546,7 +546,7 @@ class GeoMashupRenderMap {
 		if ( empty( $map_data ) ) {
 			status_header( 500 );
 			_e( 'WordPress transients may not be working. Try deactivating or reconfiguring caching plugins.', 'GeoMashup' );
-			echo ' <a href="https://code.google.com/p/wordpress-geo-mashup/issues/detail?id=425" target="_top">issue 425</a>';
+			echo ' <a href="https://github.com/cyberhobo/wordpress-geo-mashup/issues/425" target="_top">issue 425</a>';
 			exit();
 		}
 
