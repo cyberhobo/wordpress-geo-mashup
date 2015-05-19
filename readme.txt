@@ -3,8 +3,8 @@ Contributors: cyberhobo
 Donate Link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=11045324
 Tags: map, maps, google maps, google map, mapping, mashup, geo, google, geocms
 Requires at least: 3.7
-Tested up to: 4.1
-Stable tag: 1.8.3
+Tested up to: 4.2
+Stable tag: 1.8.4
 License: GPL2+
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -99,6 +99,10 @@ This version fixes a security related bug.  Upgrade immediately.
 == Change Log ==
 
 Features are generally added in one-dot releases, while two-dot releases contain fixes and small updates.
+
+= 1.8.4 May 18 2015 =
+
+Move official source from Google Code to Github.
 
 = 1.8.3 Jan 11 2015 =
 
