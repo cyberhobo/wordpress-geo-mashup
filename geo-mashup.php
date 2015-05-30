@@ -717,7 +717,10 @@ class GeoMashup {
 		$objects = GeoMashupDB::get_object_locations( $query_args );
 		if ( $objects ) {
 			foreach ($objects as $object) {
-				$json_objects[] = self::augment_map_object_location( $query_args['object_name'], $object );
+				$obj = self::augment_map_object_location( $query_args['object_name'], $object );
+				if ($obj) {
+					$json_objects[] = $obj;
+				}
 			}
 		}
 		if ( ARRAY_A == $format ) 
