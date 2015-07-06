@@ -5,7 +5,7 @@
  * THIS FILE WILL BE OVERWRITTEN BY AUTOMATIC UPGRADES
  * See the geo-mashup-search.php plugin file for license
  *
- * Copy this to a file named geo-mashup-nearby-posts.php in your active theme folder
+ * Copy this to a file named geo-mashup-nearby-list.php in your active theme folder
  * to customize. For bonus points delete this message in the copy!
  *
  * Variables in scope:
