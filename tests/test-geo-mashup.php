@@ -845,6 +845,24 @@ class GeoMashup_Unit_Tests extends WP_UnitTestCase {
 		$this->assertContains( 'map_content=global', $html, 'Expected global map content when object_ids are passed.' );
 	}
 
+	/**
+	 * Issue 713
+	 */
+	function test_field_truncation() {
+		$location = self::rand_location();
+		$location->saved_name = str_repeat( 'a', 101 );
+		$location->country_code = 'aaa';
+		$location->admin_code = str_repeat( 'a', 21 );
+		$location->sub_admin_code = str_repeat( 'a', 81 );
+
+		GeoMashupDB::set_location( $location, false );
+
+		$this->assertEquals( str_repeat( 'a', 100 ), $location->saved_name );
+		$this->assertEquals( 'aa', $location->country_code );
+		$this->assertEquals( str_repeat( 'a', 20 ), $location->admin_code );
+		$this->assertEquals( str_repeat( 'a', 80 ), $location->sub_admin_code );
+	}
+
 	private function get_nv_test_location() {
 		$location = GeoMashupDB::blank_location();
 		$location->lat = 40;

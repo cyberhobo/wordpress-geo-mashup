@@ -1851,6 +1851,8 @@ class GeoMashupDB {
 			$wpdb->query( $wpdb->prepare( "UPDATE $location_table SET saved_name = NULL WHERE saved_name = %s", $location['saved_name'] ) );
 		}
 
+		self::truncate_location_fields( $location );
+
 		$set_id = null;
 
 		if ( empty( $location['id'] ) ) {
@@ -1907,6 +1909,22 @@ class GeoMashupDB {
 			$location = (object) $location;
 
 		return $set_id;
+	}
+
+	/**
+	 * Cut location fields to maximum length.
+	 * @since 1.8.5
+	 * @param array $location
+	 */
+	static private function truncate_location_fields( &$location ) {
+		if ( isset( $location['saved_name'] ) )
+			$location['saved_name'] = mb_substr( $location['saved_name'], 0, 100 );
+		if ( isset( $location['country_code'] ) )
+			$location['country_code'] = mb_substr( $location['country_code'], 0, 2 );
+		if ( isset( $location['admin_code'] ) )
+			$location['admin_code'] = mb_substr( $location['admin_code'], 0, 20 );
+		if ( isset( $location['sub_admin_code'] ) )
+			$location['sub_admin_code'] = mb_substr( $location['sub_admin_code'], 0, 80 );
 	}
 
 	/**
