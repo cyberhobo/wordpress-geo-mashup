@@ -81,6 +81,10 @@ to the community.
 
 [Translators welcome](https://github.com/cyberhobo/wordpress-geo-mashup/wiki/Translating).
 
+= Thanks =
+
+Thanks to [JetBrains](https://www.jetbrains.com) for providing cutting edge development tools to this project.
+
 = Mashup Ingredients =
 
 Geo Mashup combines WordPress, [Google Maps](http://maps.google.com), [OpenStreetMap](http://openstreetmap.org),
