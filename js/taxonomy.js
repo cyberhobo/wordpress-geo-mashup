@@ -234,7 +234,7 @@ jQuery.extend( GeoMashup, {
 					$title = $( '<h2></h2>' )
 						.addClass( 'gm-legend-title' )
 						.addClass( taxonomy + '-legend-title' )
-						.text( term_properties[taxonomy].label );
+						.html( term_properties[taxonomy].label );
 					/**
 					 * A taxonomy legend title is being created
 					 * @name GeoMashup#taxonomyLegendTitle
@@ -264,7 +264,7 @@ jQuery.extend( GeoMashup, {
 
 					// Add check/uncheck all
 					$check_all = $( '<label></label>' )
-						.text( GeoMashup.opts.check_all_label )
+						.html( GeoMashup.opts.check_all_label )
 						.attr( 'for', 'gm-' + taxonomy + '-check-all' )
 						.prepend(
 							$( '<input type="checkbox" />' ).attr( 'id', 'gm-' + taxonomy + '-check-all' )
@@ -313,12 +313,12 @@ jQuery.extend( GeoMashup, {
 
 						$label = $( '<label/>' )
 							.attr( 'for', id )
-							.text( name )
+							.html( name )
 							.prepend( $checkbox );
 
 					} else {
 
-						$label = $( '<span/>' ).text( name ); 
+						$label = $( '<span/>' ).html( name );
 
 					}
 
