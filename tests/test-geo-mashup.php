@@ -863,6 +863,32 @@ class GeoMashup_Unit_Tests extends WP_UnitTestCase {
 		$this->assertEquals( str_repeat( 'a', 80 ), $location->sub_admin_code );
 	}
 
+	/**
+	 * issue 718
+	 */
+	function test_show_on_map_url_parameters() {
+		global $geo_mashup_options;
+
+		$page_id = $this->factory->post->create( array( 'post_type' => 'page' ) );
+
+		$geo_mashup_options->set_valid_options( array(
+			array( 'overall' => array(
+				'mashup_page' => $page_id,
+			) ),
+		) );
+		$post_id = $this->factory->post->create();
+
+		$location = $this->rand_location( 4 );
+		GeoMashupDB::set_object_location( 'post', $post_id, $location, false );
+
+		$test_query = new WP_Query( array( 'p' => $post_id ) );
+		$test_query->the_post();
+
+		$test_args = array( 'text' => 'TEST TEXT', 'zoom' => 10 );
+		$this->assertNotContains( 'text=', GeoMashup::show_on_map_link( $test_args ) );
+		$this->assertContains( 'zoom=10', GeoMashup::show_on_map_link( $test_args ) );
+	}
+
 	private function get_nv_test_location() {
 		$location = GeoMashupDB::blank_location();
 		$location->lat = 40;

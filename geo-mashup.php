@@ -1636,7 +1636,7 @@ class GeoMashup {
 			 'show_icon' => true );
 		$options = wp_parse_args($args, $defaults);
 		$link = '';
-		$url = self::show_on_map_link_url( $args );
+		$url = self::show_on_map_link_url( array_intersect_key( $options, array( 'zoom' => true ) ) );
 		if ( $url ) {
 			$icon = '';
 			if ($options['show_icon'] && strcmp( $options['show_icon'], 'false' ) != 0) {
