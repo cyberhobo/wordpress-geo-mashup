@@ -64,7 +64,7 @@
 					<exclude name="*qunit-close-enough.js"/>
 					<exclude name="*modernizr.js"/>
 					<exclude name="mxn/*"/>
-                    <exclude name="leaflet/*"/>
+					<exclude name="leaflet/*"/>
 				</fileset>
 			</path>
 			<sequential>
@@ -81,8 +81,9 @@
 	
 		<echo>--- POT ---</echo>
 		<exec executable="php">
-			<arg line="tools/wp-i18n-tools/makepot.php wp-plugin ${build.dir} ${build.dir}/lang/geo-mashup.pot geo-mashup"/>
+			<arg line="tools/wp-i18n-tools/makepot.php wp-plugin ${build.dir} ${build.dir}/lang/GeoMashup.pot geo-mashup"/>
 		</exec>
+		<copy file="${build.dir}/lang/GeoMashup.pot" todir="${source}/lang" />
 		
 		<!-- minify our sources -->
 		<echo>--- MIN ---</echo>
