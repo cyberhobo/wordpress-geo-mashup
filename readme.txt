@@ -73,7 +73,7 @@ to the community.
 * Polish by [Kamil](http://wbartoszycach.pl) added in version 1.4.7
 * Portugese by [Antonio Xeira](http://flyingsouth.thehappytoadfish.com/) added in version 1.4.2
 * Italian by [Federico](http://thrifytuscany.com/) added in version 1.3.10
-* Dutch by Kurt Stockman of [eten in Gent](http://www.eteningent.be/) added in version 1.3.9
+* Dutch by [delicatesther](http://delicatesther.nl/) updated in version 1.8.5
 * French updated in version 1.3.7
 * Spanish by [Reven](http://www.reven.org/blog/2010/03/15/traduccion-de-geo-mashup/) added in version 1.3.3
 * Swedish by [Joakim Green](http://www.joakimgreen.com/) added in version 1.3.3
