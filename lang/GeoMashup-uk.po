@@ -1,0 +1,1188 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Geo Mashup 1.4\n"
+"Report-Msgid-Bugs-To: http://wordpress.org/tag/geo-mashup\n"
+"POT-Creation-Date: 2015-08-16 20:44:41+00:00\n"
+"PO-Revision-Date: 2015-09-27 15:05-0800\n"
+"Last-Translator: LANGUAGE <LL@li.org>\n"
+"Language-Team: TohaPro.com <jaaatony@gmail.com>\n"
+"Language: ru_RU\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-KeywordsList: _e;__\n"
+"X-Poedit-Basepath: .\n"
+"X-Generator: Poedit 1.5.4\n"
+"X-Poedit-SearchPath-0: ..\n"
+
+#: default-templates/comment.php:51
+msgid "<cite class=\"fn\">%s</cite> <span class=\"says\">says:</span>"
+msgstr "<cite class=\"fn\">%s</cite> <span class=\"says\">говорит:</span>"
+
+#: default-templates/comment.php:54
+msgid "%1$s at %2$s"
+msgstr "%1$s у %2$s"
+
+#: default-templates/map-frame.php:56
+#, fuzzy
+msgid ""
+"This map requires JavaScript. You may have to enable it in your browser's "
+"settings."
+msgstr ""
+"Ви повинні включити JavaScript в налаштуваннях, щоб використовувати дану "
+"мапу."
+
+#: default-templates/nearby-list.php:36
+msgid "Posts Nearby"
+msgstr ""
+
+#: default-templates/nearby-list.php:38
+msgid "Users Nearby"
+msgstr ""
+
+#: default-templates/search-form.php:25
+msgid "find"
+msgstr ""
+
+#: default-templates/search-form.php:34 geo-mashup-search.php:513
+msgid "posts"
+msgstr ""
+
+#: default-templates/search-form.php:38
+msgid "within"
+msgstr ""
+
+#: default-templates/search-form.php:60
+msgid "Search"
+msgstr ""
+
+#: default-templates/search-results.php:35
+msgid "Search results near \"%s\""
+msgstr ""
+
+#: default-templates/search-results.php:59
+#: default-templates/search-results.php:70
+msgid "Distance"
+msgstr ""
+
+#: default-templates/search-results.php:78
+#, fuzzy
+msgid "No results found."
+msgstr "Інформація про адресу не знайдена."
+
+#: default-templates/user.php:41
+msgid "Display Name"
+msgstr "Показати Назву"
+
+#: default-templates/user.php:46
+msgid "Website"
+msgstr "Вебсайт"
+
+#: edit-form.php:127
+msgid "Address"
+msgstr "Адреса"
+
+#: edit-form.php:128
+msgid "Saved Name"
+msgstr "Збережена Назва"
+
+#: edit-form.php:129
+msgid "Geo Date"
+msgstr "Гео дата"
+
+#: edit-form.php:157
+msgid "Loading Google map. Check Geo Mashup options if the map fails to load."
+msgstr ""
+"Завантаження Google карти. Перевірте налаштування Geo Mashup, якщо карта не "
+"завантажується."
+
+#: edit-form.php:163
+msgid "Location Map Image"
+msgstr "Зображення карти"
+
+#: edit-form.php:169
+msgid "Find a new location:"
+msgstr "Знайти нове місце:"
+
+#: edit-form.php:173
+msgid "or select from"
+msgstr "або вибрати з"
+
+#: edit-form.php:175
+msgid "[Saved Locations]"
+msgstr "[Збережені Місця]"
+
+#: edit-form.php:198
+msgid "Add Location"
+msgstr "Додати Місце"
+
+#: edit-form.php:199
+msgid "Delete"
+msgstr "Видалити"
+
+#: edit-form.php:200
+msgid "Save"
+msgstr "Зберегти"
+
+#: edit-form.php:203
+msgid "help"
+msgstr "допомога"
+
+#: edit-form.php:206
+msgid ""
+"<em>Saved Name</em> is an optional name you may use to add entries to the "
+"Saved Locations menu."
+msgstr ""
+"<em>Збережена Назва</em> - необов'язкова назва, яку Ви можете "
+"використовувати, щоб додати записи в меню [Збережені Місця]."
+
+#: edit-form.php:207
+msgid ""
+"<em>Geo Date</em> associates a date (most formats work) and time with a "
+"location. Leave the default value if uncertain."
+msgstr ""
+"<em>Гео дата</em> асоціює дату (основні формати підтримуються) і час з "
+"місцем. Залиште порожнім, якщо невпевнені."
+
+#: edit-form.php:209
+msgid "Put a green pin at a new location. There are many ways to do it:"
+msgstr ""
+"Помістіть зелений маркер в нове місце. Існує кілька способів зробити це:"
+
+#: edit-form.php:211
+msgid "Search for a location name."
+msgstr "Шукати місце за назвою."
+
+#: edit-form.php:212
+msgid ""
+"For multiple search results, mouse over pins to see location names, and "
+"click a result pin to select that location."
+msgstr ""
+"Для кількох результатів пошуку наведіть курсор миші на маркери, щоб побачити "
+"назви місць, і натисніть на маркері, щоб вибрати місце."
+
+#: edit-form.php:213
+msgid ""
+"Search for a decimal latitude and longitude separated by a comma, like "
+"<em>40.123,-105.456</em>. Seven decimal places are stored. Negative latitude "
+"is used for the southern hemisphere, and negative longitude for the western "
+"hemisphere."
+msgstr ""
+"Шукати по десятковим значенням широти і довготи, розділеним комами, "
+"наприклад, <em>40.123,-105.456</em>. Зберігається 7 знаків після коми. "
+"Негативні значення широти використовуються для південної півкулі, а "
+"негативні значення довготи - для західної півкулі."
+
+#: edit-form.php:214
+msgid "Search for a street address, like <em>123 main st, anytown, acity</em>."
+msgstr ""
+"Знайти поштову адресу, наприклад, <em>вулиця Хрещатик, 2, місто Київ</em>."
+
+#: edit-form.php:215
+msgid ""
+"Click on the location. Zoom in if necessary so you can refine the location "
+"by dragging it or clicking a new location."
+msgstr ""
+"Натисніть на місці. Якщо потрібно, можете наблизити карту, щоб Ви могли "
+"уточнити місце, перетягуючи його, або вибрати нове місце."
+
+#: edit-form.php:217
+msgid ""
+"To execute a search, type search text into the Find Location box and hit the "
+"enter key. If you type a name next to \"Save As\", the location will be "
+"saved under that name and added to the Saved Locations dropdown list."
+msgstr ""
+"Щоб здійснити пошук, введіть шукану фразу в поле 'Знайти Місце' і натисніть "
+"клавішу Enter. Якщо Ви введете назву поряд з \"Зберегти як\", нове місце "
+"буде збережено під обраним ім'ям і добавлено в випадаючий список 'Збережені "
+"Місця'."
+
+#: edit-form.php:218
+msgid ""
+"To remove the location (green pin), clear the search box and hit the enter "
+"key."
+msgstr ""
+"Щоб видалити місце розташування (зелений маркер), встановлене для запису, "
+"потрібно очистити поле пошуку і натиснути клавішу Enter."
+
+#: edit-form.php:219
+msgid "When you are satisfied with the location, save or update."
+msgstr "Коли Ви задоволені обраним місцем, збережіть або поновіть Ваш запис."
+
+#: edit-form.php:223
+msgid ""
+"To add or update location choose a saved location, or find a new location "
+"using one of these formats:"
+msgstr ""
+"Щоб додати або оновити місце, виберіть збережене місце або знайдіть нове "
+"місце, використовуючи один з наступних форматів:"
+
+#: edit-form.php:225
+msgid "A place name like <em>Yellowstone National Park</em>"
+msgstr "Назва місця, наприклад, <em>Єллоустонський Національний Парк</em>"
+
+#: edit-form.php:226
+msgid "A decimal latitude and longitude, like <em>40.123,-105.456</em>."
+msgstr "Десяткова широта і довгота, наприклад, <em>40.123,-105.456</em>."
+
+#: edit-form.php:227
+msgid ""
+"A full or partial street address, like <em>123 main st, anytown, acity 12345 "
+"USA</em>."
+msgstr ""
+"Повна або часткова адреса, наприклад, <em>вул. Пушкіна, 14, Сімферополь, "
+"95011, Україна</em>."
+
+#: edit-form.php:229
+msgid ""
+"When you save or update, the closest match available will be saved as the "
+"location."
+msgstr ""
+"Коли Ви зберігаєте або оновлюєте, найближче доступне співпадання буде "
+"збережено як місце."
+
+#: geo-mashup-db.php:647
+msgid "Activating Geo Mashup"
+msgstr "Geo Mashup активується"
+
+#: geo-mashup-db.php:718
+msgid "Geo Mashup database is up to date."
+msgstr "База даних Geo Mashup в актуальному стані."
+
+#: geo-mashup-db.php:721
+msgid "Geo Mashup database upgrade failed."
+msgstr "Не вийшло оновити базу даних Geo Mashup."
+
+#: geo-mashup-db.php:983
+msgid "No locations found with missing address fields."
+msgstr "З пропущеними полями адреси місць не знайдено."
+
+#: geo-mashup-db.php:986
+msgid "Locations to geocode: "
+msgstr "Місця по ГеоКод:"
+
+#: geo-mashup-db.php:994
+msgid "Time limit: "
+msgstr "Ліміт часу:"
+
+#: geo-mashup-db.php:1005
+msgid "Lookup error:"
+msgstr "Помилка пошуку:"
+
+#: geo-mashup-db.php:1006
+msgid "Increasing delay to"
+msgstr "Збільшення затримки на"
+
+#: geo-mashup-db.php:1009
+msgid "address"
+msgstr "адреса"
+
+#: geo-mashup-db.php:1011
+msgid "postal code"
+msgstr "поштовий індекс"
+
+#: geo-mashup-db.php:1015
+msgid "No address info found."
+msgstr "Інформація про адресу не знайдена."
+
+#: geo-mashup-db.php:1018
+msgid "Time limit exceeded, retry to continue."
+msgstr "Ліміт часу вичерпаний, спробуйте ще раз."
+
+#: geo-mashup-db.php:1063
+msgid "Geodata duplication done."
+msgstr "Дублювання геоданих завершено."
+
+#: geo-mashup-db.php:1102
+msgid "Copying missing %s geodata from WordPress"
+msgstr "Копіювання пропущених %s геоданих з WordPress"
+
+#: geo-mashup-db.php:1140
+msgid "Copying missing %s geodata from Geo Mashup"
+msgstr "Копіювання пропущених %s геоданих з Geo Mashup"
+
+#: geo-mashup-db.php:1152
+msgid "Failed to duplicate Geo Mashup location for %s (%s)."
+msgstr "Не вийшло дублювати місце Geo Mashup для %s (%s)."
+
+#: geo-mashup-db.php:1194
+msgid "Converting old locations"
+msgstr "Конвертування старих місць"
+
+#: geo-mashup-db.php:1218
+msgid "Converting saved locations"
+msgstr "Конвертування збережених місць"
+
+#: geo-mashup-db.php:1227
+msgid "OK: "
+msgstr "OK: "
+
+#: geo-mashup-db.php:1250
+msgid "Failed to initialize geo dates from post dates: "
+msgstr "Не вийшло ініціалізувати гео дати з дат записів:"
+
+#: geo-mashup-db.php:1253
+msgid "Initialized %d geo dates from corresponding post dates."
+msgstr "Ініціалізовано %d гео дат з відповідних дат записів."
+
+#: geo-mashup-db.php:1825
+msgid "A location must have an ID or coordinates to be saved."
+msgstr "Місце повинно мати ID або координати, щоб бути збереженим."
+
+#: geo-mashup-geocoders.php:107 options.php:64
+msgid "%s Multibyte string functions %s are not installed."
+msgstr ""
+
+#: geo-mashup-geocoders.php:112
+msgid "Geocoding will only work if \"%s\" is UTF-8 text."
+msgstr ""
+
+#: geo-mashup-geocoders.php:185 geo-mashup-geocoders.php:388
+#: geo-mashup-geocoders.php:452
+msgid "Reverse geocoding requires numeric coordinates."
+msgstr "Зворотне геокодування вимагає числових координат."
+
+#: geo-mashup-geocoders.php:350
+msgid "The geocoding request failed with status %s."
+msgstr "Запит геокодування не виконано, статус: %s."
+
+#: geo-mashup-options.php:372 geo-mashup-options.php:380
+#: geo-mashup-options.php:386 geo-mashup-options.php:396
+#: geo-mashup-options.php:405 geo-mashup-options.php:414
+#: geo-mashup-options.php:437 geo-mashup-options.php:442
+#: geo-mashup-options.php:455 geo-mashup-options.php:488
+#: geo-mashup-options.php:504 geo-mashup-options.php:517
+#: geo-mashup-options.php:526
+msgid "is invalid for"
+msgstr "не вірно для"
+
+#: geo-mashup-options.php:373 geo-mashup-options.php:387
+msgid ", which must be a valid map type (see documentation)"
+msgstr ", який повинен мати правильний тип карти (див. документацію)"
+
+#: geo-mashup-options.php:381
+msgid ", which must be an array of valid map types (see documentation)"
+msgstr ", який повинен бути масивом правильних типів карт (див. документацію)"
+
+#: geo-mashup-options.php:397
+msgid ", which must be a valid map control (see documentation)"
+msgstr ", який повинен мати правильний контроль карти (див. документацію)"
+
+#: geo-mashup-options.php:406
+msgid ", which must be a valid map provider."
+msgstr ", який повинен бути правильним провайдером карт."
+
+#: geo-mashup-options.php:415
+msgid ", which must be a valid clustering library."
+msgstr ", який повинен бути правильною бібліотекою кластеризації."
+
+#: geo-mashup-options.php:438
+msgid ", which must be a string"
+msgstr ", який повинен бути рядком"
+
+#: geo-mashup-options.php:443
+msgid ", which must not contain XML tags."
+msgstr ", який не повинен містити XML тегів."
+
+#: geo-mashup-options.php:456
+msgid ", which must be a number"
+msgstr ", який повинен бути числом"
+
+#: geo-mashup-options.php:489
+msgid ", which must be \"true\" or \"false\""
+msgstr ", який повинен бути \"true\" чи \"false\""
+
+#: geo-mashup-options.php:505
+msgid ", which must be an array"
+msgstr ", який повинен бути масивом"
+
+#: geo-mashup-options.php:518
+msgid ", which must be a number from 0 to "
+msgstr ", який повинен бути числом від 0 до"
+
+#: geo-mashup-options.php:527
+msgid ", which is a deprecated option"
+msgstr ", який є застарілим."
+
+#: geo-mashup-search.php:363
+#, fuzzy
+msgid "Search content by Geo Mashup location."
+msgstr "Шукати місце за назвою."
+
+#: geo-mashup-search.php:365
+#, fuzzy
+msgid "Geo Mashup Search"
+msgstr "Geo Mashup"
+
+#: geo-mashup-search.php:379
+msgid "Couldn't find you..."
+msgstr ""
+
+#: geo-mashup-search.php:380
+#, fuzzy
+msgid "My Location"
+msgstr "Місце"
+
+#: geo-mashup-search.php:395
+msgid "No Geo Mashup Search result page found - check widget settings."
+msgstr ""
+
+#: geo-mashup-search.php:474
+msgid "Widget heading, leave blank to omit."
+msgstr ""
+
+#: geo-mashup-search.php:475
+msgid "Title:"
+msgstr ""
+
+#: geo-mashup-search.php:486
+msgid ""
+"Default text in the search text box for use as a prompt, leave blank to omit."
+msgstr ""
+
+#: geo-mashup-search.php:487
+#, fuzzy
+msgid "Default Search Text:"
+msgstr "Тип Мапи за Замовчуванням"
+
+#: geo-mashup-search.php:493
+msgid "city, state or zip"
+msgstr ""
+
+#: geo-mashup-search.php:498
+msgid "Text for the user locate button, leave blank to omit."
+msgstr ""
+
+#: geo-mashup-search.php:499
+#, fuzzy
+msgid "Find Me Button:"
+msgstr "Знайти нове місце:"
+
+#: geo-mashup-search.php:505
+msgid "Find Me"
+msgstr ""
+
+#: geo-mashup-search.php:510
+msgid "What to search:"
+msgstr ""
+
+#: geo-mashup-search.php:516
+#, fuzzy
+msgid "users"
+msgstr "Користувачі"
+
+#: geo-mashup-search.php:519
+#, fuzzy
+msgid "comments"
+msgstr "Коментарі"
+
+#: geo-mashup-search.php:526
+msgid ""
+"Category dropdown contents. Blank to omit, 'all' for all post categories, or "
+"comma separated category IDs to include."
+msgstr ""
+
+#: geo-mashup-search.php:527
+#, fuzzy
+msgid "Category Menu:"
+msgstr "Категорія"
+
+#: geo-mashup-search.php:538
+msgid "Units:"
+msgstr ""
+
+#: geo-mashup-search.php:541
+msgid "miles"
+msgstr ""
+
+#: geo-mashup-search.php:544
+msgid "kilometers"
+msgstr ""
+
+#: geo-mashup-search.php:551
+msgid ""
+"Radius dropdown contents. Blank to omit, or comma separated numeric "
+"distances in selected units."
+msgstr ""
+
+#: geo-mashup-search.php:552
+msgid "Radius Menu:"
+msgstr ""
+
+#: geo-mashup-search.php:563
+msgid "The page where search results should be displayed."
+msgstr ""
+
+#: geo-mashup-search.php:564
+msgid "Results Page:"
+msgstr ""
+
+#: geo-mashup-ui-managers.php:281
+msgid "Object location not saved - invalid request."
+msgstr "Неправильний запит - місце об'єкта не збережено."
+
+#: geo-mashup-ui-managers.php:431 geo-mashup-ui-managers.php:625
+msgid "Location"
+msgstr "Місце"
+
+#: geo-mashup-ui-managers.php:747
+msgid "Address not found - try making it less detailed"
+msgstr "Адресу не знайдено - спробуйте зробити його менш докладним"
+
+#: geo-mashup-ui-managers.php:931
+msgid "Written from (location)"
+msgstr "Написано в (місце)"
+
+#: geo-mashup-ui-managers.php:933
+msgid "Loading..."
+msgstr "Завантаження..."
+
+#: geo-mashup.php:483
+msgid "No object id posted."
+msgstr "Не додано id об'єкта."
+
+#: geo-mashup.php:500
+msgid "Location updated."
+msgstr "Місце оновлено."
+
+#: geo-mashup.php:502
+msgid "Location deleted."
+msgstr "Місце видалено."
+
+#: geo-mashup.php:504
+msgid "Location added."
+msgstr "Місце додано."
+
+#: geo-mashup.php:1060
+msgid "Geo Mashup found no objects to map in this context"
+msgstr "У даному контексті Geo Mashup не знайшов об'єктів на мапі"
+
+#: geo-mashup.php:1078
+msgid "Geo Mashup found no current object to map"
+msgstr "Geo Mashup не знайшов даний об'єкт на мапі"
+
+#: geo-mashup.php:1082
+msgid "Geo Mashup omitted a map for an object with no location"
+msgstr "Geo Mashup приховав карту для об'єкта без місця"
+
+#: geo-mashup.php:1089
+msgid "Geo Mashup map omitted to avoid nesting maps"
+msgstr "Geo Mashup приховав мапу, щоб уникнути вкладеності мап"
+
+#: geo-mashup.php:1123
+msgid "Geo Mashup omitted a map with no located objects found."
+msgstr "Geo Mashup приховав мапу без об'єктів."
+
+#: geo-mashup.php:1342
+msgid ""
+"You must add a description to this category to use this Geo Mashup feature."
+msgstr ""
+"Ви повинні додати опис категорії, щоб використовувати цю функцію Geo Mashup."
+
+#: geo-mashup.php:1369 options.php:217
+msgid "Geo Mashup Options"
+msgstr "Налаштування Geo Mashup"
+
+#. #-#-#-#-#  GeoMashup.pot (Geo Mashup 1.8.4)  #-#-#-#-#
+#. Plugin Name of the plugin/theme
+#: geo-mashup.php:1369
+msgid "Geo Mashup"
+msgstr "Geo Mashup"
+
+#: geo-mashup.php:1387
+msgid ""
+"Geo Mashup now includes search, deactivating the old %s plugin. It's safe to "
+"delete it."
+msgstr ""
+
+#: geo-mashup.php:1395
+msgid ""
+"Geo Mashup requires a Google API key in the <a href=\"%s\">settings</a> "
+"before it will work."
+msgstr ""
+"Geo Mashup вимагає ключ Google API у <a href=\"%s\">налаштуваннях</a> до "
+"початку роботи."
+
+#: geo-mashup.php:1399
+msgid ""
+"Geo Mashup needs to upgrade its database, visit the <a href=\"%s\">settings</"
+"a> to do it now."
+msgstr ""
+"Geo Mashup вимагає оновлення бази даних, відвідайте <a href=\"%s"
+"\">налаштування</a>, щоб зробити це прямо зараз."
+
+#: geo-mashup.php:1420
+msgid "Settings"
+msgstr "Налаштування"
+
+#: geo-mashup.php:1437
+msgid "Documentation"
+msgstr "Документація"
+
+#: geo-mashup.php:1439
+msgid "Donate"
+msgstr "Пожертвувати"
+
+#: geo-mashup.php:1633
+msgid "Show on map"
+msgstr "Показати на мапі"
+
+#: geo-mashup.php:1644
+msgid "Geotag Icon"
+msgstr "Іконка Геотеги"
+
+#: geo-mashup.php:1807
+msgid ""
+"Enable the geo search widget in the Geo Mashup settings to power the nearby "
+"list!"
+msgstr ""
+
+#: options.php:44
+msgid ""
+"Options updated.  Browser or server caching may delay updates for recently "
+"viewed maps."
+msgstr ""
+
+#: options.php:50
+msgid "Copied existing geodata, see log for details."
+msgstr "Існуючі геодані скопійовані, дивіться лог для подробиць."
+
+#: options.php:69
+msgid "Geocoding and other web services may not work properly."
+msgstr ""
+
+#: options.php:75 render-map.php:548
+msgid ""
+"WordPress transients may not be working. Try deactivating or reconfiguring "
+"caching plugins."
+msgstr ""
+
+#: options.php:89
+msgid "Database upgraded, see log for details."
+msgstr "База даних оновлена, дивіться лог для подробиць."
+
+#: options.php:96
+msgid "Log deleted."
+msgstr "Лог видалений."
+
+#: options.php:102
+msgid "Saved options may be corrupted, try updating again. Corrupt values: "
+msgstr ""
+"Збережені налаштування могли бути пошкоджені, спробуйте оновити ще раз. "
+"Пошкоджені значення:"
+
+#: options.php:110
+msgid ""
+"Some invalid options will not be used. If you've just upgraded, do an update "
+"to initialize new options."
+msgstr ""
+"Деякі неправильні опції не будуть використані. Якщо Ви тільки що оновили "
+"плагін, зробіть оновлення, щоб ініціалізувати нові опції."
+
+#: options.php:139
+msgid "Roadmap"
+msgstr "Мапа дорог"
+
+#: options.php:140
+msgid "Satellite"
+msgstr "Супутник"
+
+#: options.php:141
+msgid "Hybrid"
+msgstr "Гібрид"
+
+#: options.php:142
+msgid "Terrain"
+msgstr "Поверхня"
+
+#: options.php:143
+msgid "Earth Plugin"
+msgstr "Плагін Земля"
+
+#: options.php:146
+msgid "Small Zoom"
+msgstr "Невелике наближення"
+
+#: options.php:147
+msgid "Small Zoom 3D"
+msgstr "Невелике Наближення 3D"
+
+#: options.php:148
+msgid "Small Pan/Zoom"
+msgstr "Невелике Панорамування/Наближення"
+
+#: options.php:149
+msgid "Large Pan/Zoom"
+msgstr "Велике Панорамування/Наближення"
+
+#: options.php:150
+msgid "Large Pan/Zoom 3D"
+msgstr "Велике Панорамування/Наближення 3D"
+
+#: options.php:153
+msgid "Yes"
+msgstr "Так"
+
+#: options.php:154
+msgid "No"
+msgstr "Ні"
+
+#: options.php:155
+msgid "Only"
+msgstr "Тільки"
+
+#: options.php:158
+msgid "Google v2"
+msgstr "Google v2"
+
+#: options.php:159
+msgid "Google v3"
+msgstr "Google v3"
+
+#: options.php:160
+msgid "OpenLayers"
+msgstr "OpenLayers"
+
+#: options.php:161
+msgid "Leaflet"
+msgstr ""
+
+#: options.php:164
+msgid "auto"
+msgstr "авто"
+
+#: options.php:220
+msgid "Overall"
+msgstr "Загальний"
+
+#: options.php:221
+msgid "Single Maps"
+msgstr "Одиночні Мапи"
+
+#: options.php:222
+msgid "Global Maps"
+msgstr "Глобальні Мапи"
+
+#: options.php:223
+msgid "Contextual Maps"
+msgstr "Контекстні Мапи"
+
+#: options.php:224
+msgid "Tests"
+msgstr ""
+
+#: options.php:232
+msgid "Overall Geo Mashup Settings"
+msgstr "Всі Налаштування Geo Mashup"
+
+#: options.php:236
+msgid "Map Provider"
+msgstr "Провайдер Мапи"
+
+#: options.php:251
+msgid "Google v2 has expired and will be removed in version 1.9."
+msgstr ""
+
+#: options.php:259 options.php:278
+msgid "Google API Key"
+msgstr "Ключ Google API"
+
+#: options.php:267 options.php:286
+msgid "Get yours here"
+msgstr "Отримайте Ваш тут"
+
+#: options.php:270
+msgid "This setting is required for Geo Mashup to work."
+msgstr "Дане налаштування потрібно для коректної роботи Geo Mashup."
+
+#: options.php:298
+msgid "Generated links go here"
+msgstr "Створені посилання тут"
+
+#: options.php:299
+msgid "Global Mashup Page"
+msgstr "Глобальна Сторінка Mashup"
+
+#: options.php:306
+msgid "&mdash; Select &mdash;"
+msgstr ""
+
+#: options.php:312
+msgid "Geo Mashup will use this page for generated location links"
+msgstr "Geo Mashup використовуватиме дану сторінку для посилань на місця"
+
+#: options.php:317
+msgid "Collect Location For"
+msgstr "Визначати Місце Для"
+
+#: options.php:330
+msgid "Users"
+msgstr "Користувачі"
+
+#: options.php:335
+msgid "Comments"
+msgstr "Коментарі"
+
+#: options.php:339
+msgid "Enable Geo Search"
+msgstr ""
+
+#: options.php:347
+msgid ""
+"Creates a customizable widget and other features for performing radius "
+"searches."
+msgstr ""
+
+#: options.php:352
+msgid "Include Taxonomies"
+msgstr ""
+
+#: options.php:363
+msgid ""
+"Makes legends, colors, and other features available. Minimize use of these "
+"for best performance."
+msgstr ""
+
+#: options.php:368
+msgid "Copy Geodata Meta Fields"
+msgstr "Копіювати Мета Поля з Геоданих"
+
+#: options.php:379
+#, fuzzy
+msgid ""
+"Copy coordinates to and from %s geodata meta fields %s, for integration with "
+"the Geolocation and other plugins."
+msgstr ""
+"Копіювати геокоордінати в і з %sгеоданих мета полів%s для інтеграції з "
+"Geolocation та іншими плагінами."
+
+#: options.php:385
+msgid "Geocode Custom Field"
+msgstr "Користувальницьке Поле з Геокодом"
+
+#: options.php:394
+msgid ""
+"Comma separated keys of custom fields to be geocoded when saved. Multiple "
+"fields will be combined in order before geocoding. Saves a location for the "
+"post if found."
+msgstr ""
+
+#: options.php:399
+msgid "Enable Reverse Geocoding"
+msgstr "Включення Зворотного Геокодування"
+
+#: options.php:407
+msgid "Try to look up missing address fields for new locations."
+msgstr "Спробуйте знайти відсутні поля адреси для нових місць."
+
+#: options.php:413
+msgid "Bulk Reverse Geocode"
+msgstr "Масове Зворотне Геокодування"
+
+#: options.php:415
+msgid "Start"
+msgstr "Почати"
+
+#: options.php:417
+msgid ""
+"Try to look up missing address fields for existing locations. Could be slow."
+msgstr ""
+"Спробувати знайти пропущені поля адреси для існуючих місць. Можливе "
+"уповільнення роботи."
+
+#: options.php:423
+msgid "Use Theme Style Sheet with Maps"
+msgstr "Використовувати Стилі Теми з Мапами"
+
+#: options.php:436
+#, fuzzy
+msgid "Obscure Settings"
+msgstr "Налаштування"
+
+#: options.php:440
+msgid "Reveal some less commonly used settings."
+msgstr ""
+
+#: options.php:445
+msgid "GeoNames ID"
+msgstr "GeoNames ID"
+
+#: options.php:454
+msgid ""
+"Your %sGeoNames username%s, used with GeoNames API requests. Leave the "
+"default value to use Geo Mashup's."
+msgstr ""
+"Ваше %sGeoNames ім'я користувача%s, що використовується з GeoNames API "
+"запитами. Залиште значення за замовчуванням, щоб використовувати Geo Mashup."
+
+#: options.php:461
+msgid "AdSense For Search ID"
+msgstr "AdSense Для Пошуку ID"
+
+#: options.php:470
+msgid ""
+"Your client ID, used with the Google Bar. Leave the default value to use Geo "
+"Mashup's :)."
+msgstr ""
+"Ваш ID клієнта, використовуваний в Google Bar. Залиште значення за "
+"замовчуванням, щоб використовувати Geo Mashup."
+
+#: options.php:475
+msgid "Add Category Links"
+msgstr "Додати Посилання Категорії"
+
+#: options.php:483
+msgid ""
+"Add map links to category lists. Categories must have descriptions for this "
+"to work."
+msgstr ""
+"Додати посилання мапи в списки категорії. Щоб це працювало, категорії "
+"повинні мати опис."
+
+#: options.php:488
+msgid "Category Link Separator"
+msgstr "Розділювач Посилань Категорії"
+
+#: options.php:500
+msgid "Category Link Text"
+msgstr "Текст Посилання Категорії"
+
+#: options.php:511
+msgid "Category Link Zoom Level"
+msgstr "Рівень Наближення для Посилання Категорії"
+
+#: options.php:523 options.php:639 options.php:778 options.php:1025
+msgid "0 is zoomed all the way out."
+msgstr "0 - повністю віддалене."
+
+#: options.php:529 options.php:664 options.php:668 options.php:912
+#: options.php:1071
+msgid "Update Options"
+msgstr "Оновіть Налаштування"
+
+#: options.php:533
+msgid "Default settings for maps of a single located post."
+msgstr "Налаштування за замовчуванням для мап одного поста."
+
+#: options.php:536 options.php:671 options.php:918
+msgid "Map Width"
+msgstr "Ширина Мапи"
+
+#: options.php:543 options.php:678 options.php:925
+msgid "Pixels, or append %."
+msgstr "Пікселі або додайте %."
+
+#: options.php:547 options.php:682 options.php:929
+msgid "Map Height"
+msgstr "Висота Мапи"
+
+#: options.php:554 options.php:689 options.php:936
+msgid "px"
+msgstr "px"
+
+#: options.php:558 options.php:693 options.php:940
+msgid "Map Control"
+msgstr "Контроль Мапи"
+
+#: options.php:572 options.php:707 options.php:954
+msgid "Default Map Type"
+msgstr "Тип Мапи за Замовчуванням"
+
+#: options.php:586 options.php:721 options.php:968
+msgid "Add Map Type Control"
+msgstr "Додати Контроль Типу Мапи"
+
+#: options.php:601 options.php:736 options.php:983
+msgid "Add Overview Control"
+msgstr "Додати Контроль Огляду"
+
+#: options.php:610 options.php:747 options.php:994
+msgid "Add Google Bar"
+msgstr "Додати Google Bar"
+
+#: options.php:619 options.php:758 options.php:1005
+msgid "Enable Scroll Wheel Zoom"
+msgstr "Включити Наближення Коліщатком Миші"
+
+#: options.php:627 options.php:766 options.php:1013
+msgid "Default Zoom Level"
+msgstr "Наближення за Замовчуванням"
+
+#: options.php:644 options.php:855 options.php:1051
+msgid "Click To Load"
+msgstr "Натисніть для Завантаження"
+
+#: options.php:654 options.php:865 options.php:1061
+msgid "Click To Load Text"
+msgstr "Натисніть для Завантаження Тексту"
+
+#: options.php:667
+msgid "Default settings for global maps of located items."
+msgstr "Стандартні налаштування глобальних мап для постів."
+
+#: options.php:784
+msgid "Cluster Markers Until Zoom Level"
+msgstr "Кластеризувати Маркери, Поки Мапа не Наближена"
+
+#: options.php:792
+msgid "Highest zoom level to cluster markers, or blank for no clustering."
+msgstr ""
+"Максимальне наближення для кластеризації маркерів, або залиште порожнім, щоб "
+"не використовувати кластеризацію."
+
+#: options.php:798 options.php:1030
+msgid "Marker Selection Behaviors"
+msgstr "Поведінка Маркера Вибору"
+
+#: options.php:803 options.php:1035
+msgid "Open info window"
+msgstr "Відкрити інформаційний вікно"
+
+#: options.php:807 options.php:1039
+msgid "Highlight"
+msgstr "Виділити"
+
+#: options.php:811 options.php:1043
+msgid "Center"
+msgstr "Центр"
+
+#: options.php:815 options.php:1047
+msgid "Show Geo Attachments"
+msgstr "Показати Гео Вкладання"
+
+#: options.php:819
+msgid "Automatic Selection"
+msgstr "Автоматичний Вибір"
+
+#: options.php:827
+msgid "Selects the linked or most recent item when the map loads."
+msgstr ""
+"Коли мапа завантажена, вибирає зв'язаний або найбільш часто використовуваний "
+"елемент."
+
+#: options.php:832
+msgid "Show Only Most Recent Items"
+msgstr "Показувати Тільки Найбільш Часто Використовувані Елементи"
+
+#: options.php:839
+msgid "Number of items to show, leave blank for all"
+msgstr ""
+"Кількість елементів для відображення, залиште порожнім для відображення всіх"
+
+#: options.php:843
+msgid "Show Future Posts"
+msgstr "Показати майбутні записи"
+
+#: options.php:880
+msgid "Color"
+msgstr "Колір"
+
+#: options.php:881
+msgid "Show Connecting Line Until Zoom Level (0-20 or none)"
+msgstr "Показати Сполучну Лінію До Певного Рівня Наближення (0-20 або ніякий)"
+
+#: options.php:915
+msgid ""
+"Default settings for contextual maps, which include just the items shown on "
+"a page, for example."
+msgstr ""
+"Налаштування за замовчуванням для контекстних мап, наприклад, які включають "
+"тільки пости відображені на сторінці."
+
+#: options.php:1075
+msgid "Some checks that Geo Mashup is working properly."
+msgstr ""
+
+#: options.php:1076
+msgid ""
+"Not working in Firefox yet - free Geo Mashup license to the first to figure "
+"out why!"
+msgstr ""
+
+#: options.php:1082
+msgid "Run Tests"
+msgstr ""
+
+#: options.php:1088
+msgid "Update Log"
+msgstr "Оновити Лог"
+
+#: options.php:1092
+msgid "Delete Log"
+msgstr "Видалити Лог"
+
+#: options.php:1093
+msgid "You can keep this log as a record, future entries will be appended."
+msgstr "Ви можете залишити цей лог як запис, наступні записи будуть додані."
+
+#: options.php:1097
+msgid "View Update Log"
+msgstr "Показати Оновлений Лог"
+
+#: options.php:1099
+msgid "Geo Mashup Documentation"
+msgstr "Документація Geo Mashup"
+
+#: render-map.php:486
+msgid "Check/Uncheck All"
+msgstr ""
+
+#. Plugin URI of the plugin/theme
+msgid "https://wordpress.org/plugins/geo-mashup/"
+msgstr ""
+
+#. Description of the plugin/theme
+msgid ""
+"Save location for posts and pages, or even users and comments. Display these "
+"locations on Google, Leaflet, and OSM maps. Make WordPress into your GeoCMS."
+msgstr ""
+
+#. Author of the plugin/theme
+msgid "Dylan Kuhn"
+msgstr ""
+
+#. Author URI of the plugin/theme
+msgid "http://www.cyberhobo.net/"
+msgstr ""
+
+#~ msgid ""
+#~ "Failed to duplicate WordPress location (%s). You can edit %s with id %s "
+#~ "to update the location, and try again."
+#~ msgstr ""
+#~ "Не вийшло дублювати місце WordPress (%s). Ви можете редагувати %s з id "
+#~ "%s, щоб оновити місце і спробувати знову."
+
+#~ msgid ""
+#~ "Failed to convert location (%s). You can %sedit the post%s to update the "
+#~ "location, and try again."
+#~ msgstr ""
+#~ "Не вийшло конвертувати місце (%s). Ви можете %sредагувати запис%s, щоб "
+#~ "оновити місце і спробувати знову."
+
+#~ msgid ""
+#~ "Failed to convert saved location (%s). You'll have to save it again, "
+#~ "sorry."
+#~ msgstr ""
+#~ "Не вийшло конвертувати збережені місця (%s). Спробуйте зберегти їх знову."
+
+#~ msgid "Options updated."
+#~ msgstr "Налаштування оновлені."
+
+#~ msgid "Cluster Marker"
+#~ msgstr "Маркер Кластеру"
+
+#~ msgid "Marker Clusterer"
+#~ msgstr "Маркер Кластерів"
+
+#~ msgid "Some features still work only with Google v2."
+#~ msgstr "Деякі функції поки що працюють тільки з Google v2."
+
+#~ msgid "No pages available."
+#~ msgstr "Немає доступних сторінок."
+
+#~ msgid ""
+#~ "Custom fields with this key will be geocoded and the resulting location "
+#~ "saved for the post."
+#~ msgstr ""
+#~ "Користувальницькі поля з даним ключем будуть геокодовані, і отримане "
+#~ "місце буде додано до запису."
