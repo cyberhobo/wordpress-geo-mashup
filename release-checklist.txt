@@ -12,7 +12,6 @@ If any step fails, fix before continuing, repeating any necessary prior steps.
 
 	1. Bump versions in source.
 	1. Edit WP readme.txt (remember stable tag, tested version, and changelog!)
-		1. Edit project site home page.
 	1. Commit.
 		1. Generate and deploy new PHPDoc and JavaDocs. (ant phpdoc; ant jsdoc; ...)
 	1. Build a ZIP archive (ant).
