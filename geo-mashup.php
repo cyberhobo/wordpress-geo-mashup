@@ -5,12 +5,14 @@ Plugin URI: https://wordpress.org/plugins/geo-mashup/
 Description: Save location for posts and pages, or even users and comments. Display these locations on Google, Leaflet, and OSM maps. Make WordPress into your GeoCMS.
 Version: 1.8.5
 Author: Dylan Kuhn
+Text Domain: GeoMashup
+Domain Path: /lang
 Author URI: http://www.cyberhobo.net/
 Minimum WordPress Version Required: 3.0
 License: GPL2+
 */
 
-/*  Copyright 2011  Dylan Kuhn  (email : cyberhobo@cyberhobo.net)
+/*  Copyright 2015  Dylan Kuhn  (email : cyberhobo@cyberhobo.net)
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License, version 2 or later, as
