@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Geo Mashup 1.4\n"
 "Report-Msgid-Bugs-To: http://wordpress.org/tag/geo-mashup\n"
 "POT-Creation-Date: 2015-08-16 20:44:41+00:00\n"
-"PO-Revision-Date: 2015-09-27 15:05-0800\n"
+"PO-Revision-Date: 2015-09-29 14:57+0300\n"
 "Last-Translator: LANGUAGE <LL@li.org>\n"
 "Language-Team: TohaPro.com <jaaatony@gmail.com>\n"
 "Language: ru_RU\n"
@@ -12,63 +12,61 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Poedit-KeywordsList: _e;__\n"
 "X-Poedit-Basepath: .\n"
-"X-Generator: Poedit 1.5.4\n"
+"X-Generator: Poedit 1.8.5\n"
 "X-Poedit-SearchPath-0: ..\n"
 
 #: default-templates/comment.php:51
 msgid "<cite class=\"fn\">%s</cite> <span class=\"says\">says:</span>"
-msgstr "<cite class=\"fn\">%s</cite> <span class=\"says\">говорит:</span>"
+msgstr "<cite class=\"fn\">%s</cite> <span class=\"says\">говорить:</span>"
 
 #: default-templates/comment.php:54
 msgid "%1$s at %2$s"
 msgstr "%1$s у %2$s"
 
 #: default-templates/map-frame.php:56
-#, fuzzy
 msgid ""
 "This map requires JavaScript. You may have to enable it in your browser's "
 "settings."
 msgstr ""
-"Ви повинні включити JavaScript в налаштуваннях, щоб використовувати дану "
-"мапу."
+"Ви повинні включити JavaScript в налаштуваннях Вашого браузера, щоб "
+"використовувати дану мапу."
 
 #: default-templates/nearby-list.php:36
 msgid "Posts Nearby"
-msgstr ""
+msgstr "Найближчі Повідомлення"
 
 #: default-templates/nearby-list.php:38
 msgid "Users Nearby"
-msgstr ""
+msgstr "Користувачі, Розташовані Поблизу"
 
 #: default-templates/search-form.php:25
 msgid "find"
-msgstr ""
+msgstr "знайти"
 
 #: default-templates/search-form.php:34 geo-mashup-search.php:513
 msgid "posts"
-msgstr ""
+msgstr "повідомлення"
 
 #: default-templates/search-form.php:38
 msgid "within"
-msgstr ""
+msgstr "в"
 
 #: default-templates/search-form.php:60
 msgid "Search"
-msgstr ""
+msgstr "Пошук"
 
 #: default-templates/search-results.php:35
 msgid "Search results near \"%s\""
-msgstr ""
+msgstr "Результати пошуку біля \"%s\"."
 
 #: default-templates/search-results.php:59
 #: default-templates/search-results.php:70
 msgid "Distance"
-msgstr ""
+msgstr "Відстань"
 
 #: default-templates/search-results.php:78
-#, fuzzy
 msgid "No results found."
-msgstr "Інформація про адресу не знайдена."
+msgstr "Нічого не знайдено."
 
 #: default-templates/user.php:41
 msgid "Display Name"
@@ -331,11 +329,11 @@ msgstr "Місце повинно мати ID або координати, що�
 
 #: geo-mashup-geocoders.php:107 options.php:64
 msgid "%s Multibyte string functions %s are not installed."
-msgstr ""
+msgstr "%s Багатобайтові строкові функції %s не встановлені."
 
 #: geo-mashup-geocoders.php:112
 msgid "Geocoding will only work if \"%s\" is UTF-8 text."
-msgstr ""
+msgstr "Геокодування буде працювати тільки, якщо \"%s\" - UTF-8 текст."
 
 #: geo-mashup-geocoders.php:185 geo-mashup-geocoders.php:388
 #: geo-mashup-geocoders.php:452
@@ -405,117 +403,120 @@ msgid ", which is a deprecated option"
 msgstr ", який є застарілим."
 
 #: geo-mashup-search.php:363
-#, fuzzy
 msgid "Search content by Geo Mashup location."
-msgstr "Шукати місце за назвою."
+msgstr "Шукати зміст за місцем у Geo Mashup ."
 
 #: geo-mashup-search.php:365
-#, fuzzy
 msgid "Geo Mashup Search"
-msgstr "Geo Mashup"
+msgstr "Пошук Geo Mashup"
 
 #: geo-mashup-search.php:379
 msgid "Couldn't find you..."
-msgstr ""
+msgstr "Не вдалося Вас знайти..."
 
 #: geo-mashup-search.php:380
-#, fuzzy
 msgid "My Location"
-msgstr "Місце"
+msgstr "Моє Місцезнаходження"
 
 #: geo-mashup-search.php:395
 msgid "No Geo Mashup Search result page found - check widget settings."
 msgstr ""
+"Немає сторінки результатів пошуку Гео Mashup - перевірте налаштування "
+"віджета."
 
 #: geo-mashup-search.php:474
 msgid "Widget heading, leave blank to omit."
-msgstr ""
+msgstr "Заголовок віджету, залиште це поле порожнім, щоб пропустити."
 
 #: geo-mashup-search.php:475
 msgid "Title:"
-msgstr ""
+msgstr "Назва:"
 
 #: geo-mashup-search.php:486
 msgid ""
 "Default text in the search text box for use as a prompt, leave blank to omit."
 msgstr ""
+"Текст за замовчанням у текстовому полі пошуку для швидкого використання; "
+"залиште це поле порожнім, щоб пропустити."
 
 #: geo-mashup-search.php:487
-#, fuzzy
 msgid "Default Search Text:"
-msgstr "Тип Мапи за Замовчуванням"
+msgstr "Пошук Тексту За Замовчуванням"
 
 #: geo-mashup-search.php:493
 msgid "city, state or zip"
-msgstr ""
+msgstr "місто, країна або поштовий індекс"
 
 #: geo-mashup-search.php:498
 msgid "Text for the user locate button, leave blank to omit."
 msgstr ""
+"Текст для кнопки місцезнаходження користувача, залиште це поле порожнім, щоб "
+"пропустити."
 
 #: geo-mashup-search.php:499
-#, fuzzy
 msgid "Find Me Button:"
-msgstr "Знайти нове місце:"
+msgstr "Кнопка \"Знайти Нове Місце\":"
 
 #: geo-mashup-search.php:505
 msgid "Find Me"
-msgstr ""
+msgstr "Знайти Нове Місце"
 
 #: geo-mashup-search.php:510
 msgid "What to search:"
-msgstr ""
+msgstr "Що шукати:"
 
 #: geo-mashup-search.php:516
-#, fuzzy
 msgid "users"
-msgstr "Користувачі"
+msgstr "користувачі"
 
 #: geo-mashup-search.php:519
-#, fuzzy
 msgid "comments"
-msgstr "Коментарі"
+msgstr "коментарі"
 
 #: geo-mashup-search.php:526
 msgid ""
 "Category dropdown contents. Blank to omit, 'all' for all post categories, or "
 "comma separated category IDs to include."
 msgstr ""
+"Зміст з випадаючою категорією. Залиште порожнім, щоб пропустити, 'все' - для "
+"всіх поштових категорій або для включення ідентифікаторів категорій, "
+"розділених комами."
 
 #: geo-mashup-search.php:527
-#, fuzzy
 msgid "Category Menu:"
-msgstr "Категорія"
+msgstr "Меню категорій:"
 
 #: geo-mashup-search.php:538
 msgid "Units:"
-msgstr ""
+msgstr "Одиниці:"
 
 #: geo-mashup-search.php:541
 msgid "miles"
-msgstr ""
+msgstr "милі"
 
 #: geo-mashup-search.php:544
 msgid "kilometers"
-msgstr ""
+msgstr "кілометри"
 
 #: geo-mashup-search.php:551
 msgid ""
 "Radius dropdown contents. Blank to omit, or comma separated numeric "
 "distances in selected units."
 msgstr ""
+"Зміст з випадаючим радіусом. Залиште порожнім, щоб пропустити, або розділені "
+"комою числові відстані в обраних одиницях."
 
 #: geo-mashup-search.php:552
 msgid "Radius Menu:"
-msgstr ""
+msgstr "Меню Радіусів:"
 
 #: geo-mashup-search.php:563
 msgid "The page where search results should be displayed."
-msgstr ""
+msgstr "Сторінка, де результати пошуку повинні відображатися."
 
 #: geo-mashup-search.php:564
 msgid "Results Page:"
-msgstr ""
+msgstr "Сторінка Результатів:"
 
 #: geo-mashup-ui-managers.php:281
 msgid "Object location not saved - invalid request."
@@ -583,7 +584,6 @@ msgstr ""
 msgid "Geo Mashup Options"
 msgstr "Налаштування Geo Mashup"
 
-#. #-#-#-#-#  GeoMashup.pot (Geo Mashup 1.8.4)  #-#-#-#-#
 #. Plugin Name of the plugin/theme
 #: geo-mashup.php:1369
 msgid "Geo Mashup"
@@ -594,6 +594,8 @@ msgid ""
 "Geo Mashup now includes search, deactivating the old %s plugin. It's safe to "
 "delete it."
 msgstr ""
+"Geo Mashup тепер включає в себе пошук, який вимикає старий %s плагін. Ви "
+"можете видалити його - це безпечно."
 
 #: geo-mashup.php:1395
 msgid ""
@@ -636,12 +638,16 @@ msgid ""
 "Enable the geo search widget in the Geo Mashup settings to power the nearby "
 "list!"
 msgstr ""
+"Включити геовіджет пошуку в налаштуваннях Geo Mashup для приведення в дію "
+"найближчого списку!"
 
 #: options.php:44
 msgid ""
 "Options updated.  Browser or server caching may delay updates for recently "
 "viewed maps."
 msgstr ""
+"Опції оновлюються. Кешування браузера чи сервера може затримати оновлення "
+"для недавно переглянутих мап."
 
 #: options.php:50
 msgid "Copied existing geodata, see log for details."
@@ -649,13 +655,15 @@ msgstr "Існуючі геодані скопійовані, дивіться �
 
 #: options.php:69
 msgid "Geocoding and other web services may not work properly."
-msgstr ""
+msgstr "Геокодування та інші веб-сервіси можуть не працювати належним чином."
 
 #: options.php:75 render-map.php:548
 msgid ""
 "WordPress transients may not be working. Try deactivating or reconfiguring "
 "caching plugins."
 msgstr ""
+"Транзіенти WordPress, можливо, не працюють. Спробуйте деактивувати або "
+"реконфігурувати плагіни кешування."
 
 #: options.php:89
 msgid "Database upgraded, see log for details."
@@ -745,7 +753,7 @@ msgstr "OpenLayers"
 
 #: options.php:161
 msgid "Leaflet"
-msgstr ""
+msgstr "Leaflet"
 
 #: options.php:164
 msgid "auto"
@@ -769,7 +777,7 @@ msgstr "Контекстні Мапи"
 
 #: options.php:224
 msgid "Tests"
-msgstr ""
+msgstr "Тести"
 
 #: options.php:232
 msgid "Overall Geo Mashup Settings"
@@ -781,7 +789,7 @@ msgstr "Провайдер Мапи"
 
 #: options.php:251
 msgid "Google v2 has expired and will be removed in version 1.9."
-msgstr ""
+msgstr "Google v2 минув і буде видалений у версії 1.9."
 
 #: options.php:259 options.php:278
 msgid "Google API Key"
@@ -805,7 +813,7 @@ msgstr "Глобальна Сторінка Mashup"
 
 #: options.php:306
 msgid "&mdash; Select &mdash;"
-msgstr ""
+msgstr "&mdash; Обрати &mdash;"
 
 #: options.php:312
 msgid "Geo Mashup will use this page for generated location links"
@@ -825,35 +833,38 @@ msgstr "Коментарі"
 
 #: options.php:339
 msgid "Enable Geo Search"
-msgstr ""
+msgstr "Включити Гео Пошук"
 
 #: options.php:347
 msgid ""
 "Creates a customizable widget and other features for performing radius "
 "searches."
 msgstr ""
+"Створює віджет, що може бути налаштований, і інші функції для виконання "
+"пошуку радіусів."
 
 #: options.php:352
 msgid "Include Taxonomies"
-msgstr ""
+msgstr "Включити Класифікацію та Систематизацію"
 
 #: options.php:363
 msgid ""
 "Makes legends, colors, and other features available. Minimize use of these "
 "for best performance."
 msgstr ""
+"Робить доступними систему позначень, кольори та інші функції. Зводить їх до "
+"мінімального використання для кращої продуктивності."
 
 #: options.php:368
 msgid "Copy Geodata Meta Fields"
 msgstr "Копіювати Мета Поля з Геоданих"
 
 #: options.php:379
-#, fuzzy
 msgid ""
 "Copy coordinates to and from %s geodata meta fields %s, for integration with "
 "the Geolocation and other plugins."
 msgstr ""
-"Копіювати геокоордінати в і з %sгеоданих мета полів%s для інтеграції з "
+"Копіювати геокоордінати в і з %s геоданих мета полів %s для інтеграції з "
 "Geolocation та іншими плагінами."
 
 #: options.php:385
@@ -866,6 +877,9 @@ msgid ""
 "fields will be combined in order before geocoding. Saves a location for the "
 "post if found."
 msgstr ""
+"Розділені комами ключі користувальницьких полів геокодуються при збереженні. "
+"Кілька полів будуть об'єднані в один клас перед геокодуванням. Зберігає "
+"розташування повідомлення, якщо розташування знайдено."
 
 #: options.php:399
 msgid "Enable Reverse Geocoding"
@@ -895,13 +909,12 @@ msgid "Use Theme Style Sheet with Maps"
 msgstr "Використовувати Стилі Теми з Мапами"
 
 #: options.php:436
-#, fuzzy
 msgid "Obscure Settings"
-msgstr "Налаштування"
+msgstr "Невідомі Налаштування"
 
 #: options.php:440
 msgid "Reveal some less commonly used settings."
-msgstr ""
+msgstr "Виявляє рідше загальновживані налаштування."
 
 #: options.php:445
 msgid "GeoNames ID"
@@ -1091,17 +1104,19 @@ msgstr ""
 
 #: options.php:1075
 msgid "Some checks that Geo Mashup is working properly."
-msgstr ""
+msgstr "Деякі перевірки, що Geo Mashup працює належним чином."
 
 #: options.php:1076
 msgid ""
 "Not working in Firefox yet - free Geo Mashup license to the first to figure "
 "out why!"
 msgstr ""
+"Доки не працює у Firefox - безкоштовна ліцензія Geo Mashup тому, хто перший "
+"дізнається, чому це так!"
 
 #: options.php:1082
 msgid "Run Tests"
-msgstr ""
+msgstr "Виконати Тести"
 
 #: options.php:1088
 msgid "Update Log"
@@ -1125,25 +1140,28 @@ msgstr "Документація Geo Mashup"
 
 #: render-map.php:486
 msgid "Check/Uncheck All"
-msgstr ""
+msgstr "Виділити Усе/Зняти Усі Виділення"
 
 #. Plugin URI of the plugin/theme
 msgid "https://wordpress.org/plugins/geo-mashup/"
-msgstr ""
+msgstr "https://wordpress.org/plugins/geo-mashup/"
 
 #. Description of the plugin/theme
 msgid ""
 "Save location for posts and pages, or even users and comments. Display these "
 "locations on Google, Leaflet, and OSM maps. Make WordPress into your GeoCMS."
 msgstr ""
+"Збережіть своє місцеположення для повідомлень і сторінок, або навіть "
+"користувачів і коментарів. Виведіть ці місцеположення на Google, Leaflet і "
+"OSM мапи. Робіть WordPress у ваших GeoCMS."
 
 #. Author of the plugin/theme
 msgid "Dylan Kuhn"
-msgstr ""
+msgstr "Ділан Кун"
 
 #. Author URI of the plugin/theme
 msgid "http://www.cyberhobo.net/"
-msgstr ""
+msgstr "http://www.cyberhobo.net/"
 
 #~ msgid ""
 #~ "Failed to duplicate WordPress location (%s). You can edit %s with id %s "
