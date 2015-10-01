@@ -4,7 +4,7 @@ Donate Link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: map, maps, google maps, google map, mapping, mashup, geo, google, geocms
 Requires at least: 3.7
 Tested up to: 4.3
-Stable tag: 1.8.5
+Stable tag: 1.8.6
 License: GPL2+
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -64,7 +64,8 @@ to the community.
 
 = Translations =
 
-* Ukranian by [Ivanka of Timetobreak](http://www.timetobreak.com/) added in version 1.8.5
+* Ukranian by [Ivanka of Everycloudtech](http://everycloudtech.com/) updated in version 1.8.6
+* Dutch by [delicatesther](http://delicatesther.nl/) updated in version 1.8.5
 * German by [Thomas Morvay](http://internet-dienste.biz/) added in version 1.5.4
 * Slovak by B. Radenovich of [Web Hosting Watch](http://webhostingw.com) updated in version 1.5.4
 * Romanian by [Florin Dumitru](http://www.fitnesstimisoara.ro/) added in version 1.5
@@ -74,7 +75,6 @@ to the community.
 * Polish by [Kamil](http://wbartoszycach.pl) added in version 1.4.7
 * Portugese by [Antonio Xeira](http://flyingsouth.thehappytoadfish.com/) added in version 1.4.2
 * Italian by [Federico](http://thrifytuscany.com/) added in version 1.3.10
-* Dutch by [delicatesther](http://delicatesther.nl/) updated in version 1.8.5
 * French updated in version 1.3.7
 * Spanish by [Reven](http://www.reven.org/blog/2010/03/15/traduccion-de-geo-mashup/) added in version 1.3.3
 * Swedish by [Joakim Green](http://www.joakimgreen.com/) added in version 1.3.3
@@ -105,9 +105,13 @@ This version fixes a security related bug.  Upgrade immediately.
 
 Features are generally added in one-dot releases, while two-dot releases contain fixes and small updates.
 
+= 1.8.6 Sep 30 2015 =
+
+[milestone 1.8.6 changes](https://github.com/cyberhobo/wordpress-geo-mashup/issues?utf8=%E2%9C%93&q=is%3Aissue+label%3AMilestone-1.8.6)
+
 = 1.8.5 Sep 27 2015 =
 
-[milestone 1.8.5 changes](https://github.com/cyberhobo/wordpress-geo-mashup/issues?utf8=%E2%9C%93&q=is%3Aissue+label%3AMilestone%3D1.8.5)
+[milestone 1.8.5 changes](https://github.com/cyberhobo/wordpress-geo-mashup/issues?utf8=%E2%9C%93&q=is%3Aissue+label%3AMilestone-1.8.5)
 
 = 1.8.4 May 18 2015 =
 
@@ -118,130 +122,130 @@ Move official source from Google Code to Github.
 Thanks to Paolo Perego of [armoredcode.com](http://armoredcode.com) for finding and fixing an XSS bug in the
 geo search widget.
 
-[milestone 1.8.3 changes](https://github.com/cyberhobo/wordpress-geo-mashup/issues?utf8=%E2%9C%93&q=is%3Aissue+label%3AMilestone%3D1.8.3)
+[milestone 1.8.3 changes](https://github.com/cyberhobo/wordpress-geo-mashup/issues?utf8=%E2%9C%93&q=is%3Aissue+label%3AMilestone-1.8.3)
 
 = 1.8.2 Nov 17 2014 =
 [milestone 1.8.2 changes](https://github.com/cyberhobo/wordpress-geo-mashup/issues?utf8=%E2%9C%93&q=is%3Aissue+label%3AMilestone-1.8.2)
 
 = 1.8.1 Oct 9 2014 =
-[milestone 1.8.1 changes](https://github.com/cyberhobo/wordpress-geo-mashup/issues?utf8=%E2%9C%93&q=is%3Aissue+label%3AMilestone%3D1.8.1)
+[milestone 1.8.1 changes](https://github.com/cyberhobo/wordpress-geo-mashup/issues?utf8=%E2%9C%93&q=is%3Aissue+label%3AMilestone-1.8.1)
 
 = 1.8.0 Jul 14 2014 =
-[milestone 1.8.0 changes](https://github.com/cyberhobo/wordpress-geo-mashup/issues?utf8=%E2%9C%93&q=is%3Aissue+label%3AMilestone%3D1.8.0)
+[milestone 1.8.0 changes](https://github.com/cyberhobo/wordpress-geo-mashup/issues?utf8=%E2%9C%93&q=is%3Aissue+label%3AMilestone-1.8.0)
 
 = 1.7.3 Jan 22 2014 =
-[milestone 1.7.3 changes](https://github.com/cyberhobo/wordpress-geo-mashup/issues?utf8=%E2%9C%93&q=is%3Aissue+label%3AMilestone%3D1.7.3)
+[milestone 1.7.3 changes](https://github.com/cyberhobo/wordpress-geo-mashup/issues?utf8=%E2%9C%93&q=is%3Aissue+label%3AMilestone-1.7.3)
 
 = 1.7.2 Nov 1 2013 =
-[milestone 1.7.2 changes](https://github.com/cyberhobo/wordpress-geo-mashup/issues?utf8=%E2%9C%93&q=is%3Aissue+label%3AMilestone%3D1.7.2)
+[milestone 1.7.2 changes](https://github.com/cyberhobo/wordpress-geo-mashup/issues?utf8=%E2%9C%93&q=is%3Aissue+label%3AMilestone-1.7.2)
 
 = 1.7.1 Oct 29 2013 =
-[milestone 1.7.1 changes](https://github.com/cyberhobo/wordpress-geo-mashup/issues?utf8=%E2%9C%93&q=is%3Aissue+label%3AMilestone%3D1.7.1)
+[milestone 1.7.1 changes](https://github.com/cyberhobo/wordpress-geo-mashup/issues?utf8=%E2%9C%93&q=is%3Aissue+label%3AMilestone-1.7.1)
 
 = 1.7.0 Sep 24 2013 =
-[milestone 1.7.0 changes](https://github.com/cyberhobo/wordpress-geo-mashup/issues?utf8=%E2%9C%93&q=is%3Aissue+label%3AMilestone%3D1.7.0)
+[milestone 1.7.0 changes](https://github.com/cyberhobo/wordpress-geo-mashup/issues?utf8=%E2%9C%93&q=is%3Aissue+label%3AMilestone-1.7.0)
 
 = 1.6.2 Jul 9 2013 =
-[milestone 1.6.2 changes](https://github.com/cyberhobo/wordpress-geo-mashup/issues?utf8=%E2%9C%93&q=is%3Aissue+label%3AMilestone%3D1.6.2)
+[milestone 1.6.2 changes](https://github.com/cyberhobo/wordpress-geo-mashup/issues?utf8=%E2%9C%93&q=is%3Aissue+label%3AMilestone-1.6.2)
 
 = 1.6.1 Jun 22 2013 =
-[milestone 1.6.1 changes](https://github.com/cyberhobo/wordpress-geo-mashup/issues?utf8=%E2%9C%93&q=is%3Aissue+label%3AMilestone%3D1.6.1)
+[milestone 1.6.1 changes](https://github.com/cyberhobo/wordpress-geo-mashup/issues?utf8=%E2%9C%93&q=is%3Aissue+label%3AMilestone-1.6.1)
 
 = 1.6.0 May 1 2013 =
-[milestone 1.6 changes](https://github.com/cyberhobo/wordpress-geo-mashup/issues?utf8=%E2%9C%93&q=is%3Aissue+label%3AMilestone%3D1.6)
+[milestone 1.6 changes](https://github.com/cyberhobo/wordpress-geo-mashup/issues?utf8=%E2%9C%93&q=is%3Aissue+label%3AMilestone-1.6)
 
 = 1.5.3 Feb 25 2013 =
-[milestone 1.5.3 changes](https://github.com/cyberhobo/wordpress-geo-mashup/issues?utf8=%E2%9C%93&q=is%3Aissue+label%3AMilestone%3D1.5.3)
+[milestone 1.5.3 changes](https://github.com/cyberhobo/wordpress-geo-mashup/issues?utf8=%E2%9C%93&q=is%3Aissue+label%3AMilestone-1.5.3)
 
 = 1.5.2 Feb 11 2013 =
-[milestone 1.5.2 changes](https://github.com/cyberhobo/wordpress-geo-mashup/issues?utf8=%E2%9C%93&q=is%3Aissue+label%3AMilestone%3D1.5.2)
+[milestone 1.5.2 changes](https://github.com/cyberhobo/wordpress-geo-mashup/issues?utf8=%E2%9C%93&q=is%3Aissue+label%3AMilestone-1.5.2)
 
 = 1.5.1 Feb 9 2013 =
-[milestone 1.5.1 changes](https://github.com/cyberhobo/wordpress-geo-mashup/issues?utf8=%E2%9C%93&q=is%3Aissue+label%3AMilestone%3D1.5.1)
+[milestone 1.5.1 changes](https://github.com/cyberhobo/wordpress-geo-mashup/issues?utf8=%E2%9C%93&q=is%3Aissue+label%3AMilestone-1.5.1)
 
 = 1.5 Feb 7 2013 =
-[milestone 1.5 changes](https://github.com/cyberhobo/wordpress-geo-mashup/issues?utf8=%E2%9C%93&q=is%3Aissue+label%3AMilestone%3D1.5)
+[milestone 1.5 changes](https://github.com/cyberhobo/wordpress-geo-mashup/issues?utf8=%E2%9C%93&q=is%3Aissue+label%3AMilestone-1.5)
 
 = 1.4.12 Dec 6 2012 =
-[milestone 1.4.12 changes](https://github.com/cyberhobo/wordpress-geo-mashup/issues?utf8=%E2%9C%93&q=is%3Aissue+label%3AMilestone%3D1.4.12)
+[milestone 1.4.12 changes](https://github.com/cyberhobo/wordpress-geo-mashup/issues?utf8=%E2%9C%93&q=is%3Aissue+label%3AMilestone-1.4.12)
 
 = 1.4.11 Dec 5 2012 =
-[milestone 1.4.11 changes](https://github.com/cyberhobo/wordpress-geo-mashup/issues?utf8=%E2%9C%93&q=is%3Aissue+label%3AMilestone%3D1.4.11)
+[milestone 1.4.11 changes](https://github.com/cyberhobo/wordpress-geo-mashup/issues?utf8=%E2%9C%93&q=is%3Aissue+label%3AMilestone-1.4.11)
 
 = 1.4.10 Aug 5 2012 =
-[milestone 1.4.10 changes](https://github.com/cyberhobo/wordpress-geo-mashup/issues?utf8=%E2%9C%93&q=is%3Aissue+label%3AMilestone%3D1.4.10)
+[milestone 1.4.10 changes](https://github.com/cyberhobo/wordpress-geo-mashup/issues?utf8=%E2%9C%93&q=is%3Aissue+label%3AMilestone-1.4.10)
 
 = 1.4.8 Mar 27 2012 =
-[milestone 1.4.8 changes](https://github.com/cyberhobo/wordpress-geo-mashup/issues?utf8=%E2%9C%93&q=is%3Aissue+label%3AMilestone%3D1.4.8)
+[milestone 1.4.8 changes](https://github.com/cyberhobo/wordpress-geo-mashup/issues?utf8=%E2%9C%93&q=is%3Aissue+label%3AMilestone-1.4.8)
 
 = 1.4.7 Feb 11 2012 =
-[milestone 1.4.7 changes](https://github.com/cyberhobo/wordpress-geo-mashup/issues?utf8=%E2%9C%93&q=is%3Aissue+label%3AMilestone%3D1.4.7)
+[milestone 1.4.7 changes](https://github.com/cyberhobo/wordpress-geo-mashup/issues?utf8=%E2%9C%93&q=is%3Aissue+label%3AMilestone-1.4.7)
 
 = 1.4.6 Jan 2012 =
-[milestone 1.4.6 changes](https://github.com/cyberhobo/wordpress-geo-mashup/issues?utf8=%E2%9C%93&q=is%3Aissue+label%3AMilestone%3D1.4.6)
+[milestone 1.4.6 changes](https://github.com/cyberhobo/wordpress-geo-mashup/issues?utf8=%E2%9C%93&q=is%3Aissue+label%3AMilestone-1.4.6)
 
 = 1.4.5 Dec 2011 =
-[milestone 1.4.5 changes](https://github.com/cyberhobo/wordpress-geo-mashup/issues?utf8=%E2%9C%93&q=is%3Aissue+label%3AMilestone%3D1.4.5)
+[milestone 1.4.5 changes](https://github.com/cyberhobo/wordpress-geo-mashup/issues?utf8=%E2%9C%93&q=is%3Aissue+label%3AMilestone-1.4.5)
 
 = 1.4.4 Nov 2011 =
-[milestone 1.4.4 changes](https://github.com/cyberhobo/wordpress-geo-mashup/issues?utf8=%E2%9C%93&q=is%3Aissue+label%3AMilestone%3D1.4.4)
+[milestone 1.4.4 changes](https://github.com/cyberhobo/wordpress-geo-mashup/issues?utf8=%E2%9C%93&q=is%3Aissue+label%3AMilestone-1.4.4)
 
 = 1.4.3 Nov 2011 =
-[milestone 1.4.3 changes](https://github.com/cyberhobo/wordpress-geo-mashup/issues?utf8=%E2%9C%93&q=is%3Aissue+label%3AMilestone%3D1.4.3)
+[milestone 1.4.3 changes](https://github.com/cyberhobo/wordpress-geo-mashup/issues?utf8=%E2%9C%93&q=is%3Aissue+label%3AMilestone-1.4.3)
 
 = 1.4.2 Nov 2011 =
-[milestone 1.4.2 changes](https://github.com/cyberhobo/wordpress-geo-mashup/issues?utf8=%E2%9C%93&q=is%3Aissue+label%3AMilestone%3D1.4.2)
+[milestone 1.4.2 changes](https://github.com/cyberhobo/wordpress-geo-mashup/issues?utf8=%E2%9C%93&q=is%3Aissue+label%3AMilestone-1.4.2)
 
 = 1.4.1 Jul 2011 =
-[milestone 1.4.1 changes](https://github.com/cyberhobo/wordpress-geo-mashup/issues?utf8=%E2%9C%93&q=is%3Aissue+label%3AMilestone%3D1.4.1)
+[milestone 1.4.1 changes](https://github.com/cyberhobo/wordpress-geo-mashup/issues?utf8=%E2%9C%93&q=is%3Aissue+label%3AMilestone-1.4.1)
 
 = 1.4 Jul 2011 =
-[milestone 1.4 changes](https://github.com/cyberhobo/wordpress-geo-mashup/issues?utf8=%E2%9C%93&q=is%3Aissue+label%3AMilestone%3D1.4)
+[milestone 1.4 changes](https://github.com/cyberhobo/wordpress-geo-mashup/issues?utf8=%E2%9C%93&q=is%3Aissue+label%3AMilestone-1.4)
 
 = 1.3.11 =
-[milestone 1.3.11 changes](https://github.com/cyberhobo/wordpress-geo-mashup/issues?utf8=%E2%9C%93&q=is%3Aissue+label%3AMilestone%3D1.3.11)
+[milestone 1.3.11 changes](https://github.com/cyberhobo/wordpress-geo-mashup/issues?utf8=%E2%9C%93&q=is%3Aissue+label%3AMilestone-1.3.11)
 
 = 1.3.10 =
-[milestone 1.3.10 changes](https://github.com/cyberhobo/wordpress-geo-mashup/issues?utf8=%E2%9C%93&q=is%3Aissue+label%3AMilestone%3D1.3.10)
+[milestone 1.3.10 changes](https://github.com/cyberhobo/wordpress-geo-mashup/issues?utf8=%E2%9C%93&q=is%3Aissue+label%3AMilestone-1.3.10)
 
 = 1.3.9 =
-[milestone 1.3.9 changes](https://github.com/cyberhobo/wordpress-geo-mashup/issues?utf8=%E2%9C%93&q=is%3Aissue+label%3AMilestone%3D1.3.9)
+[milestone 1.3.9 changes](https://github.com/cyberhobo/wordpress-geo-mashup/issues?utf8=%E2%9C%93&q=is%3Aissue+label%3AMilestone-1.3.9)
 
 = 1.3.8 =
-[milestone 1.3.8 changes](https://github.com/cyberhobo/wordpress-geo-mashup/issues?utf8=%E2%9C%93&q=is%3Aissue+label%3AMilestone%3D1.3.8)
+[milestone 1.3.8 changes](https://github.com/cyberhobo/wordpress-geo-mashup/issues?utf8=%E2%9C%93&q=is%3Aissue+label%3AMilestone-1.3.8)
 
 = 1.3.7 =
-[milestone 1.3.7 changes](https://github.com/cyberhobo/wordpress-geo-mashup/issues?utf8=%E2%9C%93&q=is%3Aissue+label%3AMilestone%3D1.3.7)
+[milestone 1.3.7 changes](https://github.com/cyberhobo/wordpress-geo-mashup/issues?utf8=%E2%9C%93&q=is%3Aissue+label%3AMilestone-1.3.7)
 
 = 1.3.6 =
-[milestone 1.3.6 changes](https://github.com/cyberhobo/wordpress-geo-mashup/issues?utf8=%E2%9C%93&q=is%3Aissue+label%3AMilestone%3D1.3.6)
+[milestone 1.3.6 changes](https://github.com/cyberhobo/wordpress-geo-mashup/issues?utf8=%E2%9C%93&q=is%3Aissue+label%3AMilestone-1.3.6)
 
 = 1.3.5 =
-[milestone 1.3.5 changes](https://github.com/cyberhobo/wordpress-geo-mashup/issues?utf8=%E2%9C%93&q=is%3Aissue+label%3AMilestone%3D1.3.5)
+[milestone 1.3.5 changes](https://github.com/cyberhobo/wordpress-geo-mashup/issues?utf8=%E2%9C%93&q=is%3Aissue+label%3AMilestone-1.3.5)
 
 = 1.3.4 =
-[milestone 1.3.4 changes](https://github.com/cyberhobo/wordpress-geo-mashup/issues?utf8=%E2%9C%93&q=is%3Aissue+label%3AMilestone%3D1.3.4)
+[milestone 1.3.4 changes](https://github.com/cyberhobo/wordpress-geo-mashup/issues?utf8=%E2%9C%93&q=is%3Aissue+label%3AMilestone-1.3.4)
 
 = 1.3.3 =
-[milestone 1.3.3 changes](https://github.com/cyberhobo/wordpress-geo-mashup/issues?utf8=%E2%9C%93&q=is%3Aissue+label%3AMilestone%3D1.3.3)
+[milestone 1.3.3 changes](https://github.com/cyberhobo/wordpress-geo-mashup/issues?utf8=%E2%9C%93&q=is%3Aissue+label%3AMilestone-1.3.3)
 
 = 1.3.2 =
-[milestone 1.3.2 changes](https://github.com/cyberhobo/wordpress-geo-mashup/issues?utf8=%E2%9C%93&q=is%3Aissue+label%3AMilestone%3D1.3.2)
+[milestone 1.3.2 changes](https://github.com/cyberhobo/wordpress-geo-mashup/issues?utf8=%E2%9C%93&q=is%3Aissue+label%3AMilestone-1.3.2)
 
 = 1.3.1 =
-[milestone 1.3.1 changes](https://github.com/cyberhobo/wordpress-geo-mashup/issues?utf8=%E2%9C%93&q=is%3Aissue+label%3AMilestone%3D1.3.1)
+[milestone 1.3.1 changes](https://github.com/cyberhobo/wordpress-geo-mashup/issues?utf8=%E2%9C%93&q=is%3Aissue+label%3AMilestone-1.3.1)
 
 = 1.3 =
-[milestone 1.3 changes](https://github.com/cyberhobo/wordpress-geo-mashup/issues?utf8=%E2%9C%93&q=is%3Aissue+label%3AMilestone%3D1.3)
+[milestone 1.3 changes](https://github.com/cyberhobo/wordpress-geo-mashup/issues?utf8=%E2%9C%93&q=is%3Aissue+label%3AMilestone-1.3)
 
 = 1.2.10 =
-[milestone 1.2.10 changes](https://github.com/cyberhobo/wordpress-geo-mashup/issues?utf8=%E2%9C%93&q=is%3Aissue+label%3AMilestone%3D1.2.10)
+[milestone 1.2.10 changes](https://github.com/cyberhobo/wordpress-geo-mashup/issues?utf8=%E2%9C%93&q=is%3Aissue+label%3AMilestone-1.2.10)
 
 = 1.2.9 =
-[milestone 1.2.9 changes](https://github.com/cyberhobo/wordpress-geo-mashup/issues?utf8=%E2%9C%93&q=is%3Aissue+label%3AMilestone%3D1.2.9)
+[milestone 1.2.9 changes](https://github.com/cyberhobo/wordpress-geo-mashup/issues?utf8=%E2%9C%93&q=is%3Aissue+label%3AMilestone-1.2.9)
 
 = 1.2.8 =
-[milestone 1.2.8 changes](https://github.com/cyberhobo/wordpress-geo-mashup/issues?utf8=%E2%9C%93&q=is%3Aissue+label%3AMilestone%3D1.2.8)
+[milestone 1.2.8 changes](https://github.com/cyberhobo/wordpress-geo-mashup/issues?utf8=%E2%9C%93&q=is%3Aissue+label%3AMilestone-1.2.8)
 
 = 1.2.7 =
 Fixed:
