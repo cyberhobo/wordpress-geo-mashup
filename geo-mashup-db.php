@@ -1652,18 +1652,17 @@ class GeoMashupDB {
 			$limit = apply_filters( 'geo_mashup_locations_limits', $limit );
 
 			$suppress_post_filters = defined( 'GEO_MASHUP_SUPPRESS_POST_FILTERS' ) && GEO_MASHUP_SUPPRESS_POST_FILTERS;
-			if ( 'post' === $object_name and ! $suppress_post_filters and isset( $GLOBALS['sitepress'] ) ) {
+			if ( 'post' === $object_name and ! $suppress_post_filters and isset( $GLOBALS['wpml_query_filter'] ) ) {
 				// Ok, we're catering to WPML here. If we ever integrate with a WP_Query object for posts,
 				// this could be made more general
 
-				// This filter will include all translatable post types, I hope
-				add_filter( 'get_translatable_documents', array( __CLASS__, 'wpml_filter_get_translatable_documents' ) );
-
 				// Apply post query filters, changing posts table references to our alias
-				// As of WPML 2.9 these calls can trigger undefined variable notices
-				$table_string = $GLOBALS['sitepress']->posts_join_filter( $table_string, null );
+				$table_string = $GLOBALS['wpml_query_filter']->filter_single_type_join( $table_string, 'any' );
 				$table_string = str_replace( $wpdb->posts . '.', 'o.', $table_string );
-				$where = $GLOBALS['sitepress']->posts_where_filter( $where, null );
+				$where = $GLOBALS['wpml_query_filter']->filter_single_type_where(
+					$where,
+					$GLOBALS['geo_mashup_options']->get( 'overall', 'located_post_types' )
+				);
 				$where = str_replace( $wpdb->posts . '.', 'o.', $where );
 
 				remove_filter( 'get_translatable_documents', array( __CLASS__, 'wpml_filter_get_translatable_documents' ) );
@@ -1675,19 +1674,6 @@ class GeoMashupDB {
 		$wpdb->query( $query_string );
 		
 		return $wpdb->last_result;
-	}
-
-	/**
-	 * Expand the post types returned by WPML for our queries
-	 *
-	 * @since 1.5
-	 * @param $post_types
-	 * @return array Location enabled post types, flipped so ids are keys as WPML expects
-	 */
-	public static function wpml_filter_get_translatable_documents( $post_types ) {
-		global $geo_mashup_options;
-		// Our post types may not be translatable, but I couldn't get those out of WPML
-		return array_flip( $geo_mashup_options->get( 'overall', 'located_post_types' ) );
 	}
 
 	/**
