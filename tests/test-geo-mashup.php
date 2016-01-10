@@ -8,10 +8,12 @@ class GeoMashup_Unit_Tests extends WP_UnitTestCase {
 	const DELTA = 0.0001;
 
 	private $added_filters;
+	private $data;
 
 	function setUp() {
 		parent::setUp();
 		$this->added_filters = array();
+		$this->data = new stdClass();
 	}
 
 	function tearDown() {
@@ -338,7 +340,7 @@ class GeoMashup_Unit_Tests extends WP_UnitTestCase {
 			$do_lookups = false
 		);
 
-		$GLOBALS['sitepress'] = new SitePressMock( $posts[1]->post_title );
+		$GLOBALS['wpml_query_filter'] = new SitePressQueryFilterMock( $posts[1]->post_title );
 
 		// An open query should only return post index 1 of the 3
 		$results = GeoMashupDB::get_object_locations();
@@ -871,11 +873,8 @@ class GeoMashup_Unit_Tests extends WP_UnitTestCase {
 
 		$page_id = $this->factory->post->create( array( 'post_type' => 'page' ) );
 
-		$geo_mashup_options->set_valid_options( array(
-			array( 'overall' => array(
-				'mashup_page' => $page_id,
-			) ),
-		) );
+		$geo_mashup_options->set_valid_options( array( 'overall' => array( 'mashup_page' => $page_id, ) ) );
+
 		$post_id = $this->factory->post->create();
 
 		$location = $this->rand_location( 4 );
@@ -887,6 +886,32 @@ class GeoMashup_Unit_Tests extends WP_UnitTestCase {
 		$test_args = array( 'text' => 'TEST TEXT', 'zoom' => 10 );
 		$this->assertNotContains( 'text=', GeoMashup::show_on_map_link( $test_args ) );
 		$this->assertContains( 'zoom=10', GeoMashup::show_on_map_link( $test_args ) );
+	}
+
+	/**
+	 * issue 719
+	 */
+	function test_geocode_google_key() {
+		global $geo_mashup_options;
+		$geo_mashup_options->set_valid_options( array( 'overall' => array( 'googlev3_key' => 'TESTKEY' ) ) );
+
+		$this->data->geocode_called = false;
+
+		add_filter( 'pre_http_request', array( $this, 'verify_google_geocode_request' ), 10, 3 );
+
+		$geocoder = new GeoMashupGoogleGeocoder();
+
+		$geocoder->geocode( 'nowhere' );
+
+		$this->assertTrue( $this->data->geocode_called, 'Expected to catch a geocode HTTP request.' );
+
+		remove_filter( 'pre_http_request', array( $this, 'verify_google_geocode_request' ) );
+	}
+
+	function verify_google_geocode_request( $continue, $request, $url ) {
+		$this->assertContains( 'TESTKEY', $url, 'Expected query URL to contain the test key.' );
+		$this->data->geocode_called = true;
+		return array( 'response' => array( 'code' => 200 ), 'body' => '{ "status": "ZERO_RESULTS" }' );
 	}
 
 	private function get_nv_test_location() {
