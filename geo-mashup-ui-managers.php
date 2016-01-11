@@ -103,7 +103,7 @@ class GeoMashupUIManager {
 		} else if ( 'googlev3' == $map_api ) {
 			wp_register_script(
 					'google-maps-3',
-					'//maps.google.com/maps/api/js?sensor=false&amp;language=' . GeoMashup::get_language_code(),
+					'//maps.google.com/maps/api/js?language=' . GeoMashup::get_language_code(),
 					null, 
 					'', 
 					true );

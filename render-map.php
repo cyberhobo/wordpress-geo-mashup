@@ -271,12 +271,14 @@ class GeoMashupRenderMap {
 					
 			$mashup_dependencies[] = 'mxn-openlayers-gm';
 		} else if ( 'googlev3' == $map_data['map_api'] ) {
-			$google_3_url = '//maps.google.com/maps/api/js?sensor=false';
+			$google_3_url = '//maps.google.com/maps/api/js';
 			$googlev3_key = $geo_mashup_options->get( 'overall', 'googlev3_key' );
-			if ( ! empty( $googlev3_key ) )
-				$google_3_url .= '&amp;key=' . $googlev3_key;
-			if ( ! empty( $language_code ) )
-				$google_3_url .= '&amp;language=' . substr( $language_code, 0, 2 );
+			if ( ! empty( $googlev3_key ) ) {
+				$google_3_url = add_query_arg( 'key', $googlev3_key, $google_3_url );
+			}
+			if ( ! empty( $language_code ) ) {
+				$google_3_url = add_query_arg( 'language', substr( $language_code, 0, 2 ), $google_3_url );
+			}
 			$load_markerclusterer = (bool)( 'single' != $map_data['map_content'] and !empty( $map_data['cluster_max_zoom'] ) );
 
 			wp_register_script( 

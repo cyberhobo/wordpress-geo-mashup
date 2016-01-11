@@ -334,11 +334,11 @@ class GeoMashupGoogleGeocoder extends GeoMashupHttpGeocoder {
 	private function query( $query_type, $query ) {
 		global $geo_mashup_options;
 
-		$google_geocode_url = 'http://maps.google.com/maps/api/geocode/json?sensor=false&' . $query_type . '=' .
+		$google_geocode_url = 'http://maps.google.com/maps/api/geocode/json?' . $query_type . '=' .
 			self::url_utf8_encode( $query ) . '&language=' . $this->language;
 
 		if ( $key = $geo_mashup_options->get( 'overall', 'googlev3_key' ) ) {
-			$google_geocode_url .= '&key=' . rawurlencode( $key );
+		$google_geocode_url .= '&key=' . rawurlencode( $key );
 		}
 
 		$response = $this->http->get( $google_geocode_url, $this->request_params );

@@ -1143,7 +1143,7 @@ class GeoMashup {
 					$map_image .= '&amp;center=' . $map_data['object_data']['objects'][0]['lat'] . ',' .
 						$map_data['object_data']['objects'][0]['lng'];
 				}
-				$map_image .= '&amp;sensor=false&amp;zoom=' . $map_data['zoom'] . '&amp;markers=size:small|color:red';
+				$map_image .= '&amp;zoom=' . $map_data['zoom'] . '&amp;markers=size:small|color:red';
 				foreach( $map_data['object_data']['objects'] as $location ) {
 					// TODO: Try to use the correct color for the category? Draw category lines?
 					$map_image .= '|' . $location['lat'] . ',' . $location['lng'];
