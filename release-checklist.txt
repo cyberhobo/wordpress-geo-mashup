@@ -10,10 +10,10 @@ These are notes for the software author, to help ensure you don't get a broken r
 
 If any step fails, fix before continuing, repeating any necessary prior steps.
 
-	1. Bump versions in source.
+	1. Check versions in geo-mashup.php.
 	1. Edit WP readme.txt (remember stable tag, tested version, and changelog!)
 	1. Build a ZIP archive (ant). Also updates the POT file.
-	1. Commit.
+	1. Merge/Commit.
 		1. Generate and deploy new PHPDoc and JavaDocs. (ant phpdoc; ant jsdoc; ...)
 	1. Install and test on testbed.
 	  1. Make an archive copy of current wiki docs.

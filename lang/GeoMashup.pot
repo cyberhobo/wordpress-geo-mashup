@@ -1,14 +1,14 @@
-# Copyright (C) 2015 Geo Mashup
+# Copyright (C) 2016 Geo Mashup
 # This file is distributed under the same license as the Geo Mashup package.
 msgid ""
 msgstr ""
-"Project-Id-Version: Geo Mashup 1.8.6\n"
+"Project-Id-Version: Geo Mashup 1.8.7\n"
 "Report-Msgid-Bugs-To: http://wordpress.org/tag/geo-mashup\n"
-"POT-Creation-Date: 2015-10-01 02:46:08+00:00\n"
+"POT-Creation-Date: 2016-01-19 15:37:48+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"PO-Revision-Date: 2015-MO-DA HO:MI+ZONE\n"
+"PO-Revision-Date: 2016-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 
@@ -290,7 +290,7 @@ msgstr ""
 msgid "Initialized %d geo dates from corresponding post dates."
 msgstr ""
 
-#: geo-mashup-db.php:1825
+#: geo-mashup-db.php:1811
 msgid "A location must have an ID or coordinates to be saved."
 msgstr ""
 
@@ -302,13 +302,13 @@ msgstr ""
 msgid "Geocoding will only work if \"%s\" is UTF-8 text."
 msgstr ""
 
-#: geo-mashup-geocoders.php:185 geo-mashup-geocoders.php:388
-#: geo-mashup-geocoders.php:452
+#: geo-mashup-geocoders.php:185 geo-mashup-geocoders.php:413
+#: geo-mashup-geocoders.php:477
 msgid "Reverse geocoding requires numeric coordinates."
 msgstr ""
 
-#: geo-mashup-geocoders.php:350
-msgid "The geocoding request failed with status %s."
+#: geo-mashup-geocoders.php:368
+msgid "Failed to geocode \"%s\" with status %s and body %s."
 msgstr ""
 
 #: geo-mashup-options.php:372 geo-mashup-options.php:380
@@ -478,19 +478,19 @@ msgstr ""
 msgid "Object location not saved - invalid request."
 msgstr ""
 
-#: geo-mashup-ui-managers.php:431 geo-mashup-ui-managers.php:625
+#: geo-mashup-ui-managers.php:430 geo-mashup-ui-managers.php:623
 msgid "Location"
 msgstr ""
 
-#: geo-mashup-ui-managers.php:747
+#: geo-mashup-ui-managers.php:745
 msgid "Address not found - try making it less detailed"
 msgstr ""
 
-#: geo-mashup-ui-managers.php:931
+#: geo-mashup-ui-managers.php:929
 msgid "Written from (location)"
 msgstr ""
 
-#: geo-mashup-ui-managers.php:933
+#: geo-mashup-ui-managers.php:931
 msgid "Loading..."
 msgstr ""
 
@@ -539,7 +539,7 @@ msgstr ""
 msgid "Geo Mashup Options"
 msgstr ""
 
-#. #-#-#-#-#  GeoMashup.pot (Geo Mashup 1.8.6)  #-#-#-#-#
+#. #-#-#-#-#  GeoMashup.pot (Geo Mashup 1.8.7)  #-#-#-#-#
 #. Plugin Name of the plugin/theme
 #: geo-mashup.php:1371
 msgid "Geo Mashup"
@@ -603,7 +603,7 @@ msgstr ""
 msgid "Geocoding and other web services may not work properly."
 msgstr ""
 
-#: options.php:75 render-map.php:548
+#: options.php:75 render-map.php:550
 msgid ""
 "WordPress transients may not be working. Try deactivating or reconfiguring "
 "caching plugins."
@@ -1052,7 +1052,7 @@ msgstr ""
 msgid "Geo Mashup Documentation"
 msgstr ""
 
-#: render-map.php:486
+#: render-map.php:488
 msgid "Check/Uncheck All"
 msgstr ""
 
