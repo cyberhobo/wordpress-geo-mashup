@@ -332,22 +332,47 @@ class GeoMashupGoogleGeocoder extends GeoMashupHttpGeocoder {
 	 * @return array Locations.
 	 */
 	private function query( $query_type, $query ) {
-		$google_geocode_url = 'http://maps.google.com/maps/api/geocode/json?sensor=false&' . $query_type . '=' .
+		global $geo_mashup_options;
+
+		$google_geocode_url = 'http://maps.google.com/maps/api/geocode/json?' . $query_type . '=' .
 			self::url_utf8_encode( $query ) . '&language=' . $this->language;
 
+		if ( $key = $geo_mashup_options->get( 'overall', 'googlev3_key' ) ) {
+		$google_geocode_url .= '&key=' . rawurlencode( $key );
+		}
+
 		$response = $this->http->get( $google_geocode_url, $this->request_params );
-		if ( is_wp_error( $response ) )
+		if ( is_wp_error( $response ) ) {
 			return $response;
+		}
 
 		$status = $response['response']['code'];
-		if ( '200' != $status )
-			return new WP_Error( 'geocoder_http_request_failed', $status . ': ' . $response['response']['message'], $response );
+		if ( '200' != $status ) {
+			return new WP_Error(
+				'geocoder_http_request_failed',
+				$status . ': ' . $response['response']['message'],
+				$response
+			);
+		}
 
 		$data = json_decode( $response['body'] );
-		if ( 'ZERO_RESULTS' == $data->status )
+		if ( 'ZERO_RESULTS' == $data->status ) {
 			return array();
-		if ( 'OK' != $data->status ) // status of OVER_QUERY_LIMIT, REQUEST_DENIED, INVALID_REQUEST, etc.
-			return new WP_Error( 'geocoder_request_failed', sprintf( __( 'The geocoding request failed with status %s.', 'GeoMashup' ), $status), $data );
+		}
+
+		if ( 'OK' != $data->status ) {
+			// status of OVER_QUERY_LIMIT, REQUEST_DENIED, INVALID_REQUEST, etc.
+			return new WP_Error(
+				'geocoder_request_failed',
+				sprintf(
+					__( 'Failed to geocode "%s" with status %s and body %s.', 'GeoMashup' ),
+					$query,
+					$status,
+					$data
+				),
+				$data
+			);
+		}
 
 		if ( count( $data->results ) > $this->max_results )
 			$data->results = array_slice( $data->results, 0, $this->max_results );

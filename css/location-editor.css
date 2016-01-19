@@ -9,3 +9,13 @@
 #geo-mashup-inline-help-link-wrap { padding: 4px 0 2px 4px; margin-right:1em; }
 #geo-mashup-inline-help-link-wrap .ui-icon { float: left; }
 #geo-mashup-location-table th { padding:4px; }
+#geo_mashup_location_editor .ui-widget-header { border: 1px solid #aaaaaa;background: #cccccc url(../images/ui-bg_highlight-soft_75_cccccc_1x100.png) 50% 50% repeat-x; color: #222222;font-weight: bold;}
+#geo_mashup_location_editor .ui-icon { width: 16px; height: 16px; background-image: url(../images/ui-icons_222222_256x240.png); }
+#geo_mashup_location_editor .ui-icon-triangle-1-s { background-position: -64px -16px; }
+#geo_mashup_location_editor .ui-icon-triangle-1-n { background-position: 0 -16px; }
+#geo_mashup_location_editor .ui-widget-content { border: 1px solid #aaaaaa; padding: 10px; color: #222222; }
+#geo_mashup_location_editor .ui-state-highlight {border: 1px solid #fcefa1; background: #fbf9ee url(../images/ui-bg_glass_55_fbf9ee_1x400.png) 50% 50% repeat-x; color: #363636; }
+
+
+
+

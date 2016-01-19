@@ -113,8 +113,8 @@ function geo_mashup_edit_form( $object_name, $object_id, $ui_manager = '' ) {
 
 	$nonce = wp_create_nonce('geo-mashup-edit');
 
-	$static_maps_base_url = 'http://maps.google.com/maps/api/staticmap?sensor=false&amp;key=' .
-		$geo_mashup_options->get( 'overall', 'google_key' );
+	$static_maps_base_url = 'http://maps.google.com/maps/api/staticmap?key=' .
+		$geo_mashup_options->get( 'overall', 'googlev3_key' );
 ?>
 	<div id="geo_mashup_location_editor">
 	<div id="geo_mashup_ajax_message" class="geo-mashup-js ui-state-highlight"></div>

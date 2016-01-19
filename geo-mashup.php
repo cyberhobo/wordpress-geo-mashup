@@ -3,7 +3,7 @@
 Plugin Name: Geo Mashup
 Plugin URI: https://wordpress.org/plugins/geo-mashup/
 Description: Save location for posts and pages, or even users and comments. Display these locations on Google, Leaflet, and OSM maps. Make WordPress into your GeoCMS.
-Version: 1.8.6
+Version: 1.8.7
 Author: Dylan Kuhn
 Text Domain: GeoMashup
 Domain Path: /lang
@@ -204,7 +204,7 @@ class GeoMashup {
 		define('GEO_MASHUP_DIRECTORY', dirname( GEO_MASHUP_PLUGIN_NAME ) );
 		define('GEO_MASHUP_URL_PATH', trim( plugin_dir_url( __FILE__ ), '/' ) );
 		define('GEO_MASHUP_MAX_ZOOM', 20);
-		define('GEO_MASHUP_VERSION', '1.8.6');
+		define('GEO_MASHUP_VERSION', '1.8.7');
 		define('GEO_MASHUP_DB_VERSION', '1.3');
 	}
 
@@ -1143,7 +1143,7 @@ class GeoMashup {
 					$map_image .= '&amp;center=' . $map_data['object_data']['objects'][0]['lat'] . ',' .
 						$map_data['object_data']['objects'][0]['lng'];
 				}
-				$map_image .= '&amp;sensor=false&amp;zoom=' . $map_data['zoom'] . '&amp;markers=size:small|color:red';
+				$map_image .= '&amp;zoom=' . $map_data['zoom'] . '&amp;markers=size:small|color:red';
 				foreach( $map_data['object_data']['objects'] as $location ) {
 					// TODO: Try to use the correct color for the category? Draw category lines?
 					$map_image .= '|' . $location['lat'] . ',' . $location['lng'];

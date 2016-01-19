@@ -103,7 +103,7 @@ class GeoMashupUIManager {
 		} else if ( 'googlev3' == $map_api ) {
 			wp_register_script(
 					'google-maps-3',
-					'//maps.google.com/maps/api/js?sensor=false&amp;language=' . GeoMashup::get_language_code(),
+					'//maps.google.com/maps/api/js?language=' . GeoMashup::get_language_code(),
 					null, 
 					'', 
 					true );
@@ -408,7 +408,6 @@ class GeoMashupUserUIManager extends GeoMashupUIManager {
 			add_action( 'personal_options_update', array( &$this, 'save_user'));
 			add_action( 'edit_user_profile_update', array( &$this, 'save_user'));
 
-			$this->enqueue_jquery_styles();
 			$this->enqueue_form_client_items();
 		}
 	}
@@ -604,7 +603,6 @@ class GeoMashupPostUIManager extends GeoMashupUIManager {
 		// If we're on a post editing page, queue up the form interface elements
 		if ( $load_location_editor ) {
 
-			$this->enqueue_jquery_styles();
 			$this->enqueue_form_client_items();
 
 		} 
