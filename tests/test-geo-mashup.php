@@ -888,26 +888,6 @@ class GeoMashup_Unit_Tests extends WP_UnitTestCase {
 		$this->assertContains( 'zoom=10', GeoMashup::show_on_map_link( $test_args ) );
 	}
 
-	/**
-	 * issue 719
-	 */
-	function test_geocode_google_key() {
-		global $geo_mashup_options;
-		$geo_mashup_options->set_valid_options( array( 'overall' => array( 'googlev3_key' => 'TESTKEY' ) ) );
-
-		$this->data->geocode_called = false;
-
-		add_filter( 'pre_http_request', array( $this, 'verify_google_geocode_request' ), 10, 3 );
-
-		$geocoder = new GeoMashupGoogleGeocoder();
-
-		$geocoder->geocode( 'nowhere' );
-
-		$this->assertTrue( $this->data->geocode_called, 'Expected to catch a geocode HTTP request.' );
-
-		remove_filter( 'pre_http_request', array( $this, 'verify_google_geocode_request' ) );
-	}
-
 	function verify_google_geocode_request( $continue, $request, $url ) {
 		$this->assertContains( 'TESTKEY', $url, 'Expected query URL to contain the test key.' );
 		$this->data->geocode_called = true;
