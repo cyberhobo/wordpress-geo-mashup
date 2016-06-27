@@ -68,6 +68,8 @@ class GeoMashupSearch {
 			'sort' => 'distance_km ASC',
 		);
 		$this->query_vars = wp_parse_args( $args, $default_args );
+		$this->query_vars = apply_filters( 'geo_mashup_search_query_post', $this->query_vars );
+
 		/** @var $units */
 		extract( $this->query_vars );
 
