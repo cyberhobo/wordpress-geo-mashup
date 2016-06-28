@@ -2,9 +2,9 @@
 # This file is distributed under the same license as the Geo Mashup package.
 msgid ""
 msgstr ""
-"Project-Id-Version: Geo Mashup 1.8.8\n"
+"Project-Id-Version: Geo Mashup 1.8.9\n"
 "Report-Msgid-Bugs-To: http://wordpress.org/tag/geo-mashup\n"
-"POT-Creation-Date: 2016-02-18 03:52:35+00:00\n"
+"POT-Creation-Date: 2016-06-28 17:37:56+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -38,7 +38,7 @@ msgstr ""
 msgid "find"
 msgstr ""
 
-#: default-templates/search-form.php:34 geo-mashup-search.php:513
+#: default-templates/search-form.php:34 geo-mashup-search.php:515
 msgid "posts"
 msgstr ""
 
@@ -369,108 +369,108 @@ msgstr ""
 msgid ", which is a deprecated option"
 msgstr ""
 
-#: geo-mashup-search.php:363
+#: geo-mashup-search.php:365
 msgid "Search content by Geo Mashup location."
 msgstr ""
 
-#: geo-mashup-search.php:365
+#: geo-mashup-search.php:367
 msgid "Geo Mashup Search"
 msgstr ""
 
-#: geo-mashup-search.php:379
+#: geo-mashup-search.php:381
 msgid "Couldn't find you..."
 msgstr ""
 
-#: geo-mashup-search.php:380
+#: geo-mashup-search.php:382
 msgid "My Location"
 msgstr ""
 
-#: geo-mashup-search.php:395
+#: geo-mashup-search.php:397
 msgid "No Geo Mashup Search result page found - check widget settings."
 msgstr ""
 
-#: geo-mashup-search.php:474
+#: geo-mashup-search.php:476
 msgid "Widget heading, leave blank to omit."
 msgstr ""
 
-#: geo-mashup-search.php:475
+#: geo-mashup-search.php:477
 msgid "Title:"
 msgstr ""
 
-#: geo-mashup-search.php:486
+#: geo-mashup-search.php:488
 msgid ""
 "Default text in the search text box for use as a prompt, leave blank to omit."
 msgstr ""
 
-#: geo-mashup-search.php:487
+#: geo-mashup-search.php:489
 msgid "Default Search Text:"
 msgstr ""
 
-#: geo-mashup-search.php:493
+#: geo-mashup-search.php:495
 msgid "city, state or zip"
 msgstr ""
 
-#: geo-mashup-search.php:498
+#: geo-mashup-search.php:500
 msgid "Text for the user locate button, leave blank to omit."
 msgstr ""
 
-#: geo-mashup-search.php:499
+#: geo-mashup-search.php:501
 msgid "Find Me Button:"
 msgstr ""
 
-#: geo-mashup-search.php:505
+#: geo-mashup-search.php:507
 msgid "Find Me"
 msgstr ""
 
-#: geo-mashup-search.php:510
+#: geo-mashup-search.php:512
 msgid "What to search:"
 msgstr ""
 
-#: geo-mashup-search.php:516
+#: geo-mashup-search.php:518
 msgid "users"
 msgstr ""
 
-#: geo-mashup-search.php:519
+#: geo-mashup-search.php:521
 msgid "comments"
 msgstr ""
 
-#: geo-mashup-search.php:526
+#: geo-mashup-search.php:528
 msgid ""
 "Category dropdown contents. Blank to omit, 'all' for all post categories, or "
 "comma separated category IDs to include."
 msgstr ""
 
-#: geo-mashup-search.php:527
+#: geo-mashup-search.php:529
 msgid "Category Menu:"
 msgstr ""
 
-#: geo-mashup-search.php:538
+#: geo-mashup-search.php:540
 msgid "Units:"
 msgstr ""
 
-#: geo-mashup-search.php:541
+#: geo-mashup-search.php:543
 msgid "miles"
 msgstr ""
 
-#: geo-mashup-search.php:544
+#: geo-mashup-search.php:546
 msgid "kilometers"
 msgstr ""
 
-#: geo-mashup-search.php:551
+#: geo-mashup-search.php:553
 msgid ""
 "Radius dropdown contents. Blank to omit, or comma separated numeric "
 "distances in selected units."
 msgstr ""
 
-#: geo-mashup-search.php:552
+#: geo-mashup-search.php:554
 msgid "Radius Menu:"
 msgstr ""
 
-#: geo-mashup-search.php:563
+#: geo-mashup-search.php:565
 msgid "The page where search results should be displayed."
 msgstr ""
 
-#: geo-mashup-search.php:564
+#: geo-mashup-search.php:566
 msgid "Results Page:"
 msgstr ""
 
@@ -539,7 +539,7 @@ msgstr ""
 msgid "Geo Mashup Options"
 msgstr ""
 
-#. #-#-#-#-#  GeoMashup.pot (Geo Mashup 1.8.8)  #-#-#-#-#
+#. #-#-#-#-#  GeoMashup.pot (Geo Mashup 1.8.9)  #-#-#-#-#
 #. Plugin Name of the plugin/theme
 #: geo-mashup.php:1371
 msgid "Geo Mashup"
