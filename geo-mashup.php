@@ -118,9 +118,14 @@ class GeoMashup {
 		include_once( GEO_MASHUP_DIR_PATH . '/geo-mashup-db.php' );
 		include_once( GEO_MASHUP_DIR_PATH . '/geo-mashup-ui-managers.php' );
 
-		if ( $geo_mashup_options->get( 'overall', 'enable_geo_search' ) == 'true' )
+		if ( $geo_mashup_options->get( 'overall', 'enable_geo_search' ) == 'true' ) {
 			include_once( GEO_MASHUP_DIR_PATH . '/geo-mashup-search.php' );
+		}
 
+		if ( defined( 'ICL_LANGUAGE_CODE' ) ) {
+			include_once( GEO_MASHUP_DIR_PATH . '/wpml.php' );
+			GeoMashupWPML::load();
+		}
 	}
 
 	/**
@@ -590,13 +595,10 @@ class GeoMashup {
 		} else if ( function_exists( 'qtrans_getLanguage' ) ) {
 			// qTranslate integration
 			$language_code = qtrans_getLanguage();
-		} else if ( defined( 'ICL_LANGUAGE_CODE' ) ) {
-			// WPML integration
-			$language_code = ICL_LANGUAGE_CODE;
 		} else {
 			$language_code = get_locale();
 		}
-		return $language_code;
+		return apply_filters( 'geo_mashup_get_language_code', $language_code );
 	}
 
 	/**

@@ -1644,29 +1644,12 @@ class GeoMashupDB {
 			$limit = '';
 
 		if ( ! $query_args['suppress_filters'] ) {
-			$field_string = apply_filters( 'geo_mashup_locations_fields', $field_string );
-			$table_string = apply_filters( 'geo_mashup_locations_join', $table_string );
-			$where = apply_filters( 'geo_mashup_locations_where', $where );
-			$sort = apply_filters( 'geo_mashup_locations_orderby', $sort );
-			$groupby = apply_filters( 'geo_mashup_locations_groupby', $groupby );
-			$limit = apply_filters( 'geo_mashup_locations_limits', $limit );
-
-			$suppress_post_filters = defined( 'GEO_MASHUP_SUPPRESS_POST_FILTERS' ) && GEO_MASHUP_SUPPRESS_POST_FILTERS;
-			if ( 'post' === $object_name and ! $suppress_post_filters and isset( $GLOBALS['wpml_query_filter'] ) ) {
-				// Ok, we're catering to WPML here. If we ever integrate with a WP_Query object for posts,
-				// this could be made more general
-
-				// Apply post query filters, changing posts table references to our alias
-				$table_string = $GLOBALS['wpml_query_filter']->filter_single_type_join( $table_string, 'any' );
-				$table_string = str_replace( $wpdb->posts . '.', 'o.', $table_string );
-				$where = $GLOBALS['wpml_query_filter']->filter_single_type_where(
-					$where,
-					$GLOBALS['geo_mashup_options']->get( 'overall', 'located_post_types' )
-				);
-				$where = str_replace( $wpdb->posts . '.', 'o.', $where );
-
-				remove_filter( 'get_translatable_documents', array( __CLASS__, 'wpml_filter_get_translatable_documents' ) );
-			}
+			$field_string = apply_filters( 'geo_mashup_locations_fields', $field_string, $query_args );
+			$table_string = apply_filters( 'geo_mashup_locations_join', $table_string, $query_args );
+			$where = apply_filters( 'geo_mashup_locations_where', $where, $query_args );
+			$sort = apply_filters( 'geo_mashup_locations_orderby', $sort, $query_args );
+			$groupby = apply_filters( 'geo_mashup_locations_groupby', $groupby, $query_args );
+			$limit = apply_filters( 'geo_mashup_locations_limits', $limit, $query_args );
 		}
 		
 		$query_string = "SELECT $field_string FROM $table_string $where $groupby $having $sort $limit";
