@@ -38,7 +38,6 @@ class GeoMashupOptions {
 				'user' => 'false',
 				'comment' => 'false' ),
 			'enable_reverse_geocoding' => 'true',
-			'adsense_code' => 'partner-pub-5088093001880917',
 			'geonames_username' => 'geomashup',
 	 		'map_api' => 'googlev3',
 			'import_custom_field' => '',
@@ -53,7 +52,6 @@ class GeoMashupOptions {
 			'map_control' => 'GSmallZoomControl3D',
 			'add_map_type_control' => array(),
 			'add_overview_control' => 'false',
-			'add_google_bar' => 'false',
 			'enable_scroll_wheel_zoom' => 'true',
 			'show_post' => 'false',
 			'show_future' => 'false',
@@ -76,7 +74,6 @@ class GeoMashupOptions {
 			'background_color' => 'c0c0c0',
 			'add_overview_control' => 'false',
 			'add_map_type_control' => array(),
-			'add_google_bar' => 'false',
 			'enable_scroll_wheel_zoom' => 'true',
 			'click_to_load' => 'false',
 	 		'click_to_load_text' => '' ), 
@@ -89,7 +86,6 @@ class GeoMashupOptions {
 			'background_color' => 'c0c0c0',
 			'add_overview_control' => 'false',
 			'add_map_type_control' => array(),
-			'add_google_bar' => 'false',
 			'enable_scroll_wheel_zoom' => 'true',
 			'marker_select_info_window' => 'true',
 			'marker_select_highlight' => 'false',
@@ -235,6 +231,12 @@ class GeoMashupOptions {
 		if ( isset( $settings['global_map']['category_line_zoom'] ) ) {
 			$settings['global_map']['term_options']['category']['line_zoom'] = $settings['global_map']['category_line_zoom']; 
 			unset( $settings['global_map']['category_line_zoom'] );
+		}
+
+		// In 1.9 we removed v2 of the Google API
+		if ( isset( $settings['overall']['map_api'] ) and 'google' == $settings['overall']['map_api'] ) {
+			$settings['overall']['map_api'] = 'googlev3';
+			$settings['overall']['googlev3_key'] = $settings['overall']['google_key'];
 		}
 		return $settings;
 	}
@@ -400,7 +402,7 @@ class GeoMashupOptions {
 				return true;
 
 			case 'map_api':
-				$valid_apis = array( 'google', 'openlayers', 'googlev3', 'leaflet' );
+				$valid_apis = array( 'openlayers', 'googlev3', 'leaflet' );
 				if ( !in_array ( $value, $valid_apis ) ) {
 					array_push ( $this->validation_errors, '"'. $value . '" ' . __('is invalid for', 'GeoMashup') . ' ' . $key .
 						__(', which must be a valid map provider.', 'GeoMashup') );
@@ -418,9 +420,6 @@ class GeoMashupOptions {
 				return true;
 
 			// strings without HTML
-			case 'adsense_code':
-				if ( empty( $value ) )
-					$value = 'partner-pub-5088093001880917';
 			case 'geonames_username':
 				if ( empty( $value ) )
 					$value = 'geomashup';
@@ -467,7 +466,6 @@ class GeoMashupOptions {
 			case 'auto_info_open':
 			case 'add_category_links':
 			case 'add_overview_control':
-			case 'add_google_bar':
 			case 'copy_geodata':
 			case 'enable_scroll_wheel_zoom':
 			case 'marker_select_info_window':
