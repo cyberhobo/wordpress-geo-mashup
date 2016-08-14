@@ -297,14 +297,14 @@ class GeoMashupRenderMap {
 
 			wp_register_script(
 					'leaflet',
-					'//cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.3/leaflet.js',
+					'//cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/leaflet.js',
 					null,
 					'0.6.4',
 					true );
 
 			wp_register_style(
 					'leaflet',
-					'//cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.3/leaflet.css',
+					'//cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/leaflet.css',
 					null,
 					'0.6.4' );
 
