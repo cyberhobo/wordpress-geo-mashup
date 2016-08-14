@@ -1394,11 +1394,6 @@ class GeoMashup {
 
 		if ( ! self::is_options_page() ) {
 			// We're not looking at the settings, but it may be important to do so
-			$google_key = $geo_mashup_options->get( 'overall', 'google_key' );
-			if ( empty( $google_key ) and 'google' == $geo_mashup_options->get( 'overall', 'map_api' ) and current_user_can( 'manage_options' ) ) {
-				$message_format = __( 'Geo Mashup requires a Google API key in the <a href="%s">settings</a> before it will work.', 'GeoMashup' );
-				$message[] = sprintf( $message_format, admin_url( 'options-general.php?page=' . GEO_MASHUP_PLUGIN_NAME ) );
-			}
 			if ( GEO_MASHUP_DB_VERSION != GeoMashupDB::installed_version() and current_user_can( 'manage_options' ) ) {
 				$message_format = __( 'Geo Mashup needs to upgrade its database, visit the <a href="%s">settings</a> to do it now.', 'GeoMashup' );
 				$message[] = sprintf( $message_format, admin_url( 'options-general.php?page=' . GEO_MASHUP_PLUGIN_NAME ) );

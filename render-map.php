@@ -186,58 +186,21 @@ class GeoMashupRenderMap {
 		$language_code = GeoMashup::get_language_code();
 		$load_markerclusterer = false;
 
-		if ( 'google' == $map_data['map_api'] ) {
-			// Google v2 base
-			$google_2_url = '//maps.google.com/maps?file=api&amp;v=2&amp;sensor=false&amp;key=' .
-				$geo_mashup_options->get( 'overall', 'google_key' );
-			if ( ! empty( $language_code ) ) {
-				$google_2_url .= '&amp;hl=' . substr( $language_code, 0, 2 );
-			}
-			wp_register_script( 
-					'google-maps-2', 
-					$google_2_url,
-					'',
-					'',
-					true );
-					
-			$mashup_dependencies[] = 'google-maps-2';
-			$mashup_script = 'geo-mashup-google';
+		// Mapstraction base
+		$mashup_script = 'geo-mashup-mxn';
+		GeoMashup::register_script(
+				'mxn',
+				'js/mxn/mxn.js',
+				null,
+				GEO_MASHUP_VERSION,
+				true );
 
-			if ( !empty( $map_data['cluster_max_zoom'] ) ) {
-				// Queue clustering scripts
-				GeoMashup::register_script(
-						'mapiconmaker',
-						'js/mapiconmaker.js',
-						array( 'google-maps-2' ),
-						'1.1',
-						true );
-
-				GeoMashup::register_script(
-						'clustermarker',
-						'js/ClusterMarker.js',
-						array( 'mapiconmaker' ),
-						'1.3.2',
-						true );
-
-				$mashup_dependencies[] = 'clustermarker';
-			}
-		} else {
-			// Mapstraction base
-			$mashup_script = 'geo-mashup-mxn';
-			GeoMashup::register_script( 
-					'mxn', 
-					'js/mxn/mxn.js', 
-					null, 
-					GEO_MASHUP_VERSION,
-					true );
-					
-			GeoMashup::register_script( 
-					'mxn-core', 
-					'js/mxn/mxn.core.js', 
-					array( 'mxn' ), 
-					GEO_MASHUP_VERSION,
-					true );
-		}
+		GeoMashup::register_script(
+				'mxn-core',
+				'js/mxn/mxn.core.js',
+				array( 'mxn' ),
+				GEO_MASHUP_VERSION,
+				true );
 
 		// Mapstraction providers
 		if ( 'openlayers' == $map_data['map_api'] ) {
@@ -409,7 +372,7 @@ class GeoMashupRenderMap {
 		$custom_js_url_path = '';
 		if ( isset( $geo_mashup_custom ) ) {
 			$custom_js_url_path = $geo_mashup_custom->file_url( 'custom-' . $map_data['map_api'] . '.js' );
-			if ( !$custom_js_url_path and 'google' != $map_data['map_api'] )
+			if ( !$custom_js_url_path )
 				$custom_js_url_path = $geo_mashup_custom->file_url( 'custom-mxn.js' );
 			if ( !$custom_js_url_path )
 				$custom_js_url_path = $geo_mashup_custom->file_url( 'custom.js' );
@@ -456,9 +419,7 @@ class GeoMashupRenderMap {
 		// Add background color if specified
 		if ( !empty( $map_data['background_color'] ) ) {
 			self::map_property( 'background_color', '#' . $map_data['background_color'] );
-			// Only google v2 maps need the parameter
-			if ( 'google' != $map_data['map_api'] )
-				unset( $map_data['background_color'] );
+			unset( $map_data['background_color'] );
 		}
 
 	}
