@@ -590,7 +590,7 @@ GeoMashup.createMap = function(container, opts) {
 	this.map = new mxn.Mapstraction( this.container, opts.map_api );
 	map_opts = {enableDragging: true};
 	map_opts.enableScrollWheelZoom = ( opts.enable_scroll_wheel_zoom ? true : false );
-	
+
 	if ( typeof this.map.enableGeoMashupExtras === 'function' ) {
 		this.map.enableGeoMashupExtras();
 	}
@@ -765,6 +765,10 @@ GeoMashup.createMap = function(container, opts) {
 
 	if (opts.add_overview_control) {
 		controls.overview = true;
+	}
+
+	if (opts.enable_street_view !== false) {
+		controls.street_view = true;
 	}
 	this.map.addControls( controls );
 
