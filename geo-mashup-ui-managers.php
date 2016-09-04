@@ -23,7 +23,7 @@ class GeoMashupUIManager {
 	 * @since 1.3
 	 *
 	 * @param string $name The class name of the manager.
-	 * @return GeoMashupUIPostManager|GeoMashupUIUserManager|GeoMashupUICommentManager The singleton object.
+	 * @return GeoMashupPostUIManager|GeoMashupUserUIManager|GeoMashupCommentUIManager The singleton object.
 	 */
 	public static function get_instance( $name ) {
 		static $instances = array();
