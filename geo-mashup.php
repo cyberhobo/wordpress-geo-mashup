@@ -1245,13 +1245,11 @@ class GeoMashup {
 	 * @since 1.9.0
 	 * @param array $atts limit may be added
 	 * @param array $map_data
-	 * @param int $width
-	 * @param int $height
 	 * @param string $click_to_load
 	 * @param string $click_to_load_text
 	 * @return mixed|string|void
 	 */
-	private static function build_map_image( &$atts, $map_data, $width, $height, $click_to_load, $click_to_load_text ) {
+	private static function build_map_image( &$atts, $map_data, $click_to_load, $click_to_load_text ) {
 
 		// Static maps have a limit of 50 markers: http://code.google.com/apis/maps/documentation/staticmaps/#Markers
 		$atts['limit'] = empty( $atts['limit'] ) ? 50 : $atts['limit'];
@@ -1260,7 +1258,8 @@ class GeoMashup {
 			return '';
 		}
 
-		$map_image = '<img src="http://maps.google.com/maps/api/staticmap?size='.$width.'x'.$height;
+		$dimensions = intval( $map_data['width'] ) . 'x' . intval( $map_data['height'] );
+		$map_image = '<img src="http://maps.google.com/maps/api/staticmap?size=' . $dimensions;
 		if ( count( $map_data['object_data']['objects'] ) == 1) {
 			$map_image .= '&amp;center=' . $map_data['object_data']['objects'][0]['lat'] . ',' .
 				$map_data['object_data']['objects'][0]['lng'];
@@ -1321,34 +1320,29 @@ class GeoMashup {
 
 	/**
 	 * @since 1.9.0
+	 * @param array $map_data
 	 * @param string $iframe_src
 	 * @param string $click_to_load_text
-	 * @param string $width_style
-	 * @param string $height_style
-	 * @param string $name
 	 * @param bool $static
 	 * @param string $map_image
 	 * @return string
 	 */
-	private static function click_to_load_content(
-		$iframe_src,
-		$click_to_load_text,
-		$width_style,
-		$height_style,
-		$name,
-		$static,
-		$map_image
-	) {
+	private static function click_to_load_content( $map_data, $iframe_src, $click_to_load_text, $static, $map_image ) {
 
 		if ( is_feed() ) {
 			return "<a href=\"{$iframe_src}\">$click_to_load_text</a>";
 		}
+
+		$width_style = self::dimension_style_value( $map_data['width'] );
+		$height_style = self::dimension_style_value( $map_data['height'] );
 
 		self::$add_loader_script = true;
 
 		$style = "height: {$height_style}; width: {$width_style}; background-color: #ddd;".
 			"background-image: url(".GEO_MASHUP_URL_PATH."/images/wp-gm-pale.png);".
 			"background-repeat: no-repeat;background-position:center; cursor: pointer;";
+
+		$name = $map_data['name'];
 
 		$content = "<div class=\"gm-map\" style=\"$style\" " .
 			"onclick=\"GeoMashupLoader.addMapFrame(this,'$iframe_src','{$height_style}','{$width_style}','{$name}')\">";
@@ -1361,6 +1355,33 @@ class GeoMashup {
 		}
 
 		return $content;
+	}
+
+	/**
+	 * @since 1.9.0
+	 * @param array $map_data
+	 * @param string $iframe_src
+	 * @return string
+	 */
+	private static function interactive_map_content( $map_data, $iframe_src ) {
+		return sprintf(
+			"<div class=\"gm-map\"><iframe name=\"%s\" src=\"%s\" style=\"height: %s; width: %s; border: none; overflow: hidden;\"></iframe></div>",
+			$map_data['name'],
+			$iframe_src,
+			self::dimension_style_value( $map_data['height'] ),
+			self::dimension_style_value( $map_data['width'] )
+		);
+	}
+
+	/**
+	 * Format a map dimension attribute as a CSS style value.
+	 * @since 1.9.0
+	 * @param string $dimension
+	 * @return string
+	 */
+	private static function dimension_style_value( $dimension ) {
+		$units = ( '%' === substr( $dimension, -1 ) ) ? '%' : 'px';
+		return intval( $dimension ) . $units;
 	}
 
 	/**
@@ -1401,14 +1422,7 @@ class GeoMashup {
 			return '<!--' . $map_data->get_error_message() . '-->';
 		}
 
-		$width_units = ( '%' === substr( $map_data['width'], -1 ) ) ? '%' : 'px';
-		$width = intval( $map_data['width'] );
-		$width_style = $width . $width_units;
-		$height_units = ( '%' === substr( $map_data['height'], -1 ) ) ? '%' : 'px';
-		$height = intval( $map_data['height'] );
-		$height_style = $height . $height_units;
-
-		$map_image = $static ? self::build_map_image( $atts, $map_data, $width, $height, $click_to_load, $click_to_load_text ) : '';
+		$map_image = $static ? self::build_map_image( $atts, $map_data, $click_to_load, $click_to_load_text ) : '';
 
 		$atts_md5 =  md5( serialize( $atts ) );
 		set_transient( 'gmm' . $atts_md5, $map_data, 20 );
@@ -1420,20 +1434,11 @@ class GeoMashup {
 		$iframe_src = self::build_home_url( $src_args + $atts );
 
 		if ($click_to_load == 'true') {
-			$content = self::click_to_load_content(
-				$iframe_src,
-				$click_to_load_text,
-				$width_style,
-				$height_style,
-				$map_data['name'],
-				$static,
-				$map_image
-			);
+			$content = self::click_to_load_content( $map_data, $iframe_src, $click_to_load_text, $static, $map_image );
 		} else if ( $static ) {
 			$content = "<div class=\"gm-map\">$map_image</div>";
 		} else {
-			$content =  "<div class=\"gm-map\"><iframe name=\"{$map_data['name']}\" src=\"{$iframe_src}\" " .
-				"style=\"height: $height_style; width: $width_style; border: none; overflow: hidden;\"></iframe></div>";
+			$content = self::interactive_map_content( $map_data, $iframe_src );
 		}
 
 		return apply_filters( 'geo_mashup_map_content', $content, $map_data );
