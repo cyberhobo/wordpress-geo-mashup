@@ -1250,6 +1250,7 @@ class GeoMashup {
 	 * @return mixed|string|void
 	 */
 	private static function build_map_image( &$atts, $map_data, $click_to_load, $click_to_load_text ) {
+		global $geo_mashup_options;
 
 		// Static maps have a limit of 50 markers: http://code.google.com/apis/maps/documentation/staticmaps/#Markers
 		$atts['limit'] = empty( $atts['limit'] ) ? 50 : $atts['limit'];
@@ -1258,8 +1259,9 @@ class GeoMashup {
 			return '';
 		}
 
+		$key = $geo_mashup_options->get( 'overall', 'googlev3_key' );
 		$dimensions = intval( $map_data['width'] ) . 'x' . intval( $map_data['height'] );
-		$map_image = '<img src="http://maps.google.com/maps/api/staticmap?size=' . $dimensions;
+		$map_image = '<img src="http://maps.google.com/maps/api/staticmap?size=' . $dimensions . '&amp;key=' . $key;
 		if ( count( $map_data['object_data']['objects'] ) == 1) {
 			$map_image .= '&amp;center=' . $map_data['object_data']['objects'][0]['lat'] . ',' .
 				$map_data['object_data']['objects'][0]['lng'];
