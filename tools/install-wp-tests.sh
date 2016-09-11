@@ -39,16 +39,27 @@ install_test_suite() {
 		local ioption='-i'
 	fi
 
-	if [ $WP_VERSION == 'latest' ]; then 
-		local DEV_BRANCH='trunk'
+
+	if [[ $WP_VERSION =~ [0-9]+\.[0-9]+(\.[0-9]+)? ]]; then
+		WP_TESTS_TAG="tags/$WP_VERSION"
+	elif [[ $WP_VERSION == 'nightly' || $WP_VERSION == 'trunk' ]]; then
+		WP_TESTS_TAG="trunk"
 	else
-		local DEV_BRANCH="tags/$WP_VERSION"
+		# http serves a single offer, whereas https serves multiple. we only want one
+		download http://api.wordpress.org/core/version-check/1.7/ /tmp/wp-latest.json
+		grep '[0-9]+\.[0-9]+(\.[0-9]+)?' /tmp/wp-latest.json
+		LATEST_VERSION=$(grep -o '"version":"[^"]*' /tmp/wp-latest.json | sed 's/"version":"//')
+		if [[ -z "$LATEST_VERSION" ]]; then
+			echo "Latest WordPress version could not be found"
+			exit 1
+		fi
+		WP_TESTS_TAG="tags/$LATEST_VERSION"
 	fi
 
 	# set up testing suite
 	mkdir -p $WP_TESTS_DIR
 	cd $WP_TESTS_DIR
-	svn co --quiet http://develop.svn.wordpress.org/$DEV_BRANCH/tests/phpunit/includes/
+	svn co --quiet http://develop.svn.wordpress.org/$WP_TESTS_TAG/tests/phpunit/includes/
 
 	wget -nv -O wp-tests-config.php http://develop.svn.wordpress.org/trunk/wp-tests-config-sample.php
 	sed $ioption "s:dirname( __FILE__ ) . '/src/':'$WP_CORE_DIR':" wp-tests-config.php
