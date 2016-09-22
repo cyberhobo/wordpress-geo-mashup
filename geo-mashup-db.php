@@ -826,8 +826,8 @@ class GeoMashupDB {
 
 		// Try GeoCoding services (google, nominatim, geonames) until one gives an answer
 		$results = array();
-		if ( 'googlev3' == $geo_mashup_options->get( 'overall', 'map_api' ) ) {
-			// Only try the google service if a google API is selected as the default
+		if ( $geo_mashup_options->get( 'overall', 'google_server_key' ) ) {
+			// Only try the google service if a google server key is present
 			$google_geocoder = new GeoMashupGoogleGeocoder( array( 'language' => $language ) );
 			$results = $google_geocoder->geocode( $query );
 		}
@@ -950,7 +950,7 @@ class GeoMashupDB {
 	private static function make_alternate_reverse_geocoder() {
 		global $geo_mashup_options;
 		// Choose a geocoding service based on the default API in use
-		if ( 'googlev3' == $geo_mashup_options->get( 'overall', 'map_api' ) ) {
+		if ( $geo_mashup_options->get( 'overall', 'google_server_key' ) ) {
 			return new GeoMashupGoogleGeocoder();
 		} else if ( 'openlayers' == $geo_mashup_options->get( 'overall', 'map_api' ) ) {
 			return new GeoMashupNominatimGeocoder();

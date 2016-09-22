@@ -166,7 +166,7 @@ function geo_mashup_options_page() {
 	}
 
 	$selected_tab = ( empty( $_POST['geo_mashup_selected_tab'] ) ) ? 0 : $_POST['geo_mashup_selected_tab'];
-	$google_key = $geo_mashup_options->get( 'overall', 'google_key' );
+	$google_server_key = $geo_mashup_options->get( 'overall', 'google_server_key' );
 	$include_taxonomies = $geo_mashup_options->get( 'overall', 'include_taxonomies' );
 	$map_api = $geo_mashup_options->get( 'overall', 'map_api' );
 
@@ -232,6 +232,29 @@ function geo_mashup_options_page() {
 				<table width="100%" cellspacing="2" cellpadding="5" class="editform">
 					<tr>
 						<th scope="row">
+							<?php _e( 'Google Server Key', 'GeoMashup' ); ?>
+						</th>
+						<td>
+							<input id="google_server_key"
+							       name="overall[google_server_key]"
+							       class="overall-submit"
+							       type="text"
+							       size="40"
+							       value="<?php echo esc_attr( $geo_mashup_options->get( 'overall', 'google_server_key' ) ); ?>" />
+							<a href="https://developers.google.com/maps/documentation/geocoding/start#get-a-key"
+								target="_blank"><?php _e('Get yours here', 'GeoMashup'); ?></a>
+							<p class="description">
+								<?php
+								_e(
+									'Used for address and location searches, recommended but not required. You can still use any map provider.',
+									'GeoMashup'
+								);
+								?>
+							</p>
+						</td>
+					</tr>
+					<tr>
+						<th scope="row">
 							<?php _e('Map Provider', 'GeoMashup'); ?>
 						</th>
 						<td>
@@ -256,13 +279,15 @@ function geo_mashup_options_page() {
 								type="text"
 								size="40"
 								value="<?php echo esc_attr( $geo_mashup_options->get ( 'overall', 'googlev3_key' ) ); ?>" />
-							<a href="https://developers.google.com/maps/documentation/javascript/tutorial#api_key"><?php _e('Get yours here', 'GeoMashup'); ?></a>
+							<a href="https://developers.google.com/maps/documentation/javascript/get-api-key"
+								target="_blank"><?php _e('Get yours here', 'GeoMashup'); ?></a>
 							<p class="description">
 								<?php
-								_e( 'It\'s easiest to leave this blank and use Google v3 without a key, but Google recommends using one. ' .
-									'If you do, follow the instructions carefully - there are multiple steps.',
+								_e(
+									'It may work to leave this blank and use Google maps without a key, but Google may start requiring it. Be ready to perform a few steps.',
 									'GeoMashup'
-								); ?>
+								);
+								?>
 							</p>
 						</td>
 					</tr>

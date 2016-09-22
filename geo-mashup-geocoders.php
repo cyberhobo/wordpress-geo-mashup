@@ -42,7 +42,7 @@ abstract class GeoMashupHttpGeocoder {
 	/**
 	 * Constructor
 	 *
-	 * @param string $args Optional array of arguments:
+	 * @param array $args Optional array of arguments:
 	 * 		language - two digit language code, defaults to blog language
 	 * 		max_results - maximum number of results to fetch
 	 * 		default http params - array of WP_Http request parameters, including timeout
@@ -54,10 +54,9 @@ abstract class GeoMashupHttpGeocoder {
 			'request_params' => array( 'timeout' => 3.0 )
 		);
 		$args = wp_parse_args( $args, $defaults );
-		extract( $args );
-		$this->language = GeoMashupDB::primary_language_code( $language );
-		$this->max_results = absint( $max_results );
-		$this->request_params = $request_params;
+		$this->language = GeoMashupDB::primary_language_code( $args['language'] );
+		$this->max_results = absint( $args['max_results'] );
+		$this->request_params = $args['request_params'];
 		if( !class_exists( 'WP_Http' ) )
 			include_once( ABSPATH . WPINC. '/class-http.php' );
 		$this->http = new WP_Http();
@@ -179,7 +178,6 @@ class GeoMashupGeonamesGeocoder extends GeoMashupHttpGeocoder {
 	}
 
 	public function reverse_geocode( $lat, $lng ) {
-		global $geo_mashup_options;
 
 		if ( !is_numeric( $lat ) or !is_numeric( $lng ) ) // Bad Request
 			return new WP_Error( 'bad_reverse_geocode_request', __( 'Reverse geocoding requires numeric coordinates.', 'GeoMashup' ) );
@@ -335,7 +333,8 @@ class GeoMashupGoogleGeocoder extends GeoMashupHttpGeocoder {
 		global $geo_mashup_options;
 
 		$google_geocode_url = 'https://maps.google.com/maps/api/geocode/json?' . $query_type . '=' .
-			self::url_utf8_encode( $query ) . '&language=' . $this->language;
+			self::url_utf8_encode( $query ) . '&language=' . $this->language .
+			'&key=' . self::url_utf8_encode( $geo_mashup_options->get( 'overall', 'google_server_key' ) );
 
 		$response = $this->http->get( $google_geocode_url, $this->request_params );
 		if ( is_wp_error( $response ) ) {
