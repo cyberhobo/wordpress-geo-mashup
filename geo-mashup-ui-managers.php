@@ -23,7 +23,7 @@ class GeoMashupUIManager {
 	 * @since 1.3
 	 *
 	 * @param string $name The class name of the manager.
-	 * @return GeoMashupUIPostManager|GeoMashupUIUserManager|GeoMashupUICommentManager The singleton object.
+	 * @return GeoMashupPostUIManager|GeoMashupUserUIManager|GeoMashupCommentUIManager The singleton object.
 	 */
 	public static function get_instance( $name ) {
 		static $instances = array();
@@ -77,30 +77,7 @@ class GeoMashupUIManager {
 		$geo_mashup_url_path = GEO_MASHUP_URL_PATH;
 		wp_localize_script( 'mxn-core', 'geo_mashup_location_editor_settings', compact( 'map_api', 'copy_geodata', 'ajax_url', 'geo_mashup_url_path', 'geonames_username' ) );
 		$required_scripts = array( 'jquery');
-		if ( 'google' == $map_api ) {
-			wp_register_script( 
-			  'google-maps-2', 
-			  '//maps.google.com/maps?file=api&amp;v=2&amp;sensor=false&amp;key=' . $geo_mashup_options->get( 'overall', 'google_key' ) . '&amp;hl=' . GeoMashup::get_language_code(),
-			  null, 
-			  '', 
-			  true );
-			 
-			GeoMashup::register_script( 
-				'mxn-google-2', 
-				'js/mxn/mxn.google.core.js', 
-				array( 'mxn-core', 'google-maps-2' ), 
-				GEO_MASHUP_VERSION, 
-				true );
-				
-			GeoMashup::register_script( 
-				'mxn-google-2-gm', 
-				'js/mxn/mxn.google.geo-mashup.js', 
-				array( 'mxn-google-2' ), 
-				GEO_MASHUP_VERSION, 
-				true );
-				
-			$required_scripts[] = 'mxn-google-2-gm';
-		} else if ( 'googlev3' == $map_api ) {
+		if ( 'googlev3' == $map_api ) {
 			wp_register_script(
 					'google-maps-3',
 					'//maps.google.com/maps/api/js?key=' . $geo_mashup_options->get( 'overall', 'googlev3_key' ) . '&amp;language=' . GeoMashup::get_language_code(),

@@ -2,9 +2,9 @@
 # This file is distributed under the same license as the Geo Mashup package.
 msgid ""
 msgstr ""
-"Project-Id-Version: Geo Mashup 1.8.9\n"
+"Project-Id-Version: Geo Mashup 1.9.0\n"
 "Report-Msgid-Bugs-To: http://wordpress.org/tag/geo-mashup\n"
-"POT-Creation-Date: 2016-06-28 17:37:56+00:00\n"
+"POT-Creation-Date: 2016-09-22 23:11:46+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -290,66 +290,66 @@ msgstr ""
 msgid "Initialized %d geo dates from corresponding post dates."
 msgstr ""
 
-#: geo-mashup-db.php:1811
+#: geo-mashup-db.php:1794
 msgid "A location must have an ID or coordinates to be saved."
 msgstr ""
 
-#: geo-mashup-geocoders.php:107 options.php:64
+#: geo-mashup-geocoders.php:106 options.php:64
 msgid "%s Multibyte string functions %s are not installed."
 msgstr ""
 
-#: geo-mashup-geocoders.php:112
+#: geo-mashup-geocoders.php:111
 msgid "Geocoding will only work if \"%s\" is UTF-8 text."
 msgstr ""
 
-#: geo-mashup-geocoders.php:185 geo-mashup-geocoders.php:409
-#: geo-mashup-geocoders.php:473
+#: geo-mashup-geocoders.php:183 geo-mashup-geocoders.php:408
+#: geo-mashup-geocoders.php:472
 msgid "Reverse geocoding requires numeric coordinates."
 msgstr ""
 
-#: geo-mashup-geocoders.php:364
+#: geo-mashup-geocoders.php:363
 msgid "Failed to geocode \"%s\" with status %s and body %s."
 msgstr ""
 
-#: geo-mashup-options.php:372 geo-mashup-options.php:380
-#: geo-mashup-options.php:386 geo-mashup-options.php:396
-#: geo-mashup-options.php:405 geo-mashup-options.php:414
-#: geo-mashup-options.php:437 geo-mashup-options.php:442
-#: geo-mashup-options.php:455 geo-mashup-options.php:488
+#: geo-mashup-options.php:375 geo-mashup-options.php:383
+#: geo-mashup-options.php:389 geo-mashup-options.php:399
+#: geo-mashup-options.php:408 geo-mashup-options.php:417
+#: geo-mashup-options.php:438 geo-mashup-options.php:443
+#: geo-mashup-options.php:456 geo-mashup-options.php:488
 #: geo-mashup-options.php:504 geo-mashup-options.php:517
 #: geo-mashup-options.php:526
 msgid "is invalid for"
 msgstr ""
 
-#: geo-mashup-options.php:373 geo-mashup-options.php:387
+#: geo-mashup-options.php:376 geo-mashup-options.php:390
 msgid ", which must be a valid map type (see documentation)"
 msgstr ""
 
-#: geo-mashup-options.php:381
+#: geo-mashup-options.php:384
 msgid ", which must be an array of valid map types (see documentation)"
 msgstr ""
 
-#: geo-mashup-options.php:397
+#: geo-mashup-options.php:400
 msgid ", which must be a valid map control (see documentation)"
 msgstr ""
 
-#: geo-mashup-options.php:406
+#: geo-mashup-options.php:409
 msgid ", which must be a valid map provider."
 msgstr ""
 
-#: geo-mashup-options.php:415
+#: geo-mashup-options.php:418
 msgid ", which must be a valid clustering library."
 msgstr ""
 
-#: geo-mashup-options.php:438
+#: geo-mashup-options.php:439
 msgid ", which must be a string"
 msgstr ""
 
-#: geo-mashup-options.php:443
+#: geo-mashup-options.php:444
 msgid ", which must not contain XML tags."
 msgstr ""
 
-#: geo-mashup-options.php:456
+#: geo-mashup-options.php:457
 msgid ", which must be a number"
 msgstr ""
 
@@ -474,116 +474,110 @@ msgstr ""
 msgid "Results Page:"
 msgstr ""
 
-#: geo-mashup-ui-managers.php:281
+#: geo-mashup-ui-managers.php:258
 msgid "Object location not saved - invalid request."
 msgstr ""
 
-#: geo-mashup-ui-managers.php:430 geo-mashup-ui-managers.php:623
+#: geo-mashup-ui-managers.php:407 geo-mashup-ui-managers.php:600
 msgid "Location"
 msgstr ""
 
-#: geo-mashup-ui-managers.php:745
+#: geo-mashup-ui-managers.php:722
 msgid "Address not found - try making it less detailed"
 msgstr ""
 
-#: geo-mashup-ui-managers.php:929
+#: geo-mashup-ui-managers.php:906
 msgid "Written from (location)"
 msgstr ""
 
-#: geo-mashup-ui-managers.php:931
+#: geo-mashup-ui-managers.php:908
 msgid "Loading..."
 msgstr ""
 
-#: geo-mashup.php:485
+#: geo-mashup.php:492
 msgid "No object id posted."
 msgstr ""
 
-#: geo-mashup.php:502
+#: geo-mashup.php:509
 msgid "Location updated."
 msgstr ""
 
-#: geo-mashup.php:504
+#: geo-mashup.php:511
 msgid "Location deleted."
 msgstr ""
 
-#: geo-mashup.php:506
+#: geo-mashup.php:513
 msgid "Location added."
 msgstr ""
 
-#: geo-mashup.php:1062
-msgid "Geo Mashup found no objects to map in this context"
-msgstr ""
-
-#: geo-mashup.php:1080
-msgid "Geo Mashup found no current object to map"
-msgstr ""
-
-#: geo-mashup.php:1084
-msgid "Geo Mashup omitted a map for an object with no location"
-msgstr ""
-
-#: geo-mashup.php:1091
-msgid "Geo Mashup map omitted to avoid nesting maps"
-msgstr ""
-
-#: geo-mashup.php:1125
+#: geo-mashup.php:931
 msgid "Geo Mashup omitted a map with no located objects found."
 msgstr ""
 
-#: geo-mashup.php:1344
+#: geo-mashup.php:1104
+msgid "Geo Mashup found no objects to map in this context"
+msgstr ""
+
+#: geo-mashup.php:1130
+msgid "Geo Mashup found no current object to map"
+msgstr ""
+
+#: geo-mashup.php:1138
+msgid "Geo Mashup omitted a map for an object with no location"
+msgstr ""
+
+#: geo-mashup.php:1158
+msgid "Geo Mashup map omitted to avoid nesting maps"
+msgstr ""
+
+#: geo-mashup.php:1582
 msgid ""
 "You must add a description to this category to use this Geo Mashup feature."
 msgstr ""
 
-#: geo-mashup.php:1371 options.php:217
+#: geo-mashup.php:1609 options.php:216
 msgid "Geo Mashup Options"
 msgstr ""
 
-#. #-#-#-#-#  GeoMashup.pot (Geo Mashup 1.8.9)  #-#-#-#-#
+#. #-#-#-#-#  GeoMashup.pot (Geo Mashup 1.9.0)  #-#-#-#-#
 #. Plugin Name of the plugin/theme
-#: geo-mashup.php:1371
+#: geo-mashup.php:1609
 msgid "Geo Mashup"
 msgstr ""
 
-#: geo-mashup.php:1389
+#: geo-mashup.php:1627
 msgid ""
 "Geo Mashup now includes search, deactivating the old %s plugin. It's safe to "
 "delete it."
 msgstr ""
 
-#: geo-mashup.php:1397
-msgid ""
-"Geo Mashup requires a Google API key in the <a href=\"%s\">settings</a> "
-"before it will work."
-msgstr ""
-
-#: geo-mashup.php:1401
+#: geo-mashup.php:1634
 msgid ""
 "Geo Mashup needs to upgrade its database, visit the <a href=\"%s\">settings</"
 "a> to do it now."
 msgstr ""
 
-#: geo-mashup.php:1422
+#: geo-mashup.php:1655
 msgid "Settings"
 msgstr ""
 
-#: geo-mashup.php:1439
+#: geo-mashup.php:1672
 msgid "Documentation"
 msgstr ""
 
-#: geo-mashup.php:1441
+#: geo-mashup.php:1674
 msgid "Donate"
 msgstr ""
 
-#: geo-mashup.php:1635
+#: geo-mashup.php:1868
 msgid "Show on map"
 msgstr ""
 
-#: geo-mashup.php:1646
+#: geo-mashup.php:1879
 msgid "Geotag Icon"
 msgstr ""
 
-#: geo-mashup.php:1809
+#: geo-mashup.php:2042
 msgid ""
 "Enable the geo search widget in the Geo Mashup settings to power the nearby "
 "list!"
@@ -603,7 +597,7 @@ msgstr ""
 msgid "Geocoding and other web services may not work properly."
 msgstr ""
 
-#: options.php:75 render-map.php:550
+#: options.php:75 render-map.php:511
 msgid ""
 "WordPress transients may not be working. Try deactivating or reconfiguring "
 "caching plugins."
@@ -680,379 +674,369 @@ msgid "Only"
 msgstr ""
 
 #: options.php:158
-msgid "Google v2"
-msgstr ""
-
-#: options.php:159
 msgid "Google v3"
 msgstr ""
 
-#: options.php:160
+#: options.php:159
 msgid "OpenLayers"
 msgstr ""
 
-#: options.php:161
+#: options.php:160
 msgid "Leaflet"
 msgstr ""
 
-#: options.php:164
+#: options.php:163
 msgid "auto"
 msgstr ""
 
-#: options.php:220
+#: options.php:219
 msgid "Overall"
 msgstr ""
 
-#: options.php:221
+#: options.php:220
 msgid "Single Maps"
 msgstr ""
 
-#: options.php:222
+#: options.php:221
 msgid "Global Maps"
 msgstr ""
 
-#: options.php:223
+#: options.php:222
 msgid "Contextual Maps"
 msgstr ""
 
-#: options.php:224
+#: options.php:223
 msgid "Tests"
 msgstr ""
 
-#: options.php:232
+#: options.php:231
 msgid "Overall Geo Mashup Settings"
 msgstr ""
 
-#: options.php:236
-msgid "Map Provider"
+#: options.php:235
+msgid "Google Server Key"
 msgstr ""
 
-#: options.php:251
-msgid "Google v2 has expired and will be removed in version 1.9."
-msgstr ""
-
-#: options.php:259 options.php:278
-msgid "Google API Key"
-msgstr ""
-
-#: options.php:267 options.php:286
+#: options.php:245 options.php:283
 msgid "Get yours here"
 msgstr ""
 
-#: options.php:270
-msgid "This setting is required for Geo Mashup to work."
+#: options.php:248
+msgid ""
+"Used for address and location searches, recommended but not required. You "
+"can still use any map provider."
 msgstr ""
 
-#: options.php:298
+#: options.php:258
+msgid "Map Provider"
+msgstr ""
+
+#: options.php:274
+msgid "Google API Key"
+msgstr ""
+
+#: options.php:286
+msgid ""
+"It may work to leave this blank and use Google maps without a key, but "
+"Google may start requiring it. Be ready to perform a few steps."
+msgstr ""
+
+#: options.php:296
 msgid "Generated links go here"
 msgstr ""
 
-#: options.php:299
+#: options.php:297
 msgid "Global Mashup Page"
 msgstr ""
 
-#: options.php:306
+#: options.php:304
 msgid "&mdash; Select &mdash;"
 msgstr ""
 
-#: options.php:312
+#: options.php:310
 msgid "Geo Mashup will use this page for generated location links"
 msgstr ""
 
-#: options.php:317
+#: options.php:315
 msgid "Collect Location For"
 msgstr ""
 
-#: options.php:330
+#: options.php:328
 msgid "Users"
 msgstr ""
 
-#: options.php:335
+#: options.php:333
 msgid "Comments"
 msgstr ""
 
-#: options.php:339
+#: options.php:337
 msgid "Enable Geo Search"
 msgstr ""
 
-#: options.php:347
+#: options.php:345
 msgid ""
 "Creates a customizable widget and other features for performing radius "
 "searches."
 msgstr ""
 
-#: options.php:352
+#: options.php:350
 msgid "Include Taxonomies"
 msgstr ""
 
-#: options.php:363
+#: options.php:361
 msgid ""
 "Makes legends, colors, and other features available. Minimize use of these "
 "for best performance."
 msgstr ""
 
-#: options.php:368
+#: options.php:366
 msgid "Copy Geodata Meta Fields"
 msgstr ""
 
-#: options.php:379
+#: options.php:377
 msgid ""
 "Copy coordinates to and from %s geodata meta fields %s, for integration with "
 "the Geolocation and other plugins."
 msgstr ""
 
-#: options.php:385
+#: options.php:383
 msgid "Geocode Custom Field"
 msgstr ""
 
-#: options.php:394
+#: options.php:392
 msgid ""
 "Comma separated keys of custom fields to be geocoded when saved. Multiple "
 "fields will be combined in order before geocoding. Saves a location for the "
 "post if found."
 msgstr ""
 
-#: options.php:399
+#: options.php:397
 msgid "Enable Reverse Geocoding"
 msgstr ""
 
-#: options.php:407
+#: options.php:405
 msgid "Try to look up missing address fields for new locations."
 msgstr ""
 
-#: options.php:413
+#: options.php:411
 msgid "Bulk Reverse Geocode"
 msgstr ""
 
-#: options.php:415
+#: options.php:413
 msgid "Start"
 msgstr ""
 
-#: options.php:417
+#: options.php:415
 msgid ""
 "Try to look up missing address fields for existing locations. Could be slow."
 msgstr ""
 
-#: options.php:423
+#: options.php:421
 msgid "Use Theme Style Sheet with Maps"
 msgstr ""
 
-#: options.php:436
+#: options.php:434
 msgid "Obscure Settings"
 msgstr ""
 
-#: options.php:440
+#: options.php:438
 msgid "Reveal some less commonly used settings."
 msgstr ""
 
-#: options.php:445
+#: options.php:443
 msgid "GeoNames ID"
 msgstr ""
 
-#: options.php:454
+#: options.php:452
 msgid ""
 "Your %sGeoNames username%s, used with GeoNames API requests. Leave the "
 "default value to use Geo Mashup's."
 msgstr ""
 
-#: options.php:461
-msgid "AdSense For Search ID"
-msgstr ""
-
-#: options.php:470
-msgid ""
-"Your client ID, used with the Google Bar. Leave the default value to use Geo "
-"Mashup's :)."
-msgstr ""
-
-#: options.php:475
+#: options.php:458
 msgid "Add Category Links"
 msgstr ""
 
-#: options.php:483
+#: options.php:466
 msgid ""
 "Add map links to category lists. Categories must have descriptions for this "
 "to work."
 msgstr ""
 
-#: options.php:488
+#: options.php:471
 msgid "Category Link Separator"
 msgstr ""
 
-#: options.php:500
+#: options.php:483
 msgid "Category Link Text"
 msgstr ""
 
-#: options.php:511
+#: options.php:494
 msgid "Category Link Zoom Level"
 msgstr ""
 
-#: options.php:523 options.php:639 options.php:778 options.php:1025
+#: options.php:506 options.php:612 options.php:739 options.php:974
 msgid "0 is zoomed all the way out."
 msgstr ""
 
-#: options.php:529 options.php:664 options.php:668 options.php:912
-#: options.php:1071
+#: options.php:512 options.php:637 options.php:641 options.php:873
+#: options.php:1020
 msgid "Update Options"
 msgstr ""
 
-#: options.php:533
+#: options.php:516
 msgid "Default settings for maps of a single located post."
 msgstr ""
 
-#: options.php:536 options.php:671 options.php:918
+#: options.php:519 options.php:644 options.php:879
 msgid "Map Width"
 msgstr ""
 
-#: options.php:543 options.php:678 options.php:925
+#: options.php:526 options.php:651 options.php:886
 msgid "Pixels, or append %."
 msgstr ""
 
-#: options.php:547 options.php:682 options.php:929
+#: options.php:530 options.php:655 options.php:890
 msgid "Map Height"
 msgstr ""
 
-#: options.php:554 options.php:689 options.php:936
+#: options.php:537 options.php:662 options.php:897
 msgid "px"
 msgstr ""
 
-#: options.php:558 options.php:693 options.php:940
+#: options.php:541 options.php:666 options.php:901
 msgid "Map Control"
 msgstr ""
 
-#: options.php:572 options.php:707 options.php:954
+#: options.php:555 options.php:680 options.php:915
 msgid "Default Map Type"
 msgstr ""
 
-#: options.php:586 options.php:721 options.php:968
+#: options.php:569 options.php:694 options.php:929
 msgid "Add Map Type Control"
 msgstr ""
 
-#: options.php:601 options.php:736 options.php:983
+#: options.php:584 options.php:709 options.php:944
 msgid "Add Overview Control"
 msgstr ""
 
-#: options.php:610 options.php:747 options.php:994
-msgid "Add Google Bar"
-msgstr ""
-
-#: options.php:619 options.php:758 options.php:1005
+#: options.php:592 options.php:719 options.php:954
 msgid "Enable Scroll Wheel Zoom"
 msgstr ""
 
-#: options.php:627 options.php:766 options.php:1013
+#: options.php:600 options.php:727 options.php:962
 msgid "Default Zoom Level"
 msgstr ""
 
-#: options.php:644 options.php:855 options.php:1051
+#: options.php:617 options.php:816 options.php:1000
 msgid "Click To Load"
 msgstr ""
 
-#: options.php:654 options.php:865 options.php:1061
+#: options.php:627 options.php:826 options.php:1010
 msgid "Click To Load Text"
 msgstr ""
 
-#: options.php:667
+#: options.php:640
 msgid "Default settings for global maps of located items."
 msgstr ""
 
-#: options.php:784
+#: options.php:745
 msgid "Cluster Markers Until Zoom Level"
 msgstr ""
 
-#: options.php:792
+#: options.php:753
 msgid "Highest zoom level to cluster markers, or blank for no clustering."
 msgstr ""
 
-#: options.php:798 options.php:1030
+#: options.php:759 options.php:979
 msgid "Marker Selection Behaviors"
 msgstr ""
 
-#: options.php:803 options.php:1035
+#: options.php:764 options.php:984
 msgid "Open info window"
 msgstr ""
 
-#: options.php:807 options.php:1039
+#: options.php:768 options.php:988
 msgid "Highlight"
 msgstr ""
 
-#: options.php:811 options.php:1043
+#: options.php:772 options.php:992
 msgid "Center"
 msgstr ""
 
-#: options.php:815 options.php:1047
+#: options.php:776 options.php:996
 msgid "Show Geo Attachments"
 msgstr ""
 
-#: options.php:819
+#: options.php:780
 msgid "Automatic Selection"
 msgstr ""
 
-#: options.php:827
+#: options.php:788
 msgid "Selects the linked or most recent item when the map loads."
 msgstr ""
 
-#: options.php:832
+#: options.php:793
 msgid "Show Only Most Recent Items"
 msgstr ""
 
-#: options.php:839
+#: options.php:800
 msgid "Number of items to show, leave blank for all"
 msgstr ""
 
-#: options.php:843
+#: options.php:804
 msgid "Show Future Posts"
 msgstr ""
 
-#: options.php:880
+#: options.php:841
 msgid "Color"
 msgstr ""
 
-#: options.php:881
+#: options.php:842
 msgid "Show Connecting Line Until Zoom Level (0-20 or none)"
 msgstr ""
 
-#: options.php:915
+#: options.php:876
 msgid ""
 "Default settings for contextual maps, which include just the items shown on "
 "a page, for example."
 msgstr ""
 
-#: options.php:1075
+#: options.php:1024
 msgid "Some checks that Geo Mashup is working properly."
 msgstr ""
 
-#: options.php:1076
+#: options.php:1025
 msgid ""
 "Not working in Firefox yet - free Geo Mashup license to the first to figure "
 "out why!"
 msgstr ""
 
-#: options.php:1082
+#: options.php:1031
 msgid "Run Tests"
 msgstr ""
 
-#: options.php:1088
+#: options.php:1037
 msgid "Update Log"
 msgstr ""
 
-#: options.php:1092
+#: options.php:1041
 msgid "Delete Log"
 msgstr ""
 
-#: options.php:1093
+#: options.php:1042
 msgid "You can keep this log as a record, future entries will be appended."
 msgstr ""
 
-#: options.php:1097
+#: options.php:1046
 msgid "View Update Log"
 msgstr ""
 
-#: options.php:1099
+#: options.php:1048
 msgid "Geo Mashup Documentation"
 msgstr ""
 
-#: render-map.php:488
+#: render-map.php:449
 msgid "Check/Uncheck All"
 msgstr ""
 

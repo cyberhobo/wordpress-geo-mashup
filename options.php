@@ -155,7 +155,6 @@ function geo_mashup_options_page() {
 		'only' => __('Only', 'GeoMashup'));
 
 	$mapApis = Array(
-		'google' => __( 'Google v2', 'GeoMashup' ),
 		'googlev3' => __( 'Google v3', 'GeoMashup' ),
 		'openlayers' => __( 'OpenLayers', 'GeoMashup' ),
 		'leaflet' => __( 'Leaflet', 'GeoMashup' ),
@@ -167,7 +166,7 @@ function geo_mashup_options_page() {
 	}
 
 	$selected_tab = ( empty( $_POST['geo_mashup_selected_tab'] ) ) ? 0 : $_POST['geo_mashup_selected_tab'];
-	$google_key = $geo_mashup_options->get( 'overall', 'google_key' );
+	$google_server_key = $geo_mashup_options->get( 'overall', 'google_server_key' );
 	$include_taxonomies = $geo_mashup_options->get( 'overall', 'include_taxonomies' );
 	$map_api = $geo_mashup_options->get( 'overall', 'map_api' );
 
@@ -233,6 +232,29 @@ function geo_mashup_options_page() {
 				<table width="100%" cellspacing="2" cellpadding="5" class="editform">
 					<tr>
 						<th scope="row">
+							<?php _e( 'Google Server Key', 'GeoMashup' ); ?>
+						</th>
+						<td>
+							<input id="google_server_key"
+							       name="overall[google_server_key]"
+							       class="overall-submit"
+							       type="text"
+							       size="40"
+							       value="<?php echo esc_attr( $geo_mashup_options->get( 'overall', 'google_server_key' ) ); ?>" />
+							<a href="https://developers.google.com/maps/documentation/geocoding/start#get-a-key"
+								target="_blank"><?php _e('Get yours here', 'GeoMashup'); ?></a>
+							<p class="description">
+								<?php
+								_e(
+									'Used for address and location searches, recommended but not required. You can still use any map provider.',
+									'GeoMashup'
+								);
+								?>
+							</p>
+						</td>
+					</tr>
+					<tr>
+						<th scope="row">
 							<?php _e('Map Provider', 'GeoMashup'); ?>
 						</th>
 						<td>
@@ -245,34 +267,8 @@ function geo_mashup_options_page() {
 									?>><?php echo esc_html( $label ); ?></option>
 								<?php endforeach; ?>
 							</select>
-							<?php if ( 'google' == $map_api ) : ?>
-								<span class="description">
-									<a href="https://developers.google.com/maps/documentation/javascript/v2/reference"><?php
-									_e( 'Google v2 has expired and will be removed in version 1.9.', 'GeoMashup' );
-									?></a>
-								</span>
-							<?php endif; ?>
 						</td>
 					</tr>
-					<?php if ( 'google' == $map_api ) : ?>
-					<tr>
-						<th width="33%" scope="row"><?php _e('Google API Key', 'GeoMashup'); ?></th>
-						<td<?php if ( empty( $google_key ) ) echo ' class="error"'; ?>>
-							<input id="google_key" 
-								name="overall[google_key]"
-								class="overall-submit"
-								type="text"
-								size="40"
-								value="<?php echo esc_attr( $geo_mashup_options->get ( 'overall', 'google_key' ) ); ?>" />
-							<a href="http://maps.google.com/apis/maps/signup.html"><?php _e('Get yours here', 'GeoMashup'); ?></a>
-							<?php if ( empty( $google_key ) ) : ?>
-								<p class="description">
-								<?php _e( 'This setting is required for Geo Mashup to work.', 'GeoMashup' ); ?>
-								</p>
-							<?php endif; ?>
-						</td>
-					</tr>
-					<?php endif; ?>
 					<?php if ( 'googlev3' == $map_api ) : ?>
 					<tr>
 						<th width="33%" scope="row"><?php _e('Google API Key', 'GeoMashup'); ?></th>
@@ -283,13 +279,15 @@ function geo_mashup_options_page() {
 								type="text"
 								size="40"
 								value="<?php echo esc_attr( $geo_mashup_options->get ( 'overall', 'googlev3_key' ) ); ?>" />
-							<a href="https://developers.google.com/maps/documentation/javascript/tutorial#api_key"><?php _e('Get yours here', 'GeoMashup'); ?></a>
+							<a href="https://developers.google.com/maps/documentation/javascript/get-api-key"
+								target="_blank"><?php _e('Get yours here', 'GeoMashup'); ?></a>
 							<p class="description">
 								<?php
-								_e( 'It\'s easiest to leave this blank and use Google v3 without a key, but Google recommends using one. ' .
-									'If you do, follow the instructions carefully - there are multiple steps.',
+								_e(
+									'It may work to leave this blank and use Google maps without a key, but Google may start requiring it. Be ready to perform a few steps.',
 									'GeoMashup'
-								); ?>
+								);
+								?>
 							</p>
 						</td>
 					</tr>
@@ -456,22 +454,7 @@ function geo_mashup_options_page() {
 							?></span>
 						</td>
 					</tr>
-					<?php if ( 'google' == $map_api ) : ?>
 					<tr class="obscure">
-						<th scope="row"><?php _e('AdSense For Search ID', 'GeoMashup'); ?></th>
-						<td>
-							<input id="adsense_code_text"
-								name="overall[adsense_code]"
-								class="overall-submit"
-								type="text"
-								size="35"
-								value="<?php echo esc_attr( $geo_mashup_options->get ( 'overall', 'adsense_code' ) ); ?>" /><br/>
-							<span class="description"><?php
-								_e('Your client ID, used with the Google Bar. Leave the default value to use Geo Mashup\'s :).', 'GeoMashup');
-							?></span>
-						</td>
-					</tr>
-					<?php endif; ?>					<tr class="obscure">
 						<th scope="row"><?php _e('Add Category Links', 'GeoMashup'); ?></th>
 						<td>
 							<input id="add_category_links" name="overall[add_category_links]" type="checkbox" value="true"<?php 
@@ -605,16 +588,6 @@ function geo_mashup_options_page() {
 							}
 						?> /></td>
 					</tr>
-					<?php if ( 'google' == $map_api ) : ?>
-					<tr>
-						<th scope="row"><?php _e('Add Google Bar', 'GeoMashup'); ?></th>
-						<td><input id="in_post_add_google_bar" name="single_map[add_google_bar]" type="checkbox" value="true"<?php 
-							if ( $geo_mashup_options->get ( 'single_map', 'add_google_bar' ) == 'true' ) {
-								echo ' checked="checked"';
-							}
-						?> /></td>
-					</tr>
-					<?php endif; ?>
 					<tr>
 						<th scope="row"><?php _e('Enable Scroll Wheel Zoom', 'GeoMashup'); ?></th>
 						<td><input id="in_post_enable_scroll_wheel_zoom" name="single_map[enable_scroll_wheel_zoom]" type="checkbox" value="true"<?php 
@@ -742,18 +715,6 @@ function geo_mashup_options_page() {
 							?> />
 						</td>
 					</tr>
-					<?php if ( 'google' == $map_api ) : ?>
-					<tr>
-						<th scope="row"><?php _e('Add Google Bar', 'GeoMashup'); ?></th>
-						<td>
-							<input id="add_google_bar" name="global_map[add_google_bar]" type="checkbox" value="true"<?php 
-								if ($geo_mashup_options->get ( 'global_map', 'add_google_bar' ) == 'true') {
-									echo ' checked="checked"';
-								}
-							?> />
-						</td>
-					</tr>
-					<?php endif; ?>
 					<tr>
 						<th scope="row"><?php _e('Enable Scroll Wheel Zoom', 'GeoMashup'); ?></th>
 						<td><input id="enable_scroll_wheel_zoom" name="global_map[enable_scroll_wheel_zoom]" type="checkbox" value="true"<?php 
@@ -779,7 +740,7 @@ function geo_mashup_options_page() {
 							?></span>
 						</td>
 					</tr>
-					<?php if ( 'google' == substr( $map_api, 0, 6 ) ) : ?>
+					<?php if ( 'googlev3' == $map_api ) : ?>
 					<tr>
 						<th scope="row"><?php _e('Cluster Markers Until Zoom Level', 'GeoMashup'); ?></th>
 						<td>
@@ -989,18 +950,6 @@ function geo_mashup_options_page() {
 							?> />
 						</td>
 					</tr>
-					<?php if ( 'google' == $map_api ) : ?>
-					<tr>
-						<th scope="row"><?php _e('Add Google Bar', 'GeoMashup'); ?></th>
-						<td>
-							<input id="context_add_google_bar" name="context_map[add_google_bar]" type="checkbox" value="true"<?php 
-							if ($geo_mashup_options->get ( 'context_map', 'add_google_bar' ) == 'true') {
-								echo ' checked="checked"';
-							}
-						?> />
-						</td>
-					</tr>
-					<?php endif; ?>
 					<tr>
 						<th scope="row"><?php _e('Enable Scroll Wheel Zoom', 'GeoMashup'); ?></th>
 						<td><input id="context_enable_scroll_wheel_zoom" name="context_map[enable_scroll_wheel_zoom]" type="checkbox" value="true"<?php

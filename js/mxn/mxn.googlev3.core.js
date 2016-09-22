@@ -17,7 +17,8 @@ Mapstraction: {
 			navigationControl: false,
 			navigationControlOptions: null,
 			scrollwheel: false,
-			disableDoubleClickZoom: true
+			disableDoubleClickZoom: true,
+			streetViewControl: true
 		};
 
 		// Background color can only be set at construction
@@ -55,6 +56,9 @@ Mapstraction: {
 			if (this.addControlsArgs.overview) {
 				myOptions.overviewMapControl = true;
 				myOptions.overviewMapControlOptions = {opened: true};
+			}
+			if (this.addControlsArgs.street_view === false) {
+				myOptions.streetViewControl = false;
 			}
 		}
 	
@@ -234,6 +238,16 @@ Mapstraction: {
 			myOptions = { overviewMapControl: false };
 			map.setOptions(myOptions);
 			this.addControlsArgs.overview = false;
+		}
+
+		if ('street_view' in args) {
+			map.setOptions( { streetViewControl: true } );
+			this.addControlsArgs.street_view = true;
+		}
+
+		else {
+			map.setOptions( { streetViewControl: false } );
+			this.addControlsArgs.street_view = false;
 		}
 	},
 

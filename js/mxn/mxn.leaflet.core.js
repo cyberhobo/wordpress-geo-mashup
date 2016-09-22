@@ -45,34 +45,20 @@ Mapstraction: {
 			map_type: null
 		};
 
-		// CODE HEALTH WARNING
-		// The MapQuest Open Aerial Tiles, via http://oatile1.mqcdn.com, is being obsoleted
-		// on 15/2/13.
-		// MapQuest OSM Tiles (mxn.Mapstraction.ROAD) are via:
-		//		http://otile{s}.mqcdn.com/tiles/1.0.0/map/{z}/{x}/{y}.jpg
-		// MapQuest Open Aerial Tiles (mxn.Mapstraction.SATELLITE) are now via:
-		//		http://otile{s}.mqcdn.com/tiles/1.0.0/sat/{z}/{x}/{y}.jpg
-		//
-		// mxn.Mapstraction.HYBRID and mxn.Mapstraction.PHYSICAL remain unavailable via
-		// Leaflet support
-		//
-		// Also note that the MQ Open Aerial tiles are only available at zoom levels 0-11
-		// outside of the US.
-
 		this.road_tile = {
 			name: 'Roads',
-			attribution: 'Tiles Courtesy of <a href="http://www.mapquest.com/" target="_blank">MapQuest</a> <img src="http://developer.mapquest.com/content/osm/mq_logo.png">',
-			url: 'http://otile{s}.mqcdn.com/tiles/1.0.0/map/{z}/{x}/{y}.jpg'
+			attribution: 'Tiles &copy; Esri &mdash; Source: Esri, DeLorme, NAVTEQ, USGS, Intermap, iPC, NRCAN, Esri Japan, METI, Esri China (Hong Kong), Esri (Thailand), TomTom, 2012',
+			url: 'http://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}'
 		};
 		this.satellite_tile = {
 			name: 'Satellite',
-			attribution: 'Portions Courtesy NASA/JPL-Caltech and U.S. Depart. of Agriculture, Farm Service Agency',
-			url: 'http://otile{s}.mqcdn.com/tiles/1.0.0/sat/{z}/{x}/{y}.jpg'
+			attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community',
+			url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'
 		};
 		
-		var subdomains = [1, 2, 3, 4];
-		this.addTileLayer (this.road_tile.url, 1.0, this.road_tile.name, this.road_tile.attribution, 0, 18, true, subdomains);
-		this.addTileLayer (this.satellite_tile.url, 1.0, this.satellite_tile.name, this.satellite_tile.attribution, 0, 18, true, subdomains);
+		var subdomains = 'abc';
+		this.addTileLayer (this.road_tile.url, 1.0, this.road_tile.name, this.road_tile.attribution, 0, 19, true, subdomains);
+		this.addTileLayer (this.satellite_tile.url, 1.0, this.satellite_tile.name, this.satellite_tile.attribution, 0, 18, true);
 
 		this.currentMapType = mxn.Mapstraction.ROAD;
 

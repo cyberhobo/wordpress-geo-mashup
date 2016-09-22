@@ -69,4 +69,18 @@ class GeoMashupOptions_Unit_Tests extends WP_UnitTestCase {
 		$this->assertEquals( $rand_str, $fresh_instance->get( 'overall', 'import_custom_field' ) );
 	}
 
+	function test_google_api_conversion() {
+		global $geo_mashup_options;
+
+		$options = $geo_mashup_options->default_options;
+		$options['overall']['map_api'] = 'google';
+		$options['overall']['google_key'] = 'TEST';
+		update_option( 'geo_mashup_options', $options );
+
+		$test_options = new GeoMashupOptions();
+
+		$this->assertEquals( 'googlev3', $test_options->get( 'overall', 'map_api' ) );
+		$this->assertEquals( 'TEST', $test_options->get( 'overall', 'googlev3_key' ) );
+
+	}
 }
