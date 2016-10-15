@@ -370,7 +370,7 @@ class GeoMashupUserUIManager extends GeoMashupUIManager {
 		// Enable this interface when the option is set and we're on a destination page
 		$enabled = is_admin() &&
 			$geo_mashup_options->get( 'overall', 'located_object_name', 'user' ) == 'true' &&
-			preg_match( '/(user-edit|user-new|profile).php/', $pagenow );
+			preg_match( '/(user-edit|profile).php/', $pagenow );
 		$enabled = apply_filters( 'geo_mashup_load_user_editor', $enabled );
 
 		// If enabled, register all the interface elements
