@@ -1,3 +1,4 @@
 build/*
 build.number
 tests/wp-tests-config.php
+vendor/*
