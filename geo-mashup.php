@@ -1371,12 +1371,29 @@ class GeoMashup {
 	 * @return string
 	 */
 	private static function interactive_map_content( $map_data, $iframe_src ) {
+
+		$div_styles = 'position: relative;';
+		if ( empty( $map_data['shape'] ) ) {
+			$div_styles .= sprintf(
+				'height: %s; width: %s;',
+				self::dimension_style_value( $map_data['height'] ),
+				self::dimension_style_value( $map_data['width'] )
+			);
+		} else {
+			$div_styles .= sprintf(
+				'padding-bottom: %s; height: 0; width: 100%%;',
+				$map_data['shape']
+			);
+		}
+
+		$frame_styles = 'position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; overflow: hidden;';
+
 		return sprintf(
-			"<div class=\"gm-map\"><iframe name=\"%s\" src=\"%s\" style=\"height: %s; width: %s; border: none; overflow: hidden;\"></iframe></div>",
+			"<div class=\"gm-map\" style=\"%s\"><iframe name=\"%s\" src=\"%s\" style=\"%s\"></iframe></div>",
+			$div_styles,
 			$map_data['name'],
 			$iframe_src,
-			self::dimension_style_value( $map_data['height'] ),
-			self::dimension_style_value( $map_data['width'] )
+			$frame_styles
 		);
 	}
 

@@ -821,4 +821,24 @@ class GeoMashup_Unit_Tests extends GeoMashupTestCase {
 		return array( 'response' => array( 'code' => 200 ), 'body' => '{ "status": "ZERO_RESULTS" }' );
 	}
 
+	/**
+	 * issue 715
+	 */
+	function test_map_shape() {
+		$post_id = $this->factory->post->create();
+		GeoMashupDB::set_object_location( 'post', $post_id, $this->rand_location(), false );
+
+		$html = GeoMashup::map( 'map_content=global&width=400&height=300px' );
+		$this->assertNotContains( $html, 'padding-bottom' );
+
+		$html = GeoMashup::map( 'map_content=global&width=40%&height=300&shape=50%' );
+		$this->assertThat( $html, $this->stringContains( 'width: 100%;' ) );
+		$this->assertThat( $html, $this->stringContains( 'height: 0;' ) );
+		$this->assertThat( $html, $this->stringContains( 'padding-bottom: 50%;' ) );
+
+		$html = GeoMashup::map( 'map_content=global&width=400px&height=30%&shape=50%' );
+		$this->assertThat( $html, $this->stringContains( 'width: 100%;' ) );
+		$this->assertThat( $html, $this->stringContains( 'height: 0;' ) );
+		$this->assertThat( $html, $this->stringContains( 'padding-bottom: 50%;' ) );
+	}
 }
