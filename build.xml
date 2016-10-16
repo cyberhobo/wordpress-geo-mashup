@@ -18,12 +18,18 @@
 		<arg value="-c"/>
 		<arg value="grep 'Version:' geo-mashup.php | sed -E 's/^.*Version: (.*)$/\1/'"/>
 	</exec>
+
+	<target name="composer">
+		<exec executable="composer" failonerror="true">
+			<arg value="install"/>
+		</exec>
+	</target>
 	
 	<target name="test">
 		<exec executable="phpunit" failonerror="true" />
 	</target>
 		
-	<target name="build" depends="test">
+	<target name="build" depends="composer,test">
 		<!-- generate build number -->
 		<buildnumber/>
 		<tstamp>
@@ -40,16 +46,18 @@
 		<echo>--- COPY SOURCES ---</echo>
 		<copy todir="${build.dir}">
 			<fileset dir="${source}">
-				<include name="**"/>
+				<include name="*.*"/>
+				<include name="css/**"/>
+				<include name="js/**"/>
+				<include name="images/**"/>
+				<include name="lang/**"/>
+				<include name="default-templates/**"/>
 				<exclude name="release-checklist.txt"/>
-				<exclude name="build/**"/>
+				<exclude name="composer.*"/>
 				<exclude name="build.*"/>
-				<exclude name="tools/**"/>
-				<exclude name="tests/**"/>
 			</fileset>
 		</copy>
 		
-
 		<!-- lint our javascripts -->
 		<echo>--- LINT ---</echo>
 		
@@ -78,13 +86,7 @@
 			</sequential>
 		</for>
 
-	
-		<echo>--- POT ---</echo>
-		<exec executable="php">
-			<arg line="tools/wp-i18n-tools/makepot.php wp-plugin ${build.dir} ${build.dir}/lang/GeoMashup.pot geo-mashup"/>
-		</exec>
-		<copy file="${build.dir}/lang/GeoMashup.pot" todir="${source}/lang" />
-		
+
 		<!-- minify our sources -->
 		<echo>--- MIN ---</echo>
 		<for param="file">
@@ -133,7 +135,21 @@
 				<move file="${build.dir}/js/mxn/temp.t" tofile="@{file}" overwrite="true"/>
 			</sequential>
 		</for>
-		
+
+		<echo>--- POT ---</echo>
+		<exec executable="php">
+			<arg line="tools/wp-i18n-tools/makepot.php wp-plugin ${build.dir} ${build.dir}/lang/GeoMashup.pot geo-mashup"/>
+		</exec>
+		<copy file="${build.dir}/lang/GeoMashup.pot" todir="${source}/lang" />
+
+		<!-- copy our dependencies in -->
+		<echo>--- COPY DEPENDENCIES ---</echo>
+		<copy todir="${build.dir}">
+			<fileset dir="${source}">
+				<include name="vendor/freemius/**"/>
+			</fileset>
+		</copy>
+
 		<zip destfile="${build.base}/geo-mashup-${build.ver}.zip">
 			<zipfileset dir="${build.ver.dir}" prefix="geo-mashup"/>
 		</zip> 

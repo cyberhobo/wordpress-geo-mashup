@@ -27,12 +27,8 @@
  * @package GeoMashup
  */
 ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-		"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
-<!--[if lte IE 6]>
-<html xmlns:v="urn:schemas-microsoft-com:vml">
-<![endif]-->
 
 	<head>
 		<meta http-equiv="content-type" content="text/html; charset=utf-8"/>
@@ -42,8 +38,8 @@
 		<style type="text/css">
 			v\:* { behavior:url(#default#VML); }
 			#geo-mashup {
-				width:<?php echo GeoMashupRenderMap::map_property( 'width' ); ?>;
-				height:<?php echo GeoMashupRenderMap::map_property( 'height' ); ?>;
+				width:100%;
+				height:100%;
 				<?php if ( GeoMashupRenderMap::map_property( 'background_color' ) ) : ?>
 				background-color: <?php echo esc_attr( GeoMashupRenderMap::map_property( 'background_color' ) ); ?>;
 				<?php endif; ?>

@@ -2,9 +2,9 @@
 # This file is distributed under the same license as the Geo Mashup package.
 msgid ""
 msgstr ""
-"Project-Id-Version: Geo Mashup 1.9.0\n"
+"Project-Id-Version: Geo Mashup 1.9.1\n"
 "Report-Msgid-Bugs-To: http://wordpress.org/tag/geo-mashup\n"
-"POT-Creation-Date: 2016-09-22 23:11:46+00:00\n"
+"POT-Creation-Date: 2016-10-16 04:08:03+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -20,7 +20,7 @@ msgstr ""
 msgid "%1$s at %2$s"
 msgstr ""
 
-#: default-templates/map-frame.php:56
+#: default-templates/map-frame.php:52
 msgid ""
 "This map requires JavaScript. You may have to enable it in your browser's "
 "settings."
@@ -494,90 +494,90 @@ msgstr ""
 msgid "Loading..."
 msgstr ""
 
-#: geo-mashup.php:492
+#: geo-mashup.php:497
 msgid "No object id posted."
 msgstr ""
 
-#: geo-mashup.php:509
+#: geo-mashup.php:514
 msgid "Location updated."
 msgstr ""
 
-#: geo-mashup.php:511
+#: geo-mashup.php:516
 msgid "Location deleted."
 msgstr ""
 
-#: geo-mashup.php:513
+#: geo-mashup.php:518
 msgid "Location added."
 msgstr ""
 
-#: geo-mashup.php:931
+#: geo-mashup.php:936
 msgid "Geo Mashup omitted a map with no located objects found."
 msgstr ""
 
-#: geo-mashup.php:1104
+#: geo-mashup.php:1109
 msgid "Geo Mashup found no objects to map in this context"
 msgstr ""
 
-#: geo-mashup.php:1130
+#: geo-mashup.php:1135
 msgid "Geo Mashup found no current object to map"
 msgstr ""
 
-#: geo-mashup.php:1138
+#: geo-mashup.php:1143
 msgid "Geo Mashup omitted a map for an object with no location"
 msgstr ""
 
-#: geo-mashup.php:1158
+#: geo-mashup.php:1163
 msgid "Geo Mashup map omitted to avoid nesting maps"
 msgstr ""
 
-#: geo-mashup.php:1582
+#: geo-mashup.php:1604
 msgid ""
 "You must add a description to this category to use this Geo Mashup feature."
 msgstr ""
 
-#: geo-mashup.php:1609 options.php:216
+#: geo-mashup.php:1631 options.php:216
 msgid "Geo Mashup Options"
 msgstr ""
 
-#. #-#-#-#-#  GeoMashup.pot (Geo Mashup 1.9.0)  #-#-#-#-#
+#. #-#-#-#-#  GeoMashup.pot (Geo Mashup 1.9.1)  #-#-#-#-#
 #. Plugin Name of the plugin/theme
-#: geo-mashup.php:1609
+#: geo-mashup.php:1631
 msgid "Geo Mashup"
 msgstr ""
 
-#: geo-mashup.php:1627
+#: geo-mashup.php:1649
 msgid ""
 "Geo Mashup now includes search, deactivating the old %s plugin. It's safe to "
 "delete it."
 msgstr ""
 
-#: geo-mashup.php:1634
+#: geo-mashup.php:1656
 msgid ""
 "Geo Mashup needs to upgrade its database, visit the <a href=\"%s\">settings</"
 "a> to do it now."
 msgstr ""
 
-#: geo-mashup.php:1655
+#: geo-mashup.php:1677
 msgid "Settings"
 msgstr ""
 
-#: geo-mashup.php:1672
+#: geo-mashup.php:1694
 msgid "Documentation"
 msgstr ""
 
-#: geo-mashup.php:1674
+#: geo-mashup.php:1696
 msgid "Donate"
 msgstr ""
 
-#: geo-mashup.php:1868
+#: geo-mashup.php:1890
 msgid "Show on map"
 msgstr ""
 
-#: geo-mashup.php:1879
+#: geo-mashup.php:1901
 msgid "Geotag Icon"
 msgstr ""
 
-#: geo-mashup.php:2042
+#: geo-mashup.php:2064
 msgid ""
 "Enable the geo search widget in the Geo Mashup settings to power the nearby "
 "list!"

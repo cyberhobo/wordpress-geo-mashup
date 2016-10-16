@@ -3,7 +3,7 @@
 Plugin Name: Geo Mashup
 Plugin URI: https://wordpress.org/plugins/geo-mashup/
 Description: Save location for posts and pages, or even users and comments. Display these locations on Google, Leaflet, and OSM maps. Make WordPress into your GeoCMS.
-Version: 1.9.0
+Version: 1.9.1
 Author: Dylan Kuhn
 Text Domain: GeoMashup
 Domain Path: /lang
@@ -118,6 +118,11 @@ class GeoMashup {
 		include_once( GEO_MASHUP_DIR_PATH . '/geo-mashup-db.php' );
 		include_once( GEO_MASHUP_DIR_PATH . '/geo-mashup-ui-managers.php' );
 
+		if ( ! defined( 'GEO_MASHUP_UNIT_TESTING' ) ) {
+			include_once( GEO_MASHUP_DIR_PATH . '/freemius.php' );
+			GeoMashupFreemius::load();
+		}
+
 		if ( $geo_mashup_options->get( 'overall', 'enable_geo_search' ) == 'true' ) {
 			include_once( GEO_MASHUP_DIR_PATH . '/geo-mashup-search.php' );
 		}
@@ -209,7 +214,7 @@ class GeoMashup {
 		define('GEO_MASHUP_DIRECTORY', dirname( GEO_MASHUP_PLUGIN_NAME ) );
 		define('GEO_MASHUP_URL_PATH', trim( plugin_dir_url( __FILE__ ), '/' ) );
 		define('GEO_MASHUP_MAX_ZOOM', 20);
-		define('GEO_MASHUP_VERSION', '1.9.0');
+		define('GEO_MASHUP_VERSION', '1.9.1');
 		define('GEO_MASHUP_DB_VERSION', '1.3');
 	}
 
@@ -1366,12 +1371,29 @@ class GeoMashup {
 	 * @return string
 	 */
 	private static function interactive_map_content( $map_data, $iframe_src ) {
+
+		$div_styles = 'position: relative;';
+		if ( empty( $map_data['shape'] ) ) {
+			$div_styles .= sprintf(
+				'height: %s; width: %s;',
+				self::dimension_style_value( $map_data['height'] ),
+				self::dimension_style_value( $map_data['width'] )
+			);
+		} else {
+			$div_styles .= sprintf(
+				'padding-bottom: %s; height: 0; width: 100%%;',
+				$map_data['shape']
+			);
+		}
+
+		$frame_styles = 'position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; overflow: hidden;';
+
 		return sprintf(
-			"<div class=\"gm-map\"><iframe name=\"%s\" src=\"%s\" style=\"height: %s; width: %s; border: none; overflow: hidden;\"></iframe></div>",
+			"<div class=\"gm-map\" style=\"%s\"><iframe name=\"%s\" src=\"%s\" style=\"%s\"></iframe></div>",
+			$div_styles,
 			$map_data['name'],
 			$iframe_src,
-			self::dimension_style_value( $map_data['height'] ),
-			self::dimension_style_value( $map_data['width'] )
+			$frame_styles
 		);
 	}
 
