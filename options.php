@@ -1046,11 +1046,6 @@ function geo_mashup_options_page() {
 		<p><a href="<?php echo $_SERVER['REQUEST_URI']; ?>&amp;view_activation_log=1"><?php _e('View Update Log', 'GeoMashup'); ?></a></p>
 		<?php endif; ?>
 		<p><a href="https://github.com/cyberhobo/wordpress-geo-mashup/wiki/Getting-Started"><?php _e('Geo Mashup Documentation', 'GeoMashup'); ?></a></p>
-		<p>
-			<a href="http://wpquestions.com/affiliates/register/name/cyberhobo">
-				<img src="<?php echo path_join( GEO_MASHUP_URL_PATH, 'images/wpquestions-logo.png' ); ?>" alt="WP Questions">
-			</a>
-		</p>
 		<p>Geo Mashup needs you: <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=11045324">donate</a>,
 		contribute <a href="https://github.com/cyberhobo/wordpress-geo-mashup/wiki/How-To-Guides">a guide</a>
 		or <a href="https://github.com/cyberhobo/wordpress-geo-mashup">code</a>,
