@@ -1,0 +1,22 @@
+/**
+ * Default widget styles.
+ *
+ * Don't modify this file! It will be overwritten by upgrades.
+ * 
+ */
+
+/* Widget GeoMashup search form style */
+.geo-mashup-search-form select {
+    width: 100%;
+    padding: 2px;
+    line-height: 28px;
+    height: 28px;	
+}
+.geo-mashup-search-form .submit, 
+.geo-mashup-search-form .object,
+.geo-mashup-search-form .radius {
+	padding-top: 0.6em;
+}
+.geo-mashup-search-form .submit {
+	text-align: center;
+}

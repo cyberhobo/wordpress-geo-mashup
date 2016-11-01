@@ -166,6 +166,9 @@ class GeoMashup {
 			add_filter( 'plugin_action_links', array( __CLASS__, 'plugin_action_links' ), 10, 2 );
 			add_filter( 'plugin_row_meta', array( __CLASS__, 'plugin_row_meta' ), 10, 2 );
 
+			// Enqueue widget assets in admin
+			add_action( 'admin_enqueue_scripts', array( __CLASS__, 'widget_scripts'));
+
 		} else {
 
 			// This is a non-admin request
@@ -234,6 +237,9 @@ class GeoMashup {
 				wp_enqueue_script( 'geo-mashup-tests' );
 				include_once( GEO_MASHUP_DIR_PATH . '/tests.php' );
 			}
+		}
+		if (is_admin()){
+			self::register_script( 'geo-mashup-widget','js/widget.js', array( 'jquery' ), GEO_MASHUP_VERSION, true );
 		}
 	}
 
@@ -2219,6 +2225,12 @@ class GeoMashup {
 
 		return '<div id="' . $id . '" class="' . implode( ' ', $classes ) . '"></div>';
 	}
+	/**
+	 * Enqueue widget assets in admin.
+	 */	
+	public static function widget_scripts() {
+		wp_enqueue_script( 'geo-mashup-widget' );
+	}		
 } // class GeoMashup
 GeoMashup::load();
 } // class exists

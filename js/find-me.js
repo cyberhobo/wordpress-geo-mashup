@@ -4,7 +4,7 @@
 jQuery( function( $ ) {
 	$( '.geo-mashup-search-find-me' ).show().click( function() {
 		var $button = $( this ),
-			$form = $button.parent( 'form' ),
+			$form = $button.closest('form'),
 			$search_input = $form.find( 'input.geo-mashup-search-input' ),
 			$geolocation_input = $form.find( 'input[name=geolocation]' ),
 			$submit_button = $form.find( 'input[name=geo_mashup_search_submit]' ),
