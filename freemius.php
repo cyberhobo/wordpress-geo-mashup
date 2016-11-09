@@ -31,14 +31,19 @@ class GeoMashupFreemius {
 
 		include_once( GEO_MASHUP_DIR_PATH . '/vendor/freemius/wordpress-sdk/start.php' );
 
+		$id = defined( 'GEO_MASHUP_FREEMIUS_ID' ) ? GEO_MASHUP_FREEMIUS_ID : '534';
+		$public_key = defined( 'GEO_MASHUP_FREEMIUS_KEY' ) ? GEO_MASHUP_FREEMIUS_KEY : 'pk_c28784eaec74e8b93e422064f2f99';
+		$secret_key = defined( 'GEO_MASHUP_FREEMIUS_DEV_KEY' ) ? GEO_MASHUP_FREEMIUS_KEY : null;
+
 		self::$freemius = fs_dynamic_init( array(
-			'id' => '472',
+			'id' => $id,
 			'slug' => 'geo-mashup',
 			'type' => 'plugin',
-			'public_key' => 'pk_c28784eaec74e8b93e422064f2f99',
-			'is_premium' => false,
+			'public_key' => $public_key,
+			'is_live' => false,
+			'is_premium' => true,
 			'has_addons' => false,
-			'has_paid_plans' => false,
+			'has_paid_plans' => true,
 			'menu' => array(
 				'slug' => 'geo-mashup/geo-mashup.php',
 				'account' => false,
@@ -48,6 +53,7 @@ class GeoMashupFreemius {
 					'slug' => 'options-general.php',
 				),
 			),
+			'secret_key' => $secret_key,
 		) );
 
 		self::$freemius->add_action( 'after_uninstall', array( __CLASS__, 'uninstall' ) );
