@@ -546,29 +546,12 @@ Marker: {
 		var gAnchorPoint = new google.maps.Point(ax,ay);
 
 		if (this.iconUrl) {
- 			options.icon = new google.maps.MarkerImage(
-				this.iconUrl,
-				new google.maps.Size(this.iconSize[0], this.iconSize[1]),
-				new google.maps.Point(0, 0),
-				gAnchorPoint
-			);
-
-			// do we have a Shadow?
-			if (this.iconShadowUrl) {
-				if (this.iconShadowSize) {
-					var x = this.iconShadowSize[0];
-					var y = this.iconShadowSize[1];
-					options.shadow = new google.maps.MarkerImage(
-						this.iconShadowUrl,
-						new google.maps.Size(x,y),
-						new google.maps.Point(0,0),
-						gAnchorPoint 
-					);
-				}
-				else {
-					options.shadow = new google.maps.MarkerImage(this.iconShadowUrl);
-				}
-			}
+ 			options.icon = {
+			    url: this.iconUrl,
+			    scaledSize: new google.maps.Size(this.iconSize[0], this.iconSize[1]),
+			    origin: new google.maps.Point(0, 0),
+			    anchor: gAnchorPoint
+		    };
 		}
 		if (this.draggable) {
 			options.draggable = this.draggable;
