@@ -1046,16 +1046,6 @@ function geo_mashup_options_page() {
 		<p><a href="<?php echo $_SERVER['REQUEST_URI']; ?>&amp;view_activation_log=1"><?php _e('View Update Log', 'GeoMashup'); ?></a></p>
 		<?php endif; ?>
 		<p><a href="https://github.com/cyberhobo/wordpress-geo-mashup/wiki/Getting-Started"><?php _e('Geo Mashup Documentation', 'GeoMashup'); ?></a></p>
-		<p>Geo Mashup needs you: <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=11045324">donate</a>,
-		contribute <a href="https://github.com/cyberhobo/wordpress-geo-mashup/wiki/How-To-Guides">a guide</a>
-		or <a href="https://github.com/cyberhobo/wordpress-geo-mashup">code</a>,
-		share your experience in the <a href="https://wordpress.org/support/plugin/geo-mashup">volunteer support forum</a>,
-		or use this HTML to add a link to your site:
-		<input id="geo-mashup-credit-input" type="text" size="80" value="<?php
-			echo esc_attr( '<a href="https://wordpress.org/plugins/geo-mashup/" title="Geo Mashup"><img src="' . path_join( GEO_MASHUP_URL_PATH, 'images/gm-credit.png' ) . '" alt="Geo Mashup" /></a>' );
-			?>" /><br />
-		Thanks!
-		</p>
 		<script type="text/javascript"> jQuery( function( $ ) { $( '#geo-mashup-credit-input' ).focus( function() { this.select(); } ) } ); </script>
 	</div>
 <?php
