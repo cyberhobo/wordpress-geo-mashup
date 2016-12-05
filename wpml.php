@@ -16,6 +16,7 @@ class GeoMashupWPML {
 		add_filter( 'geo_mashup_get_language_code', array( __CLASS__, 'get_language_code' ) );
 		add_filter( 'geo_mashup_locations_join', array( __CLASS__, 'augment_locations_join_clause' ), 10, 2 );
 		add_filter( 'geo_mashup_locations_where', array( __CLASS__, 'augment_locations_where_clause' ), 10, 2 );
+		add_filter( 'geo_mashup_results_page_id', array( __CLASS__, 'translate_results_page_id' ) );
 	}
 
 	/**
@@ -102,6 +103,15 @@ class GeoMashupWPML {
 		}
 
 		GeoMashupDB::set_object_location( 'post', $post_id, $location->id, false, $location->geo_date );
+	}
+
+	/**
+	 * @since 1.10.0
+	 * @param int $page_id
+	 * @return int
+	 */
+	public static function translate_results_page_id( $page_id ) {
+		return apply_filters( 'wpml_object_id', $page_id, 'page' );
 	}
 
 	/**

@@ -342,20 +342,32 @@ class GeoMashupSearchHandling {
 		}
 	}
 
+	/**
+	 * Display geo search results when detected.
+	 *
+	 * @since 1.5.0
+	 * @param string $content
+	 * @return string
+	 */
 	public static function filter_the_content( $content ) {
 
 		// Ignore unless a search was posted for this page
 		$ignore = true;
 
 		// Older search forms did not include result page id, but always location text
-		if ( !isset( $_POST['results_page_id'] ) and isset( $_POST['location_text'] ) )
+		if ( !isset( $_POST['results_page_id'] ) and isset( $_POST['location_text'] ) ) {
 			$ignore = false;
+		}
 
-		if ( isset( $_POST['results_page_id'] ) and $_POST['results_page_id'] == get_the_ID() )
-			$ignore = false;
+		if ( isset( $_POST['results_page_id'] ) ) {
+			$results_page_id = apply_filters( 'geo_mashup_results_page_id', intval( $_POST['results_page_id'] ) );
+			var_dump( $results_page_id );
+			$ignore = ( $results_page_id != get_the_ID() );
+		}
 
-		if ( $ignore )
+		if ( $ignore ) {
 			return $content;
+		}
 
 		// Remove slashes added to form input
 		$_POST = stripslashes_deep( $_POST );
