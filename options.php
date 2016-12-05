@@ -220,7 +220,9 @@ function geo_mashup_options_page() {
 			<li><a href="#geo-mashup-single-map-settings"><span><?php _e('Single Maps', 'GeoMashup'); ?></span></a></li>
 			<li><a href="#geo-mashup-global-map-settings"><span><?php _e('Global Maps', 'GeoMashup'); ?></span></a></li>
 			<li><a href="#geo-mashup-context-map-settings"><span><?php _e('Contextual Maps', 'GeoMashup'); ?></span></a></li>
-			<li><a href="#geo-mashup-tests"><span><?php _e('Tests', 'GeoMashup'); ?></span></a></li>
+			<?php if ( defined( 'WP_DEBUG' ) and WP_DEBUG ) : ?>
+				<li><a href="#geo-mashup-tests"><span><?php _e('Tests', 'GeoMashup'); ?></span></a></li>
+			<?php endif; ?>
 			</ul>
 			<fieldset id="geo-mashup-overall-settings">
 				<?php wp_nonce_field('geo-mashup-update-options'); ?>
@@ -1019,18 +1021,20 @@ function geo_mashup_options_page() {
 				</table>
 				<div class="submit"><input type="submit" name="submit" value="<?php _e('Update Options', 'GeoMashup'); ?>" /></div>
 			</fieldset>
-			<fieldset id="geo-mashup-tests">
-				<p>
-					<?php _e('Some checks that Geo Mashup is working properly.', 'GeoMashup'); ?>
-					<?php _e('Not working in Firefox yet - free Geo Mashup license to the first to figure out why!', 'GeoMashup'); ?>
-				</p>
-				<?php if ( isset( $_POST['geo_mashup_run_tests'] ) ) : ?>
-					<div id="qunit-fixture"></div>
-					<div id="qunit"></div>
-				<?php else : ?>
-					<input type="submit" name="geo_mashup_run_tests" value="<?php _e('Run Tests', 'GeoMashup'); ?>" class="button" />
-				<?php endif; ?>
-			</fieldset>
+			<?php if ( defined( 'WP_DEBUG' ) and WP_DEBUG ) : ?>
+				<fieldset id="geo-mashup-tests">
+					<p>
+						<?php _e('Some checks that Geo Mashup is working properly.', 'GeoMashup'); ?>
+						<?php _e('Not working in Firefox yet - free Geo Mashup license to the first to figure out why!', 'GeoMashup'); ?>
+					</p>
+					<?php if ( isset( $_POST['geo_mashup_run_tests'] ) ) : ?>
+						<div id="qunit-fixture"></div>
+						<div id="qunit"></div>
+					<?php else : ?>
+						<input type="submit" name="geo_mashup_run_tests" value="<?php _e('Run Tests', 'GeoMashup'); ?>" class="button" />
+					<?php endif; ?>
+				</fieldset>
+			<?php endif; ?>
 		</form>
 		<?php if ( isset( $_GET['view_activation_log'] ) ) : ?>
 		<div class="updated">
