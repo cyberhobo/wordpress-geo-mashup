@@ -117,7 +117,6 @@ class GeoMashup {
 		include_once( GEO_MASHUP_DIR_PATH . '/post-query.php' );
 		include_once( GEO_MASHUP_DIR_PATH . '/geo-mashup-db.php' );
 		include_once( GEO_MASHUP_DIR_PATH . '/geo-mashup-ui-managers.php' );
-		include_once( GEO_MASHUP_DIR_PATH . '/wpml.php' );
 
 		if ( ! defined( 'GEO_MASHUP_UNIT_TESTING' ) ) {
 			include_once( GEO_MASHUP_DIR_PATH . '/freemius.php' );
@@ -128,9 +127,23 @@ class GeoMashup {
 			include_once( GEO_MASHUP_DIR_PATH . '/geo-mashup-search.php' );
 		}
 
+	}
+
+	/**
+	 * Load available integrations.
+	 *
+	 * @since 1.10.0
+	 */
+	public static function load_integrations() {
+
 		if ( defined( 'ICL_LANGUAGE_CODE' ) ) {
-			die( 'wpml' );
-			GeoMashupWPML::load();
+			include_once( GEO_MASHUP_DIR_PATH . '/wpml.php' );
+			add_action( 'wpml_loaded', array( 'GeoMashupWPML', 'load' ) );
+		}
+
+		if ( defined( 'SNAZZY_VERSION_NUMBER' ) ) {
+			include_once( GEO_MASHUP_DIR_PATH . '/snazzy-maps.php' );
+			GeoMashupSnazzyMaps::load();
 		}
 	}
 
@@ -146,8 +159,7 @@ class GeoMashup {
 		add_action( 'wp_scheduled_delete', array( __CLASS__, 'action_wp_scheduled_delete' ) );
 
 		add_action( 'plugins_loaded', array( __CLASS__, 'dependent_init' ), -1 );
-
-		add_action( 'wpml_loaded', array( 'GeoMashupWPML', 'load' ) );
+		add_action( 'plugins_loaded', array( __CLASS__, 'load_integrations' ) );
 
 		add_action( 'wp_ajax_geo_mashup_query', array( __CLASS__, 'geo_query') );
 		add_action( 'wp_ajax_nopriv_geo_mashup_query', array( __CLASS__, 'geo_query') );

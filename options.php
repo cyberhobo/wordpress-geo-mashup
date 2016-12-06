@@ -166,7 +166,6 @@ function geo_mashup_options_page() {
 	}
 
 	$selected_tab = ( empty( $_POST['geo_mashup_selected_tab'] ) ) ? 0 : $_POST['geo_mashup_selected_tab'];
-	$google_server_key = $geo_mashup_options->get( 'overall', 'google_server_key' );
 	$include_taxonomies = $geo_mashup_options->get( 'overall', 'include_taxonomies' );
 	$map_api = $geo_mashup_options->get( 'overall', 'map_api' );
 
@@ -291,6 +290,39 @@ function geo_mashup_options_page() {
 								);
 								?>
 							</p>
+						</td>
+					</tr>
+					<tr>
+						<th width="33%" scope="row"><?php _e('Snazzy Maps', 'GeoMashup'); ?></th>
+						<td>
+							<?php if ( defined( 'SNAZZY_VERSION_NUMBER' ) ) : ?>
+								<span class="dashicons dashicons-yes"></span>
+								<a href="<?php echo admin_url( 'themes.php?page=snazzy_maps' ); ?>">
+									<?php _e( 'Using current Snazzy styles', 'GeoMashup' ); ?>
+								</a>
+								<p class="description">
+									<?php
+									_e(
+										'We\'ve detected that Snazzy Maps is installed and active, cool!',
+										'GeoMashup'
+									);
+									?>
+								</p>
+							<?php else : ?>
+								<span class="dashicons dashicons-admin-appearance"></span>
+								<a href="https://snazzymaps.com/plugins/wordpress?utm_source=geomashup&utm_medium=plugin&utm_campaign=wordpress"
+									target="_blank">
+									<?php _e( 'Get the Snazzy Maps plugin', 'Postmatic' ); ?>
+								</a>
+								<p class="description">
+									<?php
+									_e(
+										'We\'ve partnered with Atmist to make their great plugin work with Geo Mashup!',
+										'GeoMashup'
+									);
+									?>
+								</p>
+							<?php endif; ?>
 						</td>
 					</tr>
 					<?php endif; ?>
