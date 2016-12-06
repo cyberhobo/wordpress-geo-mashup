@@ -165,6 +165,11 @@ function geo_mashup_options_page() {
 		$zoomOptions[$i] = $i;
 	}
 
+	$clusterZoomOptions = Array( '' => __( '0 (Clustering Off)', 'GeoMashup' ) );
+	for ( $i = 1; $i < GEO_MASHUP_MAX_ZOOM; $i++ ) {
+		$clusterZoomOptions[$i] = $i;
+	}
+
 	$selected_tab = ( empty( $_POST['geo_mashup_selected_tab'] ) ) ? 0 : $_POST['geo_mashup_selected_tab'];
 	$include_taxonomies = $geo_mashup_options->get( 'overall', 'include_taxonomies' );
 	$map_api = $geo_mashup_options->get( 'overall', 'map_api' );
@@ -776,16 +781,23 @@ function geo_mashup_options_page() {
 					</tr>
 					<?php if ( 'googlev3' == $map_api ) : ?>
 					<tr>
-						<th scope="row"><?php _e('Cluster Markers Until Zoom Level', 'GeoMashup'); ?></th>
+						<th scope="row"><?php _e('Clustering', 'GeoMashup'); ?></th>
 						<td>
-							<input id="cluster_max_zoom"
-								name="global_map[cluster_max_zoom]" 
-								type="text" 
-								size="2" 
-								value="<?php echo esc_attr( $geo_mashup_options->get( 'global_map', 'cluster_max_zoom' ) ); ?>" />
-							<span class="description"><?php
-								_e( 'Highest zoom level to cluster markers, or blank for no clustering.', 'GeoMashup'); 
-							?></span>
+							<?php
+							printf(
+								__( 'Cluster markers from zoom level 0 to %s', 'GeoMashup' ),
+								'' // just a placeholder, really expecting the input
+							);
+							?>
+							<select id="cluster_max_zoom" name="global_map[cluster_max_zoom]">
+								<?php foreach ( $clusterZoomOptions as $value => $label ) : ?>
+									<option value="<?php echo esc_attr( $value ); ?>"<?php
+									if ( strcmp( $value, $geo_mashup_options->get( 'global_map', 'cluster_max_zoom' ) ) == 0 ) {
+										echo ' selected="selected"';
+									}
+									?>><?php echo esc_html( $label ); ?></option>
+								<?php endforeach; ?>
+							</select>
 						</td>
 					</tr>
 					<?php endif; ?>
