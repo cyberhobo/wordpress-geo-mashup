@@ -51,6 +51,7 @@ class GeoMashup {
 	 * Whether to add the click-to-load map script.
 	 *
 	 * @since 1.4
+	 * @var bool
 	 */
 	private static $add_loader_script = false;
 
@@ -58,8 +59,17 @@ class GeoMashup {
 	 * The basename of the Geo Mashup Search plugin when deactivated.
 	 * 
 	 * @since 1.5
+	 * @var string
 	 */
 	private static $deactivate_geo_search_basename = '';
+
+	/**
+	 * Freemius integration.
+	 *
+	 * @since 1.10
+	 * @var Freemius
+	 */
+	private static $freemius;
 
 	/**
 	 * Load Geo Mashup.
@@ -120,7 +130,8 @@ class GeoMashup {
 
 		if ( ! defined( 'GEO_MASHUP_UNIT_TESTING' ) ) {
 			include_once( GEO_MASHUP_DIR_PATH . '/freemius.php' );
-			GeoMashupFreemius::load();
+			self::$freemius = new GeoMashupFreemius();
+			self::$freemius->load();
 		}
 
 		if ( $geo_mashup_options->get( 'overall', 'enable_geo_search' ) == 'true' ) {
