@@ -58,6 +58,7 @@ class GeoMashupFreemius {
 			'type' => 'plugin',
 			'public_key' => 'pk_c28784eaec74e8b93e422064f2f99',
 			'is_premium' => false,
+			'has_premium_version' => false,
 			'has_addons' => false,
 			'has_paid_plans' => true,
 			'menu' => array(
@@ -90,9 +91,8 @@ class GeoMashupFreemius {
 	 * @param string $event The Freemius license event.
 	 */
 	public function after_license_change( $event ) {
-		$is_premium = ! in_array( $event, array( 'cancelled', 'expired', 'trial_expired' ) );
-		$this->update_init_data( $is_premium );
-		//$this->maybe_redirect_to_settings();
+		$is_paying = ! in_array( $event, array( 'cancelled', 'expired', 'trial_expired' ) );
+		$this->update_init_data( $is_paying );
 	}
 
 	/**
@@ -102,13 +102,13 @@ class GeoMashupFreemius {
 	 */
 	public function after_account_delete() {
 		$this->update_init_data( false );
-		//$this->maybe_redirect_to_settings();
 	}
 
 	/**
 	 * @since 1.9.1
 	 */
 	public function uninstall() {
+		delete_option( self::$init_data_option_name );
 		include_once( GEO_MASHUP_DIR_PATH . '/uninstaller.php' );
 		$uninstaller = new GeoMashupUninstaller();
 		$uninstaller->geo_mashup_uninstall_options();
@@ -116,26 +116,11 @@ class GeoMashupFreemius {
 
 	/**
 	 * @since 1.10.0
-	 * @param bool $is_premium
+	 * @param bool $is_paying
 	 */
-	public function update_init_data( $is_premium = false ) {
-		$this->init_data['is_premium'] = $is_premium;
-		$this->init_data['menu']['contact'] = $is_premium;
+	public function update_init_data( $is_paying = false ) {
+		$this->init_data['menu']['contact'] = $is_paying;
 		update_option( self::$init_data_option_name, $this->init_data, false );
 	}
 
-	/**
-	 * After changing the init values a redirect can make sure the view reflects them.
-	 *
-	 * @since 1.10.0
-	 */
-	protected function maybe_redirect_to_settings() {
-		if ( strpos(  $_SERVER['REQUEST_URI'], $this->init_data['menu']['parent']['slug'] ) > 0 ) {
-			$url = add_query_arg(
-				array( 'page' => $this->init_data['menu']['slug'] ),
-				admin_url( $this->init_data['menu']['parent']['slug'] )
-			);
-			wp_redirect( $url );
-		}
-	}
 }
