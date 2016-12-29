@@ -20,44 +20,6 @@ class GeoMashupWPML_Unit_Tests extends GeoMashupTestCase {
 		$this->assertEquals( 'xx', GeoMashupWPML::get_language_code( 'en' ), 'Expected the querystring language code.' );
 	}
 
-	public function test_duplicate_translation_post_location() {
-
-		GeoMashupWPML::load();
-
-		$default_post = $this->factory->post->create_and_get();
-		$location = $this->rand_location();
-		GeoMashupDB::set_object_location(
-			'post',
-			$default_post->ID,
-			$location,
-			$do_lookups = false
-		);
-
-		$translated_post = $this->factory->post->create_and_get();
-
-		update_post_meta( $translated_post->ID, '_icl_lang_duplicate_of', $default_post->ID );
-
-		do_action( 'save_post', $translated_post->ID, $translated_post, true );
-
-		$duplicate_location = GeoMashupDB::get_post_location( $translated_post->ID );
-
-		$this->assertNotEmpty( $duplicate_location, 'Expected translated post to be located.' );
-
-		$this->assertEquals(
-			$location->lat,
-			$duplicate_location->lat,
-			'Expected original post latitude.',
-			self::DELTA
-		);
-
-		$this->assertEquals(
-			$location->lng,
-			$duplicate_location->lng,
-			'Expected original post longitude.',
-			self::DELTA
-		);
-	}
-
 	/**
 	* issue 607
 	*/

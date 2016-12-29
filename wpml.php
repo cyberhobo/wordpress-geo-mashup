@@ -12,7 +12,6 @@ class GeoMashupWPML {
 	 * @since 1.9.0
 	 */
 	public static function load() {
-		add_action( 'save_post', array( __CLASS__, 'duplicate_translated_post_location' ) );
 		add_filter( 'geo_mashup_get_language_code', array( __CLASS__, 'get_language_code' ) );
 		add_filter( 'geo_mashup_locations_join', array( __CLASS__, 'augment_locations_join_clause' ), 10, 2 );
 		add_filter( 'geo_mashup_locations_where', array( __CLASS__, 'augment_locations_where_clause' ), 10, 2 );
@@ -81,28 +80,6 @@ class GeoMashupWPML {
 		remove_filter( 'get_translatable_documents', array( __CLASS__, 'wpml_filter_get_translatable_documents' ) );
 
 		return $where;
-	}
-
-	/**
-	 * Copy original post location to WPML translated posts.
-	 * @since 1.9.0
-	 * @param int $post_id
-	 */
-	public static function duplicate_translated_post_location( $post_id ) {
-
-		$original_post_id = get_post_meta( $post_id, '_icl_lang_duplicate_of', true );
-
-		if ( ! $original_post_id ) {
-			return;
-		}
-
-		$location = GeoMashupDB::get_post_location( $original_post_id );
-
-		if ( ! $location ) {
-			return;
-		}
-
-		GeoMashupDB::set_object_location( 'post', $post_id, $location->id, false, $location->geo_date );
 	}
 
 	/**
