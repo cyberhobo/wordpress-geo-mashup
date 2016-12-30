@@ -4,7 +4,6 @@ include_once "sitepress-mock.php" ;
 define( 'ICL_LANGUAGE_CODE', 'fo' );
 include_once GEO_MASHUP_DIR_PATH . '/wpml.php';
 
-/** @group debug */
 class GeoMashupWPML_Unit_Tests extends GeoMashupTestCase {
 
 	public function test_loaded() {
