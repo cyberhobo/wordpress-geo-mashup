@@ -1140,7 +1140,7 @@ class GeoMashup {
 		}
 		if ( !is_array( $context_objects ) ) {
 			$atts['error_comment'] = '<!-- ' . __( 'Geo Mashup found no objects to map in this context', 'GeoMashup' ) . '-->';
-			return;
+			return $atts;
 		}
 		foreach ( $context_objects as $context_object ) {
 			$object_ids[] = self::object_id_by_name( $object_name, $context_object );
