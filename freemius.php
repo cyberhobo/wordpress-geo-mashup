@@ -52,7 +52,7 @@ class GeoMashupFreemius {
 
 		include_once( GEO_MASHUP_DIR_PATH . '/vendor/freemius/wordpress-sdk/start.php' );
 
-		$defaults = get_option( self::$init_data_option_name, array(
+		$defaults = array(
 			'id' => '472',
 			'slug' => 'geo-mashup',
 			'type' => 'plugin',
@@ -69,11 +69,13 @@ class GeoMashupFreemius {
 					'slug' => 'options-general.php',
 				),
 			),
-		) );
+		);
 
 		$this->init_data = defined( 'GEO_MASHUP_FREEMIUS_INIT' ) ? unserialize( GEO_MASHUP_FREEMIUS_INIT ) : array();
 
 		$this->init_data = array_replace_recursive( $defaults, $this->init_data );
+
+		$this->init_data = array_replace_recursive( $this->init_data, get_option( self::$init_data_option_name, array() ) );
 
 		$this->freemius = fs_dynamic_init( $this->init_data );
 
@@ -119,8 +121,12 @@ class GeoMashupFreemius {
 	 * @param bool $is_paying
 	 */
 	public function update_init_data( $is_paying = false ) {
-		$this->init_data['menu']['contact'] = $is_paying;
-		update_option( self::$init_data_option_name, $this->init_data, false );
+		$init_data = array(
+			'menu' => array(
+				'contact' => $is_paying,
+			),
+		);
+		update_option( self::$init_data_option_name, $init_data, false );
 	}
 
 }
