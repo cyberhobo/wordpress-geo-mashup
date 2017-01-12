@@ -361,7 +361,6 @@ class GeoMashupSearchHandling {
 
 		if ( isset( $_POST['results_page_id'] ) ) {
 			$results_page_id = apply_filters( 'geo_mashup_results_page_id', intval( $_POST['results_page_id'] ) );
-			var_dump( $results_page_id );
 			$ignore = ( $results_page_id != get_the_ID() );
 		}
 
