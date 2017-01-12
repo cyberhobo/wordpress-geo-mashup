@@ -30,6 +30,38 @@
 
     <section class="main-content">
       <img src="images/screenshot.png" alt="screenshot of a map with a marker and info bubble" />
+      <p>Geo Mashup is free to use for personal and non-profit sites.</p> 
+      <p>
+      Business and professional users are 
+      asked to purchase an inexpensive business plan to help Geo Mashup continue to improve.
+      </p>
+      <select id="licenses">
+         <option value="1" selected="selected">Single Site</option>
+         <option value="4">4 Sites</option>
+         <option value="10">10 Sites</option>
+      </select>
+      <button id="purchase">Buy Now</button>
+      <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+      <script src="https://checkout.freemius.com/checkout.min.js"></script>
+      <script>
+          var handler = FS.Checkout.configure({
+              plugin_id:  '472',
+              plan_id:    '867',
+              public_key: 'pk_c28784eaec74e8b93e422064f2f99',
+              image:      'https://your-plugin-site.com/logo-100x100.png'
+          });
+          
+          $('#purchase').on('click', function (e) {
+              handler.open({
+                  name     : 'Geo Mashup',
+                  licenses : $('#licenses').val(),
+                  success  : function (response) {
+                      alert(response.user.email);
+                  }
+              });
+              e.preventDefault();
+          });
+      </script>
       <h3>
 <a id="learn-more" class="anchor" href="#learn-more" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Learn More</h3>
 
