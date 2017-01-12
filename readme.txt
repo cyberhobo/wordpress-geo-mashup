@@ -82,6 +82,10 @@ This version fixes a security related bug.  Upgrade immediately.
 
 Features are generally added in one-dot releases, while two-dot releases contain fixes and small updates.
 
+= 1.10.0 Jan 11 2017 =
+
+[milestone 1.10.0 changes](https://github.com/cyberhobo/wordpress-geo-mashup/milestone/3?closed=1)
+
 = 1.9.1 Oct 15 2016 =
 
 [milestone 1.9.1 changes](https://github.com/cyberhobo/wordpress-geo-mashup/milestone/2?closed=1)
