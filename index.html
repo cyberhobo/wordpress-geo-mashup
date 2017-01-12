@@ -52,6 +52,7 @@
           });
           
           $('#purchase').on('click', function (e) {
+              ga('send', 'event', 'Sales', 'Buy Now click', 'Web campaign');
               handler.open({
                   name     : 'Geo Mashup',
                   licenses : $('#licenses').val(),
