@@ -141,7 +141,12 @@ class GeoMashupSearch {
 			}
 		}
 
-		// Set post_type	
+        // Backward compatibility for categories
+        if ( isset( $map_cat ) ) {
+            $geo_query_args['map_cat'] = $map_cat;
+        }
+
+        // Set post_type
 		if ( $object_name === 'post' && isset( $map_post_type ) ) {
 			$geo_query_args['map_post_type'] = $map_post_type;
 		}

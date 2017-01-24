@@ -599,7 +599,35 @@ class GeoMashup_Unit_Tests extends GeoMashupTestCase {
 		$this->assertContains( $found_post->ID, $search->get_the_IDs(), 'Search did not find the target post.' );
 	}
 
-	/**
+    /**
+     * Issue 777
+     */
+	function test_search_map_cat() {
+		require_once GEO_MASHUP_DIR_PATH . '/geo-mashup-search.php';
+
+		$search_args = array(
+			'near_lat' => 45.6181,
+			'near_lng' => 5.226,
+			'object_name' => 'post',
+			'radius' => 0.5,
+			'units' => 'km',
+			'geo_mashup_search_submit' => 'Search',
+            'map_cat' => 'test',
+		);
+
+		$query_args_filter = $this->getMock( 'filterMock', array( 'check_args' ) );
+		$query_args_filter->expects( $this->once() )
+            ->method( 'check_args' )
+            ->with( $this->arrayHasKey( 'map_cat' ) )
+            ->willReturn( array() );
+
+		add_filter( 'geo_mashup_search_query_args', array( $query_args_filter, 'check_args' ) );
+		$search = new GeoMashupSearch( array() );
+		$search->query( $search_args );
+        remove_filter( 'geo_mashup_search_query_args', array( $query_args_filter, 'check_args' ) );
+	}
+
+    /**
 	 * Issue 639
 	 */
 	function test_wp_query() {
@@ -684,7 +712,7 @@ class GeoMashup_Unit_Tests extends GeoMashupTestCase {
 		$unlocated_user_ids = $this->factory->user->create_many( 2 );
 		$nv_user_id = $this->factory->user->create();
 		$nv_location = $this->get_nv_test_location();
-		GeoMashupDB::set_object_location( 'user', $nv_user_id, $nv_location, false );
+		GeoMashupDB::set_object_location( 'user',$nv_user_id, $nv_location, false );
 
 		$location_query = new GM_Location_Query( array(
 			'minlat' => $nv_location->lat - 1,
