@@ -26,13 +26,28 @@ var jQuery, document;
 				} );
 			};
 
-			var obj_name_action = function( select ) {
+			var obj_name_action = function( select, action ) {
 
-				if ( select.val() === 'user' || select.val() === 'comment' ) {
-
-					widget_id.find( 'span.taxonomy_section' ).hide();
-					select_tax.val( 'select' ).change();
+				// only if action changed
+				if (action == 'change' ) {
+											
 					reset_terms();
+											
+					if (select.val() == 'post') {
+						select_tax.val( 'category' ).change();
+					} else {
+						select_tax.val( 'select' ).change();
+					}
+				}
+										
+				// always, when it is added widget and action changed
+				if ( select.val() == 'user' || select.val() == 'comment' ) {
+											
+					
+					widget_id.find( 'span.taxonomy_section' ).hide();
+					reset_terms();
+					select_tax.val( 'select' ).change();
+
 				} else {
 					fieldset_tems.find( 'fieldset.' + select_tax.find( 'option:selected' ).val() ).show();
 					widget_id.find( 'span.taxonomy_section' ).show();
@@ -42,7 +57,8 @@ var jQuery, document;
 			/**
 			 * Star action for widget form
 			 */
-			obj_name_action( select_obj_name );
+			
+			obj_name_action( select_obj_name, 'add' );
 			// hide all terms lists
 			termlist.hide();
 
@@ -65,7 +81,7 @@ var jQuery, document;
 
 			// Action for object_name
 			select_obj_name.change( function() {
-				obj_name_action( $( this ) );
+				obj_name_action( $( this ), 'change');
 			} );
 
 			// Action for Taxonomy Select

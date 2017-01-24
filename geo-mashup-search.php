@@ -584,15 +584,20 @@ class GeoMashupSearchWidget extends WP_Widget {
 			<?php
 			$include_taxonomies = $geo_mashup_options->get( 'overall', 'include_taxonomies' );
 
-			if ( !empty( $include_taxonomies ) and !defined( 'GEO_MASHUP_DISABLE_CATEGORIES' ) ) : ?>
+			if ( !empty( $include_taxonomies ) and !defined( 'GEO_MASHUP_DISABLE_CATEGORIES' ) ) : 
+				
+				$taxonomy_default_value = $this->get_default_value( $instance, 'object_name' ) == 'post' ? 'category' : 'select'; ?>
+
 				<span class="taxonomy_section">
 				<p>
 				<label class="taxonomy_select"
+				       title="<?php _e( 'To disable taxonomies and terms on search widget leave select', 'GeoMashup' ); ?>"
 				       for="<?php echo $this->get_field_id( 'taxonomy' ); ?>"><?php _e( 'Taxonomies Menu:', 'GeoMashup' ); ?>
+					<span class="help-tip">?</span>
 					<select id="<?php echo $this->get_field_id( 'taxonomy' ); ?>" class="widefat"
 					        name="<?php echo $this->get_field_name( 'taxonomy' ); ?>">
 								<option
-									value="select" <?php echo 'select' == $this->get_default_value( $instance, 'taxonomy' ) ? ' selected="selected"' : ''; ?>>
+									value="select" <?php echo 'select' == $this->get_default_value( $instance, 'taxonomy', $taxonomy_default_value ) ? ' selected="selected"' : ''; ?>>
 									<?php echo _e( 'Select', 'GeoMashup' ); ?>
 								</option>
 						<?php foreach ( $include_taxonomies as $include_taxonomy ) :
@@ -600,11 +605,12 @@ class GeoMashupSearchWidget extends WP_Widget {
 							$taxonomies[$taxonomy_object->name] = $taxonomy_object->label;
 							?>
 							<option
-								value="<?php echo $taxonomy_object->name; ?>" <?php echo $taxonomy_object->name == $this->get_default_value( $instance, 'taxonomy', 'category' ) ? ' selected="selected"' : ''; ?>>
+								value="<?php echo $taxonomy_object->name; ?>" <?php echo $taxonomy_object->name == $this->get_default_value( $instance, 'taxonomy', $taxonomy_default_value ) ? ' selected="selected"' : ''; ?>>
 									<?php echo $taxonomy_object->label; ?>
 								</option>
 						<?php endforeach; // included taxonomy ?>
 					</select>
+					
 				</label>
 				</p>
 				<fieldset id="<?php echo $this->get_field_id( 'tax-terms' ); ?>"
@@ -737,13 +743,28 @@ class GeoMashupSearchWidget extends WP_Widget {
 									}
 
 									// function for object_name
-									function obj_name_action( select ) {
-
-										if ( select.val() == 'user' || select.val() == 'comment' ) {
-
-											widget_id.find( 'span.taxonomy_section' ).hide();
-											select_tax.val( 'select' ).change();
+									function obj_name_action( select, action ) {
+										
+										// only if action changed
+										if (action == 'change' ) {
+											
 											reset_terms();
+											
+											if (select.val() == 'post') {
+												select_tax.val( 'category' ).change();
+											} else {
+												select_tax.val( 'select' ).change();
+											}
+										}
+										
+										// always, when it is added widget and action changed
+										if ( select.val() == 'user' || select.val() == 'comment' ) {
+											
+											
+											widget_id.find( 'span.taxonomy_section' ).hide();
+											reset_terms();
+											select_tax.val( 'select' ).change();
+
 										} else {
 											fieldset_tems.find( 'fieldset.' + select_tax.find( 'option:selected' ).val() ).show();
 											widget_id.find( 'span.taxonomy_section' ).show();
@@ -755,7 +776,7 @@ class GeoMashupSearchWidget extends WP_Widget {
 									 */
 
 									// Action for object_name
-									obj_name_action( select_obj_name );
+									obj_name_action( select_obj_name, 'add');
 
 									// hide all terms lists
 									termlist.hide();
@@ -780,7 +801,7 @@ class GeoMashupSearchWidget extends WP_Widget {
 									// Action for object_name
 									select_obj_name.change(
 										function () {
-											obj_name_action( $( this ) );
+											obj_name_action( $( this ),'change');
 										}
 									);
 
