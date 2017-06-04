@@ -197,8 +197,11 @@ class GeoMashupDB {
 
 		// Do nothing if meta_key is not a known location field
 		$location_keys = array();
-		if ( 'true' == $geo_mashup_options->get( 'overall', 'copy_geodata' ) )
+		$is_copy_geodata_on = ( 'true' === $geo_mashup_options->get( 'overall', 'copy_geodata' ) );
+		$copy_imported_geodata = false;
+		if ( $is_copy_geodata_on ) {
 			$location_keys = array_merge( $location_keys, array( 'geo_latitude', 'geo_longitude', 'geo_lat_lng' ) );
+		}
 		$import_custom_keys = preg_split( '/\s*,\s*/', trim( $geo_mashup_options->get( 'overall', 'import_custom_field' ) ) );
 		$location_keys = array_merge( $location_keys, $import_custom_keys );
 		if ( ! in_array( $meta_key, $location_keys ) ) 
@@ -261,6 +264,9 @@ class GeoMashupDB {
 					update_metadata( $meta_type, $object_id, 'geocoding_error', self::$geocode_error->get_error_message() );
 					return;
 				}
+				if ( $is_copy_geodata_on ) {
+					$copy_imported_geodata = true;
+				}
 			}
 		}
 
@@ -275,7 +281,10 @@ class GeoMashupDB {
 		self::remove_geodata_sync_hooks();
 		// Use geo date if it exists
 		$geo_date = get_metadata( $meta_type, $object_id, 'geo_date', true );
-		self::set_object_location( $meta_type, $object_id, $location, null, $geo_date );
+		$location_id = self::set_object_location( $meta_type, $object_id, $location, null, $geo_date );
+		if ( $copy_imported_geodata ) {
+			self::copy_to_geodata( $meta_type, $object_id, $geo_date, $location_id );
+		}
 		self::add_geodata_sync_hooks();
 	}
 
