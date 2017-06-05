@@ -1,0 +1,24 @@
+{
+  "license": "GPL2+",
+  "devDependencies": {
+    "cpx": "^1.5.0",
+    "csso-cli": "^1.0.0",
+    "node-wp-i18n": "^1.0.2",
+    "uglify-js": "^2.8.21"
+  },
+  "scripts": {
+    "premakepot": "yarn run clean",
+    "makepot": "wpi18n makepot --exclude \"vendor/.*\"",
+    "clean": "rm -rf dist",
+    "prebuild": "composer test && composer install --no-dev && yarn run clean",
+    "build": "yarn build:php && yarn build:css && yarn build:js && yarn build:lang && yarn build:docs",
+    "build:php": "cpx \"*.php\" dist && yarn build:php-templates && yarn build:php-vendor",
+    "build:php-templates": "cpx \"default-templates/**\" dist/default-templates",
+    "build:php-vendor": "cpx \"vendor/**\" dist/vendor",
+    "build:lang": "cpx \"lang/*\" dist/lang",
+    "build:docs": "cpx \"readme.txt\" dist",
+    "build:css": "cpx \"css/*.css\" dist/css -c \"csso\"",
+    "build:js": "cpx \"js/**/*.js\" dist/js -c \"uglifyjs\"",
+    "postbuild": "composer install"
+  }
+}

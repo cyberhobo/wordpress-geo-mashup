@@ -2,16 +2,13 @@
   "name": "cyberhobo/wordpress-geo-mashup",
   "description": "The WordPress Geo Mashup plugin.",
   "type": "wordpress-plugin",
-  "repositories": [
-    {
-      "type": "vcs",
-      "url": "https://github.com/freemius/wordpress-sdk"
-    }
-  ],
   "require": {
-    "freemius/wordpress-sdk": "dev-develop"
+    "freemius/wordpress-sdk": "^1.2.1"
   },
   "require-dev": {
     "phpunit/phpunit": "4.2.*"
+  },
+  "scripts": {
+    "test": "phpunit"
   }
 }
