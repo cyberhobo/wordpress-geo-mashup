@@ -615,7 +615,7 @@ class GeoMashup_Unit_Tests extends GeoMashupTestCase {
             'map_cat' => 'test',
 		);
 
-		$query_args_filter = $this->getMock( 'filterMock', array( 'check_args' ) );
+		$query_args_filter = $this->getMockBuilder('filterMock')->setMethods( array( 'check_args' ) )->getMock();
 		$query_args_filter->expects( $this->once() )
             ->method( 'check_args' )
             ->with( $this->arrayHasKey( 'map_cat' ) )
