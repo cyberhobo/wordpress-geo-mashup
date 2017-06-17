@@ -3,6 +3,7 @@
   "description": "The WordPress Geo Mashup plugin.",
   "type": "wordpress-plugin",
   "require": {
+    "roave/security-advisories": "dev-master",
     "freemius/wordpress-sdk": "^1.2.1"
   },
   "require-dev": {
