@@ -244,7 +244,7 @@ class GeoMashup {
 		define('GEO_MASHUP_DIRECTORY', dirname( GEO_MASHUP_PLUGIN_NAME ) );
 		define('GEO_MASHUP_URL_PATH', trim( plugin_dir_url( __FILE__ ), '/' ) );
 		define('GEO_MASHUP_MAX_ZOOM', 20);
-		define('GEO_MASHUP_VERSION', '1.10.0');
+		define('GEO_MASHUP_VERSION', '1.10.1');
 		define('GEO_MASHUP_DB_VERSION', '1.3');
 	}
 
