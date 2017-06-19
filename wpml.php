@@ -16,6 +16,7 @@ class GeoMashupWPML {
 		add_filter( 'geo_mashup_locations_join', array( __CLASS__, 'augment_locations_join_clause' ), 10, 2 );
 		add_filter( 'geo_mashup_locations_where', array( __CLASS__, 'augment_locations_where_clause' ), 10, 2 );
 		add_filter( 'geo_mashup_results_page_id', array( __CLASS__, 'translate_results_page_id' ) );
+		add_filter( 'wpml_duplicate_generic_string', array( __CLASS__, 'action_added_post_meta' ), 10, 3 );
 	}
 
 	/**
@@ -89,6 +90,20 @@ class GeoMashupWPML {
 	 */
 	public static function translate_results_page_id( $page_id ) {
 		return apply_filters( 'wpml_object_id', $page_id, 'page' );
+	}
+
+	/**
+	 * Copy geodata when WPML adds metadata without firing WP hooks.
+	 *
+	 * @param mixed $meta_value
+	 * @param string $language
+	 * @param array $context
+	 *
+	 * @return mixed
+	 */
+	public static function action_added_post_meta( $meta_value, $language, $context ) {
+		GeoMashupDB::action_added_post_meta( null, $context['post_id'], $context['key'], $meta_value );
+		return $meta_value;
 	}
 
 	/**

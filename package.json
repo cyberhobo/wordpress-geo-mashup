@@ -1,0 +1,47 @@
+{
+  "license": "GPL2+",
+  "version": "1.10.1",
+  "devDependencies": {
+    "cpx": "^1.5.0",
+    "csso-cli": "^1.0.0",
+    "node-wp-i18n": "^1.0.2",
+    "renamer": "^0.6.1",
+    "uglify-js": "^2.8.21"
+  },
+  "scripts": {
+    "env": "env",
+
+    "update-version": "yarn update-version:header && yarn update-version:constant",
+    "update-version:header": "sed -i -E \"s/Version: .+\\..+\\..+/Version: $npm_package_version/\" geo-mashup.php",
+    "update-version:constant": "sed -i -E \"s/'GEO_MASHUP_VERSION', '.+\\..+\\..+'/'GEO_MASHUP_VERSION', '$npm_package_version'/\" geo-mashup.php",
+
+    "premakepot": "yarn run clean",
+    "makepot": "wpi18n makepot --exclude \"vendor/.*\"",
+
+    "clean": "rm -rf dist/*",
+    "prebuild": "composer test && composer install --no-dev && yarn run clean",
+    "build": "yarn build:php && yarn build:css && yarn build:js && yarn build:lang && yarn build:docs && yarn build:media",
+    "build:php": "cpx \"*.php\" dist && yarn build:php-templates && yarn build:php-vendor",
+    "build:php-templates": "cpx \"default-templates/**\" dist/default-templates",
+    "build:php-vendor": "cpx \"vendor/**\" dist/vendor",
+    "build:lang": "cpx \"lang/*\" dist/lang",
+    "build:docs": "cpx \"readme.txt\" dist",
+    "build:css": "yarn build:css:min && yarn build:css:full",
+    "build:css:min": "cpx \"css/*.css\" dist/css -c \"csso\" && renamer --find '.css' --replace '.min.css' 'dist/css/*.css'",
+    "build:css:full": "cpx \"css/*.css\" dist/css",
+    "build:js": "yarn build:js:min && yarn build:js:full",
+    "build:js:min": "cpx \"js/**/*.js\" dist/js -c \"uglifyjs\" && renamer --find '.js' --replace '.min.js' 'dist/js/**/*.js'",
+    "build:js:full": "cpx \"js/**/*.js\" dist/js",
+    "build:media": "cpx \"images/**\" dist/images",
+    "postbuild": "composer install",
+
+    "predeploy": "yarn run clean",
+    "deploy": "yarn deploy:checkout && yarn build",
+    "deploy:checkout": "svn checkout http://plugins.svn.wordpress.org/geo-mashup/trunk dist",
+    "deploy:svn-update": "yarn deploy:svn-add && yarn deploy:svn-rm && yarn deploy:svn-commit && yarn deploy:svn-tag",
+    "deploy:svn-add": "svn stat dist | grep '^\\?' | awk '{print $2}' | xargs svn add",
+    "deploy:svn-rm": "svn stat dist | grep '^\\!' | awk '{print $2}' | xargs svn rm",
+    "deploy:svn-commit": "svn commit ${svn_dir}/trunk -m \"deploy from build of $npm_package_version\" --no-auth-cache --username \"$SVN_USER\" --password \"SVN_PASSWORD\"",
+    "deploy:svn-tag": "svn copy \"http://plugins.svn.wordpress.org/geo-mashup/trunk\" \"http://plugins.svn.wordpress.org/geo-mashup/tags/$npm_package_version\" -m \"Tagging $npm_package_version\" --no-auth-cache --username \"$SVN_USER\" --password \"$SVN_PASSWORD\""
+  }
+}

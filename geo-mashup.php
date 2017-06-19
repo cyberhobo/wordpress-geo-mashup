@@ -3,7 +3,7 @@
 Plugin Name: Geo Mashup
 Plugin URI: https://wordpress.org/plugins/geo-mashup/
 Description: Save location for posts and pages, or even users and comments. Display these locations on Google, Leaflet, and OSM maps. Make WordPress into your GeoCMS.
-Version: 1.10.0
+Version: 1.10.1
 Author: Dylan Kuhn
 Text Domain: GeoMashup
 Domain Path: /lang
@@ -244,7 +244,7 @@ class GeoMashup {
 		define('GEO_MASHUP_DIRECTORY', dirname( GEO_MASHUP_PLUGIN_NAME ) );
 		define('GEO_MASHUP_URL_PATH', trim( plugin_dir_url( __FILE__ ), '/' ) );
 		define('GEO_MASHUP_MAX_ZOOM', 20);
-		define('GEO_MASHUP_VERSION', '1.10.0');
+		define('GEO_MASHUP_VERSION', '1.10.1');
 		define('GEO_MASHUP_DB_VERSION', '1.3');
 	}
 
@@ -374,8 +374,9 @@ class GeoMashup {
 		// Use the minified version if SCRIPT_DEBUG is not set and it exists
 		if ( ( !defined( 'SCRIPT_DEBUG' ) or !SCRIPT_DEBUG ) and '.js' === substr( $src, -3 ) ) {
 			$min_src = substr( $src, 0, -3 ) . '.min.js';
-			if ( is_readable( $min_src ) )
+			if ( is_readable( GEO_MASHUP_DIR_PATH . '/' . $min_src ) ) {
 				$src = $min_src;
+			}
 		}
 		wp_register_script(
 				$handle, 
@@ -399,9 +400,10 @@ class GeoMashup {
 	public static function register_style( $handle, $src, $deps = array(), $ver = false, $media = 'all' ) {
 		// Use the minified version if SCRIPT_DEBUG is not set and it exists
 		if ( ( !defined( 'SCRIPT_DEBUG' ) or !SCRIPT_DEBUG ) and '.css' === substr( $src, -4 ) ) {
-			$min_src = substr( $src, 0, -3 ) . '.min.css';
-			if ( is_readable( $min_src ) )
+			$min_src = substr( $src, 0, -4 ) . '.min.css';
+			if ( is_readable( GEO_MASHUP_DIR_PATH . '/' . $min_src ) ) {
 				$src = $min_src;
+			}
 		}
 
 		wp_register_style( $handle, plugins_url( $src, __FILE__ ), $deps, $ver, $media );

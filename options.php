@@ -469,16 +469,7 @@ function geo_mashup_options_page() {
 								?> />
 						</td>
 					</tr>
-					<tr>
-						<th scope="row"><?php _e('Obscure Settings', 'GeoMashup'); ?></th>
-						<td>
-							<a id="show_obscure_settings" href="#show_obscure_settings" class="ui-icon ui-icon-triangle-1-e alignleft"></a>
-							<span class="description"><?php
-								_e('Reveal some less commonly used settings.', 'GeoMashup' );
-							?></span>
-						</td>
-					</tr>
-					<tr class="obscure">
+                    <tr>
 						<th scope="row"><?php _e('GeoNames ID', 'GeoMashup'); ?></th>
 						<td>
 							<input id="geonames_username_text"
@@ -490,6 +481,15 @@ function geo_mashup_options_page() {
 							<span class="description"><?php
 								printf( __('Your %sGeoNames username%s, used with GeoNames API requests. Leave the default value to use Geo Mashup\'s.', 'GeoMashup'),
 									'<a href="http://geonames.wordpress.com/2011/01/28/application-identification-for-free-geonames-web-services/" title="">', '</a>' );
+							?></span>
+						</td>
+					</tr>
+					<tr>
+						<th scope="row"><?php _e('Obscure Settings', 'GeoMashup'); ?></th>
+						<td>
+							<a id="show_obscure_settings" href="#show_obscure_settings" class="ui-icon ui-icon-triangle-1-e alignleft"></a>
+							<span class="description"><?php
+								_e('Reveal some less commonly used settings.', 'GeoMashup' );
 							?></span>
 						</td>
 					</tr>
