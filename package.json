@@ -36,12 +36,13 @@
     "postbuild": "composer install",
 
     "predeploy": "yarn run clean",
-    "deploy": "yarn deploy:checkout && yarn build",
+    "deploy": "yarn deploy:checkout && yarn build && yarn deploy:update",
     "deploy:checkout": "svn checkout http://plugins.svn.wordpress.org/geo-mashup/trunk dist",
-    "deploy:svn-update": "yarn deploy:svn-add && yarn deploy:svn-rm && yarn deploy:svn-commit && yarn deploy:svn-tag",
-    "deploy:svn-add": "svn stat dist | grep '^\\?' | awk '{print $2}' | xargs svn add",
-    "deploy:svn-rm": "svn stat dist | grep '^\\!' | awk '{print $2}' | xargs svn rm",
-    "deploy:svn-commit": "svn commit ${svn_dir}/trunk -m \"deploy from build of $npm_package_version\" --no-auth-cache --username \"$SVN_USER\" --password \"SVN_PASSWORD\"",
-    "deploy:svn-tag": "svn copy \"http://plugins.svn.wordpress.org/geo-mashup/trunk\" \"http://plugins.svn.wordpress.org/geo-mashup/tags/$npm_package_version\" -m \"Tagging $npm_package_version\" --no-auth-cache --username \"$SVN_USER\" --password \"$SVN_PASSWORD\""
+    "deploy:update": "yarn deploy:update:add && yarn deploy:update:rm && yarn deploy:update:commit && yarn deploy:update:tag",
+    "deploy:update:add": "svn stat dist | grep '^\\?' | awk '{print $2}' | xargs svn add",
+    "deploy:update:rm": "svn stat dist | grep '^\\!' | awk '{print $2}' | xargs svn rm",
+    "deploy:env": "echo $SVN_USER",
+    "deploy:update:commit": "svn commit dist -m \"deploy from build of $npm_package_version\" --no-auth-cache --username \"$SVN_USER\" --password \"$SVN_PASSWORD\"",
+    "deploy:update:tag": "svn copy \"http://plugins.svn.wordpress.org/geo-mashup/trunk\" \"http://plugins.svn.wordpress.org/geo-mashup/tags/$npm_package_version\" -m \"Tagging $npm_package_version\" --no-auth-cache --username \"$SVN_USER\" --password \"$SVN_PASSWORD\""
   }
 }
