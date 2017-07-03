@@ -1,5 +1,5 @@
 === Geo Mashup ===
-Contributors: cyberhobo
+Contributors: cyberhobo, freemius
 Donate Link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=11045324
 Tags: map, maps, google maps, google map, mapping, mashup, geo, google, geocms
 Requires at least: 3.7
