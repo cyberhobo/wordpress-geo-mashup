@@ -6,6 +6,8 @@
  */
 
 class GeoMashupWPML {
+    /** @var array */
+    protected static $meta_queue = array();
 
 	/**
 	 * Load WPML integrations.
@@ -16,7 +18,7 @@ class GeoMashupWPML {
 		add_filter( 'geo_mashup_locations_join', array( __CLASS__, 'augment_locations_join_clause' ), 10, 2 );
 		add_filter( 'geo_mashup_locations_where', array( __CLASS__, 'augment_locations_where_clause' ), 10, 2 );
 		add_filter( 'geo_mashup_results_page_id', array( __CLASS__, 'translate_results_page_id' ) );
-		add_filter( 'wpml_duplicate_generic_string', array( __CLASS__, 'action_added_post_meta' ), 10, 3 );
+		add_filter( 'wpml_duplicate_generic_string', array( __CLASS__, 'queue_post_meta' ), 10, 3 );
 	}
 
 	/**
@@ -93,7 +95,7 @@ class GeoMashupWPML {
 	}
 
 	/**
-	 * Copy geodata when WPML adds metadata without firing WP hooks.
+	 * Collect geodata when WPML adds metadata without firing WP hooks.
 	 *
 	 * @param mixed $meta_value
 	 * @param string $language
@@ -101,9 +103,35 @@ class GeoMashupWPML {
 	 *
 	 * @return mixed
 	 */
-	public static function action_added_post_meta( $meta_value, $language, $context ) {
-		GeoMashupDB::action_added_post_meta( null, $context['post_id'], $context['key'], $meta_value );
-		return $meta_value;
+	public static function queue_post_meta( $meta_value, $language, $context )
+    {
+        self::$meta_queue[] = array(
+            'post_id' => $context['post_id'],
+            'key'     => $context['key'],
+            'value'   => $meta_value,
+        );
+        // Our added post meta action won't work until the post cache is cleared
+        // and it seems safer to do that on this action, near where WPML does it
+        add_action('icl_make_duplicate', array(__CLASS__, 'add_queued_meta', 10, 4));
+
+        return $meta_value;
+    }
+
+    /**
+     * Clean the post cache and run our post meta action.
+     *
+     * @param int $master_post_id
+     * @param string $lang
+     * @param array $post_array
+     * @param int $id
+     *
+     * @return mixed
+     */
+    public static function add_queued_meta( $master_post_id, $lang, $post_array, $id ) {
+	    clean_post_cache( $id );
+	    foreach (self::$meta_queue as $meta) {
+            GeoMashupDB::action_added_post_meta( null, $meta['post_id'], $meta['key'], $meta['value'] );
+        }
 	}
 
 	/**
