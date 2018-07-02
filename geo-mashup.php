@@ -128,7 +128,7 @@ class GeoMashup {
 		include_once( GEO_MASHUP_DIR_PATH . '/geo-mashup-db.php' );
 		include_once( GEO_MASHUP_DIR_PATH . '/geo-mashup-ui-managers.php' );
 
-		if ( ! defined( 'GEO_MASHUP_UNIT_TESTING' ) ) {
+		if ( ! defined( 'GEO_MASHUP_UNIT_TESTING' ) && is_admin() ) {
 			include_once( GEO_MASHUP_DIR_PATH . '/freemius.php' );
 			self::$freemius = new GeoMashupFreemius();
 			self::$freemius->load();
