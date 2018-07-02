@@ -3,7 +3,7 @@
 Plugin Name: Geo Mashup
 Plugin URI: https://wordpress.org/plugins/geo-mashup/
 Description: Save location for posts and pages, or even users and comments. Display these locations on Google, Leaflet, and OSM maps. Make WordPress into your GeoCMS.
-Version: 1.10.2
+Version: 1.10.3
 Author: Dylan Kuhn
 Text Domain: GeoMashup
 Domain Path: /lang
@@ -128,7 +128,9 @@ class GeoMashup {
 		include_once( GEO_MASHUP_DIR_PATH . '/geo-mashup-db.php' );
 		include_once( GEO_MASHUP_DIR_PATH . '/geo-mashup-ui-managers.php' );
 
-		if ( ! defined( 'GEO_MASHUP_UNIT_TESTING' ) ) {
+		if ( ! defined( 'GEO_MASHUP_UNIT_TESTING' ) &&
+             ! defined( 'GEO_MASHUP_FREEMIUS_OPT_OUT') &&
+             is_admin() ) {
 			include_once( GEO_MASHUP_DIR_PATH . '/freemius.php' );
 			self::$freemius = new GeoMashupFreemius();
 			self::$freemius->load();
@@ -244,7 +246,7 @@ class GeoMashup {
 		define('GEO_MASHUP_DIRECTORY', dirname( GEO_MASHUP_PLUGIN_NAME ) );
 		define('GEO_MASHUP_URL_PATH', trim( plugin_dir_url( __FILE__ ), '/' ) );
 		define('GEO_MASHUP_MAX_ZOOM', 20);
-		define('GEO_MASHUP_VERSION', '1.10.2');
+		define('GEO_MASHUP_VERSION', '1.10.3');
 		define('GEO_MASHUP_DB_VERSION', '1.3');
 	}
 
