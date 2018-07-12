@@ -3,8 +3,8 @@ Contributors: cyberhobo, freemius
 Donate Link:
 Tags: map, maps, google maps, google map, mapping, mashup, geo, google, geocms
 Requires at least: 3.7
-Tested up to: 4.9.6
-Stable tag: 1.10.3
+Tested up to: 4.9.7
+Stable tag: 1.10.4
 License: GPL2+
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -75,12 +75,19 @@ GeoMashup supports [standard WordPress plugin installation].
 
 == Upgrade Notice ==
 
+= 1.10.4 =
+This version fixes a security related bug.  Upgrade immediately.
+
 = 1.8.3 =
 This version fixes a security related bug.  Upgrade immediately.
 
 == Change Log ==
 
 Features are generally added in one-dot releases, while two-dot releases contain fixes and small updates.
+
+= 1.10.4 Jul 11 2018 =
+
+[milestone 1.10.4 changes](https://github.com/cyberhobo/wordpress-geo-mashup/milestone/8?closed=1)
 
 = 1.10.3 Jul 01 2018 =
 
