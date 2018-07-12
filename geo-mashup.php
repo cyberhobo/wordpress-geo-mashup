@@ -715,8 +715,9 @@ class GeoMashup {
 			}
 		}
 		$json = json_encode( $urls );
-		if ( isset( $_REQUEST['callback'] ) )
-			$json = $_REQUEST['callback'] . '(' . $json . ')';
+		if ( isset( $_REQUEST['callback'] ) ) {
+			$json = esc_js( $_REQUEST['callback'] ) . '(' . $json . ')';
+		}
 		echo $json;
 		exit();
 	}

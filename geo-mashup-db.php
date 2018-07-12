@@ -1477,6 +1477,61 @@ class GeoMashupDB {
 	}
 
 	/**
+	 * Sanitize an array of query arguments.
+	 *
+	 * @param array $query_args
+	 *
+	 * @return array
+	 */
+	public static function sanitize_query_args( $query_args ) {
+		array_walk_recursive($query_args, array( __CLASS__, 'sanitize_query_arg' ) );
+		return $query_args;
+	}
+
+	/**
+	 * Sanitize a single query argument.
+	 *
+	 * @param mixed $value May be modified.
+	 * @param string $name
+	 */
+	public static function sanitize_query_arg( &$value, $name ) {
+		switch ($name) {
+			case 'minlat':
+			case 'maxlat':
+			case 'minlng':
+			case 'maxlng':
+			case 'near_lat':
+			case 'near_lng':
+			case 'radius_km':
+			case 'radius_mi':
+				$value = (float) $value;
+				break;
+
+			case 'map_cat':
+			case 'object_ids':
+				$value = preg_replace( '/[^0-9,]', '', $value );
+				break;
+
+			case 'map_post_type':
+			case 'object_name':
+				$value = sanitize_key( $value );
+				break;
+
+			case 'limit':
+			case 'map_offset':
+				$value = (int) $value;
+				break;
+
+			case 'suppress_filters':
+				$value = (bool) $value;
+				break;
+
+			default:
+				$value = sanitize_text_field( $value );
+		}
+	}
+
+	/**
 	 * Get locations of objects.
 	 *
 	 * <code>
