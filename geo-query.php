@@ -249,9 +249,9 @@ class GeoMashupQuery {
 		header('Cache-Control: no-cache;', true);
 		header('Expires: -1;', true);
 
-		$json = GeoMashup::get_locations_json($_REQUEST);
+		$json = GeoMashup::get_locations_json( GeoMashupDB::sanitize_query_args( $_REQUEST ) );
 		if ( isset( $_REQUEST['callback'] ) )
-			$json = $_REQUEST['callback'] . '(' . $json . ')';
+			$json = esc_js( $_REQUEST['callback'] ) . '(' . $json . ')';
 		echo $json;
 	}
 }
