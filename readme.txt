@@ -3,8 +3,8 @@ Contributors: cyberhobo, freemius
 Donate Link:
 Tags: map, maps, google maps, google map, mapping, mashup, geo, google, geocms
 Requires at least: 3.7
-Tested up to: 4.9.7
-Stable tag: 1.10.4
+Tested up to: 4.9.8
+Stable tag: 1.10.5
 License: GPL2+
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -58,10 +58,6 @@ and the [tag reference](https://github.com/cyberhobo/wordpress-geo-mashup/wiki/T
 * Belorussian by [FatCow](http://www.fatcow.com) added in version 1.2.8
 
 [Translators welcome](https://github.com/cyberhobo/wordpress-geo-mashup/wiki/Translating).
-
-= Thanks =
-
-Thanks to [JetBrains](https://www.jetbrains.com) for providing cutting edge development tools to this project.
 
 = Mashup Ingredients =
 
