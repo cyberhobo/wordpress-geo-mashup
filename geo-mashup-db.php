@@ -1837,7 +1837,7 @@ class GeoMashupDB {
 			$changed_locale = true;
 		}
 
-		if ( isset( $location['id'] ) && is_numeric( $location['id'] ) ) {
+		if ( isset( $location['id'] ) && is_numeric( $location['id'] ) && $location['id'] > 0 ) {
 
 			$select_string .= $wpdb->prepare( 'WHERE id = %d', $location['id'] );
 

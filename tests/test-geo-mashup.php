@@ -869,4 +869,23 @@ class GeoMashup_Unit_Tests extends GeoMashupTestCase {
 		$this->assertThat( $html, $this->stringContains( 'height: 0;' ) );
 		$this->assertThat( $html, $this->stringContains( 'padding-bottom: 50%;' ) );
 	}
+
+	/**
+	 * issue 818
+	 */
+	function test_location_update_with_id_zero() {
+
+		$location = $this->get_nv_test_location();
+		$id = GeoMashupDB::set_location( $location, $do_lookups = false );
+
+		$location->id = 0;
+		$location->locality_name = rand_str();
+		$update_id = GeoMashupDB::set_location( $location, $do_lookups = false );
+
+		$this->assertEquals( $update_id, $id );
+		$out = GeoMashupDB::get_location( $id );
+		$this->assertEquals( $id, $out->id );
+		$this->assertEquals( $location->locality_name, $out->locality_name );
+	}
+
 }
