@@ -41,6 +41,7 @@ and the [tag reference](https://github.com/cyberhobo/wordpress-geo-mashup/wiki/T
 
 = Translations =
 
+* Belarussian by [hrank](https://hrank.com) added in version 1.10.6
 * Ukranian by [Ivanka of Everycloudtech](http://everycloudtech.com/) updated in version 1.8.6
 * Dutch by [delicatesther](http://delicatesther.nl/) updated in version 1.8.5
 * German by [Thomas Morvay](http://internet-dienste.biz/) added in version 1.5.4
@@ -55,7 +56,6 @@ and the [tag reference](https://github.com/cyberhobo/wordpress-geo-mashup/wiki/T
 * French updated in version 1.3.7
 * Spanish by [Reven](http://www.reven.org/blog/2010/03/15/traduccion-de-geo-mashup/) added in version 1.3.3
 * Swedish by [Joakim Green](http://www.joakimgreen.com/) added in version 1.3.3
-* Belorussian by [FatCow](http://www.fatcow.com) added in version 1.2.8
 
 [Translators welcome](https://github.com/cyberhobo/wordpress-geo-mashup/wiki/Translating).
 
