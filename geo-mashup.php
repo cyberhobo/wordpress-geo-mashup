@@ -1,4 +1,4 @@
-<?php 
+<?php
 /*
 Plugin Name: Geo Mashup
 Plugin URI: https://wordpress.org/plugins/geo-mashup/
@@ -35,6 +35,8 @@ License: GPL2+
  */
 
 if ( !class_exists( 'GeoMashup' ) ) {
+/** @noinspection AutoloadingIssuesInspection */
+
 /**
  * The Geo Mashup static class.
  *
@@ -79,11 +81,11 @@ class GeoMashup {
 	 * @since 1.2
 	 */
 	public static function load() {
-		GeoMashup::load_constants();
+		self::load_constants();
 		load_plugin_textdomain( 'GeoMashup', '', path_join( GEO_MASHUP_DIRECTORY, 'lang' ) );
 
-		GeoMashup::load_dependencies();
-		GeoMashup::load_hooks();
+		self::load_dependencies();
+		self::load_hooks();
 	}
 
 	/**
@@ -107,12 +109,12 @@ class GeoMashup {
 	 * @since 1.2
 	 */
 	public static function init() {
-		if ( GEO_MASHUP_DB_VERSION != GeoMashupDB::installed_version() ) {
+		if ( GEO_MASHUP_DB_VERSION !== GeoMashupDB::installed_version() ) {
 			// We're active but not installed - try once more to install
 			GeoMashupDB::install();
 		}
-		GeoMashup::load_styles();
-		GeoMashup::load_scripts();
+		self::load_styles();
+		self::load_scripts();
 	}
 
 	/**
@@ -122,22 +124,22 @@ class GeoMashup {
 	 */
 	private static function load_dependencies() {
 		global $geo_mashup_options;
-		include_once( GEO_MASHUP_DIR_PATH . '/geo-mashup-options.php' );
-		include_once( GEO_MASHUP_DIR_PATH . '/gm-location-query.php' );
-		include_once( GEO_MASHUP_DIR_PATH . '/post-query.php' );
-		include_once( GEO_MASHUP_DIR_PATH . '/geo-mashup-db.php' );
-		include_once( GEO_MASHUP_DIR_PATH . '/geo-mashup-ui-managers.php' );
+		include_once GEO_MASHUP_DIR_PATH . '/geo-mashup-options.php';
+		include_once GEO_MASHUP_DIR_PATH . '/gm-location-query.php';
+		include_once GEO_MASHUP_DIR_PATH . '/post-query.php';
+		include_once GEO_MASHUP_DIR_PATH . '/geo-mashup-db.php';
+		include_once GEO_MASHUP_DIR_PATH . '/geo-mashup-ui-managers.php';
 
 		if ( ! defined( 'GEO_MASHUP_UNIT_TESTING' ) &&
              ! defined( 'GEO_MASHUP_FREEMIUS_OPT_OUT') &&
              is_admin() ) {
-			include_once( GEO_MASHUP_DIR_PATH . '/freemius.php' );
+			include_once GEO_MASHUP_DIR_PATH . '/freemius.php';
 			self::$freemius = new GeoMashupFreemius();
 			self::$freemius->load();
 		}
 
-		if ( $geo_mashup_options->get( 'overall', 'enable_geo_search' ) == 'true' ) {
-			include_once( GEO_MASHUP_DIR_PATH . '/geo-mashup-search.php' );
+		if ( $geo_mashup_options->get( 'overall', 'enable_geo_search' ) === 'true' ) {
+			include_once GEO_MASHUP_DIR_PATH . '/geo-mashup-search.php';
 		}
 
 	}
@@ -150,12 +152,12 @@ class GeoMashup {
 	public static function load_integrations() {
 
 		if ( defined( 'ICL_LANGUAGE_CODE' ) ) {
-			include_once( GEO_MASHUP_DIR_PATH . '/wpml.php' );
+			include_once GEO_MASHUP_DIR_PATH . '/wpml.php';
 			add_action( 'wpml_loaded', array( 'GeoMashupWPML', 'load' ) );
 		}
 
 		if ( defined( 'SNAZZY_VERSION_NUMBER' ) ) {
-			include_once( GEO_MASHUP_DIR_PATH . '/snazzy-maps.php' );
+			include_once GEO_MASHUP_DIR_PATH . '/snazzy-maps.php';
 			GeoMashupSnazzyMaps::load();
 		}
 	}
@@ -202,7 +204,7 @@ class GeoMashup {
 
 			// This is a non-admin request
 
-			if ($geo_mashup_options->get('overall','add_category_links') == 'true') {
+			if ($geo_mashup_options->get('overall','add_category_links') === 'true') {
 				// To add map links to a category list - flaky, requires non-empty category description
 				add_filter('list_cats', array(__CLASS__, 'list_cats'), 10, 2);
 			}
@@ -230,7 +232,7 @@ class GeoMashup {
 			add_filter( 'query_vars', array( __CLASS__, 'query_vars' ) );
 			add_action( 'template_redirect', array( __CLASS__, 'template_redirect' ) );
 
-			include_once( GEO_MASHUP_DIR_PATH . '/shortcodes.php');
+			include_once GEO_MASHUP_DIR_PATH . '/shortcodes.php';
 	
 		}
 	}
@@ -242,6 +244,7 @@ class GeoMashup {
 	 */
 	private static function load_constants() {
 		define('GEO_MASHUP_PLUGIN_NAME', plugin_basename(__FILE__));
+		/** @noinspection DirectoryConstantCanBeUsedInspection */
 		define('GEO_MASHUP_DIR_PATH', dirname( __FILE__ ));
 		define('GEO_MASHUP_DIRECTORY', dirname( GEO_MASHUP_PLUGIN_NAME ) );
 		define('GEO_MASHUP_URL_PATH', trim( plugin_dir_url( __FILE__ ), '/' ) );
@@ -264,7 +267,7 @@ class GeoMashup {
 				self::register_script( 'qunit-close-enough', 'js/qunit-close-enough.js', array( 'qunit' ), GEO_MASHUP_VERSION, true );
 				self::register_script( 'geo-mashup-tests', 'js/qunit-tests.js', array( 'qunit-close-enough' ), GEO_MASHUP_VERSION, true );
 				wp_enqueue_script( 'geo-mashup-tests' );
-				include_once( GEO_MASHUP_DIR_PATH . '/tests.php' );
+				include_once GEO_MASHUP_DIR_PATH . '/tests.php';
 			}
 		}
 		if (is_admin()){
@@ -296,7 +299,9 @@ class GeoMashup {
 	public static function activation_hook() {
 		global $geo_mashup_options;
 		GeoMashupDB::install();
-		if ( '' == $geo_mashup_options->get( 'overall', 'version' ) and '' != $geo_mashup_options->get( 'overall', 'google_key' ) ) {
+		if ( '' === $geo_mashup_options->get( 'overall', 'version' ) &&
+		     '' !== $geo_mashup_options->get( 'overall', 'google_key' )
+		) {
 			// Upgrading from a pre-1.4 version - don't set the default provider to Google v3
 			$geo_mashup_options->set_valid_options(
 				array(
@@ -321,9 +326,10 @@ class GeoMashup {
 
 		do_action( 'geo_mashup_init' );
 
-		if ( class_exists( 'GeoMashupSearch' ) and defined( 'GeoMashupSearch::VERSION' ) ) {
+		if ( defined( 'GeoMashupSearch::VERSION' ) && class_exists( 'GeoMashupSearch' ) ) {
 
 			// The old search plugin is active - enable native geo search and flag for deactivation
+			/** @noinspection PhpUndefinedMethodInspection */
 			self::$deactivate_geo_search_basename = GeoMashupSearch::get_instance()->basename;
 			$geo_mashup_options->set_valid_options(
 				array(
@@ -334,7 +340,6 @@ class GeoMashup {
 			);
 			$geo_mashup_options->save();
 		}
-
 
 	}
 
@@ -348,8 +353,12 @@ class GeoMashup {
 		global $wpdb, $_wp_using_ext_object_cache;
 
 		
-		if ( $_wp_using_ext_object_cache || apply_filters( 'geo_mashup_disable_scheduled_delete', false ) || defined( 'GEO_MASHUP_DISABLE_SCHEDULED_DELETE' ) )
+		if ( $_wp_using_ext_object_cache ||
+		     defined( 'GEO_MASHUP_DISABLE_SCHEDULED_DELETE' ) ||
+		     apply_filters( 'geo_mashup_disable_scheduled_delete', false )
+		) {
 			return;
+		}
 
 		$time = time();
 		$expired = $wpdb->get_col( "SELECT option_name FROM {$wpdb->options} WHERE option_name LIKE '_transient_timeout_gm%' AND option_value < {$time};" );
@@ -368,13 +377,19 @@ class GeoMashup {
 	 * 
 	 * @param string $handle Global tag for the script.
 	 * @param string $src Path to the script from the root directory of Geo Mashup.
-	 * @param array $deps Array of dependency handles.
+	 * @param array|string $deps Array of dependency handles.
 	 * @param string|bool $ver Script version.
 	 * @param bool $in_footer Whether the script can be loaded in the footer.
 	 */
-	public static function register_script( $handle, $src, $deps = array(), $ver = false, $in_footer = false ) {
+	public static function register_script(
+		$handle,
+		$src,
+		$deps = array(),
+		$ver = false,
+		$in_footer = false
+	) {
 		// Use the minified version if SCRIPT_DEBUG is not set and it exists
-		if ( ( !defined( 'SCRIPT_DEBUG' ) or !SCRIPT_DEBUG ) and '.js' === substr( $src, -3 ) ) {
+		if ( ( !defined( 'SCRIPT_DEBUG' ) || !SCRIPT_DEBUG ) && '.js' === substr( $src, -3 ) ) {
 			$min_src = substr( $src, 0, -3 ) . '.min.js';
 			if ( is_readable( GEO_MASHUP_DIR_PATH . '/' . $min_src ) ) {
 				$src = $min_src;
@@ -395,13 +410,19 @@ class GeoMashup {
 	 *
 	 * @param string $handle Global tag for the style.
 	 * @param string $src Path to the stylesheet from the root directory of Geo Mashup.
-	 * @param array $deps Array of dependency handles.
+	 * @param array|string $deps Array of dependency handles.
 	 * @param string|bool $ver Script version.
 	 * @param string $media Stylesheet media target.
 	 */
-	public static function register_style( $handle, $src, $deps = array(), $ver = false, $media = 'all' ) {
+	public static function register_style(
+		$handle,
+		$src,
+		$deps = array(),
+		$ver = false,
+		$media = 'all'
+	) {
 		// Use the minified version if SCRIPT_DEBUG is not set and it exists
-		if ( ( !defined( 'SCRIPT_DEBUG' ) or !SCRIPT_DEBUG ) and '.css' === substr( $src, -4 ) ) {
+		if ( ( !defined( 'SCRIPT_DEBUG' ) || !SCRIPT_DEBUG ) && '.css' === substr( $src, -4 ) ) {
 			$min_src = substr( $src, 0, -4 ) . '.min.css';
 			if ( is_readable( GEO_MASHUP_DIR_PATH . '/' . $min_src ) ) {
 				$src = $min_src;
@@ -458,13 +479,17 @@ class GeoMashup {
 	public static function locate_template( $template_base ) {
 		global $geo_mashup_custom;
 		$template = locate_template( array("geo-mashup-$template_base.php") );
-		if ( empty( $template ) and isset( $geo_mashup_custom ) and $geo_mashup_custom->file_url( $template_base . '.php' ) ) {
+		/** @noinspection PhpUndefinedMethodInspection */
+		if ( empty( $template ) &&
+		     $geo_mashup_custom !== null &&
+		     $geo_mashup_custom->file_url( $template_base . '.php' )
+		) {
 			$template = path_join( $geo_mashup_custom->dir_path, $template_base . '.php' );
 		}
-		if ( empty( $template ) or !is_readable( $template ) ) {
+		if ( empty( $template ) || !is_readable( $template ) ) {
 			$template = path_join( GEO_MASHUP_DIR_PATH, "default-templates/$template_base.php" );
 		}
-		if ( empty( $template ) or !is_readable( $template ) ) {
+		if ( empty( $template ) || !is_readable( $template ) ) {
 			// If all else fails, just use the default info window template
 			$template = path_join( GEO_MASHUP_DIR_PATH, 'default-templates/info-window.php' );
 		}
@@ -501,7 +526,7 @@ class GeoMashup {
 	 * @uses geo-query.php
 	 */
 	public static function geo_query() {
-		require_once( 'geo-query.php' );
+		require_once 'geo-query.php';
 		exit();
 	}
 
@@ -512,7 +537,7 @@ class GeoMashup {
 	 * @uses render-map.php
 	 */
 	private static function render_map() {
-		require_once( 'render-map.php' );
+		require_once 'render-map.php';
 		GeoMashupRenderMap::render_map();
 		exit();
 	}
@@ -537,7 +562,7 @@ class GeoMashup {
 
 		/** @todo add an option for a user capability check here? */
 
-		if ( 200 == $status['code'] and ! empty( $_POST['geo_mashup_ui_manager'] ) ) {
+		if ( ! empty( $_POST['geo_mashup_ui_manager'] ) && 200 === $status['code'] ) {
 			$ui_manager = GeoMashupUIManager::get_instance( $_POST['geo_mashup_ui_manager'] );
 			$result = $ui_manager->save_posted_object_location( $status['object_id'] );
 			if ( is_wp_error( $result ) ) {
@@ -546,7 +571,7 @@ class GeoMashup {
 			}
 		}
 
-		if ( 200 == $status['code'] ) {
+		if ( 200 === $status['code'] ) {
 			if ( ! empty( $_REQUEST['geo_mashup_update_location'] ) ) {
 				$status['message'] = __( 'Location updated.', 'GeoMashup' );
 			} else if ( ! empty( $_REQUEST['geo_mashup_delete_location'] ) ) {
@@ -571,6 +596,7 @@ class GeoMashup {
 	 * Caution - what if a future Geo Mashup incorporates multiple locations per object?
 	 *
 	 * @since 1.3
+	 * @deprecated Use the geo_mashup_query query var
 	 *
 	 * @param bool $yes_or_no Whether to activate the join or not.
 	 */
@@ -614,11 +640,16 @@ class GeoMashup {
 	public static function implode_assoc($inner_glue, $outer_glue, $array, $skip_empty=false, $urlencoded=false) {
 	$output = array();
 		foreach($array as $key=>$item) {
-			if (!$skip_empty || isset($item)) {
-				if ($urlencoded)
-					$output[] = preg_replace('/\s/', ' ', $key.$inner_glue.urlencode($item));
-				else
+			if (!$skip_empty || $item !== null) {
+				if ($urlencoded) {
+					$output[] = preg_replace(
+						'/\s/',
+						' ',
+						$key.$inner_glue.urlencode($item)
+					);
+				} else {
 					$output[] = preg_replace('/\s/', ' ', $key.$inner_glue.$item);
+				}
 			}
 		}
 		return implode($outer_glue, $output);
@@ -693,8 +724,10 @@ class GeoMashup {
 			foreach ($attachments as $attachment) {
 				$url = wp_get_attachment_url( $attachment->ID ); 
 				// Backwards compatibility: include KML attachments with the incorrect octet-stream mime type
-				if ( 'application/octet-stream' != $attachment->post_mime_type or 'kml' == substr( $url, -3 ) ) {
-					array_push( $urls, $url );
+				if ( 'application/octet-stream' !== $attachment->post_mime_type ||
+				     'kml' === substr( $url, -3 )
+				) {
+					$urls[] = $url;
 				}
 			}
 		}
@@ -707,13 +740,15 @@ class GeoMashup {
 	 * since 1.4
 	 */
 	public static function ajax_kml_attachments() {
-		$urls = array(); 
+		$urls = array(array());
 		if ( !empty( $_REQUEST['post_ids'] ) ) {
 			$post_ids = array_map( 'intval', explode( ',', $_REQUEST['post_ids'] ) );
 			foreach( $post_ids as $post_id ) {
-				$urls = array_merge( $urls, self::get_kml_attachment_urls( $post_id ) );
+				$urls[] = self::get_kml_attachment_urls( $post_id );
 			}
 		}
+		/** @noinspection ArgumentUnpackingCanBeUsedInspection */
+		$urls = call_user_func_array( 'array_merge', $urls );
 		$json = json_encode( $urls );
 		if ( isset( $_REQUEST['callback'] ) ) {
 			$json = esc_js( $_REQUEST['callback'] ) . '(' . $json . ')';
@@ -737,7 +772,9 @@ class GeoMashup {
 		{
 			$loc = GeoMashupDB::get_object_location( 'post', $wp_query->post->ID );
 			if (!empty($loc)) {
-				$title = esc_html(convert_chars(strip_tags(get_bloginfo('name'))." - ".$wp_query->post->post_title));
+				$title = esc_html(
+					convert_chars(strip_tags(get_bloginfo('name')).' - '.$wp_query->post->post_title)
+				);
 				echo '<meta name="ICBM" content="' . esc_attr( $loc->lat . ', ' . $loc->lng ) . '" />' . "\n";
 				echo '<meta name="dcterms.title" content="' . esc_attr( $title ) . '" />' . "\n";
 				echo '<meta name="geo.position" content="' .  esc_attr( $loc->lat . ';' . $loc->lng ) . '" />' . "\n";
@@ -758,7 +795,7 @@ class GeoMashup {
 	 *
 	 * @param string|array $query_args Query variables for GeoMashupDB::get_object_locations().
 	 * @param string $format (optional) 'JSON' (default) or ARRAY_A
-	 * @return string Queried object locations JSON ( { "object" : [...] } ).
+	 * @return string|array Queried object locations JSON ( { "object" : [...] } ).
 	 */
 	public static function get_locations_json( $query_args, $format = 'JSON' ) {
 		$default_args = array( 'object_name' => 'post' );
@@ -773,10 +810,11 @@ class GeoMashup {
 				}
 			}
 		}
-		if ( ARRAY_A == $format ) 
+		if ( ARRAY_A === $format ) {
 			return array( 'objects' => $json_objects );
-		else
-			return json_encode( array( 'objects' => $json_objects ) );
+		}
+
+		return json_encode( array( 'objects' => $json_objects ) );
 	}
 
 	/**
@@ -818,17 +856,18 @@ class GeoMashup {
 
 		$term_ids_by_taxonomy = array();
 		$author_name = '';
-		if ( 'post' == $object_name ) {
+		if ( 'post' === $object_name ) {
 
 			// Filter the title
 			$object_location->label = sanitize_text_field( apply_filters( 'the_title', $object_location->label, $object_location->object_id ) );
 
 			// Add terms
-			if ( defined( 'GEO_MASHUP_DISABLE_CATEGORIES' ) and GEO_MASHUP_DISABLE_CATEGORIES ) 
+			if ( defined( 'GEO_MASHUP_DISABLE_CATEGORIES' ) && GEO_MASHUP_DISABLE_CATEGORIES ) {
 				$include_taxonomies = array();
-			else
+			} else {
 				$include_taxonomies = $geo_mashup_options->get( 'overall', 'include_taxonomies' );
-			
+			}
+
 			foreach( $include_taxonomies as $include_taxonomy ) {
 				$term_ids_by_taxonomy[$include_taxonomy] = array();
 				// Not using wp_get_object_terms(), which doesn't allow for persistent caching
@@ -842,15 +881,13 @@ class GeoMashup {
 			}
 
 			// Add post author name
-			if ( defined( 'GEO_MASHUP_DISABLE_AUTHOR_NAME' ) and GEO_MASHUP_DISABLE_AUTHOR_NAME ) 
+			if ( defined( 'GEO_MASHUP_DISABLE_AUTHOR_NAME' ) && GEO_MASHUP_DISABLE_AUTHOR_NAME ) {
 				$author = null;
-			else
+			} else {
 				$author = get_userdata( $object_location->post_author );
+			}
 
-			if ( empty( $author ) ) 
-				$author_name = '';
-			else 
-				$author_name = $author->display_name;
+			$author_name = empty( $author ) ? '' : $author->display_name;
 		}
 
 		$augmented_object = array(
@@ -898,14 +935,14 @@ class GeoMashup {
 			'url_path' => GEO_MASHUP_URL_PATH,
 			'template_url_path' => get_stylesheet_directory_uri()
 		);
-		if ( isset( $geo_mashup_custom ) ) {
+		if ( $geo_mashup_custom !== null ) {
 			$map_data['custom_url_path'] = $geo_mashup_custom->url_path;
 		}
 
-		$map_content = ( isset( $query['map_content'] ) ) ? $query['map_content'] : null;
-		$object_name = ( isset( $query['object_name'] ) ) ? $query['object_name'] : 'post';
+		$map_content = isset( $query['map_content'] ) ? $query['map_content'] : null;
+		$object_name = isset( $query['object_name'] ) ? $query['object_name'] : 'post';
 
-		if ( $map_content == 'single') {
+		if ( $map_content === 'single') {
 
 			$object_location = GeoMashupDB::get_object_location( $object_name, $object_id );
 			if ( !empty( $object_location ) ) {
@@ -916,7 +953,7 @@ class GeoMashup {
 			$options = $geo_mashup_options->get( 'single_map' );
 			$map_data = array_merge ( $options, $map_data );
 
-			if ( 'post' == $object_name ) {
+			if ( 'post' === $object_name ) {
 				$kml_urls = self::get_kml_attachment_urls( $object_id );
 				if (count($kml_urls)>0) {
 					$map_data['load_kml'] = array_pop( $kml_urls );
@@ -927,7 +964,7 @@ class GeoMashup {
 
 			$map_data['context_object_id'] = $object_id;
 
-			if ( $map_content == 'contextual' ) {
+			if ( $map_content === 'contextual' ) {
 
 				$options = $geo_mashup_options->get( 'context_map' );
 				// If desired we could make these real options
@@ -940,21 +977,27 @@ class GeoMashup {
 				// Term options handled during render
 				unset( $options['term_options'] );
 
-				if ( empty( $query['show_future'] ) )
+				if ( empty( $query['show_future'] ) ) {
 					$query['show_future'] = $options['show_future'];
+				}
 
-				if ( is_null( $map_content ) ) 
+				if ( $map_content === null ) {
 					$options['map_content'] = 'global';
+				}
 
 			}
 
 			// Determine which taxonomies to include, if any
-			if ( ( defined( 'GEO_MASHUP_DISABLE_CATEGORIES' ) and GEO_MASHUP_DISABLE_CATEGORIES ) )
+			if ( defined( 'GEO_MASHUP_DISABLE_CATEGORIES' ) && GEO_MASHUP_DISABLE_CATEGORIES ) {
 				$options['include_taxonomies'] = array();
-			else
-				$options['include_taxonomies'] = $geo_mashup_options->get( 'overall', 'include_taxonomies' );
+			} else {
+				$options['include_taxonomies'] = $geo_mashup_options->get(
+					'overall',
+					'include_taxonomies'
+				);
+			}
 
-			if ( isset( $options['add_google_bar'] ) and 'true' == $options['add_google_bar'] ) {
+			if ( isset( $options['add_google_bar'] ) && 'true' === $options['add_google_bar'] ) {
 				$options['adsense_code'] = $geo_mashup_options->get( 'overall', 'adsense_code' );
 			}
 
@@ -968,7 +1011,7 @@ class GeoMashup {
 
 		} // $map_content != 'single'
 
-		if ( empty( $map_data['object_data']['objects'] ) and !isset( $map_data['load_empty_map'] ) ) {
+		if ( !isset( $map_data['load_empty_map'] ) && empty( $map_data['object_data']['objects'] ) ) {
 			return new WP_Error(
 				'geo_mashup_map_data_error',
 				__( 'Geo Mashup omitted a map with no located objects found.', 'GeoMashup' )
@@ -988,7 +1031,7 @@ class GeoMashup {
 	 * @param array $query Associative array of querystring parameters.
 	 * @return string HTML-ready URL.
 	 */
-	public static function build_home_url( $query = array() ) {
+	public static function build_home_url( array $query = array() ) {
 
 		// We want domain changes or language parameters from WPML
 		// It won't provide them for any path but '/'
@@ -1002,8 +1045,9 @@ class GeoMashup {
 			$query = array_merge( $home_url_query_parts, $query );
 		}
 
-		if ( !empty( $query ) )
+		if ( !empty( $query ) ) {
 			$home_url = htmlspecialchars( add_query_arg( $query, $home_url ) );
+		}
 
 		return $home_url;
 	}
@@ -1037,15 +1081,15 @@ class GeoMashup {
 	private static function context_object_id( $object_name ) {
 		global $wp_query, $in_comment_loop;
 
-		if ( 'post' == $object_name and $wp_query->in_the_loop ) {
+		if ( 'post' === $object_name && $wp_query->in_the_loop ) {
 			return $wp_query->post->ID;
 		}
 
-		if ( 'comment' == $object_name and $in_comment_loop ) {
+		if ( 'comment' === $object_name && $in_comment_loop ) {
 			return get_comment_ID();
 		}
 
-		if ( 'user' == $object_name and $wp_query->post ) {
+		if ( 'user' === $object_name && $wp_query->post ) {
 			return $wp_query->post->post_author;
 		}
 
@@ -1066,19 +1110,19 @@ class GeoMashup {
 
 		$context_location = null;
 
-		if ( empty( $atts['object_id'] ) and ! empty( $context_object_id ) ) {
+		if ( ! empty( $context_object_id ) && empty( $atts['object_id'] ) ) {
 			// If we found a context object, we'll query for that by default
 			$atts['object_id'] = $context_object_id;
 			$context_location = GeoMashupDB::get_object_location( $object_name, $context_object_id );
 		}
 
-		if ( empty( $atts['object_id'] ) and 'single' == $map_content and 'post' == $object_name ) {
+		if ( 'single' === $map_content && 'post' === $object_name && empty( $atts['object_id'] ) ) {
 			// In secondary post loops we won't find a context object
 			// but can at least allow explicit single maps
 			$atts['object_id'] = get_the_ID();
 		}
 
-		if ( empty( $map_content ) and !empty( $atts['object_ids'] ) ) {
+		if ( empty( $map_content ) && !empty( $atts['object_ids'] ) ) {
 			$map_content = 'global';
 		}
 
@@ -1113,13 +1157,13 @@ class GeoMashup {
 	 * @return int|null
 	 */
 	private static function object_id_by_name( $object_name, $context_object ) {
-		if ( 'post' == $object_name ) {
+		if ( 'post' === $object_name ) {
 			return $context_object->ID;
 		}
-		if ( 'user' == $object_name ) {
+		if ( 'user' === $object_name ) {
 			return $context_object->post_author;
 		}
-		if ( 'comment' == $object_name ) {
+		if ( 'comment' === $object_name ) {
 			return $context_object->comment_ID;
 		}
 		return null;
@@ -1136,9 +1180,9 @@ class GeoMashup {
 		global $geo_mashup_options, $wp_query;
 
 		$atts['map_content'] = 'contextual';
-		$atts += $geo_mashup_options->get( 'context_map', $click_to_load_options );
+		$atts = array_merge( $geo_mashup_options->get( 'context_map', $click_to_load_options ), $atts );
 		$object_ids = array();
-		if ( 'comment' == $object_name ) {
+		if ( 'comment' === $object_name ) {
 			$context_objects = $wp_query->comments;
 		} else {
 			$context_objects = $wp_query->posts;
@@ -1166,6 +1210,7 @@ class GeoMashup {
 		global $geo_mashup_options;
 
 		$atts['map_content'] = 'single';
+		/** @noinspection AdditionOperationOnArraysInspection */
 		$atts += $geo_mashup_options->get( 'single_map', $click_to_load_options );
 		if ( empty( $atts['object_id'] ) ) {
 			return new WP_Error(
@@ -1194,7 +1239,7 @@ class GeoMashup {
 	private static function add_global_attributes( $atts, $click_to_load_options ) {
 		global $geo_mashup_options;
 
-		if ( isset( $_GET['template'] ) and 'full-post' == $_GET['template'] ) {
+		if ( isset( $_GET['template'] ) && 'full-post' === $_GET['template'] ) {
 			// Global maps tags in response to a full-post query can infinitely nest, prevent this
 			return new WP_Error(
 				'geo_mashup_global_attribute_error',
@@ -1205,20 +1250,20 @@ class GeoMashup {
 
 		// Global maps on a page will make use of query string arguments unless directed otherwise
 		$ignore_url = false;
-		if ( isset( $atts['ignore_url'] ) && 'true' == $atts['ignore_url'] ) {
+		if ( isset( $atts['ignore_url'] ) && 'true' === $atts['ignore_url'] ) {
 			$ignore_url = true;
 			unset( $atts['ignore_url'] );
 		}
 
-		if ( isset( $_SERVER['QUERY_STRING'] ) and !$ignore_url ) {
+		if ( isset( $_SERVER['QUERY_STRING'] ) && !$ignore_url ) {
 			$atts = wp_parse_args( $_SERVER['QUERY_STRING'], $atts );
 		}
 
-		$atts += $geo_mashup_options->get( 'global_map', $click_to_load_options );
+		$atts = array_merge( $geo_mashup_options->get( 'global_map', $click_to_load_options ), $atts );
 
 		// Don't query more than max_posts
 		$max_posts = $geo_mashup_options->get( 'global', 'max_posts' );
-		if ( empty( $atts['limit'] ) and !empty( $max_posts ) ) {
+		if ( !empty( $max_posts ) && empty( $atts['limit'] ) ) {
 			$atts['limit'] = $max_posts;
 		}
 
@@ -1251,37 +1296,37 @@ class GeoMashup {
 	 * @param array $atts
 	 * @return array|WP_Error
 	 */
-	private static function add_map_content_attributes( array $atts ) {
+	private static function add_map_content_attributes( $atts ) {
 
 		// Default query is for posts
-		$object_name = ( isset( $atts['object_name'] ) ) ? $atts['object_name'] : 'post';
+		$object_name = isset( $atts['object_name'] ) ? $atts['object_name'] : 'post';
 
 		$map_content = self::resolve_map_content( $atts, $object_name );
 
 		$click_to_load_options = array( 'click_to_load', 'click_to_load_text' );
 
-		if ( 'contextual' == $map_content ) {
+		if ( 'contextual' === $map_content ) {
 
-			$atts = self::add_contextual_attributes( $atts, $object_name, $click_to_load_options );
+			$attributes = self::add_contextual_attributes( $atts, $object_name, $click_to_load_options );
 
-		} else if ( 'single' == $map_content ) {
+		} else if ( 'single' === $map_content ) {
 
-			$atts = self::add_single_attributes( $atts, $object_name, $click_to_load_options );
+			$attributes = self::add_single_attributes( $atts, $object_name, $click_to_load_options );
 
-		} else if ( 'global' == $map_content ) {
+		} else if ( 'global' === $map_content ) {
 
-			$atts = self::add_global_attributes( $atts, $click_to_load_options );
+			$attributes = self::add_global_attributes( $atts, $click_to_load_options );
 
 		} else {
 
-			$atts = new WP_Error(
+			$attributes = new WP_Error(
 				'geo_mashup_map_content_attributes',
 				'Unrecognized value for map_content: "'.$map_content.'"'
 			);
 
 		}
 
-		return $atts;
+		return $attributes;
 	}
 
 	/**
@@ -1290,7 +1335,7 @@ class GeoMashup {
 	 * @param array $map_data
 	 * @param string $click_to_load
 	 * @param string $click_to_load_text
-	 * @return mixed|string|void
+	 * @return mixed|string
 	 */
 	private static function build_map_image( &$atts, $map_data, $click_to_load, $click_to_load_text ) {
 		global $geo_mashup_options;
@@ -1303,9 +1348,9 @@ class GeoMashup {
 		}
 
 		$key = $geo_mashup_options->get( 'overall', 'googlev3_key' );
-		$dimensions = intval( $map_data['width'] ) . 'x' . intval( $map_data['height'] );
+		$dimensions = (int) $map_data['width'] . 'x' . (int) $map_data['height'];
 		$map_image = '<img src="http://maps.google.com/maps/api/staticmap?size=' . $dimensions . '&amp;key=' . $key;
-		if ( count( $map_data['object_data']['objects'] ) == 1) {
+		if ( count( $map_data['object_data']['objects'] ) === 1) {
 			$map_image .= '&amp;center=' . $map_data['object_data']['objects'][0]['lat'] . ',' .
 				$map_data['object_data']['objects'][0]['lng'];
 		}
@@ -1315,7 +1360,7 @@ class GeoMashup {
 			$map_image .= '|' . $location['lat'] . ',' . $location['lng'];
 		}
 		$map_image .= '" alt="geo_mashup_map"';
-		if ($click_to_load == 'true') {
+		if ($click_to_load === 'true') {
 			$map_image .= '" title="'.$click_to_load_text.'"';
 		}
 		$map_image .= ' />';
@@ -1348,7 +1393,7 @@ class GeoMashup {
 	 * @return array
 	 */
 	private static function maybe_compress_object_ids( array $atts ) {
-		if ( !isset( $atts['object_ids'] ) or strlen( $atts['object_ids'] ) <= 1800 ) {
+		if ( !isset( $atts['object_ids'] ) || strlen( $atts['object_ids'] ) <= 1800 ) {
 			return $atts;
 		}
 
@@ -1384,8 +1429,8 @@ class GeoMashup {
 		self::$add_loader_script = true;
 
 		$style = "height: {$height_style}; width: {$width_style}; background-color: #ddd;".
-			"background-image: url(".GEO_MASHUP_URL_PATH."/images/wp-gm-pale.png);".
-			"background-repeat: no-repeat;background-position:center; cursor: pointer;";
+			'background-image: url('.GEO_MASHUP_URL_PATH.'/images/wp-gm-pale.png);'.
+			'background-repeat: no-repeat;background-position:center; cursor: pointer;';
 
 		$name = $map_data['name'];
 
@@ -1426,8 +1471,9 @@ class GeoMashup {
 
 		$frame_styles = 'position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; overflow: hidden;';
 
+		/** @noinspection HtmlUnknownTarget */
 		return sprintf(
-			"<div class=\"gm-map\" style=\"%s\"><iframe name=\"%s\" src=\"%s\" style=\"%s\"></iframe></div>",
+			'<div class="gm-map" style="%s"><iframe name="%s" src="%s" style="%s"></iframe></div>',
 			$div_styles,
 			$map_data['name'],
 			$iframe_src,
@@ -1443,7 +1489,7 @@ class GeoMashup {
 	 */
 	private static function dimension_style_value( $dimension ) {
 		$units = ( '%' === substr( $dimension, -1 ) ) ? '%' : 'px';
-		return intval( $dimension ) . $units;
+		return (int) $dimension . $units;
 	}
 
 	/**
@@ -1461,41 +1507,42 @@ class GeoMashup {
 	 */
 	public static function map( $atts = null ) {
 
-		$atts = self::parse_map_attributes( $atts );
+		$attributes = self::parse_map_attributes( $atts );
 
-		$static = (bool)( !empty( $atts['static'] ) and 'true' == $atts['static'] );
-		unset( $atts['static'] );
+		$static = ( !empty( $attributes['static'] ) && 'true' === $attributes['static'] );
+		unset( $attributes['static'] );
 
-		$atts = self::add_map_content_attributes( $atts );
+		$attributes = self::add_map_content_attributes( $attributes );
 
-		if ( is_wp_error( $atts ) ) {
-			return '<!--' . $atts->get_error_message() . '-->';
+		if ( is_wp_error( $attributes ) ) {
+			return '<!--' . $attributes->get_error_message() . '-->';
 		}
 
-		$click_to_load = $atts['click_to_load'];
-		unset( $atts['click_to_load'] );
+		$click_to_load = $attributes['click_to_load'];
+		unset( $attributes['click_to_load'] );
 
-		$click_to_load_text = $atts['click_to_load_text'];
-		unset( $atts['click_to_load_text'] );
+		$click_to_load_text = $attributes['click_to_load_text'];
+		unset( $attributes['click_to_load_text'] );
 
-		$map_data = self::build_map_data( $atts );
+		$map_data = self::build_map_data( $attributes );
 
 		if ( is_wp_error( $map_data ) ) {
 			return '<!--' . $map_data->get_error_message() . '-->';
 		}
 
-		$map_image = $static ? self::build_map_image( $atts, $map_data, $click_to_load, $click_to_load_text ) : '';
+		$map_image = $static ? self::build_map_image( $attributes, $map_data, $click_to_load, $click_to_load_text ) : '';
 
-		$atts_md5 =  md5( serialize( $atts ) );
+		$atts_md5 =  md5( serialize( $attributes ) );
 		set_transient( 'gmm' . $atts_md5, $map_data, 20 );
 
-		$src_args = self::src_args( $atts, $atts_md5 );
+		$src_args = self::src_args( $attributes, $atts_md5 );
 
-		$atts = self::maybe_compress_object_ids( $atts );
+		$attributes = self::maybe_compress_object_ids( $attributes );
 
-		$iframe_src = self::build_home_url( $src_args + $atts );
+		/** @noinspection AdditionOperationOnArraysInspection */
+		$iframe_src = self::build_home_url( $src_args + $attributes );
 
-		if ($click_to_load == 'true') {
+		if ($click_to_load === 'true') {
 			$content = self::click_to_load_content( $map_data, $iframe_src, $click_to_load_text, $static, $map_image );
 		} else if ( $static ) {
 			$content = "<div class=\"gm-map\">$map_image</div>";
@@ -1546,8 +1593,9 @@ class GeoMashup {
 		if (is_string($option_args)) {
 			$option_args = wp_parse_args($option_args);
 		}
-		if (is_page() && isset($_SERVER['QUERY_STRING'])) {
-			$option_args = $option_args + self::explode_assoc('=','&amp;',$_SERVER['QUERY_STRING']);
+		if ( isset($_SERVER['QUERY_STRING']) && is_page() ) {
+			/** @noinspection AdditionOperationOnArraysInspection */
+			$option_args += self::explode_assoc('=','&amp;',$_SERVER['QUERY_STRING']);
 		}
 		if (isset($option_args['map_cat'])) {
 			$category_name = get_cat_name($option_args['map_cat']);
@@ -1571,33 +1619,40 @@ class GeoMashup {
 		$args = wp_parse_args($args);
 
 		$id = 'gm-map-1';
-		if ( !empty( $args['for_map'] ) ) 
+		if ( !empty( $args['for_map'] ) ) {
 			$id = $args['for_map'];
+		}
 
-		if ( !empty( $args['taxonomy'] ) ) 
+		if ( !empty( $args['taxonomy'] ) ) {
 			$id .= '-' . esc_attr ( $args['taxonomy'] );
+		}
 
 		$id .= '-legend';
 
 		$classes = array();
 
-		if ( !empty( $args['noninteractive'] ) && 'false' != $args['noninteractive'] )
+		if ( !empty( $args['noninteractive'] ) && 'false' !== $args['noninteractive'] ) {
 			$classes[] = 'noninteractive';
+		}
 
-		if ( !empty( $args['check_all'] ) && 'true' != $args['check_all'] )
+		if ( !empty( $args['check_all'] ) && 'true' !== $args['check_all'] ) {
 			$classes[] = 'check-all-off';
+		}
 
-		if ( !empty( $args['default_off'] ) && 'false' != $args['default_off'] )
+		if ( !empty( $args['default_off'] ) && 'false' !== $args['default_off'] ) {
 			$classes[] = 'default-off';
+		}
 
-		if ( !empty( $args['format'] ) ) 
+		if ( !empty( $args['format'] ) ) {
 			$classes[] = 'format-' . esc_attr( $args['format'] );
-		
+		}
+
 		if ( isset( $args['titles'] ) ) {
-			if ( $args['titles'] && 'false' != $args['titles'] )
+			if ( $args['titles'] && 'false' !== $args['titles'] ) {
 				$classes[] = 'titles-on';
-			else
+			} else {
 				$classes[] = 'titles-off';
+			}
 		}
 
 		return '<div id="' . $id . '" class="' . implode( ' ', $classes ) . '"></div>';
@@ -1628,11 +1683,14 @@ class GeoMashup {
 	 * called by WordPress.
 	 *
 	 * @since 1.0
+	 * @param string $content
+	 * @param object $category
+	 * @return string
 	 */
 	public static function list_cats($content, $category = null) {
 		global $geo_mashup_options;
 
-		if ( $category and 'category' == $category->taxonomy ) {
+		if ( $category && 'category' === $category->taxonomy ) {
 			$count = GeoMashupDB::category_located_post_count( $category->cat_ID );
 			// Add map link only if there are geo-located posts to see
 			if ($count) {
@@ -1642,7 +1700,7 @@ class GeoMashup {
 						__( 'You must add a description to this category to use this Geo Mashup feature.', 'GeoMashup' );
 				}
 				$url = get_page_link($geo_mashup_options->get('overall', 'mashup_page'));
-				if (strstr($url,'?')) {
+				if ( false !== strpos( $url, '?' ) ) {
 					$url .= '&amp;';
 				} else {
 					$url .= '?';
@@ -1679,21 +1737,23 @@ class GeoMashup {
 	 * @since 1.3
 	 */
 	public static function admin_notices() {
-		global $geo_mashup_options;
 
 		$message = array();
 		if ( !empty( self::$deactivate_geo_search_basename ) ) {
+			/** @noinspection PhpUndefinedMethodInspection */
 			deactivate_plugins( GeoMashupSearch::get_instance()->basename );
 			$message_format = __( 'Geo Mashup now includes search, deactivating the old %s plugin. It\'s safe to delete it.', 'GeoMashup' );
 			$message[] = sprintf( $message_format, self::$deactivate_geo_search_basename );
 		}
 
-		if ( ! self::is_options_page() ) {
+		if ( ! self::is_options_page() &&
+		     GEO_MASHUP_DB_VERSION !== GeoMashupDB::installed_version() &&
+		     current_user_can( 'manage_options' )
+		) {
 			// We're not looking at the settings, but it may be important to do so
-			if ( GEO_MASHUP_DB_VERSION != GeoMashupDB::installed_version() and current_user_can( 'manage_options' ) ) {
-				$message_format = __( 'Geo Mashup needs to upgrade its database, visit the <a href="%s">settings</a> to do it now.', 'GeoMashup' );
-				$message[] = sprintf( $message_format, admin_url( 'options-general.php?page=' . GEO_MASHUP_PLUGIN_NAME ) );
-			}
+			/** @noinspection HtmlUnknownTarget */
+			$message_format = __( 'Geo Mashup needs to upgrade its database, visit the <a href="%s">settings</a> to do it now.', 'GeoMashup' );
+				$message[]  = sprintf( $message_format, admin_url( 'options-general.php?page=' . GEO_MASHUP_PLUGIN_NAME ) );
 		}
 
 		if ( ! empty( $message ) ) {
@@ -1703,14 +1763,19 @@ class GeoMashup {
 
 	/**
 	 * WordPress action to add custom action links to the plugin listing.
-	 * 
+	 *
 	 * plugin_action_links {@link http://codex.wordpress.org/Plugin_API/Filter_Reference#Advanced_WordPress_Filters filter},
 	 * called by WordPress.
 	 *
 	 * @since 1.3
+	 *
+	 * @param array $links
+	 * @param string $file
+	 *
+	 * @return mixed
 	 */
 	public static function plugin_action_links( $links, $file ) {
-		if ( GEO_MASHUP_PLUGIN_NAME == $file ) {
+		if ( GEO_MASHUP_PLUGIN_NAME === $file ) {
 			$settings_link = '<a href="' . admin_url( 'options-general.php?page=' . GEO_MASHUP_PLUGIN_NAME ) .'">' .
 				__( 'Settings' ) . '</a>';
 			array_unshift( $links, $settings_link );
@@ -1720,14 +1785,19 @@ class GeoMashup {
 
 	/**
 	 * WordPress action to add custom meta links to the plugin listing.
-	 * 
+	 *
 	 * plugin_row_meta {@link http://codex.wordpress.org/Plugin_API/Filter_Reference#Advanced_WordPress_Filters filter},
 	 * called by WordPress.
 	 *
 	 * @since 1.3
+	 *
+	 * @param array $links
+	 * @param string $file
+	 *
+	 * @return array
 	 */
 	public static function plugin_row_meta( $links, $file ) {
-		if ( GEO_MASHUP_PLUGIN_NAME == $file ) {
+		if ( GEO_MASHUP_PLUGIN_NAME === $file ) {
 			$links[] = '<a href="https://github.com/cyberhobo/wordpress-geo-mashup/wiki/Getting-Started">' .
 				__( 'Documentation', 'GeoMashup' ) . '</a>';
 			$links[] = '<a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=11045324">' .
@@ -1744,7 +1814,7 @@ class GeoMashup {
 	 * @since 1.0
 	 */
 	public static function options_page() {
-		include_once( path_join( GEO_MASHUP_DIR_PATH, 'options.php' ) );
+		include_once path_join( GEO_MASHUP_DIR_PATH, 'options.php' );
 		geo_mashup_options_page();
 	}
 
@@ -1765,11 +1835,11 @@ class GeoMashup {
 		$location = false;
 
 		// Find the context
-		if ( $object_name == 'comment' ) {
+		if ( $object_name === 'comment' ) {
 			$object_id =  get_comment_ID();
-		} else if ( $object_name == 'user' ) {
+		} else if ( $object_name === 'user' ) {
 			$object_id = $user->ID;
-		} else if ( $object_name == 'post' ) {
+		} else if ( $object_name === 'post' ) {
 			$object_id = get_the_ID();
 		} else if ( $in_comment_loop ) {
 			$object_name = 'comment';
@@ -1784,8 +1854,9 @@ class GeoMashup {
 			$object_name = $object_id = '';
 		}
 			
-		if ( $object_name && $object_id )
+		if ( $object_name && $object_id ) {
 			$location = GeoMashupDB::get_object_location( $object_name, $object_id, $output );
+		}
 
 		return $location;
 	}
@@ -1804,12 +1875,19 @@ class GeoMashup {
 
 		$location = self::current_location( $output, $object_name );
 		if ( !$location ) {
-			if ( $post and !in_array( $object_name, array( 'comment', 'user' ) ) )
+			if ( $post && !in_array( $object_name, array( 'comment', 'user' ) ) ) {
 				$location = GeoMashupDB::get_object_location( 'post', $post->ID, $output );
-			if ( !$location and $comment and !in_array( $object_name, array( 'post', 'user' ) ) )
-				$location = GeoMashupDB::get_object_location( 'comment', $comment->comment_ID, $output );
-			if ( !$location and $user and !in_array( $object_name, array( 'post', 'comment' ) ) )
+			}
+			if ( !$location && $comment && !in_array( $object_name, array( 'post', 'user' ) ) ) {
+				$location = GeoMashupDB::get_object_location(
+					'comment',
+					$comment->comment_ID,
+					$output
+				);
+			}
+			if ( !$location && $user && !in_array( $object_name, array( 'post', 'comment' ) ) ) {
 				$location = GeoMashupDB::get_object_location( 'user', $user->ID, $output );
+			}
 		}
 		return $location;
 	}
@@ -1833,45 +1911,52 @@ class GeoMashup {
 			'separator' => ',', 
 			'format' => '',
 			'object_name' => null, 
-			'object_id' => null );
+			'object_id' => null
+		);
 		$args = wp_parse_args( $args, $defaults );
 		extract( $args, EXTR_SKIP );
 		$info = '';
 
-		if ( $object_name && $object_id )
+		if ( $object_name && $object_id ) {
 			$location = GeoMashupDB::get_object_location( $object_name, $object_id, ARRAY_A );
-		else
+		} else {
 			$location = self::current_location_guess( ARRAY_A, $object_name );
+		}
 
 		if ( !empty( $location ) ) {
 			$fields = preg_split( '/\s*,\s*/', $fields );
 			$values = array();
 			foreach( $fields as $field ) {
-				if ( isset( $location[$field] ) ) {
-					array_push( $values, $location[$field] );
+				if ( isset( $location[ $field ] ) ) {
+					$values[] = $location[ $field ];
+				} else if ( 'country_name' === $field ) {
+					$values[] = GeoMashupDB::get_administrative_name( $location['country_code'] );
+				} else if ( 'admin_name' === $field ) {
+					$values[] = GeoMashupDB::get_administrative_name(
+						$location['country_code'],
+						$location['admin_code']
+					);
 				} else {
-					if ( 'country_name' == $field ) { 
-						array_push( $values, GeoMashupDB::get_administrative_name( $location['country_code'] ) );
-					} else if ( 'admin_name' == $field ) {
-						array_push( $values, GeoMashupDB::get_administrative_name( $location['country_code'], $location['admin_code'] ) );
-					} else {
-						array_push( $values, '' );
-					}
-				} 
+					$values[] = '';
+				}
 			}
-			if ( empty( $format ) ) {
+			if ( !$format ) {
 				$info = implode( $separator, $values );
 			} else {
 				$info = vsprintf( $format, $values );
 			}
 		}
 		return $info;
-	}	
+	}
 
 	/**
 	 * A template tag to insert a link to a post on the mashup.
-	 * 
+	 *
 	 * @see show_on_map_link()
+	 *
+	 * @param string $option_args
+	 *
+	 * @return string
 	 */
 	public static function post_link($option_args = '') {
 		return self::show_on_map_link($option_args);
@@ -1901,14 +1986,16 @@ class GeoMashup {
 		if ( $location ) {
 			$url = get_page_link($geo_mashup_options->get('overall', 'mashup_page'));
 
-			if ( !$url )
+			if ( !$url ) {
 				return '';
+			}
 
 			$args['center_lat'] = $location->lat;
 			$args['center_lng'] = $location->lng;
 
-			if ( $geo_mashup_options->get( 'global_map', 'auto_info_open' ) == 'true' )
+			if ( $geo_mashup_options->get( 'global_map', 'auto_info_open' ) === 'true' ) {
 				$args['open_object_id'] = $location->object_id;
+			}
 
 			$url = htmlentities( add_query_arg( $args, $url ) );
 		}
@@ -1934,7 +2021,7 @@ class GeoMashup {
 		$url = self::show_on_map_link_url( array_intersect_key( $options, array( 'zoom' => true ) ) );
 		if ( $url ) {
 			$icon = '';
-			if ($options['show_icon'] && strcmp( $options['show_icon'], 'false' ) != 0) {
+			if ($options['show_icon'] && strcmp( $options['show_icon'], 'false' ) !== 0) {
 				$icon = '<img src="'.GEO_MASHUP_URL_PATH.
 					'/images/geotag_16.png" alt="'.__('Geotag Icon','GeoMashup').'"/>';
 			}
@@ -2023,10 +2110,7 @@ class GeoMashup {
 		
 		$args = wp_parse_args( $args );
 
-		if ( $instance_count > 1 )
-			$id_suffix = '-' . $instance_count;
-		else
-			$id_suffix = '';
+		$id_suffix = ( $instance_count > 1 ) ? '-' . $instance_count : '';
 
 		$list_html = '<div id="gm-area-list' . $id_suffix . '" class="gm-area-list">';
 
@@ -2060,7 +2144,7 @@ class GeoMashup {
 						$list_html .= $country_heading;
 						$country_heading = '';
 					}
-					if ( null != $states[0]->admin_code ) {
+					if ( null !== $states[0]->admin_code ) {
 						$state_name = GeoMashupDB::get_administrative_name( $country->country_code, $state->admin_code );
 						$state_name = $state_name ? $state_name : $state->admin_code;
 						$list_html .= '<h4 id="' . $country->country_code . '-' . $state->admin_code . $id_suffix . '">' . $state_name . '</h4>';
@@ -2072,7 +2156,7 @@ class GeoMashup {
 							'">' .
 							$post_location->label .
 							'</a>';
-						if ( isset( $args['include_address'] ) && $args['include_address'] == 'true' ) {
+						if ( isset( $args['include_address'] ) && $args['include_address'] === 'true' ) {
 							$list_html .= '<p>' . $post_location->address . '</p>';
 						}
 						$list_html .= '</li>';
@@ -2098,8 +2182,12 @@ class GeoMashup {
 	 */
 	 public static function nearby_list( $args = '' ) {
 
-		if ( ! class_exists( 'GeoMashupSearch' ) )
-			return __( 'Enable the geo search widget in the Geo Mashup settings to power the nearby list!', 'GeoMashup' );
+		if ( ! class_exists( 'GeoMashupSearch' ) ) {
+			return __(
+				'Enable the geo search widget in the Geo Mashup settings to power the nearby list!',
+				'GeoMashup'
+			);
+		}
 
 		$default_args = array(
 			'template' => 'nearby-list',
@@ -2110,7 +2198,7 @@ class GeoMashup {
 		$template = $args['template'];
 		unset( $args['template'] );
 		
-		if ( !isset( $args['near_lat'] ) and !isset( $args['location_text'] ) ) {
+		if ( !isset( $args['near_lat'] ) && !isset( $args['location_text'] ) ) {
 
 			// Look near an object
 			if ( isset( $args['object_id'] ) ) {
@@ -2131,10 +2219,11 @@ class GeoMashup {
 			if ( $near_location ) {
 				$args['near_lat'] = $near_location->lat;
 				$args['near_lng'] = $near_location->lng;
-				if ( empty( $args['exclude_object_ids'] ) )
+				if ( empty( $args['exclude_object_ids'] ) ) {
 					$args['exclude_object_ids'] = $object_id;
-				else
+				} else {
 					$args['exclude_object_ids'] .= ',' . $object_id;
+				}
 			}
 		}
 
@@ -2228,32 +2317,44 @@ class GeoMashup {
 
 	/**
 	 * Tabbed term index template tag.
+	 *
+	 * @param array $args
+	 *
+	 * @return string
 	 */
 	public static function tabbed_term_index( $args ) {
 		$args = wp_parse_args($args);
 
 		$id = 'gm-map-1';
-		if ( !empty( $args['for_map'] ) ) 
+		if ( !empty( $args['for_map'] ) ) {
 			$id = $args['for_map'];
+		}
 
-		if ( !empty( $args['taxonomy'] ) ) 
+		if ( !empty( $args['taxonomy'] ) ) {
 			$id .= '-' . esc_attr ( $args['taxonomy'] );
+		}
 
 		$id .= '-tabbed-index';
 
 		$classes = array();
 
-		if ( !empty( $args['show_inactive_tab_markers'] ) && 'false' != $args['show_inactive_tab_markers'] )
+		if ( !empty( $args['show_inactive_tab_markers'] ) &&
+		     'false' !== $args['show_inactive_tab_markers']
+		) {
 			$classes[] = 'show-inactive-tab-markers';
+		}
 
-		if ( !empty( $args['start_tab_term'] ) ) 
+		if ( !empty( $args['start_tab_term'] ) ) {
 			$classes[] = 'start-tab-term-' . absint( $args['start_tab_term'] );
+		}
 
-		if ( !empty( $args['tab_index_group_size'] ) ) 
+		if ( !empty( $args['tab_index_group_size'] ) ) {
 			$classes[] = 'tab-index-group-size-' . absint( $args['tab_index_group_size'] );
+		}
 
-		if ( !empty( $args['disable_tab_auto_select'] ) && 'false' != $args['disable_tab_auto_select'] )
+		if ( !empty( $args['disable_tab_auto_select'] ) && 'false' !== $args['disable_tab_auto_select'] ) {
 			$classes[] = 'disable-tab-auto-select';
+		}
 
 		return '<div id="' . $id . '" class="' . implode( ' ', $classes ) . '"></div>';
 	}
