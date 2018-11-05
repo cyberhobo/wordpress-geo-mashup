@@ -182,36 +182,15 @@ var
 					this.id = data.location_id;
 					this.title = data.name;
 					this.address = data.address;
-				} else if (typeof data.name === 'string') { 
-					// GeoNames location
-					this.id = '';
-					this.title = data.name;
-					this.geoname = data.name; 
-					this.country_code = this.definedValue( data.countryCode, '' );
-					this.admin_code = this.definedValue( data.adminCode1, '' );
-					this.admin_name = this.definedValue( data.adminName1, '' );
-					this.sub_admin_code = this.definedValue( data.adminCode2, '' );
-					this.sub_admin_name = this.definedValue( data.adminName2, '' );
-					this.address = this.title + ', ' + this.admin_name + ', ' + this.country_code;
-				} else if (typeof data.address === 'string') {
-					// Google v2 location
-					this.title = data.address;
-					this.address = data.address;
-					this.country_code = this.subValue(data, ['AddressDetails','Country','CountryNameCode']);
-					this.admin_code = this.subValue(data, ['AddressDetails','Country','AdministrativeArea','AdministrativeAreaName']);
-					this.sub_admin_name = this.subValue(data, ['AddressDetails','Country','AdministrativeArea','SubAdministrativeArea','SubAdministrativeAreaName']);
-					if (this.sub_admin_name) {
-						this.locality_name = this.subValue(data, ['AddressDetails','Country','AdministrativeArea','SubAdministrativeArea','Locality','LocalityName']);
-						this.postal_code = this.subValue(data, ['AddressDetails','Country','AdministrativeArea','SubAdministrativeArea','Locality','PostalCode','PostalCodeNumber']);
-					} else if (this.admin_code) {
-						this.locality_name = this.subValue(data, ['AddressDetails','Country','AdministrativeArea','Locality','LocalityName']);
-						this.postal_code = this.subValue(data, ['AddressDetails','Country','AdministrativeArea','Locality','PostalCode','PostalCodeNumber']);
-					}
-					// Difficult to distinguish admin code from a name - but try
-					if ( this.admin_code.length > 20 || this.admin_code.indexOf(' ') >= 0 ) {
-						this.admin_name = this.admin_code;
-						this.admin_code = '';
-					}
+				} else if (typeof data.osm_id === 'string') {
+					// Nominatim location
+					this.title = data.display_name;
+                    this.address = data.display_name;
+					this.country_code = this.definedValue( data.address.country_code, '' );
+					this.admin_name = this.definedValue( data.address.state, '' );
+					this.sub_admin_name = this.definedValue( data.address.county, '' );
+                    this.postal_code = this.definedValue( data.address.postcode, '' );
+                    this.locality_name = this.definedValue( data.address.city, '' );
 				} else if (typeof data.types === 'object') {
 					// Google v3 location
 					this.title = data.formatted_address;
@@ -404,6 +383,11 @@ var
 
 		$container = $( '#geo_mashup_map' ).empty();
 
+		if (!$container.is(':visible')) {
+			setTimeout(init, 100);
+			return;
+		}
+
 		// Create the loading spinner icon and show it
 		$busy_icon = $( '<div id="gm-loading-icon" style="-moz-user-select: none; z-index: 100; position: absolute; left: ' +
 			( $container.width() / 2 ) + 'px; top: ' + ( $container.height() / 2 ) + 'px;">' +
@@ -567,7 +551,7 @@ var
 	 * @param object response The query response data.
 	 */
 	showAddresses = function( response, status ) {
-		var i, latlng, marker, geonames_request_url;
+		var i, latlng, marker;
 
 		// Look for provider-specific geocoder responses
 		// Only google v3 provides the status argument
@@ -582,43 +566,64 @@ var
 				marker = createMarker( latlng, new GeoAddress( response[i] ) );
 			}
 
-		} else if ( typeof status === 'undefined' && response && 200 === response.Status.code && response.Placemark && response.Placemark.length > 0 ) {
+		} else {
 
-			// Google v2 results
-			for ( i = 0; i < response.Placemark.length && i < 20 && response.Placemark[i]; i += 1) {
-				latlng = new mxn.LatLonPoint(
-					response.Placemark[i].Point.coordinates[1],
-					response.Placemark[i].Point.coordinates[0] 
-				);
-				marker = createMarker(latlng, new GeoAddress(response.Placemark[i]));
-			}
-
-
-		} else if ( 'https' !== location.href.slice( 0, 5 ) || 'geomashup' !== geo_mashup_location_editor_settings.geonames_username ) {
-
-			// Do a GeoNames search as backup
-			geonames_request_url = '//api.geonames.org/search?type=json&maxRows=20&style=full&callback=?&username=' +
-				geo_mashup_location_editor_settings.geonames_username + '&name=' + encodeURIComponent( $( '#geo_mashup_search' ).val() );
-			jQuery.getJSON( geonames_request_url, showGeoNames );
-			geo_mashup_location_editor.showBusyIcon();
+			searchNominatim( $( '#geo_mashup_search' ).val() );
 
 		}
 	},
 
 	/**
-	 * Display the results of a Geonames search request.
+	 * Search using the Nominatim web service.
 	 *
-	 * @param object data The query response data.
+	 * @param {string} query
 	 */
-	showGeoNames = function (data) {
-		var i, result_latlng, marker;
-		if (data && data.geonames ) {
-			for (i=0; i<data.geonames.length && i<100 && data.geonames[i]; i += 1) {
-				result_latlng = new mxn.LatLonPoint( data.geonames[i].lat, data.geonames[i].lng );
-				marker = createMarker( result_latlng, new GeoAddress(data.geonames[i]) );
+	searchNominatim = function( query ) {
+        var url = 'https://nominatim.openstreetmap.org/search?format=json&json_callback=?' +
+			'&addressdetails=1&q=' + encodeURIComponent(query);
+        jQuery.getJSON( url, showNominatim );
+        geo_mashup_location_editor.showBusyIcon();
+    },
+
+	/**
+	 * Get a location address using the Nominatim reverse geocoding service.
+	 *
+	 * @param {mxn.LatLonPoint} latlng
+	 */
+	reverseSearchNominatim = function( latlng ) {
+		var url = 'https://nominatim.openstreetmap.org/reverse?format=json&json_callback=?' +
+			'&addressdetails=1&lat=' + encodeURIComponent(latlng.lat) +
+			'&lon=' + encodeURIComponent(latlng.lng);
+
+        jQuery.getJSON( url, showNominatim );
+        geo_mashup_location_editor.showBusyIcon();
+	},
+
+	/**
+	 * Display the results of a Nominatim search request.
+	 *
+	 * @param {object} data The query response data.
+	 */
+	showNominatim = function (data) {
+		var i;
+		if (data && data.length) {
+			for (i=0; i<data.length && i<100 && data[i]; i += 1) {
+				showNominatimResult(data[i]);
 			}
+		} else if (data) {
+			showNominatimResult(data);
 		}
 		geo_mashup_location_editor.hideBusyIcon();
+	},
+
+	/**
+	 * Display a single Nominatim search result.
+	 *
+	 * @param {object} result
+	 */
+	showNominatimResult = function(result) {
+		var latlng = new mxn.LatLonPoint( result.lat, result.lon );
+		createMarker( latlng, new GeoAddress(result) );
 	},
 
 	/**
@@ -685,23 +690,10 @@ var
 					geocoder.getLocations( search_text, showAddresses );
 
 				}
-			} else if ( 'https' === location.href.slice( 0, 5 ) && 'geomashup' === geo_mashup_location_editor_settings.geonames_username ) {
-
-				alert( 'No search service is available over HTTPS, see http://www.geonames.org/commercial-webservices.html.' );
 
 			} else {
 
-
-				// Do a GeoNames search 
-				if ( latlng ) {
-					geonames_request_url = '//api.geonames.org/findNearbyJSON?radius=50&style=full&callback=?&username=' +
-							geo_mashup_location_editor_settings.geonames_username + '&lat=' + latlng.lat + '&lng=' + latlng.lng;
-				} else {
-					geonames_request_url = '//api.geonames.org/search?type=json&maxRows=20&style=full&callback=?&username=' +
-							geo_mashup_location_editor_settings.geonames_username + '&q=' + encodeURIComponent( $( '#geo_mashup_search' ).val() );
-				}
-				jQuery.getJSON( geonames_request_url, showGeoNames );
-				geo_mashup_location_editor.showBusyIcon();
+				latlng ? reverseSearchNominatim(latlng) : searchNominatim( $( '#geo_mashup_search' ).val() );
 
 			}
 		} 

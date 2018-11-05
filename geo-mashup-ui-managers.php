@@ -71,11 +71,15 @@ class GeoMashupUIManager {
 
 		$map_api = $geo_mashup_options->get( 'overall', 'map_api' );
 		$copy_geodata = $geo_mashup_options->get( 'overall', 'copy_geodata' );
-		$geonames_username = $geo_mashup_options->get( 'overall', 'geonames_username' );
-		$ajax_nonce = wp_create_nonce('geo-mashup-ajax-edit');
 		$ajax_url = admin_url( 'admin-ajax.php' );
 		$geo_mashup_url_path = GEO_MASHUP_URL_PATH;
-		wp_localize_script( 'mxn-core', 'geo_mashup_location_editor_settings', compact( 'map_api', 'copy_geodata', 'ajax_url', 'geo_mashup_url_path', 'geonames_username' ) );
+
+		wp_localize_script(
+			'mxn-core',
+			'geo_mashup_location_editor_settings',
+			compact( 'map_api', 'copy_geodata', 'ajax_url', 'geo_mashup_url_path' )
+		);
+
 		$required_scripts = array( 'jquery');
 		if ( 'googlev3' == $map_api ) {
 			wp_register_script(
