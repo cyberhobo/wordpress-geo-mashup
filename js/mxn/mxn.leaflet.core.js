@@ -442,6 +442,7 @@ Marker: {
 	closeBubble: function() {
 		var pin = this.proprietary_marker;
 		pin.closePopup();
+		pin.unbindPopup();
 	},
 
 	hide: function() {
