@@ -33,6 +33,7 @@ class GeoMashupRestAPI {
 	 * The get_callback for register_rest_field().
 	 *
 	 * @since 1.11.0
+	 *
 	 * @param array $object The WordPress object data as an associative array.
 	 *
 	 * @return array|null The geo field data for the given object.
@@ -59,6 +60,7 @@ class GeoMashupRestAPI {
 	 */
 	public static function geo_schema() {
 		return array(
+			'readonly'    => true,
 			'description' => __( 'Geo Mashup coordinates associated with the object.', 'GeoMashup' ),
 			'type'        => 'object',
 			'properties'  => array(
