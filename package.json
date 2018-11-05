@@ -1,6 +1,6 @@
 {
   "license": "GPL-2.0-or-later",
-  "version": "1.10.5",
+  "version": "1.11.0",
   "devDependencies": {
     "cpx": "^1.5.0",
     "csso-cli": "^1.0.0",
