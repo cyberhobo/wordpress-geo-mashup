@@ -142,6 +142,9 @@ class GeoMashup {
 			include_once GEO_MASHUP_DIR_PATH . '/geo-mashup-search.php';
 		}
 
+		if ( function_exists( 'register_rest_field' ) ) {
+			include_once GEO_MASHUP_DIR_PATH . '/rest-api.php';
+		}
 	}
 
 	/**
@@ -181,7 +184,9 @@ class GeoMashup {
 		add_action( 'wp_ajax_geo_mashup_kml_attachments', array( __CLASS__, 'ajax_kml_attachments') );
 		add_action( 'wp_ajax_nopriv_geo_mashup_kml_attachments', array( __CLASS__, 'ajax_kml_attachments') );
 		add_action( 'wp_ajax_geo_mashup_suggest_custom_keys', array( 'GeoMashupDB', 'post_meta_key_suggest' ) );
-		
+
+		add_action( 'rest_api_init', array( 'GeoMashupRestAPI', 'init' ));
+
 		register_activation_hook( __FILE__, array( __CLASS__, 'activation_hook' ) );
 
 		if (is_admin()) {
