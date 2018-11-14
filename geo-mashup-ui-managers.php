@@ -269,14 +269,16 @@ class GeoMashupUIManager {
 
 		if ( 'save' === $action || 'geocode' === $action ) {
 
-			$date_string = sanitize_text_field( $_POST['geo_mashup_date'] ) . ' ' .
-			               (int) $_POST['geo_mashup_hour'] . ':' .
-			               (int) $_POST['geo_mashup_minute'] . ':00';
+			$date_string = sanitize_text_field( $this->posted_value('geo_mashup_date' ) ) . ' ' .
+			               (int) $this->posted_value('geo_mashup_hour' ) . ':' .
+			               (int) $this->posted_value('geo_mashup_minute' ) . ':00';
 			$geo_date    = date( 'Y-m-d H:i:s', strtotime( $date_string ) );
 
-			$post_location['saved_name'] = sanitize_text_field( wp_unslash( $_POST['geo_mashup_location_name'] ) );
+			$post_location['saved_name'] = sanitize_text_field(
+				wp_unslash( $this->posted_value('geo_mashup_location_name' ) )
+			);
 
-			$search_text = sanitize_text_field( $_POST['geo_mashup_search'] );
+			$search_text = sanitize_text_field( $this->posted_value( 'geo_mashup_search' ) );
 		}
 
 
@@ -294,18 +296,9 @@ class GeoMashupUIManager {
 		}
 
 		if ( 'save' === $action && empty( $_POST['geo_mashup_select'] ) ) {
-			$post_location['id'] = (int) $_POST['geo_mashup_location_id'];
-			list( $lat, $lng ) = explode( ',', $_POST['geo_mashup_location'] );
-			$post_location['lat']            = (float) $lat;
-			$post_location['lng']            = (float) $lng;
-			$post_location['geoname']        = sanitize_text_field( $_POST['geo_mashup_geoname'] );
-			$post_location['address']        = sanitize_text_field( wp_unslash( $_POST['geo_mashup_address'] ) );
-			$post_location['postal_code']    = sanitize_text_field( $_POST['geo_mashup_postal_code'] );
-			$post_location['country_code']   = $this->sanitize_country_code( $_POST['geo_mashup_country_code'] );
-			$post_location['admin_code']     = sanitize_text_field( $_POST['geo_mashup_admin_code'] );
-			$post_location['sub_admin_code'] = sanitize_text_field( $_POST['geo_mashup_sub_admin_code'] );
-			$post_location['locality_name']  = sanitize_text_field( $_POST['geo_mashup_locality_name'] );
-			$post_location['set_null']       = $this->sanitize_null_fields( $_POST['geo_mashup_null_fields'] );
+
+			$post_location = $this->posted_location();
+
 		}
 
 		$error = null;
@@ -351,6 +344,49 @@ class GeoMashupUIManager {
 	 */
 	private function sanitize_null_fields( $fields ) {
 		return empty( $fields ) ? null : sanitize_text_field( $fields );
+	}
+
+	/**
+	 * Get a $_POST data value or default if not set.
+	 *
+	 * @since 1.11.1
+	 *
+	 * @param string $key
+	 * @param mixed $default
+	 *
+	 * @return mixed
+	 */
+	private function posted_value( $key, $default = null ) {
+		return isset($_POST[$key]) ? $_POST[$key] : $default;
+	}
+
+
+	/**
+	 * Build a location array based on expected posted data values.
+	 *
+	 * @since 1.11.1
+	 *
+	 * @return array
+	 */
+	private function posted_location() {
+		$location = array(
+			'id' => (int) $this->posted_value( 'geo_mashup_location_id' )
+		);
+
+		list( $lat, $lng ) = explode( ',', $this->posted_value( 'geo_mashup_location' ) );
+
+		$location['lat']            = (float) $lat;
+		$location['lng']            = (float) $lng;
+		$location['geoname']        = sanitize_text_field( $this->posted_value( 'geo_mashup_geoname' ) );
+		$location['address']        = sanitize_text_field( wp_unslash( $this->posted_value( 'geo_mashup_address' ) ) );
+		$location['postal_code']    = sanitize_text_field( $this->posted_value( 'geo_mashup_postal_code' ) );
+		$location['country_code']   = $this->sanitize_country_code( $this->posted_value( 'geo_mashup_country_code' ) );
+		$location['admin_code']     = sanitize_text_field( $this->posted_value( 'geo_mashup_admin_code' ) );
+		$location['sub_admin_code'] = sanitize_text_field( $this->posted_value( 'geo_mashup_sub_admin_code' ) );
+		$location['locality_name']  = sanitize_text_field( $this->posted_value( 'geo_mashup_locality_name' ) );
+		$location['set_null']       = $this->sanitize_null_fields( $this->posted_value( 'geo_mashup_null_fields' ) );
+
+		return $location;
 	}
 }
 
