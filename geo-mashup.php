@@ -159,9 +159,8 @@ class GeoMashup {
 			add_action( 'wpml_loaded', array( 'GeoMashupWPML', 'load' ) );
 		}
 
-		if ( defined( 'SNAZZY_VERSION_NUMBER' ) ) {
-			include_once GEO_MASHUP_DIR_PATH . '/snazzy-maps.php';
-			GeoMashupSnazzyMaps::load();
+		if ( defined( 'SNAZZY_VERSION_NUMBER' ) || defined( 'SNAZZY_MAPS_VERSION_NUMBER' ) ) {
+			include_once GEO_MASHUP_DIR_PATH . '/snazzy-maps.php'; GeoMashupSnazzyMaps::load();
 		}
 	}
 

@@ -300,7 +300,7 @@ function geo_mashup_options_page() {
 					<tr>
 						<th width="33%" scope="row"><?php _e('Snazzy Maps', 'GeoMashup'); ?></th>
 						<td>
-							<?php if ( defined( 'SNAZZY_VERSION_NUMBER' ) ) : ?>
+							<?php if ( class_exists( 'GeoMashupSnazzyMaps' ) ) : ?>
 								<span class="dashicons dashicons-yes"></span>
 								<a href="<?php echo admin_url( 'themes.php?page=snazzy_maps' ); ?>">
 									<?php _e( 'Using current Snazzy styles', 'GeoMashup' ); ?>
