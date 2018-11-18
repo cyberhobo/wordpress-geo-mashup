@@ -385,6 +385,9 @@ class GeoMashupUIManager {
 		$location['sub_admin_code'] = sanitize_text_field( $this->posted_value( 'geo_mashup_sub_admin_code' ) );
 		$location['locality_name']  = sanitize_text_field( $this->posted_value( 'geo_mashup_locality_name' ) );
 		$location['set_null']       = $this->sanitize_null_fields( $this->posted_value( 'geo_mashup_null_fields' ) );
+		$location['saved_name']     = sanitize_text_field(
+			wp_unslash( $this->posted_value( 'geo_mashup_location_name' ) )
+		);
 
 		return $location;
 	}
