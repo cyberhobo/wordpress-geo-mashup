@@ -275,7 +275,7 @@ function geo_mashup_options_page() {
 							</select>
 						</td>
 					</tr>
-					<?php if ( 'googlev3' == $map_api ) : ?>
+					<?php if ( 'googlev3' === $map_api ) : ?>
 					<tr>
 						<th width="33%" scope="row"><?php _e('Google API Key', 'GeoMashup'); ?></th>
 						<td>
@@ -290,7 +290,7 @@ function geo_mashup_options_page() {
 							<p class="description">
 								<?php
 								_e(
-									'It may work to leave this blank and use Google maps without a key, but Google may start requiring it. Be ready to perform a few steps.',
+									'Google now requires a key and will trigger a warning alert without one. Be ready to perform a few steps.',
 									'GeoMashup'
 								);
 								?>

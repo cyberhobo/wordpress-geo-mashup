@@ -4,7 +4,7 @@ Donate Link:
 Tags: map, maps, google maps, google map, mapping, mashup, geo, google, geocms
 Requires at least: 3.7
 Tested up to: 5.0.0
-Stable tag: 1.11.1
+Stable tag: 1.11.2
 License: GPL2+
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -12,19 +12,22 @@ Include Google and OpenStreetMap maps in posts and pages, and map posts, pages, 
 
 == Description ==
 
-This plugin lets you save location information with posts, pages, and other WordPress objects. 
-These can then be presented on interactive maps in many ways.
+This plugin lets you save location information with posts, pages, and other WordPress objects. These can then be presented on interactive maps in many ways.
 
 = Key Features =
 
 Geo Mashup, like WordPress, has a simple interface for basic features,
 templates for control of output, and APIs for endless customization options.
+
 Some popular features are:
 
   * Use different map providers: [Google Maps v3](https://developers.google.com/maps/documentation/javascript/reference), [OpenStreetMap](http://openstreetmap.org), [Leaflet](http://leafletjs.com)
   * Global maps can present your posts in many ways
+
 	They can show just one category, custom taxonomy term, or custom post type, for example
+
 	Clicking on a post marker shows a customizable summary of the post or page in an info window
+
   * A Geo Search widget enables searching for content by distance from a search location
   * Marker clustering for Google maps
   * Location can be saved for all post types (including pages) users, and comments
@@ -35,9 +38,7 @@ Some popular features are:
   * Attach KML files to posts and pages
   * Connect category markers with a colored line
 
-If you need features that are aren't listed here, check 
-[the documentation](https://github.com/cyberhobo/wordpress-geo-mashup/wiki/Getting-Started)
-and the [tag reference](https://github.com/cyberhobo/wordpress-geo-mashup/wiki/Tag-Reference).
+If you need features that are aren't listed here, check [the documentation](https://github.com/cyberhobo/wordpress-geo-mashup/wiki/Getting-Started) and the [tag reference](https://github.com/cyberhobo/wordpress-geo-mashup/wiki/Tag-Reference).
 
 = Translations =
 
@@ -80,6 +81,10 @@ This version fixes a security related bug.  Upgrade immediately.
 == Change Log ==
 
 Features are generally added in one-dot releases, while two-dot releases contain fixes and small updates.
+
+= 1.11.2 Nov 18 2018 =
+
+[milestone 1.11.2 changes](https://github.com/cyberhobo/wordpress-geo-mashup/milestone/11?closed=1)
 
 = 1.11.1 Nov 14 2018 =
 
