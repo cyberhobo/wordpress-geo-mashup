@@ -66,6 +66,13 @@ Geo Mashup combines WordPress, [Google Maps](http://maps.google.com), [OpenStree
 [GeoNames](http://geonames.org), and [geoPlugin](http://geoplugin.net) to create a GeoCMS that puts you in control
 of all your content, including geographic data.
 
+Thanks to [Alex Chepovetsky](https://www.linkedin.com/in/alexchepovetsky)
+and [Maxim Lemberg](https://www.linkedin.com/in/maxim-lemberg-661a06149/) for finding an XSS bug in the
+location editor.
+
+Thanks to Paolo Perego of [armoredcode.com](http://armoredcode.com) for finding and fixing an XSS bug in the
+geo search widget.
+
 == Installation ==
 
 GeoMashup supports [standard WordPress plugin installation].
@@ -99,6 +106,10 @@ Features are generally added in one-dot releases, while two-dot releases contain
 [milestone 1.10.5 changes](https://github.com/cyberhobo/wordpress-geo-mashup/milestone/9?closed=1)
 
 = 1.10.4 Jul 11 2018 =
+
+Thanks to [Alex Chepovetsky](https://www.linkedin.com/in/alexchepovetsky)
+and [Maxim Lemberg](https://www.linkedin.com/in/maxim-lemberg-661a06149/) for finding an XSS bug in the
+location editor.
 
 [milestone 1.10.4 changes](https://github.com/cyberhobo/wordpress-geo-mashup/milestone/8?closed=1)
 
