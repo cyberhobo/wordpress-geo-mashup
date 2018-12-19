@@ -4,6 +4,12 @@ class GeoMashupMapAttributes {
 	/** @var int Used to index maps per request */
 	protected static $map_number = 1;
 
+	/** @var GeoMashupOptions */
+	protected $options;
+	/** @var boolean */
+	protected $in_comment_loop;
+	/** @var WP_Query */
+	protected $wp_query;
 	/** @var array Attribute values */
 	protected $values;
 	/** @var boolean */
@@ -15,7 +21,10 @@ class GeoMashupMapAttributes {
 	/** @var string */
 	protected $click_to_load_text;
 
-	public function __construct() {
+	public function __construct($options, $wp_query, $in_comment_loop) {
+		$this->options = $options;
+		$this->wp_query = $wp_query;
+		$this->in_comment_loop = $in_comment_loop;
 	}
 
 	/**
@@ -260,18 +269,17 @@ class GeoMashupMapAttributes {
 	 * @return int|null|string
 	 */
 	protected function context_object_id( $object_name ) {
-		global $wp_query, $in_comment_loop;
 
-		if ( 'post' === $object_name && $wp_query->in_the_loop ) {
-			return $wp_query->post->ID;
+		if ( 'post' === $object_name && $this->wp_query->in_the_loop ) {
+			return $this->wp_query->post->ID;
 		}
 
-		if ( 'comment' === $object_name && $in_comment_loop ) {
+		if ( 'comment' === $object_name && $this->in_comment_loop ) {
 			return get_comment_ID();
 		}
 
-		if ( 'user' === $object_name && $wp_query->post ) {
-			return $wp_query->post->post_author;
+		if ( 'user' === $object_name && $this->wp_query->post ) {
+			return $this->wp_query->post->post_author;
 		}
 
 		return null;
@@ -284,20 +292,19 @@ class GeoMashupMapAttributes {
 	 * @param array $click_to_load_options
 	 */
 	protected function add_contextual_attributes( $object_name, $click_to_load_options ) {
-		global $geo_mashup_options, $wp_query;
 
 		$this->values['map_content'] = 'contextual';
 		$this->values                = array_merge(
-			$geo_mashup_options->get( 'context_map', $click_to_load_options ),
+			$this->options->get( 'context_map', $click_to_load_options ),
 			$this->values
 		);
 
 		$object_ids = array();
 
 		if ( 'comment' === $object_name ) {
-			$context_objects = $wp_query->comments;
+			$context_objects = $this->wp_query->comments;
 		} else {
-			$context_objects = $wp_query->posts;
+			$context_objects = $this->wp_query->posts;
 		}
 
 		if ( ! is_array( $context_objects ) ) {
@@ -345,12 +352,11 @@ class GeoMashupMapAttributes {
 	 * @param array $click_to_load_options
 	 */
 	protected function add_single_attributes( $object_name, $click_to_load_options ) {
-		global $geo_mashup_options;
 
 		$this->values['map_content'] = 'single';
 
 		/** @noinspection AdditionOperationOnArraysInspection */
-		$this->values += $geo_mashup_options->get( 'single_map', $click_to_load_options );
+		$this->values += $this->options->get( 'single_map', $click_to_load_options );
 		if ( empty( $this->values['object_id'] ) ) {
 			$this->error = new WP_Error(
 				'geo_mashup_single_attribute_error',
@@ -375,7 +381,6 @@ class GeoMashupMapAttributes {
 	 * @param array $click_to_load_options
 	 */
 	protected function add_global_attributes( $click_to_load_options ) {
-		global $geo_mashup_options;
 
 		if ( isset( $_GET['template'] ) && 'full-post' === $_GET['template'] ) {
 			// Global maps tags in response to a full-post query can infinitely nest, prevent this
@@ -400,12 +405,12 @@ class GeoMashupMapAttributes {
 		}
 
 		$this->values = array_merge(
-			$geo_mashup_options->get( 'global_map', $click_to_load_options ),
+			$this->options->get( 'global_map', $click_to_load_options ),
 			$this->values
 		);
 
 		// Don't query more than max_posts
-		$max_posts = $geo_mashup_options->get( 'global', 'max_posts' );
+		$max_posts = $this->options->get( 'global', 'max_posts' );
 		if ( ! empty( $max_posts ) && empty( $this->values['limit'] ) ) {
 			$this->values['limit'] = $max_posts;
 		}

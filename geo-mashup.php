@@ -1174,6 +1174,19 @@ class GeoMashup {
 	}
 
 	/**
+	 * @since 1.11.3
+	 *
+	 * @return GeoMashupMapAttributes
+	 */
+	private static function create_map_attributes() {
+		global $wp_query, $geo_mashup_options, $in_comment_loop;
+
+		include_once path_join( GEO_MASHUP_DIR_PATH, 'map-attributes.php' );
+
+		return new GeoMashupMapAttributes($geo_mashup_options, $wp_query, $in_comment_loop);
+	}
+
+	/**
 	 * The map template tag.
 	 *
 	 * Returns HTML for a Google map. Must use with echo in a template: echo GeoMashup::map();.
@@ -1188,9 +1201,7 @@ class GeoMashup {
 	 */
 	public static function map( $atts = null ) {
 
-		include_once path_join( GEO_MASHUP_DIR_PATH, 'map-attributes.php' );
-
-		$attributes = new GeoMashupMapAttributes();
+		$attributes = self::create_map_attributes();
 
 		$attributes->build( $atts );
 
