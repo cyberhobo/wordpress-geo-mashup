@@ -888,4 +888,17 @@ class GeoMashup_Unit_Tests extends GeoMashupTestCase {
 		$this->assertEquals( $location->locality_name, $out->locality_name );
 	}
 
+	/**
+	 * issue 828
+	 */
+	function test_querystring_parameter_whitelist() {
+		$post_id = $this->factory->post->create();
+		GeoMashupDB::set_object_location( 'post', $post_id, $this->rand_location(), false );
+
+		$_SERVER['QUERY_STRING'] = 'limit=10&foo=bar';
+		$html = GeoMashup::map( 'map_content=global&width=400&height=300px' );
+		$this->assertThat( $html, $this->stringContains( 'limit=10' ) );
+		$this->assertThat( $html, $this->logicalNot($this->stringContains('foo=bar') ) );
+	}
+
 }

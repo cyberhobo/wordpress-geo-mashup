@@ -21,9 +21,9 @@ class GeoMashupMapAttributes {
 	/** @var string */
 	protected $click_to_load_text;
 
-	public function __construct($options, $wp_query, $in_comment_loop) {
-		$this->options = $options;
-		$this->wp_query = $wp_query;
+	public function __construct( $options, $wp_query, $in_comment_loop ) {
+		$this->options         = $options;
+		$this->wp_query        = $wp_query;
 		$this->in_comment_loop = $in_comment_loop;
 	}
 
@@ -46,7 +46,6 @@ class GeoMashupMapAttributes {
 		$this->convert_map_attributes();
 
 		$this->parse_static_attributes();
-
 
 		$this->add_map_content_attributes();
 
@@ -393,16 +392,7 @@ class GeoMashupMapAttributes {
 		}
 		$this->values['map_content'] = 'global';
 
-		// Global maps on a page will make use of query string arguments unless directed otherwise
-		$ignore_url = false;
-		if ( isset( $this->values['ignore_url'] ) && 'true' === $this->values['ignore_url'] ) {
-			$ignore_url = true;
-			unset( $this->values['ignore_url'] );
-		}
-
-		if ( isset( $_SERVER['QUERY_STRING'] ) && ! $ignore_url ) {
-			$this->values = wp_parse_args( $_SERVER['QUERY_STRING'], $this->values );
-		}
+		$this->add_whitelisted_query_string_parameters();
 
 		$this->values = array_merge(
 			$this->options->get( 'global_map', $click_to_load_options ),
@@ -414,5 +404,80 @@ class GeoMashupMapAttributes {
 		if ( ! empty( $max_posts ) && empty( $this->values['limit'] ) ) {
 			$this->values['limit'] = $max_posts;
 		}
+	}
+
+	/**
+	 * @since 1.11.3
+	 */
+	protected function add_whitelisted_query_string_parameters() {
+
+		// Global maps on a page will make use of query string arguments unless directed otherwise
+		$ignore_url = false;
+		if ( isset( $this->values['ignore_url'] ) && 'true' === $this->values['ignore_url'] ) {
+			$ignore_url = true;
+			unset( $this->values['ignore_url'] );
+		}
+
+		if ( $ignore_url || ! isset( $_SERVER['QUERY_STRING'] ) ) {
+			return;
+		}
+
+		$whitelist = array(
+			'admin_code',
+			'country_code',
+			'exclude_object_ids',
+			'limit',
+			'locality_name',
+			'map_cat',
+			'map_content',
+			'map_offset',
+			'map_post_type',
+			'minlat',
+			'maxlat',
+			'minlon',
+			'maxlon',
+			'near_lat',
+			'near_lng',
+			'object_name',
+			'object_id',
+			'object_ids',
+			'postal_code',
+			'radius_km',
+			'radius_mi',
+			'saved_name',
+			'show_future',
+			'sort',
+			'tax_query',
+			'add_map_control',
+			'add_google_bar',
+			'add_map_type_control',
+			'add_overview_control',
+			'auto_info_open',
+			'auto_zoom_max',
+			'background_color',
+			'center_lat',
+			'center_lng',
+			'cluster_max_zoom',
+			'enable_scroll_wheel_zoom',
+			'enable_street_view',
+			'height',
+			'load_empty_map',
+			'load_kml',
+			'map_control',
+			'map_type',
+			'marker_min_zoom',
+			'marker_select_info_window',
+			'marker_select_highlight',
+			'marker_select_center',
+			'marker_select_attachments',
+			'open_object_id',
+			'static',
+			'width',
+			'zoom'
+		);
+
+		$allowed_parameters = array_intersect_key( wp_parse_args( $_SERVER['QUERY_STRING'] ), array_flip( $whitelist ) );
+
+		$this->values = array_merge( $this->values, $allowed_parameters );
 	}
 }
