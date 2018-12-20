@@ -3,8 +3,8 @@ Contributors: cyberhobo, freemius
 Donate Link:
 Tags: map, maps, google maps, google map, mapping, mashup, geo, google, geocms
 Requires at least: 3.7
-Tested up to: 5.0.0
-Stable tag: 1.11.2
+Tested up to: 5.0.2
+Stable tag: 1.11.3
 License: GPL2+
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -66,6 +66,13 @@ Geo Mashup combines WordPress, [Google Maps](http://maps.google.com), [OpenStree
 [GeoNames](http://geonames.org), and [geoPlugin](http://geoplugin.net) to create a GeoCMS that puts you in control
 of all your content, including geographic data.
 
+Thanks to [Alex Chepovetsky](https://www.linkedin.com/in/alexchepovetsky)
+and [Maxim Lemberg](https://www.linkedin.com/in/maxim-lemberg-661a06149/) for finding an XSS bug in the
+location editor.
+
+Thanks to Paolo Perego of [armoredcode.com](http://armoredcode.com) for finding and fixing an XSS bug in the
+geo search widget.
+
 == Installation ==
 
 GeoMashup supports [standard WordPress plugin installation].
@@ -81,6 +88,10 @@ This version fixes a security related bug.  Upgrade immediately.
 == Change Log ==
 
 Features are generally added in one-dot releases, while two-dot releases contain fixes and small updates.
+
+= 1.11.3 Dec 19 2018 =
+
+[milestone 1.11.3 changes](https://github.com/cyberhobo/wordpress-geo-mashup/milestone/12?closed=1)
 
 = 1.11.2 Nov 18 2018 =
 
@@ -99,6 +110,10 @@ Features are generally added in one-dot releases, while two-dot releases contain
 [milestone 1.10.5 changes](https://github.com/cyberhobo/wordpress-geo-mashup/milestone/9?closed=1)
 
 = 1.10.4 Jul 11 2018 =
+
+Thanks to [Alex Chepovetsky](https://www.linkedin.com/in/alexchepovetsky)
+and [Maxim Lemberg](https://www.linkedin.com/in/maxim-lemberg-661a06149/) for finding an XSS bug in the
+location editor.
 
 [milestone 1.10.4 changes](https://github.com/cyberhobo/wordpress-geo-mashup/milestone/8?closed=1)
 
