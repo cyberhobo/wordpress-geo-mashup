@@ -443,10 +443,9 @@ class GeoMashup_Unit_Tests extends GeoMashupTestCase {
 	* issue 581
 	*/
 	function test_static_map_filter() {
-		$filter = create_function( 
-			'$map_image, $map_data, $args',
-			'return str_replace( "color:red", "color:blue", $map_image );'
-		);
+		$filter = function($map_image, $map_data, $args) {
+			return str_replace( "color:red", "color:blue", $map_image );
+		};
 
 		$this->add_filter( 'geo_mashup_static_map', $filter, 10, 3 );
 
