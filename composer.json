@@ -4,7 +4,7 @@
   "type": "wordpress-plugin",
   "require": {
     "roave/security-advisories": "dev-master",
-    "freemius/wordpress-sdk": "^1.2.1"
+    "freemius/wordpress-sdk": "^2.2.3"
   },
   "require-dev": {
     "phpunit/phpunit": "4.2.*"
