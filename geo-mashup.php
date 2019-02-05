@@ -225,8 +225,10 @@ class GeoMashup {
 			}
 
 			// To add the GeoRSS namespace to feeds (not available for RSS 0.92)
-			add_action('rss2_ns', array(__CLASS__, 'rss_ns'));
-			add_action('atom_ns', array(__CLASS__, 'rss_ns'));
+			//add_action('rss2_ns', array(__CLASS__, 'rss_ns_buffer'), 1);
+			//add_action('atom_ns', array(__CLASS__, 'rss_ns_buffer'), 1);
+			add_action('rss2_ns', array(__CLASS__, 'rss_ns'), 99);
+			add_action('atom_ns', array(__CLASS__, 'rss_ns'), 99);
 
 			// To add GeoRSS location to feeds
 			add_action('rss2_item', array(__CLASS__, 'rss_item'));
@@ -1961,7 +1963,21 @@ class GeoMashup {
 	}
 
 	/**
+	 * WordPress action to buffer RSS namespaces.
+	 *
+	 * rss_ns {@link http://codex.wordpress.org/Plugin_API/Action_Reference#Feed_Actions action}
+	 * called by WordPress.
+	 *
+	 * @since 1.0
+	 */
+	public static function rss_ns_buffer() {
+		ob_start();
+	}
+
+	/**
 	 * WordPress action to emit GeoRSS namespace.
+	 *
+	 * Emits buffered namespaces, adding GeoRSS if not already there.
 	 *
 	 * rss_ns {@link http://codex.wordpress.org/Plugin_API/Action_Reference#Feed_Actions action}
 	 * called by WordPress.
@@ -1969,7 +1985,11 @@ class GeoMashup {
 	 * @since 1.0
 	 */
 	public static function rss_ns() {
-		echo 'xmlns:georss="http://www.georss.org/georss" ';
+		$namespaces = ob_get_clean();
+		echo $namespaces;
+		if (false === strpos($namespaces, 'xmlns:georss')) {
+			echo 'xmlns:georss="http://www.georss.org/georss" ';
+		}
 	}
 
 	/**
