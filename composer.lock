@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ff581cace0a93157bdc255191b6ae2c7",
+    "content-hash": "bf1626c25eed3e42f22fbc506b241b7c",
     "packages": [
         {
             "name": "freemius/wordpress-sdk",
-            "version": "2.2.3",
+            "version": "dev-develop",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Freemius/wordpress-sdk.git",
-                "reference": "34dfa26505800c9404c3969ef84969f4606da76a"
+                "reference": "c524d1f1e852fd37ea27e4e2806d1f162cc8c609"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Freemius/wordpress-sdk/zipball/34dfa26505800c9404c3969ef84969f4606da76a",
-                "reference": "34dfa26505800c9404c3969ef84969f4606da76a",
+                "url": "https://api.github.com/repos/Freemius/wordpress-sdk/zipball/c524d1f1e852fd37ea27e4e2806d1f162cc8c609",
+                "reference": "c524d1f1e852fd37ea27e4e2806d1f162cc8c609",
                 "shasum": ""
             },
             "require": {
@@ -34,9 +34,12 @@
                 "freemius",
                 "plugin",
                 "sdk",
-                "wordpress"
+                "theme",
+                "wordpress",
+                "wordpress-plugin",
+                "wordpress-theme"
             ],
-            "time": "2019-01-13T12:37:54+00:00"
+            "time": "2019-01-30T09:08:21+00:00"
         },
         {
             "name": "roave/security-advisories",
@@ -1107,7 +1110,8 @@
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
-        "roave/security-advisories": 20
+        "roave/security-advisories": 20,
+        "freemius/wordpress-sdk": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,
