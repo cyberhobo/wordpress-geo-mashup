@@ -443,10 +443,9 @@ class GeoMashup_Unit_Tests extends GeoMashupTestCase {
 	* issue 581
 	*/
 	function test_static_map_filter() {
-		$filter = create_function( 
-			'$map_image, $map_data, $args',
-			'return str_replace( "color:red", "color:blue", $map_image );'
-		);
+		$filter = function($map_image, $map_data, $args) {
+			return str_replace( "color:red", "color:blue", $map_image );
+		};
 
 		$this->add_filter( 'geo_mashup_static_map', $filter, 10, 3 );
 
@@ -901,4 +900,23 @@ class GeoMashup_Unit_Tests extends GeoMashupTestCase {
 		$this->assertThat( $html, $this->logicalNot($this->stringContains('foo=bar') ) );
 	}
 
+	/**
+	 * issue 829
+	 */
+	function test_rss_ns_no_duplicate() {
+		GeoMashup::rss_ns_buffer();
+		$ns = '<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"
+				xmlns:content="http://purl.org/rss/1.0/modules/content/"
+				xmlns:dc="http://purl.org/dc/elements/1.1/"
+				xmlns:atom="http://www.w3.org/2005/Atom"
+				xmlns:sy="http://purl.org/rss/1.0/modules/syndication/"
+				xmlns:georss="http://www.georss.org/georss" ';
+
+		ob_start();
+		echo $ns;
+		GeoMashup::rss_ns();
+		$ns_output = ob_get_clean();
+
+		$this->assertEquals( $ns_output, $ns );
+	}
 }

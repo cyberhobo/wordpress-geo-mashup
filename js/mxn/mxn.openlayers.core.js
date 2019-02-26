@@ -34,9 +34,9 @@ mxn.register('openlayers', {
 
 			// create OSM layer using all 3 hostnames
 			this.layers.osm = new OpenLayers.Layer.OSM("OpenStreetMap",
-			  ["http://a.tile.openstreetmap.org/${z}/${x}/${y}.png",
-			   "http://b.tile.openstreetmap.org/${z}/${x}/${y}.png",
-			   "http://c.tile.openstreetmap.org/${z}/${x}/${y}.png"]);
+			  ["https://a.tile.openstreetmap.org/${z}/${x}/${y}.png",
+			   "https://b.tile.openstreetmap.org/${z}/${x}/${y}.png",
+			   "https://c.tile.openstreetmap.org/${z}/${x}/${y}.png"]);
 		
 			// deal with click
 			map.events.register('click', map, function(evt){
@@ -72,7 +72,7 @@ mxn.register('openlayers', {
 			}
 		
 			map.addLayer(this.layers.osm);
-			this.tileLayers.push(["http://a.tile.openstreetmap.org/", this.layers.osm, true]);
+			this.tileLayers.push(["https://a.tile.openstreetmap.org/", this.layers.osm, true]);
 			this.maps[api] = map;
 			this.loaded[api] = true;
 		},
@@ -335,7 +335,7 @@ mxn.register('openlayers', {
 					outFeature       : function(feature) {
 						var marker = feature.mapstraction_marker;
 						if (!!marker.hoverIconUrl) {
-							var iconUrl = marker.iconUrl || 'http://openlayers.org/dev/img/marker-gold.png';
+							var iconUrl = marker.iconUrl || 'https://openlayers.org/dev/img/marker-gold.png';
 							marker.setUrl(iconUrl);
 						}
 						if (marker.hover && !!marker.popup) {
@@ -641,12 +641,12 @@ mxn.register('openlayers', {
 				this.icon = new OpenLayers.Icon(this.iconUrl, size, anchor);
 			}
 			else {
-				this.icon = new OpenLayers.Icon('http://openlayers.org/dev/img/marker-gold.png', size, anchor);
+				this.icon = new OpenLayers.Icon('https://openlayers.org/dev/img/marker-gold.png', size, anchor);
 			}
 
 			style = {
 				cursor         : 'pointer',
-				externalGraphic: ((!!this.iconUrl) ? this.iconUrl : 'http://openlayers.org/dev/img/marker-gold.png'),
+				externalGraphic: ((!!this.iconUrl) ? this.iconUrl : 'https://openlayers.org/dev/img/marker-gold.png'),
 				graphicTitle   : ((!!this.labelText) ? this.labelText : ''),
 				graphicHeight  : size.h,
 				graphicWidth   : size.w,
