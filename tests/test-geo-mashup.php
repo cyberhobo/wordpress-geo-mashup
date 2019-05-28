@@ -506,7 +506,7 @@ class GeoMashup_Unit_Tests extends GeoMashupTestCase {
 			) ),
 		) );
 		$post_id = $this->factory->post->create();
-		// Use 4 decimal places in location to get 5 good total characters to check in link
+		// Use 4 decimal places in location to get 4 good total characters to check in link
 		$location = $this->rand_location( 4 );
 		GeoMashupDB::set_object_location( 'post', $post_id, $location, false );
 
@@ -514,7 +514,7 @@ class GeoMashup_Unit_Tests extends GeoMashupTestCase {
 		$this->assertTrue( $test_query->have_posts() );
 		$test_query->the_post();
 		$this->assertFalse( $test_query->have_posts() );
-		$this->assertContains( 'center_lat=' . substr( $location->lat, 0, 5 ), GeoMashup::show_on_map_link() );
+		$this->assertContains( 'center_lat=' . substr( $location->lat, 0, 4 ), GeoMashup::show_on_map_link() );
 	}
 
 	/**
