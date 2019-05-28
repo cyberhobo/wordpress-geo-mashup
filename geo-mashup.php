@@ -82,8 +82,6 @@ class GeoMashup {
 	 */
 	public static function load() {
 		self::load_constants();
-		load_plugin_textdomain( 'GeoMashup', '', path_join( GEO_MASHUP_DIRECTORY, 'lang' ) );
-
 		self::load_dependencies();
 		self::load_hooks();
 	}
@@ -153,6 +151,8 @@ class GeoMashup {
 	 * @since 1.10.0
 	 */
 	public static function load_integrations() {
+
+		load_plugin_textdomain( 'GeoMashup', false, GEO_MASHUP_DIR_PATH . '/lang' );
 
 		if ( defined( 'ICL_LANGUAGE_CODE' ) ) {
 			include_once GEO_MASHUP_DIR_PATH . '/wpml.php';
@@ -252,7 +252,6 @@ class GeoMashup {
 		define('GEO_MASHUP_PLUGIN_NAME', plugin_basename(__FILE__));
 		/** @noinspection DirectoryConstantCanBeUsedInspection */
 		define('GEO_MASHUP_DIR_PATH', dirname( __FILE__ ));
-		define('GEO_MASHUP_DIRECTORY', dirname( GEO_MASHUP_PLUGIN_NAME ) );
 		define('GEO_MASHUP_URL_PATH', trim( plugin_dir_url( __FILE__ ), '/' ) );
 		define('GEO_MASHUP_MAX_ZOOM', 20);
 		define('GEO_MASHUP_VERSION', '1.11.5');
