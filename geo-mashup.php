@@ -82,8 +82,6 @@ class GeoMashup {
 	 */
 	public static function load() {
 		self::load_constants();
-		load_plugin_textdomain( 'GeoMashup', '', path_join( GEO_MASHUP_DIRECTORY, 'lang' ) );
-
 		self::load_dependencies();
 		self::load_hooks();
 	}
@@ -153,6 +151,8 @@ class GeoMashup {
 	 * @since 1.10.0
 	 */
 	public static function load_integrations() {
+
+		load_plugin_textdomain( 'GeoMashup', false, GEO_MASHUP_DIRECTORY . '/lang' );
 
 		if ( defined( 'ICL_LANGUAGE_CODE' ) ) {
 			include_once GEO_MASHUP_DIR_PATH . '/wpml.php';
