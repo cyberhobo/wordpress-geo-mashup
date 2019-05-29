@@ -10,7 +10,7 @@ These are notes for the software author, to help ensure you don't get a broken r
 
 If any step fails, fix before continuing, repeating any necessary prior steps.
 
-	1. Check version in package.json, `yarn update-version`, commit if necessary.
+	1. Check version in package.json, `yarn version <new version>`, commit if necessary.
 	1. Edit WP readme.txt (remember stable tag, tested version, and changelog!)
 	1. Update the language template if the release contains new language strings `yarn makepot`, `git commit`;
 	1. Merge `git checkout master; git merge --no-ff <dev-branch>`

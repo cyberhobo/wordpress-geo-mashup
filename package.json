@@ -1,6 +1,6 @@
 {
   "license": "GPL-2.0-or-later",
-  "version": "1.11.4",
+  "version": "1.11.5",
   "devDependencies": {
     "cpx": "^1.5.0",
     "csso-cli": "^1.0.0",
@@ -10,15 +10,14 @@
   },
   "scripts": {
     "env": "env",
-
+    "version": "npm run update-version && git add geo-mashup.php",
     "update-version": "yarn update-version:header && yarn update-version:constant",
     "update-version:header": "sed -i -E \"s/Version: .+\\..+\\..+/Version: $npm_package_version/\" geo-mashup.php",
     "update-version:constant": "sed -i -E \"s/'GEO_MASHUP_VERSION', '.+\\..+\\..+'/'GEO_MASHUP_VERSION', '$npm_package_version'/\" geo-mashup.php",
-
     "premakepot": "yarn run clean",
     "makepot": "wpi18n makepot --exclude \"vendor/.*\"",
-
     "clean": "rm -rf dist/*",
+    "test": "composer test",
     "prebuild": "composer test && composer install --no-dev && yarn run clean",
     "build": "yarn build:php && yarn build:css && yarn build:js && yarn build:lang && yarn build:docs && yarn build:media",
     "build:php": "cpx \"*.php\" dist && yarn build:php-templates && yarn build:php-vendor",
@@ -34,7 +33,6 @@
     "build:js:full": "cpx \"js/**/*.js\" dist/js",
     "build:media": "cpx \"images/**\" dist/images",
     "postbuild": "composer install",
-
     "predeploy": "yarn run clean",
     "deploy": "yarn deploy:checkout && yarn build && yarn deploy:update",
     "deploy:checkout": "svn checkout http://plugins.svn.wordpress.org/geo-mashup/trunk dist",
