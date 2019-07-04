@@ -520,7 +520,17 @@ class GeoMashup {
 			// Call the function corresponding to the content request
 			// This provides some security, as only implemented methods will be executed
 			$method = str_replace( '-', '_', $geo_mashup_content );
-			call_user_func( array( __CLASS__, $method ) );
+
+			$callable = array( __CLASS__, $method );
+
+			if ( is_callable( $callable ) ) {
+				call_user_func( $callable );
+			} else {
+				/** @noinspection ForgottenDebugOutputInspection */
+				error_log( 'Undefined Geo Mashup content requested: ' . $method );
+				status_header( 404 );
+				echo 'Not Found';
+			}
 			exit();
 		}
 	}
