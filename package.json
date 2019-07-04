@@ -5,7 +5,7 @@
     "cpx": "^1.5.0",
     "csso-cli": "^1.0.0",
     "node-wp-i18n": "^1.0.2",
-    "renamer": "^0.6.1",
+    "renamer": "^1.1.0",
     "uglify-js": "^2.8.21"
   },
   "scripts": {
