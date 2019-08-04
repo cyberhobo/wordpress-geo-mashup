@@ -410,7 +410,10 @@ jQuery.extend( GeoMashup, {
 
 			if ( !loaded_taxonomy.terms.hasOwnProperty( term_id ) ) {
 
-				if ( term_properties[taxonomy].terms[term_id].color ) {
+				if (
+					term_properties[taxonomy].terms.hasOwnProperty( term_id ) &&
+					term_properties[taxonomy].terms[term_id].color
+				) {
 					color_name = term_properties[taxonomy].terms[term_id].color;
 				} else {
 					color_name = GeoMashup.color_names[ loaded_taxonomy.term_count % GeoMashup.color_names.length ];
