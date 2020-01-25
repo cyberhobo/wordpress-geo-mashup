@@ -1,0 +1,13 @@
+version: '2'
+
+services:
+  yarn:
+    image: juliquiron/wordpress-phpunit-test-runner-gitlab-ci
+    volumes:
+      - ..:/app
+      - geo-mashup-test-support:/tmp
+    working_dir: /app
+    entrypoint: yarn
+
+volumes:
+  geo-mashup-test-support:
