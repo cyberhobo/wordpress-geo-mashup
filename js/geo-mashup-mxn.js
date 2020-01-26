@@ -324,7 +324,7 @@ GeoMashup.addObjectIcon = function( obj ) {
 		} );
 
 		if ( !obj.icon ) {
-			obj.icon = GeoMashup.colorIcon( 'red' );
+			obj.icon = GeoMashup.colorIcon( this.marker_default_color || 'red' );
 		}
 
 		/**
@@ -769,7 +769,7 @@ GeoMashup.createMap = function( container, opts ) {
 				marker_opts = customGeoMashupSinglePostIcon( this.opts );
 			}
 			if ( !marker_opts.image ) {
-				marker_opts = this.colorIcon( 'red' );
+				marker_opts = this.colorIcon( opts.marker_default_color || 'red' );
 				marker_opts.icon = marker_opts.image;
 			}
 			/**
