@@ -465,6 +465,7 @@ class GeoMashupMapAttributes {
 			'load_kml',
 			'map_control',
 			'map_type',
+			'marker_default_color',
 			'marker_min_zoom',
 			'marker_select_info_window',
 			'marker_select_highlight',
