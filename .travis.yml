@@ -1,24 +1,21 @@
 language: php
-dist: precise
+
+services:
+    - mysql
 
 php:
-    - 5.3
-    - 5.6
+    - 7.1
+    - 7.2
+    - 7.3
 
 env:
     - WP_VERSION=latest WP_MULTISITE=0
     - WP_VERSION=latest WP_MULTISITE=1
-    - WP_VERSION=4.1 WP_MULTISITE=0
-    - WP_VERSION=4.1 WP_MULTISITE=1
-
-matrix:
-    exclude:
-        - php: 5.3
-          env: WP_VERSION=latest WP_MULTISITE=0
-        - php: 5.3
-          env: WP_VERSION=latest WP_MULTISITE=1
+    - WP_VERSION=5.0 WP_MULTISITE=0
+    - WP_VERSION=5.0 WP_MULTISITE=1
 
 before_script:
     - bash tools/install-wp-tests.sh wordpress_test root '' localhost $WP_VERSION
+    - composer install
 
 script: composer test
