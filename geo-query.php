@@ -22,6 +22,25 @@ if ( ( isset( $_GET['output'] ) and 'json' == $_GET['output'] ) or empty( $_GET[
  */
 class GeoMashupQuery {
 
+    /**
+     * Filter the post thumbnail size.
+     *
+     * Apply the saved option.
+     *
+     * @since 1.12.0
+     *
+     * @param array|string $size
+     *
+     * @return array|string
+     */
+    public static function post_thumbnail_size( $size ) {
+        global $geo_mashup_options;
+
+        $option = $geo_mashup_options->get('global_map', 'thumbnail_size' );
+
+        return empty( $option ) ? $size : $option;
+    }
+
 	/**
 	 * Strip content in square brackets.
 	 *
