@@ -16,8 +16,6 @@ class TestsPanel {
         <fieldset id="geo-mashup-tests">
             <p>
 				<?php _e( 'Some checks that Geo Mashup is working properly.', 'GeoMashup' ); ?>
-				<?php _e( 'Not working in Firefox yet - free Geo Mashup license to the first to figure out why!',
-					'GeoMashup' ); ?>
             </p>
 			<?php if ( $data->run_tests ) : ?>
                 <div id="qunit-fixture"></div>

@@ -48,7 +48,7 @@ class GlobalMap extends SingleMap {
 		parent::from_options_array( $global );
 		$this->term_options = $global['term_options'];
 		$this->show_post = $global['show_post'] === 'true';
-		$this->show_future = $global['show_future'] === 'true';
+		$this->show_future = $global['show_future'];
 		$this->marker_select_info_window = $global['marker_select_info_window'] === 'true';
 		$this->marker_select_highlight = $global['marker_select_highlight'] === 'true';
 		$this->marker_select_center = $global['marker_select_center'] === 'true';

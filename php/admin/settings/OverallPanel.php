@@ -341,8 +341,7 @@ class OverallPanel {
                     <td>
                         <input id="category_link_separator"
                                name="overall[category_link_separator]"
-                               class="add-category-links-dep"
-                               class="overall-submit"
+                               class="add-category-links-dep overall-submit"
                                type="text"
                                size="3"
                                value="<?php echo esc_attr( $data->options->category_link_separator ); ?>"/>
@@ -365,7 +364,7 @@ class OverallPanel {
                         <select id="category_zoom" name="overall[category_zoom]">
 							<?php foreach ( $data->zoom_options as $value => $label ) : ?>
                                 <option value="<?php echo esc_attr( $value ); ?>"<?php
-								if ( $value === $data->options->category_zoom ) {
+								if ( strcmp( $value, $data->options->category_zoom ) === 0 ) {
 									echo ' selected="selected"';
 								}
 								?>><?php echo esc_attr( $label ); ?></option>

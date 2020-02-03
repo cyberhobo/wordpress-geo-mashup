@@ -19,6 +19,7 @@ class ContextMapPanel {
                     <td>
                         <input id="context_map_width"
                                name="context_map[width]"
+                               class="overall-submit"
                                type="text"
                                size="5"
                                value="<?php echo esc_attr( $data->options->width ); ?>"/>
@@ -30,6 +31,7 @@ class ContextMapPanel {
                     <td>
                         <input id="context_map_height"
                                name="context_map[height]"
+                               class="overall-submit"
                                type="text"
                                size="5"
                                value="<?php echo esc_attr( $data->options->height ); ?>"/>
@@ -105,7 +107,7 @@ class ContextMapPanel {
                         <select id="context_zoom" name="context_map[zoom]">
 							<?php foreach ( $data->zoom_options as $value => $label ) : ?>
                                 <option value="<?php echo esc_attr( $value ); ?>"<?php
-								if ( $value === $data->options->zoom) {
+								if ( strcmp( $value, $data->options->zoom ) === 0 ) {
 									echo ' selected="selected"';
 								}
 								?>><?php echo esc_html( $label ); ?></option>
@@ -157,6 +159,7 @@ class ContextMapPanel {
                     <td>
                         <input id="context_click_to_load_text"
                                name="context_map[click_to_load_text]"
+                               class="overall-submit"
                                type="text"
                                size="50"
                                value="<?php echo esc_attr( $data->options->click_to_load_text ); ?>"/>

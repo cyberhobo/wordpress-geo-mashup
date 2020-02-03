@@ -20,6 +20,7 @@ class GlobalMapPanel {
                     <td>
                         <input id="map_width"
                                name="global_map[width]"
+                               class="overall-submit"
                                type="text"
                                size="5"
                                value="<?php echo esc_attr( $data->options->width ); ?>"/>
@@ -31,6 +32,7 @@ class GlobalMapPanel {
                     <td>
                         <input id="map_height"
                                name="global_map[height]"
+                               class="overall-submit"
                                type="text"
                                size="5"
                                value="<?php echo esc_attr( $data->options->height ); ?>"/>
@@ -73,7 +75,7 @@ class GlobalMapPanel {
                                    name="global_map[add_map_type_control][]"
                                    type="checkbox"
                                    value="<?php echo esc_attr( $type ); ?>" <?php
-							if ( in_array( $type, $data->options->add_map_type_control, false) ) {
+							if ( in_array( $type, $data->options->add_map_type_control, false ) ) {
 								echo ' checked="checked"';
 							}
 							?> /> <?php echo esc_html( $label ); ?>
@@ -106,7 +108,7 @@ class GlobalMapPanel {
                         <select id="zoom" name="global_map[zoom]">
 							<?php foreach ( $data->zoom_options as $value => $label ) : ?>
                                 <option value="<?php echo esc_attr( $value ); ?>"<?php
-								if ( $value === $data->options->zoom ) {
+								if ( strcmp( $value, $data->options->zoom ) === 0 ) {
 									echo ' selected="selected"';
 								}
 								?>><?php echo esc_html( $label ); ?></option>
@@ -130,7 +132,7 @@ class GlobalMapPanel {
                             <select id="cluster_max_zoom" name="global_map[cluster_max_zoom]">
 								<?php foreach ( $data->cluster_zoom_options as $value => $label ) : ?>
                                     <option value="<?php echo esc_attr( $value ); ?>"<?php
-									if ( $value === $data->options->cluster_max_zoom) {
+									if ( $value === $data->options->cluster_max_zoom ) {
 										echo ' selected="selected"';
 									}
 									?>><?php echo esc_html( $label ); ?></option>
@@ -168,20 +170,22 @@ class GlobalMapPanel {
                     <th scope="row"><?php _e( 'Info window thumbnail size', 'GeoMashup' ); ?></th>
                     <td>
                         <select id="thumbnail_size" name="global_map[thumbnail_size]">
-		                    <?php foreach ( $data->thumbnail_sizes as $size ) : ?>
+							<?php foreach ( $data->thumbnail_sizes as $size ) : ?>
                                 <option value="<?php echo esc_attr( $size ); ?>"<?php
-			                    if ( $size === $data->options->thumbnail_size ) {
-				                    echo ' selected="selected"';
-			                    }
-			                    ?>><?php echo esc_html( $size ); ?></option>
-		                    <?php endforeach; ?>
+								if ( $size === $data->options->thumbnail_size ) {
+									echo ' selected="selected"';
+								}
+								?>><?php echo esc_html( $size ); ?></option>
+							<?php endforeach; ?>
                         </select>
                     </td>
                 </tr>
                 <tr>
                     <th scope="row"><?php _e( 'Automatic Selection', 'GeoMashup' ); ?></th>
                     <td>
-                        <input id="auto_info_open" name="global_map[auto_info_open]" type="checkbox"
+                        <input id="auto_info_open"
+                               name="global_map[auto_info_open]"
+                               type="checkbox"
                                value="true"<?php
 						if ( $data->options->auto_info_open ) {
 							echo ' checked="checked"';
@@ -197,6 +201,7 @@ class GlobalMapPanel {
                     <td>
                         <input id="max_posts"
                                name="global_map[max_posts]"
+                               class="overall-submit"
                                type="text"
                                size="4"
                                value="<?php echo esc_attr( $data->options->max_posts ); ?>"/>
@@ -242,7 +247,7 @@ class GlobalMapPanel {
                         <td colspan="2" align="center">
 							<?php foreach ( $data->overall->include_taxonomies as $include_taxonomy ) : ?>
 								<?php $taxonomy_object = get_taxonomy( $include_taxonomy ); ?>
-								<?php $taxonomy_options = $data->options->term_options[$include_taxonomy] ?>
+								<?php $taxonomy_options = $data->options->term_options[ $include_taxonomy ] ?>
                                 <table>
                                     <tr>
                                         <th><?php echo $taxonomy_object->label; ?></th>
@@ -270,7 +275,7 @@ class GlobalMapPanel {
                                                 </td>
                                                 <td>
                                                     <input id="<?php echo $include_taxonomy; ?>_line_zoom_<?php
-													echo esc_attr( $term->slug ); ?>"
+													echo esc_attr( $term->slug ); ?>" class="overall-submit"
                                                            name="global_map[term_options][<?php
 													       echo $include_taxonomy; ?>][line_zoom][<?php
 													       echo esc_attr( $term->slug ); ?>]" value="<?php

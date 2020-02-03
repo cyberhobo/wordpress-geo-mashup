@@ -9,9 +9,9 @@ namespace GeoMashup\Options;
 use GeoMashupOptions;
 
 class SingleMap {
-	/** @var int */
+	/** @var string */
 	public $width;
-	/** @var int */
+	/** @var string */
 	public $height;
 	/** @var string */
 	public $map_control;
@@ -41,11 +41,11 @@ class SingleMap {
 	}
 
 	protected function from_options_array($single) {
-		$this->width = (int) $single['width'];
-		$this->height = (int) $single['height'];
+		$this->width = $single['width'];
+		$this->height = $single['height'];
 		$this->map_control = $single['map_control'];
 		$this->map_type = $single['map_type'];
-		$this->zoom = (int) $single['zoom'];
+		$this->zoom = $single['zoom'];
 		$this->background_color = $single['background_color'];
 		$this->add_overview_control = $single['add_overview_control'] === 'true';
 		$this->add_map_type_control = $single['add_map_type_control'];
