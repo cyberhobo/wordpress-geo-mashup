@@ -324,7 +324,7 @@ GeoMashup.addObjectIcon = function( obj ) {
 		} );
 
 		if ( !obj.icon ) {
-			obj.icon = GeoMashup.colorIcon( this.marker_default_color || 'red' );
+			obj.icon = GeoMashup.colorIcon( this.opts.marker_default_color || 'red' );
 		}
 
 		/**
