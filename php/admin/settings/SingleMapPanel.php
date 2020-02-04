@@ -1,0 +1,145 @@
+<?php
+/**
+ * Options page single map panel
+ *
+ * @package GeoMashup
+ */
+
+namespace GeoMashup\Admin\Settings;
+
+class SingleMapPanel {
+	public function render( SingleMapPanelData $data ) {
+		?>
+        <fieldset id="geo-mashup-single-map-settings">
+            <p><?php _e( 'Default settings for maps of a single located post.', 'GeoMashup' ); ?></p>
+            <table width="100%" cellspacing="2" cellpadding="5" class="editform">
+                <tr>
+                    <th scope="row"><?php _e( 'Map Width', 'GeoMashup' ); ?></th>
+                    <td>
+                        <input id="in_post_map_width"
+                               name="single_map[width]"
+                               class="overall-submit"
+                               type="text"
+                               size="5"
+                               value="<?php echo esc_attr( $data->options->width ); ?>"/>
+						<?php _e( 'Pixels, or append %.', 'GeoMashup' ); ?>
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row"><?php _e( 'Map Height', 'GeoMashup' ); ?></th>
+                    <td>
+                        <input id="in_post_map_height"
+                               name="single_map[height]"
+                               class="overall-submit"
+                               type="text"
+                               size="5"
+                               value="<?php echo esc_attr( $data->options->height ); ?>"/>
+						<?php _e( 'px', 'GeoMashup' ); ?>
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row"><?php _e( 'Map Control', 'GeoMashup' ); ?></th>
+                    <td>
+                        <select id="in_post_map_control" name="single_map[map_control]">
+							<?php foreach ( $data->map_controls as $type => $label ) : ?>
+                                <option value="<?php echo esc_attr( $type ); ?>"<?php
+								if ( $type === $data->options->map_control ) {
+									echo ' selected="selected"';
+								}
+								?>><?php echo esc_html( $label ); ?></option>
+							<?php endforeach; ?>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row"><?php _e( 'Default Map Type', 'GeoMashup' ); ?></th>
+                    <td>
+                        <select id="in_post_map_type" name="single_map[map_type]">
+							<?php foreach ( $data->map_types as $type => $label ) : ?>
+                                <option value="<?php echo esc_attr( $type ); ?>"<?php
+								if ( $type === $data->options->map_type ) {
+									echo ' selected="selected"';
+								}
+								?>><?php echo esc_html( $label ); ?></option>
+							<?php endforeach; ?>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row"><?php _e( 'Add Map Type Control', 'GeoMashup' ); ?></th>
+                    <td>
+						<?php foreach ( $data->map_types as $type => $label ) : ?>
+                            <input id="in_post_add_map_type_<?php echo esc_attr( $type ); ?>"
+                                   name="single_map[add_map_type_control][]"
+                                   type="checkbox"
+                                   value="<?php echo esc_attr( $type ); ?>" <?php
+							if ( in_array( $type, $data->options->add_map_type_control, false ) ) {
+								echo ' checked="checked"';
+							}
+							?> /> <?php echo esc_html( $label ); ?>
+						<?php endforeach; ?>
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row"><?php _e( 'Add Overview Control', 'GeoMashup' ); ?></th>
+                    <td><input id="in_post_add_overview_control" name="single_map[add_overview_control]"
+                               type="checkbox" value="true"<?php
+						if ( $data->options->add_overview_control ) {
+							echo ' checked="checked"';
+						}
+						?> /></td>
+                </tr>
+                <tr>
+                    <th scope="row"><?php _e( 'Enable Scroll Wheel Zoom', 'GeoMashup' ); ?></th>
+                    <td><input id="in_post_enable_scroll_wheel_zoom" name="single_map[enable_scroll_wheel_zoom]"
+                               type="checkbox" value="true"<?php
+						if ( $data->options->enable_scroll_wheel_zoom ) {
+							echo ' checked="checked"';
+						}
+						?> /></td>
+                </tr>
+                <tr>
+                    <th scope="row"><?php _e( 'Default Zoom Level', 'GeoMashup' ); ?></th>
+                    <td>
+                        <select id="in_post_zoom" name="single_map[zoom]">
+							<?php foreach ( $data->zoom_options as $value => $label ) : ?>
+                                <option value="<?php echo esc_attr( $value ); ?>"<?php
+								if ( strcmp( $value, $data->options->zoom ) === 0 ) {
+									echo ' selected="selected"';
+								}
+								?>><?php echo esc_html( $label ); ?></option>
+							<?php endforeach; ?>
+                        </select>
+                        <span class="description"><?php
+							_e( '0 is zoomed all the way out.', 'GeoMashup' );
+							?></span>
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row"><?php _e( 'Click To Load', 'GeoMashup' ); ?></th>
+                    <td>
+                        <input id="in_post_click_to_load" name="single_map[click_to_load]" type="checkbox"
+                               value="true"<?php
+						if ( $data->options->click_to_load ) {
+							echo ' checked="checked"';
+						}
+						?> />
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row"><?php _e( 'Click To Load Text', 'GeoMashup' ); ?></th>
+                    <td>
+                        <input id="in_post_click_to_load_text"
+                               name="single_map[click_to_load_text]"
+                               type="text"
+                               size="50"
+                               value="<?php echo esc_attr( $data->options->click_to_load_text ); ?>"/>
+                    </td>
+                </tr>
+            </table>
+            <div class="submit"><input type="submit" name="submit"
+                                       value="<?php _e( 'Update Options', 'GeoMashup' ); ?>"/></div>
+        </fieldset>
+		<?php
+	}
+}

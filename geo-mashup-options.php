@@ -7,7 +7,7 @@
 
 /**
  * A singleton to manage Geo Mashup saved options.
- * 
+ *
  * @since 1.2
  * @access public
  * @package GeoMashup
@@ -15,7 +15,7 @@
 class GeoMashupOptions {
 	/**
 	 * Valid options with default values.
-	 * 
+	 *
 	 * @since 1.2
 	 * @var array
 	 */
@@ -34,7 +34,7 @@ class GeoMashupOptions {
 			'theme_stylesheet_with_maps' => 'false',
 			'located_post_types' => array( 'post', 'page' ),
 			'include_taxonomies' => array( 'category' ),
-			'located_object_name' => array( 
+			'located_object_name' => array(
 				'post' => 'deprecated',
 				'user' => 'false',
 				'comment' => 'false' ),
@@ -65,7 +65,8 @@ class GeoMashupOptions {
 			'click_to_load' => 'false',
 			'click_to_load_text' => '',
 	 		'cluster_max_zoom' => '',
-	 		'cluster_lib' => 'clustermarker'	),
+	 		'cluster_lib' => 'clustermarker',
+            'thumbnail_size' => 'post-thumbnail' ),
 		'single_map' => array (
 			'width' => '400',
 			'height' => '400',
@@ -77,7 +78,7 @@ class GeoMashupOptions {
 			'add_map_type_control' => array(),
 			'enable_scroll_wheel_zoom' => 'true',
 			'click_to_load' => 'false',
-	 		'click_to_load_text' => '' ), 
+	 		'click_to_load_text' => '' ),
 		'context_map' => array (
 			'width' => '200',
 			'height' => '200',
@@ -97,7 +98,7 @@ class GeoMashupOptions {
 
 	/**
 	 * Map of old option names to new ones.
-	 * 
+	 *
 	 * @since 1.2
 	 * @var array
 	 */
@@ -137,7 +138,7 @@ class GeoMashupOptions {
 
 	/**
 	 * Options keys whose values aren't predictable.
-	 * 
+	 *
 	 * @since 1.2
 	 * @var array
 	 */
@@ -145,7 +146,7 @@ class GeoMashupOptions {
 
 	/**
 	 * Valid map types.
-	 * 
+	 *
 	 * @since 1.2
 	 * @var array
 	 */
@@ -155,7 +156,7 @@ class GeoMashupOptions {
 	 * Saved option values.
 	 *
 	 * Use the GeoMashupOptions::get() method for access.
-	 * 
+	 *
 	 * @since 1.2
 	 * @var array
 	 */
@@ -163,7 +164,7 @@ class GeoMashupOptions {
 
 	/**
 	 * Old option values that can't be converted.
-	 * 
+	 *
 	 * @since 1.2
 	 * @var array
 	 */
@@ -171,7 +172,7 @@ class GeoMashupOptions {
 
 	/**
 	 * Validation messages.
-	 * 
+	 *
 	 * @since 1.2
 	 * @var array
 	 */
@@ -181,7 +182,7 @@ class GeoMashupOptions {
 	 * PHP5 constructor
 	 *
 	 * Should be used only in this file.
-	 * 
+	 *
 	 * @since 1.2
 	 */
 	function __construct() {
@@ -203,7 +204,7 @@ class GeoMashupOptions {
 
 	/**
 	 * Change old option names.
-	 * 
+	 *
 	 * @since 1.2
 	 *
 	 * @param array $settings Existing settings.
@@ -225,12 +226,12 @@ class GeoMashupOptions {
 		}
 
 		// In 1.5 we set options for any taxonomy, not just category
-		if ( isset( $settings['global_map']['category_color'] ) ) { 
-			$settings['global_map']['term_options']['category']['color'] = $settings['global_map']['category_color']; 
+		if ( isset( $settings['global_map']['category_color'] ) ) {
+			$settings['global_map']['term_options']['category']['color'] = $settings['global_map']['category_color'];
 			unset( $settings['global_map']['category_color'] );
 		}
 		if ( isset( $settings['global_map']['category_line_zoom'] ) ) {
-			$settings['global_map']['term_options']['category']['line_zoom'] = $settings['global_map']['category_line_zoom']; 
+			$settings['global_map']['term_options']['category']['line_zoom'] = $settings['global_map']['category_line_zoom'];
 			unset( $settings['global_map']['category_line_zoom'] );
 		}
 
@@ -244,7 +245,7 @@ class GeoMashupOptions {
 
 	/**
 	 * Write current values to the database.
-	 * 
+	 *
 	 * @since 1.2
 	 *
 	 * @return bool Success or failure.
@@ -253,7 +254,7 @@ class GeoMashupOptions {
 		$saved = false;
 		if ($this->options == $this->valid_options ( $this->options ) ) {
 			$saved = update_option('geo_mashup_options', $this->options);
-			
+
 			// Share our Google API key
 			$google_api_key = $this->options['overall']['google_key'];
 			if ( !empty ( $google_api_key ) && !get_option ( 'google_api_key' ) ) {
@@ -265,7 +266,7 @@ class GeoMashupOptions {
 
 	/**
 	 * Get a saved option value.
-	 * 
+	 *
 	 * <code>
 	 * $single_map_options_array = $geo_mashup_options->get( 'single_map' );
 	 * $google_key = $geo_mashup_options->get( 'overall', 'google_key' );
@@ -296,7 +297,7 @@ class GeoMashupOptions {
 				return $subset;
 			} else {
 				return isset( $this->options[$key1][$key2] ) ? $this->options[$key1][$key2] : null;
-			} 
+			}
 		} else {
 			// Getting third dimension options
 			if ( is_array ( $key3 ) ) {
@@ -310,7 +311,7 @@ class GeoMashupOptions {
 
 	/**
 	 * Import valid options from an array.
-	 * 
+	 *
 	 * @since 1.2
 	 *
 	 * @param array $option_array Associative array of option names and values.
@@ -351,7 +352,7 @@ class GeoMashupOptions {
 				if ( ! $add_missing and empty ( $option_array[$key] ) and in_array ($default_value, array ( 'true', 'false' ) ) ) {
 					// Convert empty booleans to false to handle unchecked checkboxes
 					$valid_options[$key] = 'false';
-				} else { 
+				} else {
 					$valid_options[$key] = $default_value;
 				}
 			}
@@ -361,7 +362,7 @@ class GeoMashupOptions {
 
 	/**
 	 * Check an option key and value for validity.
-	 * 
+	 *
 	 * @since 1.2
 	 *
 	 * @param string $key Option key.
@@ -428,6 +429,7 @@ class GeoMashupOptions {
 			case 'category_link_text':
 			case 'click_to_load_text':
 			case 'import_custom_field':
+            case 'thumbnail_size':
 				if ( empty ( $value ) ) return true;
 			case 'google_key':
 			case 'googlev3_key':
@@ -461,7 +463,7 @@ class GeoMashupOptions {
 
 			// show_future: boolean or 'only'
 			case 'show_future':
-				if ( 'only' == $value ) 
+				if ( 'only' == $value )
 					return true;
 
 			// booleans
@@ -484,7 +486,7 @@ class GeoMashupOptions {
 				if ( empty ( $value ) ) {
 					// fail quietly - it will be converted to false
 					return false;
-				} else if ( $value != 'true' && $value != 'false' ) { 
+				} else if ( $value != 'true' && $value != 'false' ) {
 					array_push ( $this->validation_errors, '"'. $value . '" ' . __('is invalid for', 'GeoMashup') . ' ' . $key .
 						__(', which must be "true" or "false"', 'GeoMashup') );
 					return false;
