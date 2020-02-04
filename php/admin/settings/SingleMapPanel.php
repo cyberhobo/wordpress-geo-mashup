@@ -99,6 +99,22 @@ class SingleMapPanel {
 						?> /></td>
                 </tr>
                 <tr>
+                    <th scope="row"><?php _e( 'Marker Default Color', 'GeoMashup' ); ?></th>
+                    <td>
+                        <select id="marker_default_color" name="single_map[marker_default_color]">
+				            <?php foreach ( $data->color_names as $name => $rgb ) : ?>
+                                <option value="<?php echo esc_attr( $name ); ?>"<?php
+					            if ( $data->options->marker_default_color === $name ) {
+						            echo ' selected="selected"';
+					            }
+					            ?> style="background-color:<?php echo esc_attr( $rgb ); ?>;">
+						            <?php echo esc_html( $name ); ?>
+                                </option>
+				            <?php endforeach; // color name ?>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
                     <th scope="row"><?php _e( 'Default Zoom Level', 'GeoMashup' ); ?></th>
                     <td>
                         <select id="in_post_zoom" name="single_map[zoom]">
@@ -137,8 +153,10 @@ class SingleMapPanel {
                     </td>
                 </tr>
             </table>
-            <div class="submit"><input type="submit" name="submit"
-                                       value="<?php _e( 'Update Options', 'GeoMashup' ); ?>"/></div>
+            <div class="submit">
+                <input class="button button-primary" type="submit" name="submit"
+                       value="<?php _e( 'Update Options', 'GeoMashup' ); ?>"/>
+            </div>
         </fieldset>
 		<?php
 	}

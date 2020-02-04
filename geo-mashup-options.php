@@ -42,7 +42,7 @@ class GeoMashupOptions {
 			'geonames_username' => 'geomashup',
 	 		'map_api' => 'googlev3',
 			'import_custom_field' => '',
-			'enable_geo_search' => 'false' ),
+			'enable_geo_search' => 'false'),
 		'global_map' => array (
 			'width' => '400',
 			'height' => '400',
@@ -66,7 +66,8 @@ class GeoMashupOptions {
 			'click_to_load_text' => '',
 	 		'cluster_max_zoom' => '',
 	 		'cluster_lib' => 'clustermarker',
-            'thumbnail_size' => 'post-thumbnail' ),
+            'thumbnail_size' => 'post-thumbnail',
+			'marker_default_color' => 'red'),
 		'single_map' => array (
 			'width' => '400',
 			'height' => '400',
@@ -78,7 +79,8 @@ class GeoMashupOptions {
 			'add_map_type_control' => array(),
 			'enable_scroll_wheel_zoom' => 'true',
 			'click_to_load' => 'false',
-	 		'click_to_load_text' => '' ),
+	 		'click_to_load_text' => '',
+			'marker_default_color' => 'red'),
 		'context_map' => array (
 			'width' => '200',
 			'height' => '200',
@@ -94,7 +96,8 @@ class GeoMashupOptions {
 			'marker_select_center' => 'false',
 			'marker_select_attachments' => 'false',
 			'click_to_load' => 'false',
-	 		'click_to_load_text' => '' ) );
+	 		'click_to_load_text' => '',
+			'marker_default_color' => 'red' ) );
 
 	/**
 	 * Map of old option names to new ones.
@@ -429,6 +432,7 @@ class GeoMashupOptions {
 			case 'category_link_text':
 			case 'click_to_load_text':
 			case 'import_custom_field':
+			case 'marker_default_color':
             case 'thumbnail_size':
 				if ( empty ( $value ) ) return true;
 			case 'google_key':

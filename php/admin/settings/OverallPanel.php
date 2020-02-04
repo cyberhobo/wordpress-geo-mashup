@@ -188,7 +188,7 @@ class OverallPanel {
 						?> /> <?php _e( 'Comments', 'GeoMashup' ); ?>
                     </td>
                 </tr>
-                <tr>
+               <tr>
                     <th scope="row"><?php _e( 'Enable Geo Search', 'GeoMashup' ); ?></th>
                     <td>
                         <input id="enable_geo_search" name="overall[enable_geo_search]" type="checkbox"
