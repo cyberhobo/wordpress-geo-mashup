@@ -37,58 +37,64 @@ class SingleMapPanel {
 						<?php _e( 'px', 'GeoMashup' ); ?>
                     </td>
                 </tr>
-                <tr>
-                    <th scope="row"><?php _e( 'Map Control', 'GeoMashup' ); ?></th>
-                    <td>
-                        <select id="in_post_map_control" name="single_map[map_control]">
-							<?php foreach ( $data->map_controls as $type => $label ) : ?>
-                                <option value="<?php echo esc_attr( $type ); ?>"<?php
-								if ( $type === $data->options->map_control ) {
-									echo ' selected="selected"';
-								}
-								?>><?php echo esc_html( $label ); ?></option>
-							<?php endforeach; ?>
-                        </select>
-                    </td>
-                </tr>
-                <tr>
-                    <th scope="row"><?php _e( 'Default Map Type', 'GeoMashup' ); ?></th>
-                    <td>
-                        <select id="in_post_map_type" name="single_map[map_type]">
+				<?php if ( 'openlayers' === $data->overall->map_api ) : ?>
+                    <tr>
+                        <th scope="row"><?php _e( 'Map Control', 'GeoMashup' ); ?></th>
+                        <td>
+                            <select id="in_post_map_control" name="single_map[map_control]">
+								<?php foreach ( $data->map_controls as $type => $label ) : ?>
+                                    <option value="<?php echo esc_attr( $type ); ?>"<?php
+									if ( $type === $data->options->map_control ) {
+										echo ' selected="selected"';
+									}
+									?>><?php echo esc_html( $label ); ?></option>
+								<?php endforeach; ?>
+                            </select>
+                        </td>
+                    </tr>
+				<?php endif; ?>
+				<?php if ( 'googlev3' === $data->overall->map_api ) : ?>
+                    <tr>
+                        <th scope="row"><?php _e( 'Default Map Type', 'GeoMashup' ); ?></th>
+                        <td>
+                            <select id="in_post_map_type" name="single_map[map_type]">
+								<?php foreach ( $data->map_types as $type => $label ) : ?>
+                                    <option value="<?php echo esc_attr( $type ); ?>"<?php
+									if ( $type === $data->options->map_type ) {
+										echo ' selected="selected"';
+									}
+									?>><?php echo esc_html( $label ); ?></option>
+								<?php endforeach; ?>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row"><?php _e( 'Add Map Type Control', 'GeoMashup' ); ?></th>
+                        <td>
 							<?php foreach ( $data->map_types as $type => $label ) : ?>
-                                <option value="<?php echo esc_attr( $type ); ?>"<?php
-								if ( $type === $data->options->map_type ) {
-									echo ' selected="selected"';
+                                <input id="in_post_add_map_type_<?php echo esc_attr( $type ); ?>"
+                                       name="single_map[add_map_type_control][]"
+                                       type="checkbox"
+                                       value="<?php echo esc_attr( $type ); ?>" <?php
+								if ( in_array( $type, $data->options->add_map_type_control, false ) ) {
+									echo ' checked="checked"';
 								}
-								?>><?php echo esc_html( $label ); ?></option>
+								?> /> <?php echo esc_html( $label ); ?>
 							<?php endforeach; ?>
-                        </select>
-                    </td>
-                </tr>
-                <tr>
-                    <th scope="row"><?php _e( 'Add Map Type Control', 'GeoMashup' ); ?></th>
-                    <td>
-						<?php foreach ( $data->map_types as $type => $label ) : ?>
-                            <input id="in_post_add_map_type_<?php echo esc_attr( $type ); ?>"
-                                   name="single_map[add_map_type_control][]"
-                                   type="checkbox"
-                                   value="<?php echo esc_attr( $type ); ?>" <?php
-							if ( in_array( $type, $data->options->add_map_type_control, false ) ) {
+                        </td>
+                    </tr>
+				<?php endif; ?>
+				<?php if ( 'openlayers' === $data->overall->map_api ) : ?>
+                    <tr>
+                        <th scope="row"><?php _e( 'Add Overview Control', 'GeoMashup' ); ?></th>
+                        <td><input id="in_post_add_overview_control" name="single_map[add_overview_control]"
+                                   type="checkbox" value="true"<?php
+							if ( $data->options->add_overview_control ) {
 								echo ' checked="checked"';
 							}
-							?> /> <?php echo esc_html( $label ); ?>
-						<?php endforeach; ?>
-                    </td>
-                </tr>
-                <tr>
-                    <th scope="row"><?php _e( 'Add Overview Control', 'GeoMashup' ); ?></th>
-                    <td><input id="in_post_add_overview_control" name="single_map[add_overview_control]"
-                               type="checkbox" value="true"<?php
-						if ( $data->options->add_overview_control ) {
-							echo ' checked="checked"';
-						}
-						?> /></td>
-                </tr>
+							?> /></td>
+                    </tr>
+				<?php endif; ?>
                 <tr>
                     <th scope="row"><?php _e( 'Enable Scroll Wheel Zoom', 'GeoMashup' ); ?></th>
                     <td><input id="in_post_enable_scroll_wheel_zoom" name="single_map[enable_scroll_wheel_zoom]"
@@ -102,15 +108,15 @@ class SingleMapPanel {
                     <th scope="row"><?php _e( 'Marker Default Color', 'GeoMashup' ); ?></th>
                     <td>
                         <select id="marker_default_color" name="single_map[marker_default_color]">
-				            <?php foreach ( $data->color_names as $name => $rgb ) : ?>
+							<?php foreach ( $data->color_names as $name => $rgb ) : ?>
                                 <option value="<?php echo esc_attr( $name ); ?>"<?php
-					            if ( $data->options->marker_default_color === $name ) {
-						            echo ' selected="selected"';
-					            }
-					            ?> style="background-color:<?php echo esc_attr( $rgb ); ?>;">
-						            <?php echo esc_html( $name ); ?>
+								if ( $data->options->marker_default_color === $name ) {
+									echo ' selected="selected"';
+								}
+								?> style="background-color:<?php echo esc_attr( $rgb ); ?>;">
+									<?php echo esc_html( $name ); ?>
                                 </option>
-				            <?php endforeach; // color name ?>
+							<?php endforeach; // color name ?>
                         </select>
                     </td>
                 </tr>
