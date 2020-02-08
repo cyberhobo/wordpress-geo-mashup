@@ -21,7 +21,7 @@ before_script:
 script: composer test
 
 deploy:
-  provider: script
+  - provider: script
     script: yarn deploy
     on:
       branch: master
