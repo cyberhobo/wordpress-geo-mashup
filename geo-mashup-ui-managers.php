@@ -137,17 +137,24 @@ class GeoMashupUIManager {
 		} elseif ( 'leaflet' == $map_api ) {
 
 			wp_register_script(
-					'leaflet',
-					'//cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.3/leaflet.js',
-					null,
-					'0.7',
-					true );
+				'leaflet',
+				'//cdnjs.cloudflare.com/ajax/libs/leaflet/1.6.0/leaflet.js',
+				null,
+				'1.6.0',
+				true );
+
+			wp_register_script(
+				'leaflet-kml',
+				'//cdnjs.cloudflare.com/ajax/libs/leaflet-plugins/3.3.1/layer/vector/KML.min.js',
+				['leaflet'],
+				'3.3.1',
+				true );
 
 			wp_enqueue_style(
-					'leaflet',
-					'//cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.3/leaflet.css',
-					null,
-					'0.7' );
+				'leaflet',
+				'//cdnjs.cloudflare.com/ajax/libs/leaflet/1.6.0/leaflet.css',
+				null,
+				'0.6.4' );
 
 			GeoMashup::register_script(
 				'mxn-leaflet',
@@ -157,16 +164,9 @@ class GeoMashupUIManager {
 				true );
 
 			GeoMashup::register_script(
-					'mxn-leaflet-kml',
-					'js/leaflet/KML.js',
-					array( 'mxn-leaflet' ),
-					GEO_MASHUP_VERSION,
-					true );
-
-			GeoMashup::register_script(
 				'mxn-leaflet-gm',
 				'js/mxn/mxn.leaflet.geo-mashup.js',
-				array( 'mxn-leaflet-kml' ),
+				array( 'mxn-leaflet' ),
 				GEO_MASHUP_VERSION,
 				true );
 

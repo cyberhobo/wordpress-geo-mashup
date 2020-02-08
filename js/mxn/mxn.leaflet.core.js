@@ -375,52 +375,32 @@ Marker: {
 	
 	toProprietary: function() {
 		var me = this;
-		var thisIcon = null;
-		if (L.Icon.hasOwnProperty("Default")) {
-			thisIcon = L.Icon.Default;
-		}
-		else {
-			thisIcon = L.Icon;
-		}
+		var options = {};
 		if (me.iconUrl) {
-			thisIcon = thisIcon.extend({
-				options: {
-					iconUrl: me.iconUrl
-				}
-			});
+		  options.iconUrl = me.iconUrl;
+		  options.iconRetinaUrl = me.iconUrl;
 		}
 		if (me.iconSize) {
-			thisIcon = thisIcon.extend({
-				options: {
-					iconSize: new L.Point(me.iconSize[0], me.iconSize[1])
-				}
-			});
+		  options.iconSize = new L.Point(me.iconSize[0], me.iconSize[1]);
+		  options.popupAnchor = new L.Point(0, -me.iconSize[1]);
 		}
 		if (me.iconAnchor) {
-			thisIcon = thisIcon.extend({
-				options: {
-					iconAnchor: new L.Point(me.iconAnchor[0], me.iconAnchor[1])
-				}
-			});
+		  options.iconAnchor = new L.Point(me.iconAnchor[0], me.iconAnchor[1]);
 		}
 		if (me.iconShadowUrl) {
-			thisIcon = thisIcon.extend({
-				options: {
-					shadowUrl: me.iconShadowUrl
-				}
-			});
+		  options.shadowUrl = me.iconShadowUrl;
+		  options.shadowRetinaUrl = me.iconShadowUrl;
 		}
 		if (me.iconShadowSize) {
-			thisIcon = thisIcon.extend({
-				options: {
-					shadowSize: new L.Point(me.iconShadowSize[0], me.iconShadowSize[1])
-				}
-			});
+		  options.shadowSize = new L.Point(me.iconShadowSize[0], me.iconShadowSize[1]);
 		}
-		var iconObj = new thisIcon();
+		var markerOpts = {};
+		if (Object.keys(options).length > 0) {
+		  markerOpts.icon = L.icon(options);
+		}
 		var marker = new L.Marker(
 			this.location.toProprietary('leaflet'),
-			{ icon: iconObj }
+			markerOpts
 		);
 		(function(me, marker) {
 			marker.on("click", function (e) {
