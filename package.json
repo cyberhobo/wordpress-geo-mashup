@@ -23,7 +23,7 @@
     "test": "composer test",
     "prebuild": "composer test && composer install --no-dev && yarn run clean",
     "build": "yarn build:php && yarn build:css && yarn build:js && yarn build:lang && yarn build:docs && yarn build:media",
-    "build:php": "cpx \"*.php\" dist && yarn build:php-templates && yarn build:php-vendor",
+    "build:php": "cpx \"*.php\" dist && cpx \"php/**\" dist/php && yarn build:php-templates && yarn build:php-vendor",
     "build:php-templates": "cpx \"default-templates/**\" dist/default-templates",
     "build:php-vendor": "cpx \"vendor/**\" dist/vendor",
     "build:lang": "cpx \"lang/*\" dist/lang",
