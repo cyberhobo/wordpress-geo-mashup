@@ -37,7 +37,7 @@
     "build:media": "cpx \"images/**\" dist/images",
     "postbuild": "composer install",
     "predeploy": "yarn run clean",
-    "deploy": "yarn deploy:checkout && yarn build && yarn deploy:update",
+    "deploy": "yarn deploy:checkout && yarn deploy:update",
     "deploy:checkout": "svn checkout http://plugins.svn.wordpress.org/geo-mashup/trunk dist",
     "deploy:update": "yarn deploy:update:add && yarn deploy:update:rm && yarn deploy:update:commit && yarn deploy:update:tag",
     "deploy:update:add": "svn stat dist | grep '^?' | awk '{print $2}' | xargs -r svn add",

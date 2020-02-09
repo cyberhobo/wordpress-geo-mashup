@@ -20,7 +20,7 @@ script: composer test
 
 deploy:
   - provider: script
-    script: yarn deploy
+    script: yarn build && yarn deploy
     on:
       branch: master
       tags: true
