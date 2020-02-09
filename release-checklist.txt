@@ -2,14 +2,15 @@
 These are notes for the software author, to help ensure you don't get a broken release :)
 
 = Before =
-	* Feature branches are merged to release branch
-	* Current revision is tested and working locally
+	* Feature branches are merged to develop branch
+	* TravisCI build is passing
 	* New documentation is written
 
 = Release Steps =
 
 If any step fails, fix before continuing, repeating any necessary prior steps.
 
+	1. Start a `release/<version>` branch off `develop`.
 	1. Check version in package.json, `yarn version <new version>`, commit if necessary.
 	1. Edit WP readme.txt (remember stable tag, tested version, and changelog!)
 	1. Update the language template if the release contains new language strings `yarn makepot`, `git commit`;

@@ -13,7 +13,7 @@
     "composer": "composer",
     "install:dev": "composer install && yarn install",
     "install:docker:test-support": "./tools/install-wp-tests.sh wp_test root root mysql",
-    "version": "yarn run update-version && git add geo-mashup.php",
+    "version": "yarn run update-version && git diff",
     "update-version": "yarn update-version:header && yarn update-version:constant",
     "update-version:header": "sed -i -E \"s/Version: .+\\..+\\..+/Version: $npm_package_version/\" geo-mashup.php",
     "update-version:constant": "sed -i -E \"s/'GEO_MASHUP_VERSION', '.+\\..+\\..+'/'GEO_MASHUP_VERSION', '$npm_package_version'/\" geo-mashup.php",
