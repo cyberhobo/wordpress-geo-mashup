@@ -4,15 +4,13 @@ services:
   - mysql
 
 php:
-  - 7.1
-  - 7.2
+  - 5.6
   - 7.3
 
 env:
-  - WP_VERSION=latest WP_MULTISITE=0
+  - WP_VERSION=latest WP_MULTISITE=0 DEPLOY=1
   - WP_VERSION=latest WP_MULTISITE=1
   - WP_VERSION=5.0 WP_MULTISITE=0
-  - WP_VERSION=5.0 WP_MULTISITE=1
 
 before_script:
   - bash tools/install-wp-tests.sh wordpress_test root '' localhost $WP_VERSION
@@ -26,3 +24,5 @@ deploy:
     on:
       branch: master
       tags: true
+      php: 7.3
+      condition: $DEPLOY = 1
