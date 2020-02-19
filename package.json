@@ -22,7 +22,7 @@
     "makepot": "wpi18n makepot --exclude \"vendor/.*\"",
     "clean": "rm -rf dist/*",
     "test": "composer test",
-    "prebuild": "composer install --no-dev && yarn run clean",
+    "prebuild": "composer install --no-dev && yarn install && yarn run clean",
     "build": "yarn build:php && yarn build:css && yarn build:js && yarn build:lang && yarn build:docs && yarn build:media",
     "build:php": "cpx \"*.php\" dist && cpx \"php/**\" dist/php && yarn build:php-templates && yarn build:php-vendor",
     "build:php-templates": "cpx \"default-templates/**\" dist/default-templates",
