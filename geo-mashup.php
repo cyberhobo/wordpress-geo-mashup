@@ -225,8 +225,8 @@ class GeoMashup {
 			}
 
 			// To add the GeoRSS namespace to feeds (not available for RSS 0.92)
-			//add_action('rss2_ns', array(__CLASS__, 'rss_ns_buffer'), 1);
-			//add_action('atom_ns', array(__CLASS__, 'rss_ns_buffer'), 1);
+			add_action('rss2_ns', array(__CLASS__, 'rss_ns_buffer'), 1);
+			add_action('atom_ns', array(__CLASS__, 'rss_ns_buffer'), 1);
 			add_action('rss2_ns', array(__CLASS__, 'rss_ns'), 99);
 			add_action('atom_ns', array(__CLASS__, 'rss_ns'), 99);
 
