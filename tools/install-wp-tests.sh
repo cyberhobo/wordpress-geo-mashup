@@ -43,11 +43,8 @@ set -ex
 
 install_wp() {
 
-	if [ -d $WP_CORE_DIR ]; then
-		return;
-	fi
-
 	mkdir -p $WP_CORE_DIR
+	rm -rf $WP_CORE_DIR/*
 
 	if [[ $WP_VERSION == 'nightly' || $WP_VERSION == 'trunk' ]]; then
 		mkdir -p /tmp/wordpress-nightly

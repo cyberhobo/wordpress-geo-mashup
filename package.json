@@ -13,6 +13,7 @@
     "composer": "composer",
     "install:dev": "composer install && yarn install",
     "install:docker:test-support": "./tools/install-wp-tests.sh wp_test root root mysql",
+    "upgrade:docker:test-support": "./tools/install-wp-tests.sh wp_test root root mysql nightly true",
     "version": "yarn run update-version && git diff",
     "update-version": "yarn update-version:header && yarn update-version:constant && yarn update-version:readme",
     "update-version:header": "perl -pi -e \"s/Version: .+\\..+\\..+/Version: $npm_package_version/\" geo-mashup.php",
