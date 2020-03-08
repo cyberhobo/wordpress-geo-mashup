@@ -38,13 +38,14 @@
     "build:js:full": "cpx \"js/**/*.js\" dist/js",
     "build:media": "cpx \"images/**\" dist/images",
     "postbuild": "composer install",
-    "deploy": "yarn deploy:checkout && yarn deploy:update",
-    "deploy:checkout": "svn checkout http://plugins.svn.wordpress.org/geo-mashup/trunk dist",
+    "deploy": "yarn deploy:checkout && yarn deploy:copy && yarn deploy:update",
+    "deploy:checkout": "svn checkout http://plugins.svn.wordpress.org/geo-mashup/trunk deploy",
+    "deploy:copy": "rm -rf \"deploy/*.*\" && cpx \"dist/**\" deploy",
     "deploy:update": "yarn deploy:update:add && yarn deploy:update:rm && yarn deploy:update:commit && yarn deploy:update:tag",
-    "deploy:update:add": "svn stat dist | grep '^?' | awk '{print $2}' | xargs -r svn add",
-    "deploy:update:rm": "svn stat dist | grep '^!' | awk '{print $2}' | xargs -r svn rm",
-    "deploy:env": "echo $SVN_USER",
-    "deploy:update:commit": "svn commit dist -m \"deploy from build of $npm_package_version\" --no-auth-cache --username=\"$SVN_USER\" --password=\"$SVN_PASSWORD\"",
-    "deploy:update:tag": "svn copy \"http://plugins.svn.wordpress.org/geo-mashup/trunk\" \"http://plugins.svn.wordpress.org/geo-mashup/tags/$npm_package_version\" -m \"Tagging $npm_package_version\" --no-auth-cache --username=\"$SVN_USER\" --password=\"$SVN_PASSWORD\""
+    "deploy:update:add": "svn stat deploy | grep '^?' | awk '{print $2}' | xargs -r svn add",
+    "deploy:update:rm": "svn stat deploy | grep '^!' | awk '{print $2}' | xargs -r svn rm",
+    "deploy:update:commit": "svn commit deploy -m \"deploy from build of $npm_package_version\" --no-auth-cache --username=\"$SVN_USER\" --password=\"$SVN_PASSWORD\"",
+    "deploy:update:tag": "svn copy \"http://plugins.svn.wordpress.org/geo-mashup/trunk\" \"http://plugins.svn.wordpress.org/geo-mashup/tags/$npm_package_version\" -m \"Tagging $npm_package_version\" --no-auth-cache --username=\"$SVN_USER\" --password=\"$SVN_PASSWORD\"",
+    "deploy:clean": "rm -rf deploy"
   }
 }

@@ -1,4 +1,5 @@
 dist/
+deploy/
 tests/wp-tests-config.php
 vendor/
 node_modules/
