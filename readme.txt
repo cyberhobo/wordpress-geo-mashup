@@ -21,7 +21,7 @@ templates for control of output, and APIs for endless customization options.
 
 Some popular features are:
 
-  * Use different map providers: [Google Maps v3](https://developers.google.com/maps/documentation/javascript/reference), [OpenStreetMap](http://openstreetmap.org), [Leaflet](http://leafletjs.com)
+  * Use different map providers: [Google Maps v3](https://developers.google.com/maps/documentation/javascript/reference), [OpenLayers](http://openlayers.org), [Leaflet](http://leafletjs.com)
   * Global maps can present your posts in many ways
 
 	They can show just one category, custom taxonomy term, or custom post type, for example
@@ -89,6 +89,10 @@ This version fixes a security related bug.  Upgrade immediately.
 This version fixes a security related bug.  Upgrade immediately.
 
 == Change Log ==
+
+= 1.12.2 Feb 18 2020 =
+
+Build fixes and WP 5.4 testing.
 
 = 1.12.1 Feb 18 2020 =
 
