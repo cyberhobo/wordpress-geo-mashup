@@ -19,7 +19,7 @@
     "update-version": "yarn update-version:header && yarn update-version:constant && yarn update-version:readme",
     "update-version:header": "rexreplace \"^Version: .+\\..+\\..+\" \"Version: $npm_package_version\" geo-mashup.php",
     "update-version:constant": "rexreplace \"'GEO_MASHUP_VERSION', '.+\\..+\\..+'\" \"'GEO_MASHUP_VERSION', '$npm_package_version'\" geo-mashup.php",
-    "update-version:readme": "rexreplace \"Stable tag: .+\\..+\\..+\" \"Stable tag: $npm_package_version/\" readme.txt",
+    "update-version:readme": "rexreplace \"Stable tag: .+\\..+\\..+\" \"Stable tag: $npm_package_version\" readme.txt",
     "premakepot": "yarn run clean",
     "makepot": "wpi18n makepot --exclude \"vendor/.*\"",
     "clean": "rm -rf dist/*",
