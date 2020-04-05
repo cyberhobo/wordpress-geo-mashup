@@ -2,12 +2,12 @@
   "license": "GPL-2.0-or-later",
   "version": "1.12.2",
   "devDependencies": {
-    "cpx": "^1.5.0",
-    "csso-cli": "^1.0.0",
+    "@larscom/cpx": "^2.0.0",
+    "csso-cli": "^3.0.0",
     "node-wp-i18n": "^1.0.2",
-    "renamer": "^1.1.0",
+    "renamer": "^1.1.4",
     "rexreplace": "^5.2.0",
-    "uglify-js": "^2.8.21"
+    "uglify-js": "^3.8.1"
   },
   "scripts": {
     "env": "env",
