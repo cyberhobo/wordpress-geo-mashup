@@ -122,6 +122,7 @@ class GeoMashup {
 	 */
 	private static function load_dependencies() {
 		global $geo_mashup_options;
+		include_once GEO_MASHUP_DIR_PATH . '/vendor/autoload.php';
 		include_once GEO_MASHUP_DIR_PATH . '/geo-mashup-options.php';
 		include_once GEO_MASHUP_DIR_PATH . '/gm-location-query.php';
 		include_once GEO_MASHUP_DIR_PATH . '/post-query.php';
@@ -1519,7 +1520,6 @@ class GeoMashup {
 	 * @since 1.0
 	 */
 	public static function options_page() {
-		include_once GEO_MASHUP_DIR_PATH . '/php/Admin/Settings/OptionsPage.php';
 		$options_page = new \GeoMashup\Admin\Settings\OptionsPage();
 		$options_page->render($_POST, $_SERVER['REQUEST_URI']);
 	}

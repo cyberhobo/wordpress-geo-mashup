@@ -4,8 +4,6 @@ namespace GeoMashup\Hooks;
 
 use GeoMashup\Search;
 
-include_once __DIR__ . '/Base.php';
-
 class SearchResults extends Base {
 
 	public function add() {

@@ -2,8 +2,6 @@
 
 namespace GeoMashup\Hooks;
 
-include_once __DIR__ . '/Base.php';
-
 class RegisterSearchWidget extends Base {
 
 	public function add() {

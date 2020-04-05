@@ -6,9 +6,6 @@
  */
 namespace GeoMashup\Admin\Settings;
 
-require_once dirname(dirname(__DIR__)) . '/Options/GlobalMap.php';
-require_once __DIR__ . '/BaseData.php';
-
 use GeoMashup\Options\GlobalMap;
 use GeoMashup\Options\Overall;
 

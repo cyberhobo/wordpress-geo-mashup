@@ -5,8 +5,6 @@ namespace GeoMashup\Hooks;
 use GeoMashup;
 use GeoMashupRenderMap;
 
-include_once __DIR__ . '/Base.php';
-
 class RenderSearchMap extends Base {
 
 	public function render_map() {
