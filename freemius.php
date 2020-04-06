@@ -61,6 +61,7 @@ class GeoMashupFreemius {
 			'has_premium_version' => false,
 			'has_addons' => false,
 			'has_paid_plans' => true,
+			'navigation' => 'tabs',
 			'menu' => array(
 				'slug' => 'geo-mashup/geo-mashup.php',
 				'contact' => false,
