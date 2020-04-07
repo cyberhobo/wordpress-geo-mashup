@@ -8,6 +8,7 @@ use WP_User;
 
 class Search {
 	const MILES_PER_KILOMETER = 0.621371;
+	const NAUTICAL_MILES_PER_KILOMETER = 0.5399565;
 
 	/**
 	 * Plugin URL path.
@@ -51,7 +52,7 @@ class Search {
 	 * @param string|array $args Search parameters.
 	 *
 	 * @return array Search results.
-	 **@since 1.5
+	 * @since 1.5
 	 * @uses apply_filters() geo_mashup_search_query_args Filter the geo query arguments.
 	 *
 	 */
@@ -81,7 +82,7 @@ class Search {
 		$this->current_result  = - 1;
 		$this->units           = $units;
 		$this->max_km          = 20000;
-		$this->distance_factor = ( 'km' === $units ) ? 1 : self::MILES_PER_KILOMETER;
+		$this->distance_factor = $this->distance_factor_for($units);
 		$this->near_location   = GeoMashupDB::blank_location( ARRAY_A );
 
 		$geo_query_args = wp_array_slice_assoc(
@@ -310,5 +311,17 @@ class Search {
 	public function enqueue_script( $handle ) {
 		// As of WP 3.3 we can enqueue scripts any time
 		wp_enqueue_script( $handle );
+	}
+
+	private function distance_factor_for($units) {
+		if ( 'km' === $units ) {
+			return 1;
+		}
+
+		if ( 'nm' === $units ) {
+			return self::NAUTICAL_MILES_PER_KILOMETER;
+		}
+
+		return self::MILES_PER_KILOMETER;
 	}
 }

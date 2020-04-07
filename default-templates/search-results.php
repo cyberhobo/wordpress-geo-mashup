@@ -13,7 +13,7 @@
  * @var $result_count       int      The number of objects found
  * @var $search_text        string   The search text entered in the form
  * @var $radius             int      The search radius
- * @var $units              string   'mi' or 'km'
+ * @var $units              string   'mi' or 'km' or 'nm'
  * @var $object_name        string   'post' or 'user' or 'comment'
  * @var $near_location      array    The location searched, including 'lat' and 'lng'
  * @var $distance_factor    float    The multiplier to convert the radius to kilometers
