@@ -93,7 +93,8 @@ class Search extends WP_Widget {
 		), $geo_mashup_options->get( 'overall', 'located_post_types' ) ), false ) ? $new_instance['object_name'] : 'post';
 		$instance['units']               = in_array( $new_instance['units'], array(
 			'km',
-			'mi'
+			'mi',
+            'nm'
 		) ) ? $new_instance['units'] : 'km';
 		$instance['radius_list']         = sanitize_text_field( $new_instance['radius_list'] );
 		$instance['results_page_id']     = intval( $new_instance['results_page_id'] );
@@ -288,6 +289,10 @@ class Search extends WP_Widget {
                         <option
                                 value="km"<?php echo 'km' === $this->get_default_value( $instance, 'units' ) ? ' selected="selected"' : ''; ?>>
 							<?php _e( 'kilometers', 'GeoMashup' ); ?>
+                        </option>
+                        <option
+                                value="nm"<?php echo 'nm' === $this->get_default_value( $instance, 'units' ) ? ' selected="selected"' : ''; ?>>
+		                    <?php _e( 'nautical miles', 'GeoMashup' ); ?>
                         </option>
                     </select>
                 </label>

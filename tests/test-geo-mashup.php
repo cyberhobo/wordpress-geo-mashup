@@ -626,7 +626,39 @@ class GeoMashup_Unit_Tests extends GeoMashupTestCase {
         remove_filter( 'geo_mashup_search_query_args', array( $query_args_filter, 'check_args' ) );
 	}
 
-    /**
+	/**
+	 * Issue 846
+	 */
+	public function test_nm_search() {
+		require_once GEO_MASHUP_DIR_PATH . '/geo-mashup-search.php';
+
+		$found_post = $this->factory->post->create_and_get();
+		$location = GeoMashupDB::blank_location();
+		$location->lat = 45.61806;
+		$location->lng = 5.226046;
+		GeoMashupDB::set_object_location( 'post', $found_post->ID, $location, false );
+
+		$search_args = array(
+			'near_lat' => 45.619,
+			'near_lng' => 5.225,
+			'object_name' => 'post',
+			'radius' => 0.5,
+			'units' => 'nm',
+			'geo_mashup_search_submit' => 'Search',
+		);
+		$search = new GeoMashupSearch( $search_args );
+		$this->assertTrue( $search->have_posts(), 'Search did not find any posts.' );
+		$this->assertContains( $found_post->ID, $search->get_the_IDs(), 'Search did not find the target post.' );
+
+		$search->the_post();
+		$this->assertEquals(
+			$search->the_distance([ 'echo' => false ]),
+			'0.08 nm',
+			'Did not find distance in nautical miles.'
+		);
+	}
+
+	/**
 	 * Issue 639
 	 */
 	function test_wp_query() {
