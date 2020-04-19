@@ -61,7 +61,7 @@ Mapstraction: {
 				myOptions.streetViewControl = false;
 			}
 		}
-	
+
 		var map = new google.maps.Map(element, myOptions);
 		
 		var fireOnNextIdle = [];
@@ -146,6 +146,7 @@ Mapstraction: {
 		else{
 			myOptions.disableDoubleClickZoom = false;
 		}
+		myOptions.fullscreenControl = this.options.fullscreenControl;
 		map.setOptions(myOptions);
 	},
 
@@ -163,6 +164,7 @@ Mapstraction: {
 		 *     overview: true,
 		 *     scale:    true,
 		 *     map_type: true,
+		 * 		 full_screen_control: true
 		 * }
 		 */
 
@@ -248,6 +250,16 @@ Mapstraction: {
 		else {
 			map.setOptions( { streetViewControl: false } );
 			this.addControlsArgs.street_view = false;
+		}
+
+		if ('full_screen_control' in args) {
+			map.setOptions( { fullscreenControl: true })
+			this.addControlsArgs.full_screen_control = true;
+		}
+
+		else {
+			map.setOptions( { fullscreenControl: false })
+			this.addControlsArgs.full_screen_control = false;
 		}
 	},
 
@@ -535,7 +547,7 @@ Marker: {
 	toProprietary: function() {
 		var options = {};
 
-		// do we have an Anchor?
+		// do we have an public Anchor?
 		var ax = 0;  // anchor x 
 		var ay = 0;  // anchor y
 

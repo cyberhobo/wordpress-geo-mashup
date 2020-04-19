@@ -96,6 +96,18 @@ class SingleMapPanel {
                     </tr>
 				<?php endif; ?>
                 <tr>
+                    <th scope="row"><?php _e( 'Add Full Screen Control', 'GeoMashup' ); ?></th>
+                    <td>
+                        <input id="single_add_full_screen_control" name="single_map[add_full_screen_control]"
+                               type="checkbox" value="true"<?php
+			            if ( $data->options->add_full_screen_control ) {
+				            echo ' checked="checked"';
+			            }
+			            ?> />
+                    </td>
+                </tr>
+                <tr>
+                <tr>
                     <th scope="row"><?php _e( 'Enable Scroll Wheel Zoom', 'GeoMashup' ); ?></th>
                     <td><input id="in_post_enable_scroll_wheel_zoom" name="single_map[enable_scroll_wheel_zoom]"
                                type="checkbox" value="true"<?php
