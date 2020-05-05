@@ -412,6 +412,7 @@ class GeoMashupSearchWidget extends WP_Widget {
 
 	// Display Widget
 	function widget( $args, $instance ) {
+	    global $geo_mashup_options;
 
 		GeoMashup::register_style( 'front-style-widget', 'css/front-widget.css', GEO_MASHUP_VERSION );
 		wp_enqueue_style( 'front-style-widget' );
@@ -426,6 +427,7 @@ class GeoMashupSearchWidget extends WP_Widget {
 				'client_ip' => $_SERVER['REMOTE_ADDR'],
 				'fail_message' => __( 'Couldn\'t find you...', 'GeoMashup' ),
 				'my_location_message' => __( 'My Location', 'GeoMashup' ),
+                'geonames_username' => $geo_mashup_options->get('overall', 'geonames_username'),
 			) );
 			wp_enqueue_script( 'geo-mashup-search-find-me' );
 		}
