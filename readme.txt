@@ -63,7 +63,7 @@ If you need features that are aren't listed here, check [the documentation](http
 = Mashup Ingredients =
 
 Geo Mashup combines WordPress, [Google Maps](http://maps.google.com), [OpenStreetMap](http://openstreetmap.org),
-[GeoNames](http://geonames.org), and [geoPlugin](http://geoplugin.net) to create a GeoCMS that puts you in control
+and [GeoNames](http://geonames.org) to create a GeoCMS that puts you in control
 of all your content, including geographic data.
 
 Thanks to [Alex Chepovetsky](https://www.linkedin.com/in/alexchepovetsky)
