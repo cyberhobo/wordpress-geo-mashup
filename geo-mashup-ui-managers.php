@@ -107,9 +107,9 @@ class GeoMashupUIManager {
 		} else if ( 'openlayers' == $map_api ) {
 			wp_register_script(
 					'openlayers',
-					'//cdnjs.cloudflare.com/ajax/libs/openlayers/2.13.1/OpenLayers.js',
+					'https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.3.1/build/ol.js',
 					null,
-					'latest',
+					'6.3.1',
 					true );
 
 			wp_register_script(
@@ -122,18 +122,19 @@ class GeoMashupUIManager {
 			GeoMashup::register_script(
 					'mxn-openlayers',
 					'js/mxn/mxn.openlayers.core.js',
-					array( 'mxn-core', 'openstreetmap' ),
+					array( 'mxn-core', 'openlayers' ),
 					GEO_MASHUP_VERSION,
 					true );
 
-			GeoMashup::register_script(
-					'mxn-openlayers-gm',
-					'js/mxn/mxn.openlayers.geo-mashup.js',
-					array( 'mxn-openlayers' ),
-					GEO_MASHUP_VERSION,
-					true );
+			GeoMashup::register_style(
+				'openlayers',
+				'css/ol.css',
+				null,
+				'6.3.1' );
 
-			$required_scripts[] = 'mxn-openlayers-gm';
+			wp_enqueue_style( 'openlayers' );
+
+			$required_scripts[] = 'mxn-openlayers';
 		} elseif ( 'leaflet' == $map_api ) {
 
 			wp_register_script(

@@ -203,36 +203,30 @@ class GeoMashupRenderMap {
 				true );
 
 		// Mapstraction providers
-		if ( 'openlayers' == $map_data['map_api'] ) {
+		if ( 'openlayers' === $map_data['map_api'] ) {
 			wp_register_script( 
 					'openlayers', 
-					'//cdnjs.cloudflare.com/ajax/libs/openlayers/2.13.1/OpenLayers.js',
+					'https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.3.1/build/ol.js',
 					null, 
-					'latest', 
+					'6.3.1',
 					true );
-					
-			wp_register_script( 
-					'openstreetmap', 
-					'//www.openstreetmap.org/openlayers/OpenStreetMap.js',
-					array( 'openlayers' ), 
-					'latest', 
-					true );
-					
-			GeoMashup::register_script( 
+
+			GeoMashup::register_style(
+				'openlayers',
+				'css/ol.css',
+				null,
+				'6.3.1' );
+
+			self::enqueue_style( 'openlayers' );
+
+			GeoMashup::register_script(
 					'mxn-openlayers', 
 					'js/mxn/mxn.openlayers.core.js', 
-					array( 'mxn-core', 'openstreetmap' ), 
+					array( 'mxn-core', 'openlayers' ),
 					GEO_MASHUP_VERSION,
 					true );
 					
-			GeoMashup::register_script( 
-					'mxn-openlayers-gm', 
-					'js/mxn/mxn.openlayers.geo-mashup.js', 
-					array( 'mxn-openlayers' ), 
-					GEO_MASHUP_VERSION,
-					true );
-					
-			$mashup_dependencies[] = 'mxn-openlayers-gm';
+			$mashup_dependencies[] = 'mxn-openlayers';
 		} else if ( 'googlev3' == $map_data['map_api'] ) {
 			$google_3_url = '//maps.google.com/maps/api/js';
 			$googlev3_key = $geo_mashup_options->get( 'overall', 'googlev3_key' );

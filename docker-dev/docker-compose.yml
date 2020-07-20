@@ -15,6 +15,8 @@ services:
     image: mariadb
     environment:
       MYSQL_ROOT_PASSWORD: root
+    volumes:
+      - mysql:/var/lib/mysql
   install:
     image: juliquiron/wordpress-phpunit-test-runner-gitlab-ci
     volumes:
@@ -24,3 +26,4 @@ services:
 
 volumes:
   uploads:
+  mysql:
