@@ -14,7 +14,7 @@ GeoMashupLoader = {
 		html.push(name);
 		html.push('" src="');
 		html.push(frame_url);
-		html.push('" style="height:');
+		html.push('" allowfullscreen style="height:');
 		html.push(height);
 		html.push('; width:');
 		html.push(width);
