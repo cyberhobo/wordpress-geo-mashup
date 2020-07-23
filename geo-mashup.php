@@ -1167,7 +1167,7 @@ class GeoMashup {
 
 		/** @noinspection HtmlUnknownTarget */
 		return sprintf(
-			'<div class="gm-map" style="%s"><iframe name="%s" src="%s" style="%s"></iframe></div>',
+			'<div class="gm-map" style="%s"><iframe name="%s" allowfullscreen src="%s" style="%s"></iframe></div>',
 			$div_styles,
 			$map_data['name'],
 			$iframe_src,

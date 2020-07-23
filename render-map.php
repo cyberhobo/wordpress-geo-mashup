@@ -303,18 +303,31 @@ class GeoMashupRenderMap {
 					'3.3.1',
 					true );
 
+			wp_register_script(
+					'leaflet-fullscreen',
+					'https://cdnjs.cloudflare.com/ajax/libs/leaflet.fullscreen/1.6.0/Control.FullScreen.min.js',
+					null,
+					'1.6.0',
+					true );
+
 			wp_register_style(
 					'leaflet',
 					'//cdnjs.cloudflare.com/ajax/libs/leaflet/1.6.0/leaflet.css',
 					null,
 					'0.6.4' );
 
-			self::enqueue_style( 'leaflet' );
+			wp_register_style(
+				'leaflet-fullscreen',
+				'https://cdnjs.cloudflare.com/ajax/libs/leaflet.fullscreen/1.6.0/Control.FullScreen.css',
+				['leaflet'],
+				'1.6.0' );
+
+			self::enqueue_style( 'leaflet-fullscreen' );
 
 			GeoMashup::register_script(
 					'mxn-leaflet',
 					'js/mxn/mxn.leaflet.core.js',
-					array( 'mxn-core', 'leaflet-kml' ),
+					array( 'mxn-core', 'leaflet-kml', 'leaflet-fullscreen' ),
 					GEO_MASHUP_VERSION,
 					true );
 
