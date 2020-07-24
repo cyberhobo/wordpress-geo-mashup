@@ -100,6 +100,17 @@ class GlobalMapPanel {
                     </tr>
 				<?php endif; ?>
                 <tr>
+                    <th scope="row"><?php _e( 'Add Full Screen Control', 'GeoMashup' ); ?></th>
+                    <td>
+                        <input id="global_add_full_screen_control" name="global_map[add_full_screen_control]"
+                               type="checkbox" value="true"<?php
+			            if ( $data->options->add_full_screen_control ) {
+				            echo ' checked="checked"';
+			            }
+			            ?> />
+                    </td>
+                </tr>
+                <tr>
                     <th scope="row"><?php _e( 'Enable Scroll Wheel Zoom', 'GeoMashup' ); ?></th>
                     <td><input id="enable_scroll_wheel_zoom" name="global_map[enable_scroll_wheel_zoom]"
                                type="checkbox" value="true"<?php

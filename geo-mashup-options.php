@@ -53,6 +53,7 @@ class GeoMashupOptions {
 			'map_control' => 'GSmallZoomControl',
 			'add_map_type_control' => array(),
 			'add_overview_control' => 'false',
+			'add_full_screen_control' => 'true',
 			'enable_scroll_wheel_zoom' => 'true',
 			'show_post' => 'false',
 			'show_future' => 'false',
@@ -76,6 +77,7 @@ class GeoMashupOptions {
 			'zoom' => '11',
 			'background_color' => 'c0c0c0',
 			'add_overview_control' => 'false',
+			'add_full_screen_control' => 'true',
 			'add_map_type_control' => array(),
 			'enable_scroll_wheel_zoom' => 'true',
 			'click_to_load' => 'false',
@@ -89,6 +91,7 @@ class GeoMashupOptions {
 			'zoom' => 'auto',
 			'background_color' => 'c0c0c0',
 			'add_overview_control' => 'false',
+			'add_full_screen_control' => 'false',
 			'add_map_type_control' => array(),
 			'enable_scroll_wheel_zoom' => 'true',
 			'marker_select_info_window' => 'true',
@@ -474,6 +477,7 @@ class GeoMashupOptions {
 			case 'auto_info_open':
 			case 'add_category_links':
 			case 'add_overview_control':
+			case 'add_full_screen_control':
 			case 'copy_geodata':
 			case 'enable_scroll_wheel_zoom':
 			case 'marker_select_info_window':

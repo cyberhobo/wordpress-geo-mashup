@@ -449,7 +449,7 @@ class GeoMashupMapAttributes {
 			'sort',
 			'tax_query',
 			'add_map_control',
-			'add_google_bar',
+			'add_full_screen_control',
 			'add_map_type_control',
 			'add_overview_control',
 			'auto_info_open',
