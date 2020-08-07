@@ -152,7 +152,7 @@ class GeoMashupRenderMap {
 			$map_data = get_transient( 'gmm' . $_GET['map_data_key'] );
 		}
 
-		if ( !$map_data and isset( $_GET['map_content'] ) ) {
+		if ( isset( $_GET['map_content'] ) && ( !$map_data || is_wp_error($map_data ) ) ) {
 
 			// Try building the map data from the query string
 			if ( isset( $_GET['oids'] ) ) {
@@ -513,10 +513,9 @@ class GeoMashupRenderMap {
 		self::enqueue_styles();
 
 		$map_data = self::get_map_data();
-		if ( empty( $map_data ) ) {
+		if ( empty( $map_data ) || is_wp_error( $map_data ) ) {
 			status_header( 500 );
 			_e( 'WordPress transients may not be working. Try deactivating or reconfiguring caching plugins.', 'GeoMashup' );
-			echo ' <a href="https://github.com/cyberhobo/wordpress-geo-mashup/issues/425" target="_top">issue 425</a>';
 			exit();
 		}
 
