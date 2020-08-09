@@ -7,8 +7,6 @@
 
 namespace GeoMashup\Options;
 
-require_once __DIR__ . '/SingleMap.php';
-
 use GeoMashupOptions;
 
 class ContextMap extends SingleMap {

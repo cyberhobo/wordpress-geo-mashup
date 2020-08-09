@@ -24,6 +24,8 @@ class SingleMap {
 	public $background_color;
 	/** @var bool */
 	public $add_overview_control;
+	/** @var bool */
+	public $add_full_screen_control;
 	/** @var array */
 	public $add_map_type_control;
 	/** @var bool */
@@ -51,6 +53,7 @@ class SingleMap {
 		$this->zoom                     = $single['zoom'];
 		$this->background_color         = $single['background_color'];
 		$this->add_overview_control     = $single['add_overview_control'] === 'true';
+		$this->add_full_screen_control  = $single['add_full_screen_control'] === 'true';
 		$this->add_map_type_control     = $single['add_map_type_control'];
 		$this->enable_scroll_wheel_zoom = $single['enable_scroll_wheel_zoom'] === 'true';
 		$this->click_to_load            = $single['click_to_load'] === 'true';

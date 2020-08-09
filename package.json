@@ -1,13 +1,13 @@
 {
   "license": "GPL-2.0-or-later",
-  "version": "1.12.3",
+  "version": "1.13.0",
   "devDependencies": {
-    "cpx": "^1.5.0",
-    "csso-cli": "^1.0.0",
+    "@larscom/cpx": "^2.0.0",
+    "csso-cli": "^3.0.0",
     "node-wp-i18n": "^1.0.2",
-    "renamer": "^1.1.0",
+    "renamer": "^1.1.4",
     "rexreplace": "^5.2.0",
-    "uglify-js": "^2.8.21"
+    "uglify-js": "^3.8.1"
   },
   "scripts": {
     "env": "env",
@@ -45,8 +45,8 @@
     "deploy:update": "yarn deploy:update:add && yarn deploy:update:rm && yarn deploy:update:commit && yarn deploy:update:tag",
     "deploy:update:add": "svn stat deploy | grep '^?' | awk '{print $2}' | xargs -r svn add",
     "deploy:update:rm": "svn stat deploy | grep '^!' | awk '{print $2}' | xargs -r svn rm",
-    "deploy:update:commit": "svn commit deploy -m \"deploy from build of $npm_package_version\" --no-auth-cache --username=\"$SVN_USER\" --password=\"$SVN_PASSWORD\"",
-    "deploy:update:tag": "svn copy \"http://plugins.svn.wordpress.org/geo-mashup/trunk\" \"http://plugins.svn.wordpress.org/geo-mashup/tags/$npm_package_version\" -m \"Tagging $npm_package_version\" --no-auth-cache --username=\"$SVN_USER\" --password=\"$SVN_PASSWORD\"",
+    "deploy:update:commit": "svn commit deploy -m \"deploy from build of $npm_package_version\" --no-auth-cache --username \"$SVN_USER\" --password \"$SVN_PASSWORD\"",
+    "deploy:update:tag": "svn copy \"http://plugins.svn.wordpress.org/geo-mashup/trunk\" \"http://plugins.svn.wordpress.org/geo-mashup/tags/$npm_package_version\" -m \"Tagging $npm_package_version\" --no-auth-cache --username \"$SVN_USER\" --password \"$SVN_PASSWORD\"",
     "deploy:clean": "rm -rf deploy"
   }
 }

@@ -7,9 +7,6 @@
 
 namespace GeoMashup\Admin\Settings;
 
-require_once dirname( dirname( __DIR__ ) ) . '/Options/ContextMap.php';
-require_once __DIR__ . '/BaseData.php';
-
 use GeoMashup\Options\ContextMap;
 use GeoMashup\Options\Overall;
 

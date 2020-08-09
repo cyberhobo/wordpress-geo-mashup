@@ -822,6 +822,10 @@ GeoMashup.createMap = function( container, opts ) {
 	if ( opts.enable_street_view !== false ) {
 		controls.street_view = true;
 	}
+
+	if ( opts.add_full_screen_control ) {
+		controls.full_screen_control = true;
+	}
 	this.map.addControls( controls );
 
 	if ( opts.add_map_type_control && typeof this.map.setMapTypes === 'function' ) {

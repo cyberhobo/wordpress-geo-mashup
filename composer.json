@@ -2,8 +2,13 @@
   "name": "cyberhobo/wordpress-geo-mashup",
   "description": "The WordPress Geo Mashup plugin.",
   "type": "wordpress-plugin",
+  "config": {
+    "platform": {
+      "php": "7.1.3"
+    }
+  },
   "require": {
-    "freemius/wordpress-sdk": "^2.3.0"
+    "freemius/wordpress-sdk": "^2.3.2"
   },
   "require-dev": {
     "roave/security-advisories": "dev-master",
@@ -11,5 +16,10 @@
   },
   "scripts": {
     "test": "phpunit"
+  },
+  "autoload": {
+    "psr-4": {
+      "GeoMashup\\": "php"
+    }
   }
 }

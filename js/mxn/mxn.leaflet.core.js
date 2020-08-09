@@ -42,7 +42,8 @@ Mapstraction: {
 			zoom: null,
 			overview: null,
 			scale: null,
-			map_type: null
+			map_type: null,
+			full_screen: null
 		};
 
 		this.road_tile = {
@@ -106,7 +107,7 @@ Mapstraction: {
 		
 		if ('scale' in args && args.scale) {
 			if (this.controls.scale === null) {
-				this.controls.scale = new L.Control.Scale();
+				this.controls.scale = L.control.scale();
 				map.addControl(this.controls.scale);
 			}
 		}
@@ -125,6 +126,19 @@ Mapstraction: {
 				map.removeControl(this.controls.map_type);
 				this.controls.map_type = null;
 			}
+		}
+
+		if ('full_screen_control' in args && args.full_screen_control) {
+			if (this.controls.full_screen === null) {
+				this.controls.full_screen = L.control.fullscreen();
+				map.addControl(this.controls.full_screen)
+			}
+		}
+		else {
+			if (this.controls.full_screen !== null) {
+			  map.removeControl(this.controls.full_screen);
+			  this.controls.full_screen = null;
+      }
 		}
 	},
 
@@ -222,14 +236,24 @@ Mapstraction: {
 	},
 
 	setMapType: function(type) {
+	  if (this.currentMapType === type) {
+
+		}
 		switch(type) {
+
 			case mxn.Mapstraction.ROAD:
-				this.layers[this.road_tile.name].bringToFront();
+				this.toggleTileLayer(this.satellite_tile.url);
+				this.toggleTileLayer(this.road_tile.url);
+				this.toggleTileLayer(this.road_tile.url);
+				this.toggleTileLayer(this.satellite_tile.url);
 				this.currentMapType = mxn.Mapstraction.ROAD;
 				break;
 
 			case mxn.Mapstraction.SATELLITE:
-				this.layers[this.satellite_tile.name].bringToFront();
+				this.toggleTileLayer(this.road_tile.url);
+				this.toggleTileLayer(this.satellite_tile.url);
+				this.toggleTileLayer(this.satellite_tile.url);
+				this.toggleTileLayer(this.road_tile.url);
 				this.currentMapType = mxn.Mapstraction.SATELLITE;
 				break;
 
@@ -238,11 +262,9 @@ Mapstraction: {
 			
 			case mxn.Mapstraction.PHYSICAL:
 				break;
-				
+
 			default:
-				this.layers[this.road_tile.name].bringToFront();
-				this.currentMapType = mxn.Mapstraction.ROAD;
-				break;
+			  break;
 		}
 	},
 

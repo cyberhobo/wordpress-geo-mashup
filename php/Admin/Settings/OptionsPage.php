@@ -7,21 +7,6 @@
 
 namespace GeoMashup\Admin\Settings;
 
-require_once __DIR__ . '/DbAdapter.php';
-require_once __DIR__ . '/PageData.php';
-require_once __DIR__ . '/Tabs.php';
-require_once __DIR__ . '/TabsData.php';
-require_once __DIR__ . '/OverallPanel.php';
-require_once __DIR__ . '/OverallPanelData.php';
-require_once __DIR__ . '/SingleMapPanel.php';
-require_once __DIR__ . '/SingleMapPanelData.php';
-require_once __DIR__ . '/GlobalMapPanel.php';
-require_once __DIR__ . '/GlobalMapPanelData.php';
-require_once __DIR__ . '/ContextMapPanel.php';
-require_once __DIR__ . '/ContextMapPanelData.php';
-require_once __DIR__ . '/TestsPanel.php';
-require_once __DIR__ . '/TestsPanelData.php';
-
 use GeoMashupOptions;
 
 /**
@@ -83,8 +68,7 @@ class OptionsPage {
 		$data->context_map_panel_data = new ContextMapPanelData();
 		$data->tests_panel_data       = TestsPanelData::from_submission( $submission );
 
-		include __DIR__ . '/PageView.php';
-		PageView\render(
+		PageView::render(
 			$data,
 			$this->tabs,
 			$this->overall_panel,

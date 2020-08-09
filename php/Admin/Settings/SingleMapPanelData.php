@@ -7,9 +7,6 @@
 
 namespace GeoMashup\Admin\Settings;
 
-require_once dirname( dirname( __DIR__ ) ) . '/Options/SingleMap.php';
-require_once __DIR__ . '/BaseData.php';
-
 use GeoMashup\Options\Overall;
 use GeoMashup\Options\SingleMap;
 

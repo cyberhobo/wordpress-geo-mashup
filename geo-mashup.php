@@ -3,7 +3,7 @@
 Plugin Name: Geo Mashup
 Plugin URI: https://wordpress.org/plugins/geo-mashup/
 Description: Save location for posts and pages, or even users and comments. Display these locations on Google, Leaflet, and OSM maps. Make WordPress into your GeoCMS.
-Version: 1.12.3
+Version: 1.13.0
 Author: Dylan Kuhn
 Text Domain: GeoMashup
 Domain Path: /lang
@@ -122,6 +122,7 @@ class GeoMashup {
 	 */
 	private static function load_dependencies() {
 		global $geo_mashup_options;
+		include_once GEO_MASHUP_DIR_PATH . '/vendor/autoload.php';
 		include_once GEO_MASHUP_DIR_PATH . '/geo-mashup-options.php';
 		include_once GEO_MASHUP_DIR_PATH . '/gm-location-query.php';
 		include_once GEO_MASHUP_DIR_PATH . '/post-query.php';
@@ -255,7 +256,7 @@ class GeoMashup {
 		define('GEO_MASHUP_DIRECTORY', dirname( GEO_MASHUP_PLUGIN_NAME ) );
 		define('GEO_MASHUP_URL_PATH', trim( plugin_dir_url( __FILE__ ), '/' ) );
 		define('GEO_MASHUP_MAX_ZOOM', 20);
-		define('GEO_MASHUP_VERSION', '1.12.3');
+		define('GEO_MASHUP_VERSION', '1.13.0');
 		define('GEO_MASHUP_DB_VERSION', '1.3');
 	}
 
@@ -1166,7 +1167,7 @@ class GeoMashup {
 
 		/** @noinspection HtmlUnknownTarget */
 		return sprintf(
-			'<div class="gm-map" style="%s"><iframe name="%s" src="%s" style="%s"></iframe></div>',
+			'<div class="gm-map" style="%s"><iframe name="%s" allowfullscreen src="%s" style="%s"></iframe></div>',
 			$div_styles,
 			$map_data['name'],
 			$iframe_src,
@@ -1519,7 +1520,6 @@ class GeoMashup {
 	 * @since 1.0
 	 */
 	public static function options_page() {
-		include_once GEO_MASHUP_DIR_PATH . '/php/Admin/Settings/OptionsPage.php';
 		$options_page = new \GeoMashup\Admin\Settings\OptionsPage();
 		$options_page->render($_POST, $_SERVER['REQUEST_URI']);
 	}

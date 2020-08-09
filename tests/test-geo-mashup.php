@@ -626,7 +626,39 @@ class GeoMashup_Unit_Tests extends GeoMashupTestCase {
         remove_filter( 'geo_mashup_search_query_args', array( $query_args_filter, 'check_args' ) );
 	}
 
-    /**
+	/**
+	 * Issue 846
+	 */
+	public function test_nm_search() {
+		require_once GEO_MASHUP_DIR_PATH . '/geo-mashup-search.php';
+
+		$found_post = $this->factory->post->create_and_get();
+		$location = GeoMashupDB::blank_location();
+		$location->lat = 45.61806;
+		$location->lng = 5.226046;
+		GeoMashupDB::set_object_location( 'post', $found_post->ID, $location, false );
+
+		$search_args = array(
+			'near_lat' => 45.619,
+			'near_lng' => 5.225,
+			'object_name' => 'post',
+			'radius' => 0.5,
+			'units' => 'nm',
+			'geo_mashup_search_submit' => 'Search',
+		);
+		$search = new GeoMashupSearch( $search_args );
+		$this->assertTrue( $search->have_posts(), 'Search did not find any posts.' );
+		$this->assertContains( $found_post->ID, $search->get_the_IDs(), 'Search did not find the target post.' );
+
+		$search->the_post();
+		$this->assertEquals(
+			$search->the_distance([ 'echo' => false ]),
+			'0.08 nm',
+			'Did not find distance in nautical miles.'
+		);
+	}
+
+	/**
 	 * Issue 639
 	 */
 	function test_wp_query() {
@@ -743,46 +775,49 @@ class GeoMashup_Unit_Tests extends GeoMashupTestCase {
 		$this->assertStringMatchesFormat( '%soids=.%s', $html, 'Long id list was not compressed.' );
 	}
 
-	function test_user_import_fields() {
+	public function test_user_import_fields() {
 		// This test calls geocoding services, but allows for failure
 		global $geo_mashup_options;
 
-		$geo_mashup_options->set_valid_options( array( 'overall' => array( 'import_custom_field' => 'geo' ) ) );
+		$geo_mashup_options->set_valid_options( array( 'overall' => array( 'import_custom_field' => 'city, region' ) ) );
 		GeoMashupDB::add_geodata_sync_hooks();
 
 		$user_id = $this->factory->user->create();
 		$this->assertEmpty( GeoMashupDB::get_object_location( 'user', $user_id ) );
 
-		update_user_meta( $user_id, 'geo', 'Paris, France' );
+		update_user_meta( $user_id, 'city', 'Paris' );
+		update_user_meta( $user_id, 'region', 'France' );
 
 		$error = get_user_meta( $user_id, 'geocoding_error', true );
 		if ( $error ) {
 
+			echo $error;
 			// If we can't geocode, no location is saved
 			$this->assertEmpty( GeoMashupDB::get_object_location( 'user', $user_id ) );
 
 		} else {
 
 			$location = GeoMashupDB::get_object_location( 'user', $user_id );
-			$this->assertEquals( 48, intval( $location->lat ) );
-			$this->assertEquals( 2, intval( $location->lng ) );
+			$this->assertEquals( 48, (int) $location->lat );
+			$this->assertEquals( 2, (int) $location->lng );
 
 			// A second update overwrites if successful
-			update_user_meta( $user_id, 'geo', 'Paris, Texas' );
+			update_user_meta( $user_id, 'region', 'Texas' );
 			$error = get_user_meta( $user_id, 'geocoding_error', true );
 			if ( $error ) {
 
-				// Failed geocoding due to lack of internet leaves the first result
+				// Failed geocoding leaves the first result
+				echo $error;
 				$location = GeoMashupDB::get_object_location( 'user', $user_id );
-				$this->assertEquals( 48, intval( $location->lat ), $error );
-				$this->assertEquals( 2, intval( $location->lng ), $error );
+				$this->assertEquals( 48, (int) $location->lat, $error );
+				$this->assertEquals( 2, (int) $location->lng, $error );
 
 			} else {
 
 				// Location is updated to Paris, TX
 				$location = GeoMashupDB::get_object_location( 'user', $user_id );
-				$this->assertEquals( 33, intval( $location->lat ) );
-				$this->assertEquals( -95, intval( $location->lng ) );
+				$this->assertEquals( 33, (int) $location->lat );
+				$this->assertEquals( -95, (int) $location->lng );
 
 			}
 		}

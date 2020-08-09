@@ -12,7 +12,7 @@
  * $geo_mashup_search  object   The managing search object
  * $search_text        string   The search text entered in the form
  * $radius             int      The search radius
- * $units              string   'mi' or 'km'
+ * $units              string   'mi' or 'km' or 'nm'
  * $object_name        string   'post' or 'user' or 'comment'
  * $near_location      array    The location searched, including 'lat' and 'lng'
  * $distance_factor    float    The multiplier to convert the radius to kilometers
