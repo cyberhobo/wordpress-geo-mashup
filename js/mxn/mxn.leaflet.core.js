@@ -236,14 +236,24 @@ Mapstraction: {
 	},
 
 	setMapType: function(type) {
+	  if (this.currentMapType === type) {
+
+		}
 		switch(type) {
+
 			case mxn.Mapstraction.ROAD:
-				this.layers[this.road_tile.name].bringToFront();
+				this.toggleTileLayer(this.satellite_tile.url);
+				this.toggleTileLayer(this.road_tile.url);
+				this.toggleTileLayer(this.road_tile.url);
+				this.toggleTileLayer(this.satellite_tile.url);
 				this.currentMapType = mxn.Mapstraction.ROAD;
 				break;
 
 			case mxn.Mapstraction.SATELLITE:
-				this.layers[this.satellite_tile.name].bringToFront();
+				this.toggleTileLayer(this.road_tile.url);
+				this.toggleTileLayer(this.satellite_tile.url);
+				this.toggleTileLayer(this.satellite_tile.url);
+				this.toggleTileLayer(this.road_tile.url);
 				this.currentMapType = mxn.Mapstraction.SATELLITE;
 				break;
 
@@ -252,11 +262,9 @@ Mapstraction: {
 			
 			case mxn.Mapstraction.PHYSICAL:
 				break;
-				
+
 			default:
-				this.layers[this.road_tile.name].bringToFront();
-				this.currentMapType = mxn.Mapstraction.ROAD;
-				break;
+			  break;
 		}
 	},
 
