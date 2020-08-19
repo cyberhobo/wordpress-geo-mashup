@@ -237,7 +237,7 @@ Mapstraction: {
 
 	setMapType: function(type) {
 	  if (this.currentMapType === type) {
-
+			return;
 		}
 		switch(type) {
 

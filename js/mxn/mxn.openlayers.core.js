@@ -21,8 +21,7 @@ mxn.register('openlayers', {
 			var map = new ol.Map({
 				target: element.id,
 				view: new ol.View({
-					projection: 'EPSG:4326',
-					center: [0, 0],
+					center: ol.proj.fromLonLat([0, 0]),
 					zoom: 2
 				})
 			});
@@ -75,14 +74,16 @@ mxn.register('openlayers', {
 			this.loaded[api] = true;
 
 			this.boundsToExtent = function(bounds) {
-				var sw = bounds.getSouthWest();
-				var ne = bounds.getNorthEast();
+				var swMxn = bounds.getSouthWest();
+				var neMxn = bounds.getNorthEast();
 
 				if(sw.lon > ne.lon) {
 					sw.lon -= 360;
 				}
 
-				return [sw.lon, sw.lat, ne.lon, ne.lat]
+				var swMerc = ol.proj.fromLonLat([swMxn.lon, swMxn.lat]);
+				var neMerc = ol.proj.fromLonLat([neMxn.lon, neMxn.lat]);
+				return [swMerc[0], swMerc[1], neMerc[0], neMerc[1]]
 			};
 		},
 
@@ -319,7 +320,9 @@ mxn.register('openlayers', {
 		getBounds: function () {
 			var map = this.maps[this.api];
 			var extent = map.getView().calculateExtent();
-			return new mxn.BoundingBox(extent[1], extent[0], extent[3], extent[2]);
+			var sw = ol.proj.toLonLat([extent[0], extent[1]]);
+			var ne = ol.proj.toLonLat([extent[2], extent[3]]);
+			return new mxn.BoundingBox(sw[1], sw[0], ne[1], ne[0]);
 		},
 
 		setBounds: function(bounds) {
@@ -422,13 +425,14 @@ mxn.register('openlayers', {
 	LatLonPoint: {
 
 		toProprietary: function() {
-			return [this.lon, this.lat];
+			return ol.proj.fromLonLat([this.lon, this.lat]);
 		},
 
 		fromProprietary: function(coord) {
-			this.lon = coord[0];
+			var lonLat = ol.proj.toLonLat(coord);
+			this.lon = lonLat[0];
 			this.lng = this.lon;
-			this.lat = coord[1];
+			this.lat = lonLat[1];
 		}
 
 	},
