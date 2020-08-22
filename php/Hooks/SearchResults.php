@@ -39,7 +39,7 @@ class SearchResults extends Base {
 		$_POST = stripslashes_deep( $_POST );
 
 		// Remove this filter to prevent recursion
-		remove_filter( 'the_content', array( __CLASS__, 'filter_the_content' ) );
+		remove_filter( 'the_content', [ $this, 'the_content' ] );
 
 		$geo_search = new Search( $_POST );
 
@@ -49,7 +49,7 @@ class SearchResults extends Base {
 		$content .= ob_get_clean();
 
 		// Add the filter back - it's possible that content preprocessors will cause it to be run again
-		add_filter( 'the_content', array( __CLASS__, 'filter_the_content' ) );
+		add_filter( 'the_content', [ $this, 'the_content' ] );
 
 		return $content;
 	}
