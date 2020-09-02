@@ -9,10 +9,15 @@ class Search extends WP_Widget {
 
 	// Construct Widget
 	public function __construct() {
-		$default_options = array(
+		$widget_options = array(
+            'classname' => 'geomashupsearchwidget',
 			'description' => __( 'Search content by Geo Mashup location.', 'GeoMashup' )
 		);
-		parent::__construct( false, __( 'Geo Mashup Search', 'GeoMashup' ), $default_options );
+		parent::__construct(
+		        'geomashupsearchwidget',
+                __( 'Geo Mashup Search', 'GeoMashup' ),
+                $widget_options
+        );
 	}
 
 	// Display Widget
