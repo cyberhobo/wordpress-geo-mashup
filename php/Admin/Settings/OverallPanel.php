@@ -60,7 +60,7 @@ class OverallPanel {
                                type="text"
                                size="40"
                                value="<?php echo esc_attr( $data->options->google_server_key ); ?>"/>
-                        <a href="https://developers.google.com/maps/documentation/geocoding/start#get-a-key"
+                        <a href="https://developers.google.com/maps/documentation/geocoding/get-api-key"
                            target="_blank"><?php _e( 'Get yours here', 'GeoMashup' ); ?></a>
                         <p class="description">
 							<?php
