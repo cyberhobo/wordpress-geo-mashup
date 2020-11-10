@@ -5,9 +5,9 @@
     "@larscom/cpx": "^2.0.0",
     "csso-cli": "^3.0.0",
     "node-wp-i18n": "^1.0.2",
-    "renamer": "^1.1.4",
-    "rexreplace": "^5.2.0",
-    "uglify-js": "^3.8.1"
+    "renamer": "^2.0.1",
+    "rexreplace": "^6.0.14",
+    "uglify-js": "^3.11.5"
   },
   "scripts": {
     "env": "env",
