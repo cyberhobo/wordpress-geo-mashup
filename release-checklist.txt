@@ -18,5 +18,5 @@ If any step fails, fix before continuing, repeating any necessary prior steps.
 	1. Merge `git checkout master; git merge --no-ff release/<version>; git push`
     1. For major versions generate and deploy any new PHPDoc and JavaDocs. `yarn jsdoc`, `yarn phpdoc`.
     1. Tag and push to deploy `git tag <version>; git push`.
-    1. Merge back to develeop `git co develop; git merge master; git push`
+    1. Merge back to develop `git co develop; git merge master; git push`
 	1. Close milestone, prune issues.
