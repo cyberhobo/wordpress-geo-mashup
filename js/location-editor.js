@@ -846,7 +846,7 @@ var
 	init();
 
 	// Ajax error messages
-	$ajax_message.ajaxError( function( event, request, settings ) {
+	$(document).ajaxError( function( event, request, settings ) {
 		// Try to show only errors from Geo Mashup requests
 		if ( settings && settings.data && settings.data.toString().indexOf( 'geo_mashup' ) >= 0 ) {
 			$ajax_message.text( request.statusText + ': ' + request.responseText ).show();
