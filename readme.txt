@@ -3,7 +3,7 @@ Contributors: cyberhobo, freemius
 Donate Link:
 Tags: map, maps, google maps, google map, mapping, mashup, geo, google, geocms
 Requires at least: 3.7
-Tested up to: 5.5.3
+Tested up to: 5.7
 Stable tag: 1.13.4
 License: GPL2+
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
