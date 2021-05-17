@@ -118,12 +118,14 @@ class OptionsPage {
 
 		$this->options->set_valid_options( $submission );
 
-		if ( $this->options->save() ) {
+		$saved = $this->options->save();
+		if ( $saved ) {
 			return '<div class="updated fade"><p>' .
 			       __( 'Options updated.  Browser or server caching may delay updates for recently viewed maps.',
 				       'GeoMashup' ) .
 			       '</p></div>';
 		}
+
 
 		return '';
 	}

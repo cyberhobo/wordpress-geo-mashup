@@ -55,37 +55,39 @@ class GlobalMapPanel {
                         </td>
                     </tr>
 				<?php endif; ?>
-				<?php if ( 'googlev3' === $data->overall->map_api ) : ?>
+	            <?php if ( in_array( $data->overall->map_api, [ 'googlev3', 'leaflet' ], true ) ) : ?>
                     <tr>
                         <th scope="row"><?php _e( 'Default Map Type', 'GeoMashup' ); ?></th>
                         <td>
-                            <select id="map_type" name="global_map[map_type]">
-								<?php foreach ( $data->map_types as $type => $label ) : ?>
+                            <select id="global_map_type" name="global_map[map_type]">
+					            <?php foreach ( $data->map_types[$data->overall->map_api] as $type => $label ) : ?>
                                     <option value="<?php echo esc_attr( $type ); ?>"<?php
-									if ( $type === $data->options->map_type ) {
-										echo ' selected="selected"';
-									}
-									?>><?php echo esc_html( $label ); ?></option>
-								<?php endforeach; ?>
+						            if ( $type === $data->options->map_type ) {
+							            echo ' selected="selected"';
+						            }
+						            ?>><?php echo esc_html( $label ); ?></option>
+					            <?php endforeach; ?>
                             </select>
                         </td>
                     </tr>
+	            <?php endif; ?>
+	            <?php if ( 'googlev3' === $data->overall->map_api ) : ?>
                     <tr>
                         <th scope="row"><?php _e( 'Add Map Type Control', 'GeoMashup' ); ?></th>
                         <td>
-							<?php foreach ( $data->map_types as $type => $label ) : ?>
-                                <input id="add_map_type_<?php echo esc_attr( $type ); ?>"
+				            <?php foreach ( $data->map_types[$data->overall->map_api] as $type => $label ) : ?>
+                                <input id="global_add_map_type_<?php echo esc_attr( $type ); ?>"
                                        name="global_map[add_map_type_control][]"
                                        type="checkbox"
                                        value="<?php echo esc_attr( $type ); ?>" <?php
-								if ( in_array( $type, $data->options->add_map_type_control, false ) ) {
-									echo ' checked="checked"';
-								}
-								?> /> <?php echo esc_html( $label ); ?>
-							<?php endforeach; ?>
+					            if ( in_array( $type, $data->options->add_map_type_control, false ) ) {
+						            echo ' checked="checked"';
+					            }
+					            ?> /> <?php echo esc_html( $label ); ?>
+				            <?php endforeach; ?>
                         </td>
                     </tr>
-				<?php endif; ?>
+	            <?php endif; ?>
 				<?php if ( 'openlayers' === $data->overall->map_api ) : ?>
                     <tr>
                         <th scope="row"><?php _e( 'Add Overview Control', 'GeoMashup' ); ?></th>

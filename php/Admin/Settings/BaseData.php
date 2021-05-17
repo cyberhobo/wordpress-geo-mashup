@@ -4,6 +4,7 @@
  *
  * @package GeoMashup
  */
+
 namespace GeoMashup\Admin\Settings;
 
 class BaseData {
@@ -18,17 +19,23 @@ class BaseData {
 
 	public function __construct() {
 		$this->map_controls = [
-			'GSmallZoomControl'   => __( 'Small Zoom', 'GeoMashup' ),
-			'GSmallMapControl'    => __( 'Small Pan/Zoom', 'GeoMashup' ),
-			'GLargeMapControl'    => __( 'Large Pan/Zoom', 'GeoMashup' ),
+			'GSmallZoomControl' => __( 'Small Zoom', 'GeoMashup' ),
+			'GSmallMapControl'  => __( 'Small Pan/Zoom', 'GeoMashup' ),
+			'GLargeMapControl'  => __( 'Large Pan/Zoom', 'GeoMashup' ),
 		];
-		$this->map_types = [
-			'G_NORMAL_MAP'       => __( 'Roadmap', 'GeoMashup' ),
-			'G_SATELLITE_MAP'    => __( 'Satellite', 'GeoMashup' ),
-			'G_HYBRID_MAP'       => __( 'Hybrid', 'GeoMashup' ),
-			'G_PHYSICAL_MAP'     => __( 'Terrain', 'GeoMashup' ),
+		$this->map_types    = [
+			'googlev3' => [
+				'G_NORMAL_MAP'    => __( 'Roadmap', 'GeoMashup' ),
+				'G_SATELLITE_MAP' => __( 'Satellite', 'GeoMashup' ),
+				'G_HYBRID_MAP'    => __( 'Hybrid', 'GeoMashup' ),
+				'G_PHYSICAL_MAP'  => __( 'Terrain', 'GeoMashup' ),
+			],
+			'leaflet'  => [
+				'G_NORMAL_MAP'    => __( 'Roadmap', 'GeoMashup' ),
+				'G_SATELLITE_MAP' => __( 'Satellite', 'GeoMashup' ),
+			]
 		];
-		$this->color_names = [
+		$this->color_names  = [
 			'aqua'    => '#00ffff',
 			'black'   => '#000000',
 			'blue'    => '#0000ff',
