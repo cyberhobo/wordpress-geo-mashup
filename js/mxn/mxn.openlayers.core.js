@@ -95,11 +95,6 @@ mxn.register('openlayers', {
 			} else {
 				map.removeInteraction(new ol.interaction.MouseWheelZoom())
 			}
-			if ( this.options.enableDragging ) {
-				map.addInteraction(new ol.interaction.DragPan())
-			} else {
-				map.removeInteraction(new ol.interaction.DragPan())
-			}
 		},
 
 		resizeTo: function(width, height){	
