@@ -54,12 +54,12 @@ class ContextMapPanel {
                         </td>
                     </tr>
 				<?php endif; ?>
-				<?php if ( 'googlev3' === $data->overall->map_api ) : ?>
+				<?php if ( in_array( $data->overall->map_api, [ 'googlev3', 'leaflet' ], true ) ) : ?>
                     <tr>
                         <th scope="row"><?php _e( 'Default Map Type', 'GeoMashup' ); ?></th>
                         <td>
                             <select id="context_map_type" name="context_map[map_type]">
-								<?php foreach ( $data->map_types as $type => $label ) : ?>
+								<?php foreach ( $data->map_types[$data->overall->map_api] as $type => $label ) : ?>
                                     <option value="<?php echo esc_attr( $type ); ?>"<?php
 									if ( $type === $data->options->map_type ) {
 										echo ' selected="selected"';
@@ -69,10 +69,12 @@ class ContextMapPanel {
                             </select>
                         </td>
                     </tr>
+	            <?php endif; ?>
+	            <?php if ( 'googlev3' === $data->overall->map_api ) : ?>
                     <tr>
                         <th scope="row"><?php _e( 'Add Map Type Control', 'GeoMashup' ); ?></th>
                         <td>
-							<?php foreach ( $data->map_types as $type => $label ) : ?>
+							<?php foreach ( $data->map_types[$data->overall->map_api] as $type => $label ) : ?>
                                 <input id="context_add_map_type_<?php echo esc_attr( $type ); ?>"
                                        name="context_map[add_map_type_control][]"
                                        type="checkbox"
@@ -103,10 +105,10 @@ class ContextMapPanel {
                     <td>
                         <input id="context_add_full_screen_control" name="context_map[add_full_screen_control]"
                                type="checkbox" value="true"<?php
-			            if ( $data->options->add_full_screen_control ) {
-				            echo ' checked="checked"';
-			            }
-			            ?> />
+						if ( $data->options->add_full_screen_control ) {
+							echo ' checked="checked"';
+						}
+						?> />
                     </td>
                 </tr>
                 <tr>
