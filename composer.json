@@ -8,11 +8,12 @@
     }
   },
   "require": {
-    "freemius/wordpress-sdk": "^2.4.1"
+    "freemius/wordpress-sdk": "^2.4.3"
   },
   "require-dev": {
     "roave/security-advisories": "dev-master",
-    "phpunit/phpunit": "^5.7.27"
+    "phpunit/phpunit": "^5.7.27",
+    "yoast/phpunit-polyfills": "^1.0.3"
   },
   "scripts": {
     "test": "phpunit"
