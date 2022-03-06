@@ -7,6 +7,9 @@ php:
   - 7.1
   - 7.3
 
+before_install:
+  - nvm install node
+
 env:
   - WP_VERSION=latest WP_MULTISITE=0 DEPLOY=1
   - WP_VERSION=latest WP_MULTISITE=1
