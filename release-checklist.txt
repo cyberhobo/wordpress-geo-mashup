@@ -11,7 +11,7 @@ These are notes for the software author, to help ensure you don't get a broken r
 If any step fails, fix before continuing, repeating any necessary prior steps.
 
 	1. Start a `release/<version>` branch off `develop`.
-	1. Edit WP readme.txt (remember tested version, and changelog!)
+	1. Edit WP readme.txt (Remember tested version, and changelog. Stable tag is automated.)
 	1. Update the language template if the release contains new language strings `yarn makepot`, `git commit`;
 	1. Update version, `yarn version --new-version <new version> --no-git-tag-version`, commit.
 	1. Push, check TravisCI build, `git push -u origin release/<version>`
