@@ -10,13 +10,14 @@ These are notes for the software author, to help ensure you don't get a broken r
 
 If any step fails, fix before continuing, repeating any necessary prior steps.
 
-	1. Start a `release/<version>` branch off `develop`.
+	1. Start a `release/<version>` branch off `develop`, remember to `git pull` changes`.
 	1. Edit WP readme.txt (Remember tested version, and changelog. Stable tag is automated.)
 	1. Update the language template if the release contains new language strings `yarn makepot`, `git commit`;
 	1. Update version, `yarn version --new-version <new version> --no-git-tag-version`, commit.
 	1. Push, check TravisCI build, `git push -u origin release/<version>`
 	1. Merge `git checkout master; git merge --no-ff release/<version>; git push`
     1. For major versions generate and deploy any new PHPDoc and JavaDocs. `yarn jsdoc`, `yarn phpdoc`.
-    1. Tag and push to deploy `git tag <version>; git push`.
+    1. Check `docker-dev/.yarn.env` then `yarn build` and `yarn deploy`.
+    1. Tag and push `git tag <version>; git push`.
     1. Merge back to develop `git co develop; git merge master; git push`
 	1. Close milestone, prune issues.
