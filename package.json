@@ -22,7 +22,7 @@
     "update-version:readme": "rexreplace \"Stable tag: .+\\..+\\..+\" \"Stable tag: $npm_package_version\" readme.txt",
     "premakepot": "yarn run clean",
     "makepot": "wpi18n makepot --exclude \"vendor/.*\"",
-    "clean": "rm -rf dist/*",
+    "clean": "rm -rf dist/* deploy/*",
     "test": "composer test",
     "prebuild": "composer install --no-dev && yarn install && yarn run clean",
     "build": "yarn build:php && yarn build:css && yarn build:js && yarn build:lang && yarn build:docs && yarn build:media",

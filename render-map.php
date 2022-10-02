@@ -215,7 +215,7 @@ class GeoMashupRenderMap {
 				'openlayers',
 				'css/ol.css',
 				null,
-				'6.3.1' );
+				'6.5.0' );
 
 			self::enqueue_style( 'openlayers' );
 

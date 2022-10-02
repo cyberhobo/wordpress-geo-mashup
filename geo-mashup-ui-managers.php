@@ -107,9 +107,9 @@ class GeoMashupUIManager {
 		} else if ( 'openlayers' == $map_api ) {
 			wp_register_script(
 					'openlayers',
-					'https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.3.1/build/ol.js',
+					'https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.5.0/build/ol.js',
 					null,
-					'6.3.1',
+					'6.5.0',
 					true );
 
 			wp_register_script(
@@ -130,7 +130,7 @@ class GeoMashupUIManager {
 				'openlayers',
 				'css/ol.css',
 				null,
-				'6.3.1' );
+				'6.5.0' );
 
 			wp_enqueue_style( 'openlayers' );
 
