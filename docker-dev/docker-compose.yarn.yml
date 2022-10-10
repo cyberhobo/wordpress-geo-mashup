@@ -6,6 +6,8 @@ services:
     volumes:
       - ..:/app
       - geo-mashup-test-support:/tmp
+    env_file:
+      - .yarn.env
     working_dir: /app
     entrypoint: yarn
 

@@ -47,7 +47,7 @@
 		</style>
 	</head>
 	<body>
-	<div id="geo-mashup" class="<?php echo GeoMashupRenderMap::map_property( 'name' ); ?>">
+	<div id="geo-mashup" class="<?php echo esc_attr( GeoMashupRenderMap::map_property( 'name' ) ); ?>">
 		<noscript>
 			<p><?php _e( 'This map requires JavaScript. You may have to enable it in your browser\'s settings.', 'GeoMashup' ); ?></p>
 		</noscript>
