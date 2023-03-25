@@ -13,17 +13,17 @@ jobs:
   build-and-test:
 
     runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:latest
+        ports:
+          - 3306:3306
+        environment:
+          MYSQL_ROOT_PASSWORD: root
 
     steps:
     - uses: actions/checkout@v3
     
-    - name: Start MySQL
-      run: |
-        docker run -d \
-          -e MYSQL_ROOT_PASSWORD=root \
-          -p 3306:3306 \
-        mysql:latest
-
     - name: Install WordPress testing tools
       run: bash tools/install-wp-tests.sh wordpress_test root root 127.0.0.1 latest
 
