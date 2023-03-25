@@ -10,6 +10,7 @@ services:
       WORDPRESS_DEBUG: 1
     volumes:
       - ..:/var/www/html/wp-content/plugins/geo-mashup
+      - ../../geo-mashup-custom:/var/www/html/wp-content/plugins/geo-mashup-custom
       - uploads:/var/www/html/wp-content/uploads
   mysql:
     image: mariadb
