@@ -25,7 +25,7 @@ jobs:
     - uses: actions/checkout@v3
     
     - name: Install WordPress testing tools
-      run: bash tools/install-wp-tests.sh wordpress_test root root mysql latest
+      run: bash tools/install-wp-tests.sh wordpress_test root root 127.0.0.1 latest
 
     - name: Validate composer.json and composer.lock
       run: composer validate --strict
