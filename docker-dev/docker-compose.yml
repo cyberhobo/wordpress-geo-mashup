@@ -2,7 +2,7 @@ version: '2'
 
 services:
   wordpress:
-    image: wordpress:php7.3
+    image: wordpress:php7.4
     ports:
       - 8080:80
     environment:
@@ -16,6 +16,8 @@ services:
     image: mariadb
     environment:
       MYSQL_ROOT_PASSWORD: root
+      MARIADB_AUTO_UPGRADE: "1"
+      MARIADB_INITDB_SKIP_TZINFO: "1"
     volumes:
       - mysql:/var/lib/mysql
   install:
