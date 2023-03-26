@@ -21,10 +21,21 @@ jobs:
         env:
           MYSQL_ROOT_PASSWORD: root
         options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=10s --health-retries=10
+    strategy:
+      matrix:
+        php-versions: ['5.6', '7.2', '7.3', '7.4']
 
     steps:
     - uses: actions/checkout@v3
-    
+
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: ${{ matrix.php-versions }}
+        coverage: none
+        tools: composer, phpunit-polyfills
+        extensions: mysql
+
     - name: Validate composer.json and composer.lock
       run: composer validate --strict
 
@@ -45,3 +56,5 @@ jobs:
 
     - name: Run test suite
       run: composer run-script test
+      env:
+        PHP_VERSION: ${{ matrix.php-versions }}
