@@ -18,14 +18,14 @@ jobs:
         image: mysql:latest
         ports:
           - 3306:3306
-        environment:
+        env:
           MYSQL_ROOT_PASSWORD: root
 
     steps:
     - uses: actions/checkout@v3
     
     - name: Install WordPress testing tools
-      run: bash tools/install-wp-tests.sh wordpress_test root root 127.0.0.1 latest
+      run: bash tools/install-wp-tests.sh wordpress_test root root mysql latest
 
     - name: Validate composer.json and composer.lock
       run: composer validate --strict
