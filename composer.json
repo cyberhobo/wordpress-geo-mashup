@@ -2,6 +2,7 @@
   "name": "cyberhobo/wordpress-geo-mashup",
   "description": "The WordPress Geo Mashup plugin.",
   "type": "wordpress-plugin",
+  "license": "GPL-2.0-or-later",
   "config": {
     "platform": {
       "php": "7.1.3"
