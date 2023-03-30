@@ -46,7 +46,7 @@
     "deploy:update:add": "svn stat deploy | grep '^?' | awk '{print $2}' | xargs -r svn add",
     "deploy:update:rm": "svn stat deploy | grep '^!' | awk '{print $2}' | xargs -r svn rm",
     "deploy:update:commit": "svn commit deploy -m \"deploy from build of $npm_package_version\" --no-auth-cache --username \"$SVN_USER\" --password \"$SVN_PASSWORD\"",
-    "deploy:update:tag": "svn copy \"http://plugins.svn.wordpress.org/geo-mashup/trunk\" \"http://plugins.svn.wordpress.org/geo-mashup/tags/$npm_package_version\" -m \"Tagging $npm_package_version\" --no-auth-cache --username \"$SVN_USER\" --password \"$SVN_PASSWORD\"",
+    "deploy:update:tag": "svn copy \"http://plugins.svn.wordpress.org/geo-mashup/trunk\" \"http://plugins.svn.wordpress.org/geo-mashup/tags/$npm_package_version\" -m \"Tagging $npm_package_version\" --no-auth-cache --username \"$SVN_USERNAME\" --password \"$SVN_PASSWORD\"",
     "deploy:clean": "rm -rf deploy"
   }
 }
