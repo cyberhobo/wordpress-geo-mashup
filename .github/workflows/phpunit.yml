@@ -2,7 +2,7 @@ name: Unit Testing
 
 on:
   push:
-    branches: [ "develop", "feature/*" ]
+    branches: [ "develop", "feature/*", "release/*" ]
   pull_request:
     branches: [ "develop" ]
 
