@@ -192,6 +192,8 @@ class GeoMashupUIManager {
 
 		wp_enqueue_script( 'jquery-ui-datepicker' );
 
+		$this->enqueue_jquery_styles();
+
 		if ( isset( $geo_mashup_custom ) ) {
 			$custom_url = $geo_mashup_custom->file_url( 'location-editor.js' );
 			if ( ! empty( $custom_url ) ) {
