@@ -1,6 +1,6 @@
 {
   "license": "GPL-2.0-or-later",
-  "version": "1.13.11",
+  "version": "1.13.12",
   "devDependencies": {
     "@larscom/cpx": "^2.0.0",
     "csso-cli": "^3.0.0",
@@ -15,6 +15,7 @@
     "install:dev": "composer install && yarn install",
     "install:docker:test-support": "./tools/install-wp-tests.sh wp_test root root mysql",
     "upgrade:docker:test-support": "./tools/install-wp-tests.sh wp_test root root mysql nightly true",
+    "start:docker": "docker-compose -f docker-dev/docker-compose.yml up",
     "version": "yarn run update-version && git diff",
     "update-version": "yarn update-version:header && yarn update-version:constant && yarn update-version:readme",
     "update-version:header": "rexreplace \"^Version: .+\\..+\\..+\" \"Version: $npm_package_version\" geo-mashup.php",
