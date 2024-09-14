@@ -3,7 +3,7 @@
 Plugin Name: Geo Mashup
 Plugin URI: https://wordpress.org/plugins/geo-mashup/
 Description: Save location for posts and pages, or even users and comments. Display these locations on Google, Leaflet, and OSM maps. Make WordPress into your GeoCMS.
-Version: 1.13.12
+Version: 1.13.13
 Author: Dylan Kuhn
 Text Domain: GeoMashup
 Domain Path: /lang
@@ -256,7 +256,7 @@ class GeoMashup {
 		define('GEO_MASHUP_DIRECTORY', dirname( GEO_MASHUP_PLUGIN_NAME ) );
 		define('GEO_MASHUP_URL_PATH', trim( plugin_dir_url( __FILE__ ), '/' ) );
 		define('GEO_MASHUP_MAX_ZOOM', 20);
-		define('GEO_MASHUP_VERSION', '1.13.12');
+		define('GEO_MASHUP_VERSION', '1.13.13');
 		define('GEO_MASHUP_DB_VERSION', '1.3');
 	}
 
@@ -1280,7 +1280,7 @@ class GeoMashup {
 		// It's nice if click-to-load works in the full post display
 		self::$add_loader_script = true;
 
-		return '<div id="' . $for_map . '-post"></div>';
+		return '<div id="' . esc_attr($for_map) . '-post"></div>';
 	}
 
 	/**
@@ -1361,7 +1361,7 @@ class GeoMashup {
 			}
 		}
 
-		return '<div id="' . $id . '" class="' . implode( ' ', $classes ) . '"></div>';
+		return '<div id="' . esc_attr($id) . '" class="' . esc_attr(implode( ' ', $classes )) . '"></div>';
 	}
 
 	/**
@@ -1402,7 +1402,7 @@ class GeoMashup {
 			if ($count) {
 				// This feature doesn't work unless there is a category description
 				if ( empty( $category->description ) ) {
-					return $content . $geo_mashup_options->get('overall', 'category_link_separator') .
+					return $content . esc_html($geo_mashup_options->get('overall', 'category_link_separator')) .
 						__( 'You must add a description to this category to use this Geo Mashup feature.', 'GeoMashup' );
 				}
 				$url = get_page_link($geo_mashup_options->get('overall', 'mashup_page'));
@@ -1411,10 +1411,10 @@ class GeoMashup {
 				} else {
 					$url .= '?';
 				}
-				$link = '<a href="'.$url.'map_cat='.$category->cat_ID.'&amp;zoom='.$geo_mashup_options->get('overall', 'category_zoom').
-					'" title="'.$geo_mashup_options->get('overall', 'category_link_text').'">';
-				return $content.'</a>'.$geo_mashup_options->get('overall', 'category_link_separator').$link.
-					$geo_mashup_options->get('overall', 'category_link_text');
+				$link = '<a href="'.$url.'map_cat='.$category->cat_ID.'&amp;zoom='.esc_attr($geo_mashup_options->get('overall', 'category_zoom')).
+					'" title="'.esc_attr($geo_mashup_options->get('overall', 'category_link_text')).'">';
+				return $content.'</a>'.esc_html($geo_mashup_options->get('overall', 'category_link_separator')).$link.
+					esc_html($geo_mashup_options->get('overall', 'category_link_text'));
 			}
 		}
 		return $content;
@@ -1732,7 +1732,7 @@ class GeoMashup {
 					'/images/geotag_16.png" alt="'.__('Geotag Icon','GeoMashup').'"/>';
 			}
 			$link = '<a class="gm-link" href="'.$url.'">'.
-				$icon.' '.$options['text'].'</a>';
+				$icon.' '.esc_html($options['text']).'</a>';
 			if ($options['display']) {
 				echo $link;
 			}
@@ -1769,7 +1769,7 @@ class GeoMashup {
 			}
 			$list_html .= balanceTags( $heading_div . $heading_tags . $args['heading_text'], true );
 		}
-		$list_html .= '<div id="' . $for_map . '-visible-list"></div>';
+		$list_html .= '<div id="' . esc_attr($for_map) . '-visible-list"></div>';
 		return $list_html;
 	}
 
@@ -1827,7 +1827,7 @@ class GeoMashup {
 			if ( $country_count > 1 ) {
 				$country_name = GeoMashupDB::get_administrative_name( $country->country_code );
 				$country_name = $country_name ? $country_name : $country->country_code;
-				$country_heading = '<h3 id="' . $country->country_code . $id_suffix . '">' . $country_name . '</h3>';
+				$country_heading = '<h3 id="' . esc_attr($country->country_code . $id_suffix) . '">' . esc_html($country_name) . '</h3>';
 			}
 
 			$states = GeoMashupDB::get_distinct_located_values(
@@ -1853,17 +1853,17 @@ class GeoMashup {
 					if ( null !== $states[0]->admin_code ) {
 						$state_name = GeoMashupDB::get_administrative_name( $country->country_code, $state->admin_code );
 						$state_name = $state_name ? $state_name : $state->admin_code;
-						$list_html .= '<h4 id="' . $country->country_code . '-' . $state->admin_code . $id_suffix . '">' . $state_name . '</h4>';
+						$list_html .= '<h4 id="' . esc_attr($country->country_code) . '-' . esc_attr($state->admin_code . $id_suffix) . '">' . esc_html($state_name) . '</h4>';
 					}
 					$list_html .= '<ul class="gm-index-posts">';
 					foreach ( $post_locations as $post_location ) {
 						$list_html .= '<li><a href="' .
 							get_permalink( $post_location->object_id ) .
 							'">' .
-							$post_location->label .
+							esc_html($post_location->label) .
 							'</a>';
 						if ( isset( $args['include_address'] ) && $args['include_address'] === 'true' ) {
-							$list_html .= '<p>' . $post_location->address . '</p>';
+							$list_html .= '<p>' . esc_html($post_location->address) . '</p>';
 						}
 						$list_html .= '</li>';
 					}
@@ -2080,7 +2080,7 @@ class GeoMashup {
 			$classes[] = 'disable-tab-auto-select';
 		}
 
-		return '<div id="' . $id . '" class="' . implode( ' ', $classes ) . '"></div>';
+		return '<div id="' . esc_attr($id) . '" class="' . esc_attr(implode( ' ', $classes )) . '"></div>';
 	}
 	/**
 	 * Enqueue widget assets in admin.

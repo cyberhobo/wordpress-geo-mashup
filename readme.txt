@@ -3,8 +3,8 @@ Contributors: cyberhobo, freemius
 Donate Link:
 Tags: map, maps, google maps, google map, mapping, mashup, geo, google, geocms
 Requires at least: 3.7
-Tested up to: 6.2.2
-Stable tag: 1.13.12
+Tested up to: 6.6.2
+Stable tag: 1.13.13
 License: GPL2+
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -66,6 +66,9 @@ Geo Mashup combines WordPress, [Google Maps](http://maps.google.com), [OpenStree
 and [GeoNames](http://geonames.org) to create a GeoCMS that puts you in control
 of all your content, including geographic data.
 
+Thanks to [LVT-tholv2k at patchstack](https://patchstack.com/database/researcher/ada529e8-a3cf-495a-8dcb-3e5e460a4081)
+for responsibly reporting a security issue.
+
 Thanks to [Abhinav Mishra](https://twitter.com/0ctac0der) for finding an XSS bug in the map template.
 
 Thanks to [Alex Chepovetsky](https://www.linkedin.com/in/alexchepovetsky)
@@ -81,6 +84,9 @@ GeoMashup supports [standard WordPress plugin installation].
 
 == Upgrade Notice ==
 
+= 1.13.13 =
+This version includes a security update.  Upgrade immediately.
+
 = 1.13.10 =
 This version includes a security update.  Upgrade immediately.
 
@@ -95,7 +101,11 @@ This version fixes a security related bug.  Upgrade immediately.
 
 == Change Log ==
 
-= 1.13.12 Jul 14 2023 =
+= 1.13.13 Sep 14 2024 =
+
+Security fix.
+
+= 1.13.12 Jul 14 2024 =
 
 [milestone 1.13.12 changes](https://github.com/cyberhobo/wordpress-geo-mashup/milestone/30?closed=1)
 

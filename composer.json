@@ -27,7 +27,7 @@
   "require-dev": {
     "roave/security-advisories": "dev-latest",
     "phpunit/phpunit": "^5.7.27",
-    "yoast/phpunit-polyfills": "^1.0.3"
+    "yoast/phpunit-polyfills": "^1.1.0"
   },
   "scripts": {
     "test": "phpunit"
