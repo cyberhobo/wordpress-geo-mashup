@@ -4,7 +4,7 @@ Donate Link:
 Tags: map, maps, google maps, google map, mapping, mashup, geo, google, geocms
 Requires at least: 3.7
 Tested up to: 6.6.2
-Stable tag: 1.13.13
+Stable tag: 1.13.14
 License: GPL2+
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -66,23 +66,28 @@ Geo Mashup combines WordPress, [Google Maps](http://maps.google.com), [OpenStree
 and [GeoNames](http://geonames.org) to create a GeoCMS that puts you in control
 of all your content, including geographic data.
 
+Thanks to Peter Thaleikis of Wordfence for responsibly reporting a security issue.
+
 Thanks to [LVT-tholv2k at patchstack](https://patchstack.com/database/researcher/ada529e8-a3cf-495a-8dcb-3e5e460a4081)
 for responsibly reporting a security issue.
 
-Thanks to [Abhinav Mishra](https://twitter.com/0ctac0der) for finding an XSS bug in the map template.
+Thanks to [Abhinav Mishra](https://twitter.com/0ctac0der) for finding an XSS bug.
 
 Thanks to [Alex Chepovetsky](https://www.linkedin.com/in/alexchepovetsky)
-and [Maxim Lemberg](https://www.linkedin.com/in/maxim-lemberg-661a06149/) for finding an XSS bug in the
-location editor.
+and [Maxim Lemberg](https://www.linkedin.com/in/maxim-lemberg-661a06149/) for finding an XSS bug.
 
-Thanks to Paolo Perego of [armoredcode.com](http://armoredcode.com) for finding and fixing an XSS bug in the
-geo search widget.
+You can report security bugs through the Patchstack Vulnerability Disclosure Program.
+The Patchstack team help validate, triage and handle any security vulnerabilities.
+[Report a security vulnerability.](https://patchstack.com/database/vdp/geo-mashup)
 
 == Installation ==
 
 GeoMashup supports [standard WordPress plugin installation].
 
 == Upgrade Notice ==
+
+= 1.13.14 =
+This version includes a security update.  Upgrade immediately.
 
 = 1.13.13 =
 This version includes a security update.  Upgrade immediately.
@@ -100,6 +105,10 @@ This version fixes a security related bug.  Upgrade immediately.
 This version fixes a security related bug.  Upgrade immediately.
 
 == Change Log ==
+
+= 1.13.14 Sep 29 2024 =
+
+Security fix.
 
 = 1.13.13 Sep 14 2024 =
 
