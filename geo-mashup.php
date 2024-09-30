@@ -1762,12 +1762,12 @@ class GeoMashup {
 			$for_map = $args['for_map'];
 		}
 		if ( !empty( $args['heading_text'] ) ) {
-			$heading_div = '<div id="' . $for_map . '-visible-list-header" style="display:none;">';
+			$heading_div = '<div id="' . esc_attr($for_map) . '-visible-list-header" style="display:none;">';
 			$heading_tags = '<h2>';
 			if ( !empty( $args['heading_tags'] ) ) {
 				$heading_tags = $args['heading_tags'];
 			}
-			$list_html .= balanceTags( $heading_div . $heading_tags . $args['heading_text'], true );
+			$list_html .= balanceTags( esc_html($heading_div . $heading_tags . $args['heading_text']), true );
 		}
 		$list_html .= '<div id="' . esc_attr($for_map) . '-visible-list"></div>';
 		return $list_html;
