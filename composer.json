@@ -22,7 +22,7 @@
     }
   ],
   "require": {
-    "freemius/wordpress-sdk": "^2.5.10"
+    "freemius/wordpress-sdk": "^2.9.0"
   },
   "require-dev": {
     "roave/security-advisories": "dev-latest",
