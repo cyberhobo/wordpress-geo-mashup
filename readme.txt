@@ -4,7 +4,7 @@ Donate Link:
 Tags: map, maps, google maps, google map, mapping, mashup, geo, google, geocms
 Requires at least: 3.7
 Tested up to: 6.6.2
-Stable tag: 1.13.15
+Stable tag: 1.13.16
 License: GPL2+
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -105,6 +105,10 @@ This version fixes a security related bug.  Upgrade immediately.
 This version fixes a security related bug.  Upgrade immediately.
 
 == Change Log ==
+
+= 1.13.16 Jan 27 2025 =
+
+Upgrade Freemius.
 
 = 1.13.15 Nov 10 2024 =
 
