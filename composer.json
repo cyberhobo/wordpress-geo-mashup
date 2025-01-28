@@ -13,16 +13,16 @@
       "type": "package",
       "package": {
         "name": "freemius/wordpress-sdk",
-        "version": "2.5.10",
+        "version": "2.11.0",
         "dist": {
           "type": "zip",
-          "url": "/tmp/wordpress-sdk-2.5.10.zip"
+          "url": "tmp/wordpress-sdk-2.11.0.zip"
         }
       }
     }
   ],
   "require": {
-    "freemius/wordpress-sdk": "^2.9.0"
+    "freemius/wordpress-sdk": "^2.11.0"
   },
   "require-dev": {
     "roave/security-advisories": "dev-latest",
