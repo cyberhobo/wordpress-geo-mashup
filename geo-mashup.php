@@ -1901,7 +1901,7 @@ class GeoMashup {
 			'radius' => '50',
 	 	);
 		$args = wp_parse_args( $args, $default_args );
-		$template = $args['template'];
+		$template = sanitize_key($args['template']);
 		unset( $args['template'] );
 
 		if ( !isset( $args['near_lat'] ) && !isset( $args['location_text'] ) ) {
