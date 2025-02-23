@@ -1,9 +1,10 @@
 services:
   wordpress:
-    image: wordpress:php7.4
+    image: wordpress:php8.0
     ports:
       - 8080:80
     environment:
+      WORDPRESS_DB_USER: root
       WORDPRESS_DB_PASSWORD: root
       WORDPRESS_DEBUG: 1
     volumes:
@@ -12,10 +13,12 @@ services:
       - uploads:/var/www/html/wp-content/uploads
   mysql:
     image: mariadb
+    hostname: mysql
     environment:
       MYSQL_ROOT_PASSWORD: root
       MARIADB_AUTO_UPGRADE: "1"
       MARIADB_INITDB_SKIP_TZINFO: "1"
+      MARIADB_DATABASE: wordpress
     volumes:
       - mysql:/var/lib/mysql
   install:
