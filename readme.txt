@@ -3,8 +3,8 @@ Contributors: cyberhobo, freemius
 Donate Link:
 Tags: map, maps, google maps, google map, mapping, mashup, geo, google, geocms
 Requires at least: 3.7
-Tested up to: 6.6.2
-Stable tag: 1.13.16
+Tested up to: 6.8
+Stable tag: 1.13.17
 License: GPL2+
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -66,15 +66,14 @@ Geo Mashup combines WordPress, [Google Maps](http://maps.google.com), [OpenStree
 and [GeoNames](http://geonames.org) to create a GeoCMS that puts you in control
 of all your content, including geographic data.
 
-Thanks to Peter Thaleikis of Wordfence for responsibly reporting a security issue.
+Thanks for security reports to:
 
-Thanks to [LVT-tholv2k at patchstack](https://patchstack.com/database/researcher/ada529e8-a3cf-495a-8dcb-3e5e460a4081)
-for responsibly reporting a security issue.
-
-Thanks to [Abhinav Mishra](https://twitter.com/0ctac0der) for finding an XSS bug.
-
-Thanks to [Alex Chepovetsky](https://www.linkedin.com/in/alexchepovetsky)
-and [Maxim Lemberg](https://www.linkedin.com/in/maxim-lemberg-661a06149/) for finding an XSS bug.
+* [Dimas Maulana](https://patchstack.com/database/researcher/1ca635c5-9810-4bb5-a410-a651905ea23c?_gl=1*1cx2q4b*_up*MQ..*_ga*MTgyMDQwMDM4My4xNzQ1Mjg3NDQ0*_ga_V3Z4NFMXH9*MTc0NTI4NzQ0NC4xLjEuMTc0NTI4NzQ1NC4wLjAuMA..)
+* Peter Thaleikis of Wordfence
+* [LVT-tholv2k at patchstack](https://patchstack.com/database/researcher/ada529e8-a3cf-495a-8dcb-3e5e460a4081)
+* [Abhinav Mishra](https://twitter.com/0ctac0der)
+* [Alex Chepovetsky](https://www.linkedin.com/in/alexchepovetsky)
+* [Maxim Lemberg](https://www.linkedin.com/in/maxim-lemberg-661a06149/)
 
 You can report security bugs through the Patchstack Vulnerability Disclosure Program.
 The Patchstack team help validate, triage and handle any security vulnerabilities.
@@ -85,6 +84,9 @@ The Patchstack team help validate, triage and handle any security vulnerabilitie
 GeoMashup supports [standard WordPress plugin installation].
 
 == Upgrade Notice ==
+
+= 1.13.17 =
+This version includes a security update.  Upgrade immediately.
 
 = 1.13.14 =
 This version includes a security update.  Upgrade immediately.
@@ -105,6 +107,10 @@ This version fixes a security related bug.  Upgrade immediately.
 This version fixes a security related bug.  Upgrade immediately.
 
 == Change Log ==
+
+= 1.13.17 Apr 21 2025 =
+
+Security fix.
 
 = 1.13.16 Jan 27 2025 =
 
