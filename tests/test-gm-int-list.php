@@ -2,7 +2,8 @@
 
 class GMIntList_Unit_Tests extends WP_UnitTestCase {
 
-	function setUp() {
+	protected function setUp(): void {
+		parent::setUp();
 		require_once( GEO_MASHUP_DIR_PATH . '/gm-int-list.php' );
 	}
 

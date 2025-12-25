@@ -7,13 +7,13 @@ class GeoMashupTestCase extends WP_UnitTestCase {
 	protected $added_filters;
 	protected $data;
 
-	function setUp() {
+	protected function setUp(): void {
 		parent::setUp();
 		$this->added_filters = array();
 		$this->data = new stdClass();
 	}
 
-	function tearDown() {
+	protected function tearDown(): void {
 		global $wpdb;
 		parent::tearDown();
 

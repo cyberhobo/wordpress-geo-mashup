@@ -1,0 +1,39 @@
+# Development image with PHP, Node.js, Composer, and PHPUnit
+ARG PHP_VERSION=8.3
+
+# Use official PHP CLI image as base
+FROM php:${PHP_VERSION}-cli-alpine
+
+# Copy Composer from official image
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+
+# Install system dependencies
+RUN apk add --no-cache \
+    # Basic tools
+    bash \
+    git \
+    subversion \
+    # Node.js and package managers
+    nodejs \
+    npm \
+    yarn \
+    # Build tools for native modules
+    make \
+    g++ \
+    python3 \
+    # MySQL client for WordPress tests
+    mysql-client
+
+# Install PHP extensions commonly needed for WordPress
+RUN docker-php-ext-install \
+    mysqli \
+    pdo_mysql
+
+# Set working directory
+WORKDIR /app
+
+# Stop git from complaining about ownership
+RUN git config --global --add safe.directory /app
+
+# Default command
+CMD ["/bin/bash"]
