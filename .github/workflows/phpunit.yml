@@ -23,10 +23,15 @@ jobs:
         options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=10s --health-retries=10
     strategy:
       matrix:
-        php-versions: ['7.2', '7.3', '7.4', '8.0']
+        php-versions: ['7.4', '8.0', '8.1', '8.2', '8.3']
 
     steps:
     - uses: actions/checkout@v4
+
+    - name: Install SVN  
+      run: |
+        sudo apt-get update 
+        sudo apt-get install -y subversion  
 
     - name: Setup PHP
       uses: shivammathur/setup-php@v2

@@ -48,13 +48,13 @@ class GeoMashup_Unit_Tests extends GeoMashupTestCase {
 	function test_activation_log() {
 		$test_string = rand_str();
 		GeoMashupDB::activation_log( $test_string, true );
-		$this->assertContains( $test_string, GeoMashupDB::activation_log() );
+		$this->assertStringContainsString( $test_string, GeoMashupDB::activation_log() );
 	}
 	
 	function test_location_fields() {
 		
 		$blank_location = GeoMashupDB::blank_location();
-		$this->assertObjectHasAttribute( 'lat', $blank_location );
+		$this->assertObjectHasProperty( 'lat', $blank_location );
 		$this->assertTrue( GeoMashupDB::are_any_location_fields_empty( $blank_location ) );
 
 		$test_location = $this->get_nv_test_location();
@@ -167,8 +167,8 @@ class GeoMashup_Unit_Tests extends GeoMashupTestCase {
 			'sort' => 'distance_km ASC',
 		) );
 		$this->assertTrue( count( $one_result ) === 1 );
-		$this->assertEquals( $coordinates[0]['lat'], $one_result[0]->lat, '', self::DELTA );
-		$this->assertEquals( $coordinates[0]['lng'], $one_result[0]->lng, '', self::DELTA );
+		$this->assertEqualsWithDelta( $coordinates[0]['lat'], $one_result[0]->lat, self::DELTA );
+		$this->assertEqualsWithDelta( $coordinates[0]['lng'], $one_result[0]->lng, self::DELTA );
 		$this->assertEquals( $posts[0], $one_result[0]->object_id );
 
 		$two_results = GeoMashupDB::get_object_locations( array(
@@ -179,8 +179,8 @@ class GeoMashup_Unit_Tests extends GeoMashupTestCase {
 			'sort' => 'distance_km ASC',
 		) );
 		$this->assertTrue( count( $two_results ) === 2 );
-		$this->assertEquals( $coordinates[1]['lat'], $two_results[1]->lat, '', self::DELTA );
-		$this->assertEquals( $coordinates[1]['lng'], $two_results[1]->lng, '', self::DELTA );
+		$this->assertEqualsWithDelta( $coordinates[1]['lat'], $two_results[1]->lat, self::DELTA );
+		$this->assertEqualsWithDelta( $coordinates[1]['lng'], $two_results[1]->lng, self::DELTA );
 		$this->assertEquals( $posts[1], $two_results[1]->object_id );
 	}
 
@@ -232,8 +232,8 @@ class GeoMashup_Unit_Tests extends GeoMashupTestCase {
 
 		$out = GeoMashupDB::get_object_location( 'post', $post_id );
 		$this->assertEquals( $geo_date, $out->geo_date );
-		$this->assertEquals( $loc->lat, $out->lat, '', self::DELTA );
-		$this->assertEquals( $loc->lng, $out->lng, '', self::DELTA );
+		$this->assertEqualsWithDelta( $loc->lat, $out->lat, self::DELTA );
+		$this->assertEqualsWithDelta( $loc->lng, $out->lng, self::DELTA );
 
 		$user_id = $this->factory->user->create();
 		$loc = $this->rand_location();
@@ -244,8 +244,8 @@ class GeoMashup_Unit_Tests extends GeoMashupTestCase {
 
 		$out = GeoMashupDB::get_object_location( 'user', $user_id );
 		$this->assertEquals( $geo_date, $out->geo_date );
-		$this->assertEquals( $loc->lat, $out->lat, '', self::DELTA );
-		$this->assertEquals( $loc->lng, $out->lng, '', self::DELTA );
+		$this->assertEqualsWithDelta( $loc->lat, $out->lat, self::DELTA );
+		$this->assertEqualsWithDelta( $loc->lng, $out->lng, self::DELTA );
 	}
 
 	function test_copy_to_geodata() {
@@ -261,10 +261,10 @@ class GeoMashup_Unit_Tests extends GeoMashupTestCase {
 		$loc_id = GeoMashupDB::set_object_location( 'post', $post_id, $loc, $do_lookups = false );
 		
 		$sync_lat = get_post_meta( $post_id, 'geo_latitude', true );
-		$this->assertEquals( $loc->lat, $sync_lat, '', self::DELTA );
+		$this->assertEqualsWithDelta( $loc->lat, $sync_lat, self::DELTA );
 
 		$sync_lng = get_post_meta( $post_id, 'geo_longitude', true );
-		$this->assertEquals( $loc->lng, $sync_lng, '', self::DELTA ); 
+		$this->assertEqualsWithDelta( $loc->lng, $sync_lng, self::DELTA ); 
 
 		$geo_date = get_post_meta( $post_id, 'geo_date', true );
 		$this->assertFalse( empty( $geo_date ) );
@@ -275,10 +275,10 @@ class GeoMashup_Unit_Tests extends GeoMashupTestCase {
 		$loc_id = GeoMashupDB::set_object_location( 'user', $user_id, $loc, $do_lookups = false );
 
 		$sync_lat = get_user_meta( $user_id, 'geo_latitude', true );
-		$this->assertEquals( $loc->lat, $sync_lat, '', self::DELTA );
+		$this->assertEqualsWithDelta( $loc->lat, $sync_lat, self::DELTA );
 
 		$sync_lng = get_user_meta( $user_id, 'geo_longitude', true );
-		$this->assertEquals( $loc->lng, $sync_lng, '', self::DELTA );
+		$this->assertEqualsWithDelta( $loc->lng, $sync_lng, self::DELTA );
 
 		$geo_date = get_user_meta( $user_id, 'geo_date', true );
 		$this->assertFalse( empty( $geo_date ) );
@@ -363,8 +363,8 @@ class GeoMashup_Unit_Tests extends GeoMashupTestCase {
 			)
 		) );
 		$this->assertEquals( 2, count( $tag1_locs ) );
-		$this->assertContains( $tag1_post_ids[0], wp_list_pluck( $tag1_locs, 'object_id' ) );
-		$this->assertContains( $tag1_post_ids[1], wp_list_pluck( $tag1_locs, 'object_id' ) );
+		$this->assertContains( (string) $tag1_post_ids[0], wp_list_pluck( $tag1_locs, 'object_id' ) );
+		$this->assertContains( (string) $tag1_post_ids[1], wp_list_pluck( $tag1_locs, 'object_id' ) );
 
 		$tag_locs = GeoMashupDB::get_object_locations( array( 
 			'tax_query' => array(
@@ -376,10 +376,10 @@ class GeoMashup_Unit_Tests extends GeoMashupTestCase {
 			)
 		) );
 		$this->assertEquals( 4, count( $tag_locs ) );
-		$this->assertContains( $tag1_post_ids[0], wp_list_pluck( $tag_locs, 'object_id' ) );
-		$this->assertContains( $tag1_post_ids[1], wp_list_pluck( $tag_locs, 'object_id' ) );
-		$this->assertContains( $tag2_post_ids[0], wp_list_pluck( $tag_locs, 'object_id' ) );
-		$this->assertContains( $tag2_post_ids[1], wp_list_pluck( $tag_locs, 'object_id' ) );
+		$this->assertContains( (string) $tag1_post_ids[0], wp_list_pluck( $tag_locs, 'object_id' ) );
+		$this->assertContains( (string) $tag1_post_ids[1], wp_list_pluck( $tag_locs, 'object_id' ) );
+		$this->assertContains( (string) $tag2_post_ids[0], wp_list_pluck( $tag_locs, 'object_id' ) );
+		$this->assertContains( (string) $tag2_post_ids[1], wp_list_pluck( $tag_locs, 'object_id' ) );
 					
 	}
 
@@ -421,7 +421,7 @@ class GeoMashup_Unit_Tests extends GeoMashupTestCase {
 			)
 		) );
 		$this->assertEquals( 1, count( $tag1_locs ) );
-		$this->assertContains( $tag1_post_ids[1], wp_list_pluck( $tag1_locs, 'object_id' ) );
+		$this->assertContains( (string) $tag1_post_ids[1], wp_list_pluck( $tag1_locs, 'object_id' ) );
 
 		$tag_locs = GeoMashupDB::get_object_locations( array(
 			'map_cat' => 'category1',
@@ -434,8 +434,8 @@ class GeoMashup_Unit_Tests extends GeoMashupTestCase {
 			)
 		) );
 		$this->assertEquals( 2, count( $tag_locs ) );
-		$this->assertContains( $tag1_post_ids[1], wp_list_pluck( $tag_locs, 'object_id' ) );
-		$this->assertContains( $tag2_post_ids[1], wp_list_pluck( $tag_locs, 'object_id' ) );
+		$this->assertContains( (string) $tag1_post_ids[1], wp_list_pluck( $tag_locs, 'object_id' ) );
+		$this->assertContains( (string) $tag2_post_ids[1], wp_list_pluck( $tag_locs, 'object_id' ) );
 
 	}
 
@@ -451,7 +451,7 @@ class GeoMashup_Unit_Tests extends GeoMashupTestCase {
 
 		list( $post_id ) = $this->generate_rand_located_posts( 1 );
 		$static_map = GeoMashup::map( 'map_content=single&static=true&object_id=' . $post_id );
-		$this->assertContains( 'color:blue', $static_map );
+		$this->assertStringContainsString( 'color:blue', $static_map );
 	}
 
 	/**
@@ -468,7 +468,7 @@ class GeoMashup_Unit_Tests extends GeoMashupTestCase {
 		) );
 		$this->assertTrue( $test_query->have_posts() );
 		$test_query->the_post();
-		$this->assertContains( '<iframe', apply_filters( 'the_content', get_the_content() ) );
+		$this->assertStringContainsString( '<iframe', apply_filters( 'the_content', get_the_content() ) );
 		wp_reset_postdata();
 	}
 
@@ -489,7 +489,7 @@ class GeoMashup_Unit_Tests extends GeoMashupTestCase {
 		) );
 		$this->assertTrue( $test_query->have_posts() );
 		$test_query->the_post();
-		$this->assertContains( 'Reno, NV', apply_filters( 'the_content', get_the_content() ) );
+		$this->assertStringContainsString( 'Reno, NV', apply_filters( 'the_content', get_the_content() ) );
 		wp_reset_postdata();
 	}
 
@@ -514,7 +514,7 @@ class GeoMashup_Unit_Tests extends GeoMashupTestCase {
 		$this->assertTrue( $test_query->have_posts() );
 		$test_query->the_post();
 		$this->assertFalse( $test_query->have_posts() );
-		$this->assertContains( 'center_lat=' . substr( $location->lat, 0, 4 ), GeoMashup::show_on_map_link() );
+		$this->assertStringContainsString( 'center_lat=' . substr( $location->lat, 0, 4 ), GeoMashup::show_on_map_link() );
 	}
 
 	/**
@@ -557,8 +557,8 @@ class GeoMashup_Unit_Tests extends GeoMashupTestCase {
 		);
 		$search = new GeoMashupSearch( $search_args );
 		$this->assertTrue( $search->have_posts(), 'Search did not find any posts (internet required).' );
-		$this->assertContains( $found_post->ID, $search->get_the_IDs(), 'Search did not find the target post.' );
-		$this->assertNotContains( $not_found_post->ID, $search->get_the_IDs(), 'Search found the wrong post.' );
+		$this->assertContains( (string) $found_post->ID, $search->get_the_IDs(), 'Search did not find the target post.' );
+		$this->assertNotContains( (string) $not_found_post->ID, $search->get_the_IDs(), 'Search found the wrong post.' );
 
 		ob_start();
 		$search->load_template();
@@ -566,7 +566,7 @@ class GeoMashup_Unit_Tests extends GeoMashupTestCase {
 
 		$this->assertThat(
 			$output,
-			$this->stringContains( $search_args['location_text'] ),
+			$this->stringContains( htmlentities( $search_args['location_text'] ) ),
 			'Default results template does not contain search text.'
 		);
 		$this->assertThat(
@@ -595,7 +595,7 @@ class GeoMashup_Unit_Tests extends GeoMashupTestCase {
 		);
 		$search = new GeoMashupSearch( $search_args );
 		$this->assertTrue( $search->have_posts(), 'Search did not find any posts.' );
-		$this->assertContains( $found_post->ID, $search->get_the_IDs(), 'Search did not find the target post.' );
+		$this->assertContains( (string) $found_post->ID, $search->get_the_IDs(), 'Search did not find the target post.' );
 	}
 
     /**
@@ -648,7 +648,7 @@ class GeoMashup_Unit_Tests extends GeoMashupTestCase {
 		);
 		$search = new GeoMashupSearch( $search_args );
 		$this->assertTrue( $search->have_posts(), 'Search did not find any posts.' );
-		$this->assertContains( $found_post->ID, $search->get_the_IDs(), 'Search did not find the target post.' );
+		$this->assertContains( (string) $found_post->ID, $search->get_the_IDs(), 'Search did not find the target post.' );
 
 		$search->the_post();
 		$this->assertEquals(
@@ -752,7 +752,7 @@ class GeoMashup_Unit_Tests extends GeoMashupTestCase {
 			'maxlon' => $nv_location->lng + 1,
 		) );
 		list( $cols, $join, $where, $groupby ) = $location_query->get_sql( $wpdb->users, 'ID' );
-		$this->assertNotContains( 'distance_km', $cols, 'Got a distance_km column for a non-radius query.' );
+		$this->assertStringNotContainsString( 'distance_km', $cols, 'Got a distance_km column for a non-radius query.' );
 		$this->assertEmpty( $groupby, 'Got a groupby value for a non-radius query.' );
 
 		$sql = "SELECT {$wpdb->users}.ID
@@ -833,7 +833,7 @@ class GeoMashup_Unit_Tests extends GeoMashupTestCase {
 			'object_name' => 'post',
 			'object_ids' => implode( ',', $post_ids ),
 		) );
-		$this->assertContains( 'map_content=global', $html, 'Expected global map content when object_ids are passed.' );
+		$this->assertStringContainsString( 'map_content=global', $html, 'Expected global map content when object_ids are passed.' );
 	}
 
 	/**
@@ -873,12 +873,12 @@ class GeoMashup_Unit_Tests extends GeoMashupTestCase {
 		$test_query->the_post();
 
 		$test_args = array( 'text' => 'TEST TEXT', 'zoom' => 10 );
-		$this->assertNotContains( 'text=', GeoMashup::show_on_map_link( $test_args ) );
-		$this->assertContains( 'zoom=10', GeoMashup::show_on_map_link( $test_args ) );
+		$this->assertStringNotContainsString( 'text=', GeoMashup::show_on_map_link( $test_args ) );
+		$this->assertStringContainsString( 'zoom=10', GeoMashup::show_on_map_link( $test_args ) );
 	}
 
 	function verify_google_geocode_request( $continue, $request, $url ) {
-		$this->assertContains( 'TESTKEY', $url, 'Expected query URL to contain the test key.' );
+		$this->assertStringContainsString( 'TESTKEY', $url, 'Expected query URL to contain the test key.' );
 		$this->data->geocode_called = true;
 		return array( 'response' => array( 'code' => 200 ), 'body' => '{ "status": "ZERO_RESULTS" }' );
 	}
@@ -891,7 +891,7 @@ class GeoMashup_Unit_Tests extends GeoMashupTestCase {
 		GeoMashupDB::set_object_location( 'post', $post_id, $this->rand_location(), false );
 
 		$html = GeoMashup::map( 'map_content=global&width=400&height=300px' );
-		$this->assertNotContains( $html, 'padding-bottom' );
+		$this->assertStringNotContainsString( 'padding-bottom', $html );
 
 		$html = GeoMashup::map( 'map_content=global&width=40%&height=300&shape=50%' );
 		$this->assertThat( $html, $this->stringContains( 'width: 100%;' ) );

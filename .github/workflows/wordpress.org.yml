@@ -14,15 +14,15 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: 7.4
+          php-version: 8.3
           coverage: none
           tools: composer
           extensions: mysql
 
-      - name: Set Node.js 16.x
+      - name: Set Node.js 24.x
         uses: actions/setup-node@v3
         with:
-          node-version: 16.x
+          node-version: 24.x
 
       - name: Install
         uses: borales/actions-yarn@v4

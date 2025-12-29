@@ -4,21 +4,24 @@ Develop using Docker Compose, no need to install MySQL, PHP, or Node.
 
 ## Install
 
+`touch .yarn.env` to create an empty file for development environment variables.
+
 An install service attempts to install development dependencies when
 the development server is brought up.
 
-Alternatively `./yarn.sh dev:install` will do the job.
+
+Alternatively `./yarn.sh install:dev` will do the job.
 
 ## Development Server
 
 To run MariaDB and WordPress with a live copy of Geo Mashup:
 
-`docker-compose up`
+`docker compose up`
 
 This also runs a temporary install service to install node and PHP
 development dependencies.
 
-Control-C stops running services, or `docker-compose stop` if that goes
+Control-C stops running services, or `docker compose stop` if that goes
 awry.
 
 ## Testing
