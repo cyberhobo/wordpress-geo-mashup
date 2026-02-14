@@ -954,4 +954,70 @@ class GeoMashup_Unit_Tests extends GeoMashupTestCase {
 
 		$this->assertEquals( $ns_output, $ns );
 	}
+
+	function test_sanitize_sort_arg_valid_single_column() {
+		$args = array( 'sort' => 'post_title ASC' );
+		$result = GeoMashupDB::sanitize_query_args( $args );
+		$this->assertEquals( 'post_title ASC', $result['sort'] );
+	}
+
+	function test_sanitize_sort_arg_valid_multiple_clauses() {
+		$args = array( 'sort' => 'post_status ASC, geo_date DESC' );
+		$result = GeoMashupDB::sanitize_query_args( $args );
+		$this->assertEquals( 'post_status ASC, geo_date DESC', $result['sort'] );
+	}
+
+	function test_sanitize_sort_arg_valid_no_direction() {
+		$args = array( 'sort' => 'post_title' );
+		$result = GeoMashupDB::sanitize_query_args( $args );
+		$this->assertEquals( 'post_title', $result['sort'] );
+	}
+
+	function test_sanitize_sort_arg_valid_distance() {
+		$args = array( 'sort' => 'distance_km ASC' );
+		$result = GeoMashupDB::sanitize_query_args( $args );
+		$this->assertEquals( 'distance_km ASC', $result['sort'] );
+	}
+
+	function test_sanitize_sort_arg_rejects_sql_injection() {
+		$args = array( 'sort' => '1; DROP TABLE wp_posts; --' );
+		$result = GeoMashupDB::sanitize_query_args( $args );
+		$this->assertEmpty( $result['sort'] );
+	}
+
+	function test_sanitize_sort_arg_rejects_unknown_column() {
+		$args = array( 'sort' => 'evil_column ASC' );
+		$result = GeoMashupDB::sanitize_query_args( $args );
+		$this->assertEmpty( $result['sort'] );
+	}
+
+	function test_sanitize_sort_arg_rejects_invalid_direction() {
+		$args = array( 'sort' => 'post_title SIDEWAYS' );
+		$result = GeoMashupDB::sanitize_query_args( $args );
+		$this->assertEmpty( $result['sort'] );
+	}
+
+	function test_sanitize_sort_arg_rejects_subquery() {
+		$args = array( 'sort' => '(SELECT 1 FROM wp_users)' );
+		$result = GeoMashupDB::sanitize_query_args( $args );
+		$this->assertEmpty( $result['sort'] );
+	}
+
+	function test_sanitize_object_id_cast_to_int() {
+		$args = array( 'object_id' => '42 OR 1=1' );
+		$result = GeoMashupDB::sanitize_query_args( $args );
+		$this->assertSame( 42, $result['object_id'] );
+	}
+
+	function test_sanitize_exclude_object_ids_strips_non_numeric() {
+		$args = array( 'exclude_object_ids' => '1,2,3 OR 1=1' );
+		$result = GeoMashupDB::sanitize_query_args( $args );
+		$this->assertEquals( '1,2,311', $result['exclude_object_ids'] );
+	}
+
+	function test_sanitize_show_future_sanitized() {
+		$args = array( 'show_future' => 'true<script>' );
+		$result = GeoMashupDB::sanitize_query_args( $args );
+		$this->assertEquals( 'truescript', $result['show_future'] );
+	}
 }
