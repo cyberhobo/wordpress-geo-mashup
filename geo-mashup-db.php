@@ -1509,7 +1509,8 @@ class GeoMashupDB {
 
 			case 'map_cat':
 			case 'object_ids':
-				$value = preg_replace( '/[^0-9,]', '', $value );
+			case 'exclude_object_ids':
+				$value = preg_replace( '/[^0-9,]/', '', $value );
 				break;
 
 			case 'map_post_type':
@@ -1517,6 +1518,7 @@ class GeoMashupDB {
 				$value = sanitize_key( $value );
 				break;
 
+			case 'object_id':
 			case 'limit':
 			case 'map_offset':
 				$value = (int) $value;
@@ -1526,9 +1528,73 @@ class GeoMashupDB {
 				$value = (bool) $value;
 				break;
 
+			case 'show_future':
+				$value = sanitize_key( $value );
+				break;
+
+			case 'sort':
+				$value = self::sanitize_sort_arg( $value );
+				break;
+
 			default:
 				$value = sanitize_text_field( $value );
 		}
+	}
+
+	/**
+	 * Sanitize a sort/order-by query argument.
+	 *
+	 * Validates each clause against an allowlist of column names and directions
+	 * to prevent SQL injection via the ORDER BY clause.
+	 *
+	 * @since 1.13.18
+	 *
+	 * @param string $value Sort expression like 'column ASC' or 'col1 ASC, col2 DESC'.
+	 * @return string Sanitized sort expression, or empty string if invalid.
+	 */
+	private static function sanitize_sort_arg( $value ) {
+		$allowed_columns = array(
+			// geo_mashup_locations columns
+			'id', 'lat', 'lng', 'address', 'saved_name', 'geoname',
+			'postal_code', 'country_code', 'admin_code', 'sub_admin_code', 'locality_name',
+			// geo_mashup_location_relationships columns
+			'object_name', 'object_id', 'location_id', 'geo_date',
+			// wp_posts columns commonly used in sort
+			'post_title', 'post_date', 'post_modified', 'post_status', 'post_author',
+			// wp_users columns
+			'display_name', 'user_registered',
+			// wp_comments columns
+			'comment_date', 'comment_author',
+			// computed column from radius queries
+			'distance_km',
+		);
+
+		$clauses = explode( ',', $value );
+		$sanitized = array();
+
+		foreach ( $clauses as $clause ) {
+			$parts = preg_split( '/\s+/', trim( $clause ) );
+			if ( empty( $parts[0] ) ) {
+				continue;
+			}
+
+			$column = $parts[0];
+			if ( ! in_array( $column, $allowed_columns, true ) ) {
+				return '';
+			}
+
+			$direction = '';
+			if ( isset( $parts[1] ) ) {
+				$direction = strtoupper( $parts[1] );
+				if ( 'ASC' !== $direction && 'DESC' !== $direction ) {
+					return '';
+				}
+			}
+
+			$sanitized[] = $direction ? "$column $direction" : $column;
+		}
+
+		return implode( ', ', $sanitized );
 	}
 
 	/**
