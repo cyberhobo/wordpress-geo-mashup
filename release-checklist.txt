@@ -13,7 +13,7 @@ If any step fails, fix before continuing, repeating any necessary prior steps.
 	1. Start a `release/<version>` branch off `develop`, remember to `git pull` changes`.
 	1. Edit WP readme.txt (Remember tested version, and changelog. Stable tag is automated.)
 	1. Update the language template if the release contains new language strings `yarn makepot`, `git commit`;
-	1. Update version, `yarn version --new-version <new version> --no-git-tag-version`, commit.
+	1. Update version, `./yarn.sh version --new-version <new version> --no-git-tag-version`, commit.
 	1. Push, check GitHub actions, `git push -u origin release/<version>`
 	1. Merge `git checkout master; git merge --no-ff release/<version>; git push`
     1. For major versions generate and deploy any new PHPDoc and JavaDocs. `yarn jsdoc`, `yarn phpdoc`.
