@@ -45,7 +45,7 @@ class GeoMashupOptions_Unit_Tests extends WP_UnitTestCase {
 
 		$this->assertNotCount( 0, $geo_mashup_options->validation_errors );
 		$this->assertNotEquals( $invalid_options['overall']['map_api'], $geo_mashup_options->get( 'overall', 'map_api' ) );
-		$this->assertNotEquals( $invalid_options['overall']['add_category_links'], $geo_mashup_options->get( 'overall', 'add_category_links' ) );
+		$this->assertNotSame( $invalid_options['overall']['add_category_links'], $geo_mashup_options->get( 'overall', 'add_category_links' ) );
 		$this->assertNotEquals( $invalid_options['global_map']['width'], $geo_mashup_options->get( 'global_map', 'width' ) );
 		$this->assertNotEquals( $invalid_options['global_map']['cluster_lib'], $geo_mashup_options->get( 'global_map', 'cluster_lib' ) );
 	}

@@ -1,3 +1,4 @@
+<?xml version="1.0"?>
 <phpunit
 	bootstrap="tests/bootstrap.php"
 	backupGlobals="false"
@@ -7,12 +8,18 @@
 	convertWarningsToExceptions="true"
 	>
 	<testsuites>
-		<testsuite>
+		<testsuite name="default">
 			<directory prefix="test-" suffix=".php">./</directory>
 		</testsuite>
 	</testsuites>
-	<filter>
-		<whitelist>
-		</whitelist>
-	</filter>
+	<coverage>
+		<include>
+			<directory suffix=".php">./</directory>
+		</include>
+		<exclude>
+			<directory>./tests</directory>
+			<directory>./vendor</directory>
+			<directory>./node_modules</directory>
+		</exclude>
+	</coverage>
 </phpunit>

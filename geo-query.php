@@ -80,8 +80,9 @@ class GeoMashupQuery {
 		if ( !is_array( $object_ids ) ) {
 			$object_ids = explode( ',', $object_ids );
 		}
-		$object_name = ( isset( $_GET['object_name'] ) ) ? $_GET['object_name'] : 'post';
-		$template_base = ( isset( $_GET['template'] ) ) ? $_GET['template'] : '';
+		$object_ids = array_map( 'intval', $object_ids );
+		$object_name = ( isset( $_GET['object_name'] ) ) ? sanitize_key($_GET['object_name']) : 'post';
+		$template_base = ( isset( $_GET['template'] ) ) ? sanitize_key($_GET['template']) : '';
 
 		switch ( $object_name ) {
 			case 'post':

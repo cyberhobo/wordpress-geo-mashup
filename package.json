@@ -3,10 +3,11 @@
   "version": "1.13.18",
   "devDependencies": {
     "@larscom/cpx": "^2.0.0",
-    "csso-cli": "^3.0.0",
-    "node-wp-i18n": "^1.0.2",
-    "renamer": "^2.0.1",
-    "uglify-js": "^3.11.5"
+    "csso-cli": "^4.0.2",
+    "node-wp-i18n": "^1.2.8",
+    "renamer": "^5.0.2",
+    "rexreplace": "^7.1.14",
+    "uglify-js": "^3.19.3"
   },
   "scripts": {
     "env": "env",

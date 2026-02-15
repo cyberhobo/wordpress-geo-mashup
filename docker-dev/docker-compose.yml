@@ -1,9 +1,10 @@
 services:
   wordpress:
-    image: wordpress:php7.4
+    image: wordpress:php8.3
     ports:
-      - 8080:80
+      - 8000:80
     environment:
+      WORDPRESS_DB_USER: root
       WORDPRESS_DB_PASSWORD: root
       WORDPRESS_DEBUG: 1
     volumes:
@@ -11,15 +12,21 @@ services:
       - ../../geo-mashup-custom:/var/www/html/wp-content/plugins/geo-mashup-custom
       - uploads:/var/www/html/wp-content/uploads
   mysql:
-    image: mariadb
+    image: mariadb:11
+    hostname: mysql
     environment:
       MYSQL_ROOT_PASSWORD: root
       MARIADB_AUTO_UPGRADE: "1"
       MARIADB_INITDB_SKIP_TZINFO: "1"
+      MARIADB_DATABASE: wordpress
     volumes:
       - mysql:/var/lib/mysql
   install:
-    image: juliquiron/wordpress-phpunit-test-runner-gitlab-ci
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+      args:
+        PHP_VERSION: 8.3
     volumes:
       - ..:/app
     working_dir: /app
