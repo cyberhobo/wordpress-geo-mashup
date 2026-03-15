@@ -1495,6 +1495,7 @@ class GeoMashupDB {
 	 * @param string $name
 	 */
 	public static function sanitize_query_arg( &$value, $name ) {
+		if (is_null($value)) return;
 		switch ($name) {
 			case 'minlat':
 			case 'maxlat':
@@ -1507,7 +1508,6 @@ class GeoMashupDB {
 				$value = (float) $value;
 				break;
 
-			case 'map_cat':
 			case 'object_ids':
 			case 'exclude_object_ids':
 				$value = preg_replace( '/[^0-9,]/', '', $value );
@@ -1515,6 +1515,8 @@ class GeoMashupDB {
 
 			case 'map_post_type':
 			case 'object_name':
+			case 'map_cat':
+			case 'show_future':
 				$value = sanitize_key( $value );
 				break;
 
@@ -1526,10 +1528,6 @@ class GeoMashupDB {
 
 			case 'suppress_filters':
 				$value = (bool) $value;
-				break;
-
-			case 'show_future':
-				$value = sanitize_key( $value );
 				break;
 
 			case 'sort':
@@ -1635,6 +1633,7 @@ class GeoMashupDB {
 			'map_offset' => 0,
 		);
 		$query_args = wp_parse_args( $query_args, $default_args );
+		$query_args = self::sanitize_query_args( $query_args );
 		
 		// Construct the query 
 		$object_name = $query_args['object_name'];
@@ -1745,18 +1744,23 @@ class GeoMashupDB {
 			} else {
 				if ( !is_array( $query_args['map_post_type'] ) ) 
 					$query_args['map_post_type'] = preg_split( '/[,\s]+/', $query_args['map_post_type'] );
-				$wheres[] = "o.post_type IN ('" . join("', '", $query_args['map_post_type']) . "')";
+				$wheres[] = "o.post_type IN ('" . join("', '", array_map( 'esc_sql', $query_args['map_post_type'] ) ) . "')";
 			}
 		} 
 
 		if ( ! empty( $query_args['object_id'] ) ) {
-			$wheres[] = 'gmlr.object_id = ' . esc_sql( $query_args['object_id'] );
+			$wheres[] = $wpdb->prepare('gmlr.object_id = %d', absint( $query_args['object_id' ]));
 		} else if ( ! empty( $query_args['object_ids'] ) ) {
-			$wheres[] = 'gmlr.object_id IN ( ' . esc_sql( $query_args['object_ids'] ) .' )';
+			$ids = array_map( 'absint', explode( ',', $query_args['object_ids'] ) );
+    		$placeholders = implode( ',', array_fill( 0, count( $ids ), '%d' ) );
+    		$wheres[] = $wpdb->prepare( "gmlr.object_id IN ( $placeholders )", $ids );
 		}
 
-		if ( ! empty( $query_args['exclude_object_ids'] ) ) 
-			$wheres[] = 'gmlr.object_id NOT IN ( ' . esc_sql( $query_args['exclude_object_ids'] ) . ' )';
+		if ( ! empty( $query_args['exclude_object_ids'] ) ) {
+			$ids = array_map( 'absint', explode( ',', $query_args['exclude_object_ids'] ) );
+    		$placeholders = implode( ',', array_fill( 0, count( $ids ), '%d' ) );
+			$wheres[] = $wpdb->prepare( "gmlr.object_id NOT IN ( $placeholders )", $ids );
+		}
 
 		list( $l_cols, $l_join, $l_where, $l_groupby ) = $location_query->get_sql( 'o', $object_store['id_column'] );
 		$field_string .= $l_cols;
