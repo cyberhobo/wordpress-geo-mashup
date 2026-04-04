@@ -448,7 +448,7 @@ class GeoMashupOptions {
 						__(', which must be a string', 'GeoMashup') );
 					return false;
 				}
-				if ( preg_match( "/<.*>/", $value ) ) {
+				if ( preg_match( "/<\/?[a-z][a-z0-9]*/i", $value ) ) {
 					array_push ( $this->validation_errors, '"'. esc_html( $value ) . '" ' . __('is invalid for', 'GeoMashup') . ' ' . $key .
 						__(', which must not contain XML tags.', 'GeoMashup') );
 					return false;
