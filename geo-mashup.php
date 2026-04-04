@@ -1624,6 +1624,8 @@ class GeoMashup {
 		);
 		$args = wp_parse_args( $args, $defaults );
 		extract( $args, EXTR_SKIP );
+		$separator = esc_html( $separator );
+		$format = esc_html( $format );
 		$info = '';
 
 		if ( $object_name && $object_id ) {
