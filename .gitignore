@@ -5,3 +5,4 @@ vendor/
 node_modules/
 *.env
 tmp/
+.phpunit.result.cache
