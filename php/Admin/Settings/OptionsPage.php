@@ -86,6 +86,10 @@ class OptionsPage {
 
 		check_admin_referer( 'geo-mashup-update-options' );
 
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_die( 'Not Authorized' );
+		}
+
 		// Make missing array options empty
 		if ( empty( $submission['global_map']['add_map_type_control'] ) ) {
 			$submission['global_map']['add_map_type_control'] = array();
