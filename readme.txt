@@ -68,8 +68,11 @@ of all your content, including geographic data.
 
 Thanks for security reports to:
 
+* [daroo](https://vdp.patchstack.com/database/researchers/9f3ffb0b-5ad7-4756-86d2-cd63a1d09469)
+* [Naoya Takahashi (nakko)](https://www.wordfence.com/threat-intel/vulnerabilities/researchers/n4kk0)
+* [Muhammad Yudha - DJ](https://vdp.patchstack.com/database/researchers/8f5691da-0aba-46ca-8be8-e3aad13cb3a2)
 * [Nabil Irawan](https://www.wordfence.com/threat-intel/vulnerabilities/researchers/nabil-irawan)
-* [Dimas Maulana](https://patchstack.com/database/researcher/1ca635c5-9810-4bb5-a410-a651905ea23c?_gl=1*1cx2q4b*_up*MQ..*_ga*MTgyMDQwMDM4My4xNzQ1Mjg3NDQ0*_ga_V3Z4NFMXH9*MTc0NTI4NzQ0NC4xLjEuMTc0NTI4NzQ1NC4wLjAuMA..)
+* [Dimas Maulana](https://patchstack.com/database/researcher/1ca635c5-9810-4bb5-a410-a651905ea23c)
 * Peter Thaleikis of Wordfence
 * [LVT-tholv2k at patchstack](https://patchstack.com/database/researcher/ada529e8-a3cf-495a-8dcb-3e5e460a4081)
 * [Abhinav Mishra](https://twitter.com/0ctac0der)
