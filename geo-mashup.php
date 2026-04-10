@@ -1113,6 +1113,9 @@ class GeoMashup {
 	 */
 	private static function click_to_load_content( $map_data, $iframe_src, $click_to_load_text, $static, $map_image ) {
 
+		$iframe_src = esc_attr( $iframe_src );
+		$click_to_load_text = esc_html( $click_to_load_text );
+
 		if ( is_feed() ) {
 			return "<a href=\"{$iframe_src}\">$click_to_load_text</a>";
 		}
@@ -1621,6 +1624,8 @@ class GeoMashup {
 		);
 		$args = wp_parse_args( $args, $defaults );
 		extract( $args, EXTR_SKIP );
+		$separator = esc_html( $separator );
+		$format = esc_html( $format );
 		$info = '';
 
 		if ( $object_name && $object_id ) {

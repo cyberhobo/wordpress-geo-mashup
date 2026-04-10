@@ -174,19 +174,18 @@ class Search {
 	public function load_template( $template = 'search-results' ) {
 
 		// Define variables for the template
-		/** @var $object_name */
-		/** @var $object_ids */
-		/** @var $units */
-		/** @var $location_text */
-		/** @var $radius */
-		/** @var $sort */
-		extract( $this->query_vars, EXTR_OVERWRITE );
+	 	$object_name = isset($this->query_vars['object_name']) ? $this->query_vars['object_name'] : null;
+	 	$distance_factor = isset($this->query_vars['distance_factor']) ? $this->query_vars['distance_factor'] : null;
+	 	$units = isset($this->query_vars['units']) ? $this->query_vars['units'] : null;
+	 	$location_text = isset($this->query_vars['location_text']) ? $this->query_vars['location_text'] : null;
+	 	$radius = isset($this->query_vars['radius']) ? $this->query_vars['radius'] : null;
+	 	$sort = isset($this->query_vars['sort']) ? $this->query_vars['sort'] : null;
 
 		extract( [
-			'search_text'       => $location_text,
+			'search_text'       => esc_html( $location_text ),
 			'distance_factor'   => $this->distance_factor,
 			'near_location'     => $this->near_location,
-			'result_count'      => $this->result_count,
+			'result_count'      => (int) $this->result_count,
 			'geo_mashup_search' => &$this,
 			'approximate_zoom'  => absint( log( 10000 / $this->max_km, 2 ) )
 		], EXTR_OVERWRITE );

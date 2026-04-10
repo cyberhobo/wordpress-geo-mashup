@@ -410,7 +410,7 @@ class GeoMashup_Unit_Tests extends GeoMashupTestCase {
 		wp_set_post_terms( $tag2_post_ids[1], $cat1_term_id, $cat_taxonomy );
 		GeoMashupDB::set_object_location( 'post', $tag2_post_ids[1], $this->rand_location(), false );
 
-		$tag1_locs = GeoMashupDB::get_object_locations( array(
+		$query = array(
 			'map_cat' => 'category1',
 			'tax_query' => array(
 				array(
@@ -419,7 +419,9 @@ class GeoMashup_Unit_Tests extends GeoMashupTestCase {
 					'field' => 'slug',
 				)
 			)
-		) );
+		);
+
+		$tag1_locs = GeoMashupDB::get_object_locations( $query );
 		$this->assertEquals( 1, count( $tag1_locs ) );
 		$this->assertContains( (string) $tag1_post_ids[1], wp_list_pluck( $tag1_locs, 'object_id' ) );
 

@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(docker-dev/yarn.sh:*)",
+      "Bash(./yarn.sh test:*)",
+      "Bash(docker compose:*)"
+    ]
+  }
+}
