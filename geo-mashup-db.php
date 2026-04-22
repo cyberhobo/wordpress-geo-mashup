@@ -1985,10 +1985,14 @@ class GeoMashupDB {
 					if ( !is_array( $null_fields ) ) {
 						$null_fields = explode( ',', $null_fields );
 					}
-					$null_fields = array_map( function( $field ) {
-						return $field . "=NULL";
-					}, $null_fields );
-					$wpdb->query( $wpdb->prepare( "UPDATE $location_table SET " . implode( ',', $null_fields) . " WHERE id=%d", $db_location['id'] ) );
+					$allowed_null_fields = array( 'address', 'saved_name', 'geoname', 'postal_code', 'country_code', 'admin_code', 'sub_admin_code', 'locality_name' );
+					$null_fields = array_intersect( $null_fields, $allowed_null_fields );
+					if ( ! empty( $null_fields ) ) {
+						$null_fields = array_map( function( $field ) {
+							return $field . "=NULL";
+						}, $null_fields );
+						$wpdb->query( $wpdb->prepare( "UPDATE $location_table SET " . implode( ',', $null_fields) . " WHERE id=%d", $db_location['id'] ) );
+					}
 					unset( $location['set_null'] );
 				}
 
