@@ -2244,14 +2244,17 @@ class GeoMashupDB {
 			$limit = (int) apply_filters( 'postmeta_form_limit', 30 );
 			$terms = explode( ',', $_GET['q'] );
 			$stub = trim( array_pop( $terms ) );
-			$like = esc_sql( $stub );
-			$keys = $wpdb->get_col( "
+			$like = $wpdb->esc_like( $stub );
+			$keys = $wpdb->get_col( $wpdb->prepare( "
 				SELECT meta_key
 				FROM $wpdb->postmeta
 				GROUP BY meta_key
-				HAVING meta_key LIKE '$like%'
+				HAVING meta_key LIKE %s
 				ORDER BY meta_key
-				LIMIT $limit" );
+				LIMIT %d",
+				$like . '%',
+				$limit
+			) );
 			foreach( $keys as $key ) {
 				echo "$key\n";
 			}
