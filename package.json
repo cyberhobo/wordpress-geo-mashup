@@ -1,6 +1,6 @@
 {
   "license": "GPL-2.0-or-later",
-  "version": "1.13.19",
+  "version": "1.13.20",
   "devDependencies": {
     "@larscom/cpx": "^2.0.0",
     "csso-cli": "^4.0.2",

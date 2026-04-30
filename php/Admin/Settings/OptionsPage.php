@@ -34,20 +34,27 @@ class OptionsPage {
 		TestsPanel $tests_panel = null
 	) {
 		global $geo_mashup_options;
-		$this->options           = $options === null ? $geo_mashup_options : $options;
-		$this->db                = $db_adapter === null ? new DbAdapter() : $db_adapter;
-		$this->tabs              = $tabs === null ? new Tabs() : $tabs;
-		$this->overall_panel     = $overall_panel === null ? new OverallPanel() : $overall_panel;
-		$this->single_map_panel  = $single_map_panel === null ? new SingleMapPanel() : $single_map_panel;
-		$this->global_map_panel  = $global_map_panel === null ? new GlobalMapPanel() : $global_map_panel;
+		$this->options = $options === null ? $geo_mashup_options : $options;
+		$this->db = $db_adapter === null ? new DbAdapter() : $db_adapter;
+		$this->tabs = $tabs === null ? new Tabs() : $tabs;
+		$this->overall_panel = $overall_panel === null ? new OverallPanel() : $overall_panel;
+		$this->single_map_panel = $single_map_panel === null ? new SingleMapPanel() : $single_map_panel;
+		$this->global_map_panel = $global_map_panel === null ? new GlobalMapPanel() : $global_map_panel;
 		$this->context_map_panel = $context_map_panel === null ? new ContextMapPanel() : $context_map_panel;
-		$this->tests_panel       = $tests_panel === null ? new TestsPanel() : $tests_panel;
+		$this->tests_panel = $tests_panel === null ? new TestsPanel() : $tests_panel;
 	}
 
 	/**
 	 * @param array $submission Submitted data
 	 */
 	public function render( $submission ) {
+		if ( isset( $submission['submit'] ) ) {
+			check_admin_referer( 'geo-mashup-update-options' );
+		}
+
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_die( 'Not Authorized' );
+		}
 
 		echo $this->save( $submission );
 		echo $this->duplicate_geodata();
@@ -58,15 +65,15 @@ class OptionsPage {
 		echo $this->corrupt_options();
 		echo $this->validation_errors();
 
-		$data                         = new PageData();
-		$data->action                 = $_SERVER['REQUEST_URI'];
-		$data->view_activation_log    = isset($_GET['view_activation_log']);
-		$data->tabs_data              = TabsData::from_submission( $submission );
-		$data->overall_panel_data     = new OverallPanelData();
-		$data->single_map_panel_data  = new SingleMapPanelData();
-		$data->global_map_panel_data  = new GlobalMapPanelData();
+		$data = new PageData();
+		$data->action = $_SERVER['REQUEST_URI'];
+		$data->view_activation_log = isset( $_GET['view_activation_log'] );
+		$data->tabs_data = TabsData::from_submission( $submission );
+		$data->overall_panel_data = new OverallPanelData();
+		$data->single_map_panel_data = new SingleMapPanelData();
+		$data->global_map_panel_data = new GlobalMapPanelData();
 		$data->context_map_panel_data = new ContextMapPanelData();
-		$data->tests_panel_data       = TestsPanelData::from_submission( $submission );
+		$data->tests_panel_data = TestsPanelData::from_submission( $submission );
 
 		PageView::render(
 			$data,
@@ -82,12 +89,6 @@ class OptionsPage {
 	private function save( $submission ) {
 		if ( ! isset( $submission['submit'] ) ) {
 			return '';
-		}
-
-		check_admin_referer( 'geo-mashup-update-options' );
-
-		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_die( 'Not Authorized' );
 		}
 
 		// Make missing array options empty
@@ -116,7 +117,7 @@ class OptionsPage {
 		}
 
 		if ( isset( $submission['overall']['copy_geodata'] ) &&
-		     'true' !== $this->options->get( 'overall', 'copy_geodata' ) ) {
+			'true' !== $this->options->get( 'overall', 'copy_geodata' ) ) {
 			$this->activated_copy_geodata = true;
 		}
 
@@ -125,9 +126,9 @@ class OptionsPage {
 		$saved = $this->options->save();
 		if ( $saved ) {
 			return '<div class="updated fade"><p>' .
-			       __( 'Options updated.  Browser or server caching may delay updates for recently viewed maps.',
-				       'GeoMashup' ) .
-			       '</p></div>';
+				__( 'Options updated.  Browser or server caching may delay updates for recently viewed maps.',
+					'GeoMashup' ) .
+				'</p></div>';
 		}
 
 
@@ -141,8 +142,8 @@ class OptionsPage {
 		$this->db->duplicate_geodata();
 
 		return '<div class="updated fade"><p>' .
-		       __( 'Copied existing geodata, see log for details.', 'GeoMashup' ) .
-		       '</p></div>';
+			__( 'Copied existing geodata, see log for details.', 'GeoMashup' ) .
+			'</p></div>';
 	}
 
 	private function bulk_reverse_geocode( $submission ) {
@@ -165,13 +166,13 @@ class OptionsPage {
 
 		if ( ! function_exists( 'mb_check_encoding' ) ) {
 			return '<div class="updated fade">' .
-			       printf(
-				       __( '%s Multibyte string functions %s are not installed.', 'GeoMashup' ),
-				       '<a href="http://www.php.net/manual/en/mbstring.installation.php" title="">',
-				       '</a>'
-			       ) . ' ' .
-			       _e( 'Geocoding and other web services may not work properly.', 'GeoMashup' ) .
-			       '</div>';
+				printf(
+					__( '%s Multibyte string functions %s are not installed.', 'GeoMashup' ),
+					'<a href="http://www.php.net/manual/en/mbstring.installation.php" title="">',
+					'</a>'
+				) . ' ' .
+				_e( 'Geocoding and other web services may not work properly.', 'GeoMashup' ) .
+				'</div>';
 		}
 
 		$test_transient = get_transient( 'geo_mashup_test' );
@@ -179,9 +180,9 @@ class OptionsPage {
 			unset( $submission['geo_mashup_run_tests'] );
 
 			return '<div class="updated fade">' .
-			       _e( 'WordPress transients may not be working. Try deactivating or reconfiguring caching plugins.',
-				       'GeoMashup' ) .
-			       ' <a href="https://github.com/cyberhobo/wordpress-geo-mashup/issues/425">issue 425</a></div>';
+				_e( 'WordPress transients may not be working. Try deactivating or reconfiguring caching plugins.',
+					'GeoMashup' ) .
+				' <a href="https://github.com/cyberhobo/wordpress-geo-mashup/issues/425">issue 425</a></div>';
 		}
 
 		// load tests
@@ -191,7 +192,7 @@ class OptionsPage {
 	private function migrate() {
 		if ( $this->db->is_install_needed() && $this->db->install() ) {
 			return '<div class="updated fade"><p>' .
-			       __( 'Database upgraded, see log for details.', 'GeoMashup' ) . '</p></div>';
+				__( 'Database upgraded, see log for details.', 'GeoMashup' ) . '</p></div>';
 		}
 
 		return '';
@@ -210,10 +211,10 @@ class OptionsPage {
 	}
 
 	private function corrupt_options() {
-		if ( ! empty ( $this->options->corrupt_options ) ) {
+		if ( ! empty( $this->options->corrupt_options ) ) {
 			// Options didn't load correctly
 			$message = __( 'Saved options may be corrupted, try updating again. Corrupt values: ', 'GeoMashup' ) .
-			           '<code>' . $this->options->corrupt_options . '</code>';
+				'<code>' . $this->options->corrupt_options . '</code>';
 
 			return '<div class="updated"><p>' . $message . '</p></div>';
 		}
@@ -222,13 +223,13 @@ class OptionsPage {
 	}
 
 	private function validation_errors() {
-		if ( empty ( $this->options->validation_errors ) ) {
+		if ( empty( $this->options->validation_errors ) ) {
 			return '';
 		}
 		$html = '<div class="updated"><p>' .
-		        __( 'Some invalid options will not be used. If you\'ve just upgraded, do an update to initialize new options.',
-			        'GeoMashup' ) .
-		        '<ul>';
+			__( 'Some invalid options will not be used. If you\'ve just upgraded, do an update to initialize new options.',
+				'GeoMashup' ) .
+			'<ul>';
 		foreach ( $this->options->validation_errors as $message ) {
 			$html .= "<li>$message</li>";
 		}
