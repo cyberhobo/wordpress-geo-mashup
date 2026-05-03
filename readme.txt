@@ -4,7 +4,7 @@ Donate Link:
 Tags: maps, google maps, mapping, geo, geocms
 Requires at least: 3.7
 Tested up to: 6.9.4
-Stable tag: 1.13.20
+Stable tag: 1.13.21
 License: GPL2+
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -123,6 +123,10 @@ This version fixes a security related bug.  Upgrade immediately.
 This version fixes a security related bug.  Upgrade immediately.
 
 == Change Log ==
+
+= 1.13.21 May 2 2026 =
+
+Fixed broken map category ID exclusion.
 
 = 1.13.20 Apr 30 2026 =
 
