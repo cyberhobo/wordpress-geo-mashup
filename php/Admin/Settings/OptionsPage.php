@@ -24,14 +24,14 @@ class OptionsPage {
 	private $activated_copy_geodata = false;
 
 	public function __construct(
-		GeoMashupOptions $options = null,
-		DbAdapter $db_adapter = null,
-		Tabs $tabs = null,
-		OverallPanel $overall_panel = null,
-		SingleMapPanel $single_map_panel = null,
-		GlobalMapPanel $global_map_panel = null,
-		ContextMapPanel $context_map_panel = null,
-		TestsPanel $tests_panel = null
+		?GeoMashupOptions $options = null,
+		?DbAdapter $db_adapter = null,
+		?Tabs $tabs = null,
+		?OverallPanel $overall_panel = null,
+		?SingleMapPanel $single_map_panel = null,
+		?GlobalMapPanel $global_map_panel = null,
+		?ContextMapPanel $context_map_panel = null,
+		?TestsPanel $tests_panel = null
 	) {
 		global $geo_mashup_options;
 		$this->options = $options === null ? $geo_mashup_options : $options;
