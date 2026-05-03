@@ -1022,4 +1022,16 @@ class GeoMashup_Unit_Tests extends GeoMashupTestCase {
 		$result = GeoMashupDB::sanitize_query_args( $args );
 		$this->assertEquals( 'truescript', $result['show_future'] );
 	}
+
+	function test_sanitize_map_cat_preserves_negative_ids() {
+		$args = array( 'map_cat' => '491,-71,-493' );
+		$result = GeoMashupDB::sanitize_query_args( $args );
+		$this->assertEquals( '491,-71,-493', $result['map_cat'] );
+	}
+
+	function test_sanitize_map_cat_strips_non_numeric() {
+		$args = array( 'map_cat' => '491 OR 1=1' );
+		$result = GeoMashupDB::sanitize_query_args( $args );
+		$this->assertEquals( '49111', $result['map_cat'] );
+	}
 }

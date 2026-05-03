@@ -1508,6 +1508,11 @@ class GeoMashupDB {
 				$value = (float) $value;
 				break;
 
+			case 'map_cat':
+				// Allow numeric IDs (with leading minus for exclusions), commas, or slug characters
+				$value = preg_replace( '/[^0-9,\-a-z_]/', '', $value );
+				break;
+
 			case 'object_ids':
 			case 'exclude_object_ids':
 				$value = preg_replace( '/[^0-9,]/', '', $value );
@@ -1515,7 +1520,6 @@ class GeoMashupDB {
 
 			case 'map_post_type':
 			case 'object_name':
-			case 'map_cat':
 			case 'show_future':
 				$value = sanitize_key( $value );
 				break;
