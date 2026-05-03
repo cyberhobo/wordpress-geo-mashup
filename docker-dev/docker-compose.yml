@@ -1,6 +1,6 @@
 services:
   wordpress:
-    image: wordpress:php8.3
+    image: wordpress:php8.4
     ports:
       - 8000:80
     environment:
