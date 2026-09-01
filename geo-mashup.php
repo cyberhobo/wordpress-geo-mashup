@@ -1113,11 +1113,10 @@ class GeoMashup {
 	 */
 	private static function click_to_load_content( $map_data, $iframe_src, $click_to_load_text, $static, $map_image ) {
 
-		$iframe_src = esc_attr( $iframe_src );
 		$click_to_load_text = esc_html( $click_to_load_text );
 
 		if ( is_feed() ) {
-			return "<a href=\"{$iframe_src}\">$click_to_load_text</a>";
+			return '<a href="' . esc_attr( $iframe_src ) . '">' . $click_to_load_text . '</a>';
 		}
 
 		$width_style = self::dimension_style_value( $map_data['width'] );
@@ -1129,10 +1128,18 @@ class GeoMashup {
 			'background-image: url('.GEO_MASHUP_URL_PATH.'/images/wp-gm-pale.png);'.
 			'background-repeat: no-repeat;background-position:center; cursor: pointer;';
 
-		$name = $map_data['name'];
+		// Values inside the JS string literals need esc_js(); the whole
+		// handler then needs esc_attr() for the surrounding HTML attribute.
+		$onclick = sprintf(
+			"GeoMashupLoader.addMapFrame(this,'%s','%s','%s','%s')",
+			esc_js( $iframe_src ),
+			esc_js( $height_style ),
+			esc_js( $width_style ),
+			esc_js( $map_data['name'] )
+		);
 
 		$content = "<div class=\"gm-map\" style=\"$style\" " .
-			"onclick=\"GeoMashupLoader.addMapFrame(this,'$iframe_src','{$height_style}','{$width_style}','{$name}')\">";
+			'onclick="' . esc_attr( $onclick ) . '">';
 
 		if ( $static ) {
 			// TODO: test whether click to load really works with a static map

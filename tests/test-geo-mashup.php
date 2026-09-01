@@ -496,6 +496,28 @@ class GeoMashup_Unit_Tests extends GeoMashupTestCase {
 	}
 
 	/**
+	 * Security: the name shortcode attribute must be escaped for the
+	 * click-to-load onclick handler, or a contributor can break out of the
+	 * embedded JS string and inject arbitrary JavaScript (XSS).
+	 */
+	function test_click_to_load_name_attribute_is_escaped() {
+		$malicious_name = "x');alert(document.domain);//";
+		$post_id = $this->factory->post->create( array(
+			'post_content' => "[geo_mashup_map load_empty_map=true click_to_load=true name=\"{$malicious_name}\"]",
+		) );
+
+		$test_query = new WP_Query( array( 'p' => $post_id ) );
+		$this->assertTrue( $test_query->have_posts() );
+		$test_query->the_post();
+		$content = apply_filters( 'the_content', get_the_content() );
+		wp_reset_postdata();
+
+		$this->assertStringContainsString( 'onclick=', $content );
+		$this->assertStringNotContainsString( $malicious_name, $content );
+		$this->assertStringContainsString( esc_attr( esc_js( $malicious_name ) ), $content );
+	}
+
+	/**
 	* issue 621
 	*/
 	function test_wp_query_location_info() {
