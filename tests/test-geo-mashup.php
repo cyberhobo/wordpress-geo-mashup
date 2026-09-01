@@ -475,6 +475,27 @@ class GeoMashup_Unit_Tests extends GeoMashupTestCase {
 	}
 
 	/**
+	 * Security: the name shortcode attribute must be escaped in the map iframe,
+	 * or a contributor can inject an event handler attribute (XSS).
+	 */
+	function test_map_name_attribute_is_escaped() {
+		$malicious_name = 'x" onload="alert(document.domain)';
+		$post_id = $this->factory->post->create( array(
+			'post_content' => "[geo_mashup_map load_empty_map=true name='{$malicious_name}']",
+		) );
+
+		$test_query = new WP_Query( array( 'p' => $post_id ) );
+		$this->assertTrue( $test_query->have_posts() );
+		$test_query->the_post();
+		$content = apply_filters( 'the_content', get_the_content() );
+		wp_reset_postdata();
+
+		$this->assertStringContainsString( '<iframe', $content );
+		$this->assertStringNotContainsString( 'onload="alert', $content );
+		$this->assertStringContainsString( esc_attr( $malicious_name ), $content );
+	}
+
+	/**
 	* issue 621
 	*/
 	function test_wp_query_location_info() {
