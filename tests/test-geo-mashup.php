@@ -496,6 +496,36 @@ class GeoMashup_Unit_Tests extends GeoMashupTestCase {
 	}
 
 	/**
+	 * Security: build_map_data() must not let request/shortcode data override
+	 * the trusted, server-computed URL properties (ajaxurl, siteurl, url_path,
+	 * template_url_path, custom_url_path). Those values reach GeoMashup.opts
+	 * in JavaScript and are trusted there.
+	 */
+	function test_build_map_data_ignores_request_urls() {
+		$query = array(
+			'map_content' => 'global',
+			'load_empty_map' => 'true',
+			'ajaxurl' => 'https://evil.example/ajax',
+			'siteurl' => 'https://evil.example/',
+			'url_path' => 'https://evil.example/plugin',
+			'template_url_path' => 'https://evil.example/theme',
+			'custom_url_path' => 'https://evil.example/custom',
+		);
+
+		$map_data = GeoMashup::build_map_data( $query );
+
+		$this->assertNotWPError( $map_data );
+		$this->assertSame( admin_url( 'admin-ajax.php' ), $map_data['ajaxurl'] );
+		$this->assertSame( home_url( '/' ), $map_data['siteurl'] );
+		$this->assertSame( GEO_MASHUP_URL_PATH, $map_data['url_path'] );
+		$this->assertSame( get_stylesheet_directory_uri(), $map_data['template_url_path'] );
+		$this->assertNotEquals(
+			'https://evil.example/custom',
+			isset( $map_data['custom_url_path'] ) ? $map_data['custom_url_path'] : null
+		);
+	}
+
+	/**
 	 * Security: the name shortcode attribute must be escaped for the
 	 * click-to-load onclick handler, or a contributor can break out of the
 	 * embedded JS string and inject arbitrary JavaScript (XSS).

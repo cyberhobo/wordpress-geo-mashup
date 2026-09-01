@@ -916,6 +916,14 @@ class GeoMashup {
 	 */
 	public static function build_map_data( $query ) {
 		global $geo_mashup_options, $geo_mashup_custom;
+
+		// These are always computed server side below - a request (or a
+		// malicious shortcode attribute) must never be able to supply them,
+		// since they end up in JavaScript as trusted URLs.
+		foreach ( array( 'ajaxurl', 'siteurl', 'url_path', 'template_url_path', 'custom_url_path' ) as $reserved_key ) {
+			unset( $query[ $reserved_key ] );
+		}
+
 		$defaults = array(
 			'map_api' => $geo_mashup_options->get( 'overall', 'map_api' )
 		);
