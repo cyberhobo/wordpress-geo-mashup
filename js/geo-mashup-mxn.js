@@ -31,7 +31,10 @@ GeoMashup.loadFullPost = function( point ) {
 		request,
 		cache,
 		objects,
-		object_ids;
+		object_ids,
+		show_post_element,
+		loading_div,
+		loading_img;
 
 	objects = this.getObjectsAtLocation( point );
 	object_ids = this.getOnObjectIDs( objects );
@@ -42,7 +45,16 @@ GeoMashup.loadFullPost = function( point ) {
 
 	} else {
 
-		this.getShowPostElement().innerHTML = '<div align="center"><img src="' + this.opts.url_path + '/images/busy_icon.gif" alt="Loading..." /></div>';
+		show_post_element = this.getShowPostElement();
+		show_post_element.innerHTML = '';
+		loading_div = document.createElement( 'div' );
+		loading_div.setAttribute( 'align', 'center' );
+		loading_img = document.createElement( 'img' );
+		loading_img.setAttribute( 'src', this.opts.url_path + '/images/busy_icon.gif' );
+		loading_img.setAttribute( 'alt', 'Loading...' );
+		loading_div.appendChild( loading_img );
+		show_post_element.appendChild( loading_div );
+
 		request = {
 			url: this.geo_query_url + '&object_name=' + this.opts.object_name + '&object_ids=' + object_ids.join( ',' ) + '&template=full-post'
 		};
@@ -54,6 +66,9 @@ GeoMashup.loadFullPost = function( point ) {
 		 * @param {AjaxRequestOptions} options
 		 */
 		this.doAction( 'fullPostRequest', objects, request );
+		if ( !GeoMashup.isSameOrigin( request.url ) ) {
+			return;
+		}
 		jQuery.get( request.url, function( content ) {
 			var filter = {
 				content: content
@@ -147,6 +162,8 @@ GeoMashup.openInfoWindow = function( marker ) {
 		object_ids,
 		i,
 		object_element,
+		loading_div,
+		loading_img,
 		point = marker.location;
 
 	if ( this.open_window_marker && !this.opts.multiple_info_windows ) {
@@ -158,7 +175,13 @@ GeoMashup.openInfoWindow = function( marker ) {
 		marker.setInfoBubble( cache.html );
 		marker.openBubble();
 	} else {
-		marker.setInfoBubble( '<div align="center"><img src="' + this.opts.url_path + '/images/busy_icon.gif" alt="Loading..." /></div>' );
+		loading_div = document.createElement( 'div' );
+		loading_div.setAttribute( 'align', 'center' );
+		loading_img = document.createElement( 'img' );
+		loading_img.setAttribute( 'src', this.opts.url_path + '/images/busy_icon.gif' );
+		loading_img.setAttribute( 'alt', 'Loading...' );
+		loading_div.appendChild( loading_img );
+		marker.setInfoBubble( loading_div.outerHTML );
 		marker.openBubble();
 		this.open_window_marker = marker;
 		// Collect object ids
@@ -174,6 +197,9 @@ GeoMashup.openInfoWindow = function( marker ) {
 		 * @param {AjaxRequestOptions} request Modifiable property: url
 		 */
 		this.doAction( 'markerInfoWindowRequest', marker, request );
+		if ( !GeoMashup.isSameOrigin( request.url ) ) {
+			return;
+		}
 		jQuery.get( request.url, function( content ) {
 			var filter = {
 				content: content
@@ -271,8 +297,13 @@ GeoMashup.showMarkerAttachments = function( marker ) {
 		var ajax_params = {
 			action: 'geo_mashup_kml_attachments'
 		};
+		if ( !GeoMashup.isSameOrigin( GeoMashup.opts.ajaxurl ) ) {
+			return;
+		}
 		ajax_params.post_ids = id;
-		jQuery.getJSON( GeoMashup.opts.ajaxurl + '?callback=?', ajax_params, function( data ) {
+		// A same-origin JSON request, not JSONP (no callback=?): the response
+		// is parsed as data, never executed as a script.
+		jQuery.getJSON( GeoMashup.opts.ajaxurl, ajax_params, function( data ) {
 			var cached_attachments = GeoMashup.locationCache( marker.location, 'attachments-' + id );
 			if ( !cached_attachments.urls ) {
 				cached_attachments.urls = [];
@@ -582,9 +613,25 @@ GeoMashup.createMap = function( container, opts ) {
 		single_marker,
 		ov,
 		credit_div,
+		spinner_icon_div,
+		spinner_icon_img,
 		initial_zoom = 1,
 		controls = {},
 		filter = {};
+
+	// Defense in depth: opts is server-supplied JSON. These URLs should
+	// always already be trustworthy (see GeoMashup::build_map_data() in
+	// geo-mashup.php), but never build requests or markup from them if a
+	// filter or future code path lets an untrusted value through.
+	if ( !GeoMashup.isSameOrigin( opts.url_path ) ) {
+		opts.url_path = '';
+	}
+	if ( !GeoMashup.isSameOrigin( opts.ajaxurl ) ) {
+		opts.ajaxurl = '';
+	}
+	if ( !GeoMashup.isSameOrigin( opts.siteurl ) ) {
+		opts.siteurl = window.location.protocol + '//' + window.location.host + '/';
+	}
 
 	this.container = container;
 	this.base_color_icon = {};
@@ -671,8 +718,24 @@ GeoMashup.createMap = function( container, opts ) {
 	this.doAction( 'newMap', opts, this.map );
 
 	// Create the loading spinner icon and show it
+	spinner_icon_div = document.createElement( 'div' );
+	spinner_icon_div.id = 'gm-loading-icon';
+	spinner_icon_div.style.MozUserSelect = 'none';
+	spinner_icon_div.style.zIndex = 100;
+	spinner_icon_div.style.position = 'absolute';
+	spinner_icon_div.style.left = ( jQuery( this.container ).width() / 2 ) + 'px';
+	spinner_icon_div.style.top = ( jQuery( this.container ).height() / 2 ) + 'px';
+	spinner_icon_img = document.createElement( 'img' );
+	spinner_icon_img.setAttribute( 'src', opts.url_path + '/images/busy_icon.gif' );
+	spinner_icon_img.style.border = '0px none';
+	spinner_icon_img.style.margin = '0px';
+	spinner_icon_img.style.padding = '0px';
+	spinner_icon_img.style.width = '16px';
+	spinner_icon_img.style.height = '16px';
+	spinner_icon_img.style.MozUserSelect = 'none';
+	spinner_icon_div.appendChild( spinner_icon_img );
 	this.spinner_div = document.createElement( 'div' );
-	this.spinner_div.innerHTML = '<div id="gm-loading-icon" style="-moz-user-select: none; z-index: 100; position: absolute; left: ' + (jQuery( this.container ).width() / 2 ) + 'px; top: ' + (jQuery( this.container ).height() / 2 ) + 'px;">' + '<img style="border: 0px none ; margin: 0px; padding: 0px; width: 16px; height: 16px; -moz-user-select: none;" src="' + opts.url_path + '/images/busy_icon.gif"/></a></div>';
+	this.spinner_div.appendChild( spinner_icon_div );
 	this.showLoadingIcon();
 	this.map.load.addHandler( function() {
 		GeoMashup.hideLoadingIcon();
@@ -749,12 +812,14 @@ GeoMashup.createMap = function( container, opts ) {
 			if ( opts.map_cat ) {
 				url += '&map_cat=' + opts.map_cat;
 			}
-			jQuery.getJSON( url, function( objects ) {
-				if ( objects.length > 0 ) {
-					center_latlng = new mxn.LatLonPoint( parseFloat( objects[0].lat ), parseFloat( objects[0].lng ) );
-					this.map.setCenterAndZoom( center_latlng, initial_zoom );
-				}
-			} );
+			if ( GeoMashup.isSameOrigin( url ) ) {
+				jQuery.getJSON( url, function( objects ) {
+					if ( objects.length > 0 ) {
+						center_latlng = new mxn.LatLonPoint( parseFloat( objects[0].lat ), parseFloat( objects[0].lng ) );
+						this.map.setCenterAndZoom( center_latlng, initial_zoom );
+					}
+				} );
+			}
 		}
 	}
 
