@@ -526,6 +526,35 @@ class GeoMashup_Unit_Tests extends GeoMashupTestCase {
 	}
 
 	/**
+	 * The reserved-key fix in build_map_data() (see
+	 * test_build_map_data_ignores_request_urls()) must only strip the
+	 * specific URL properties it's meant to. Every other query value is
+	 * still legitimate map configuration and must still take effect.
+	 */
+	function test_build_map_data_allows_other_request_overrides() {
+		$query = array(
+			'map_content' => 'global',
+			'load_empty_map' => 'true',
+			'map_api' => 'leaflet', // default is googlev3, so this proves an override
+			'name' => 'my-custom-map-name',
+			'zoom' => '15',
+			'width' => '444',
+			'height' => '333',
+			'background_color' => 'c0ffee',
+		);
+
+		$map_data = GeoMashup::build_map_data( $query );
+
+		$this->assertNotWPError( $map_data );
+		$this->assertSame( 'leaflet', $map_data['map_api'] );
+		$this->assertSame( 'my-custom-map-name', $map_data['name'] );
+		$this->assertSame( '15', $map_data['zoom'] );
+		$this->assertSame( '444', $map_data['width'] );
+		$this->assertSame( '333', $map_data['height'] );
+		$this->assertSame( 'c0ffee', $map_data['background_color'] );
+	}
+
+	/**
 	 * Security: the name shortcode attribute must be escaped for the
 	 * click-to-load onclick handler, or a contributor can break out of the
 	 * embedded JS string and inject arbitrary JavaScript (XSS).
