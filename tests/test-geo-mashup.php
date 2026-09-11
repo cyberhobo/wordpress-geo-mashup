@@ -496,6 +496,75 @@ class GeoMashup_Unit_Tests extends GeoMashupTestCase {
 	}
 
 	/**
+	 * Security: the shape shortcode attribute reaches the div style attribute
+	 * via the same sprintf() as the name attribute, unescaped and
+	 * unvalidated, letting a contributor break out and inject an event
+	 * handler (XSS).
+	 */
+	function test_map_shape_attribute_is_escaped() {
+		$malicious_shape = '0%" onmouseover="alert(1)';
+		$post_id = $this->factory->post->create( array(
+			'post_content' => "[geo_mashup_map load_empty_map=true shape='{$malicious_shape}']",
+		) );
+
+		$test_query = new WP_Query( array( 'p' => $post_id ) );
+		$this->assertTrue( $test_query->have_posts() );
+		$test_query->the_post();
+		$content = apply_filters( 'the_content', get_the_content() );
+		wp_reset_postdata();
+
+		$this->assertStringContainsString( '<iframe', $content );
+		$this->assertStringNotContainsString( 'onmouseover="alert', $content );
+	}
+
+	/**
+	 * Security: the zoom shortcode attribute is concatenated unescaped into
+	 * the static map image's src attribute, letting a contributor break out
+	 * and inject an event handler (XSS). Requires static=true and a located
+	 * object so build_map_image() actually runs.
+	 */
+	function test_static_map_zoom_attribute_is_escaped() {
+		$malicious_zoom = '10" onerror="alert(1)';
+		$post_id = $this->factory->post->create( array(
+			'post_content' => "[geo_mashup_map map_content=\"single\" static=\"true\" zoom='{$malicious_zoom}']",
+		) );
+		GeoMashupDB::set_object_location( 'post', $post_id, $this->rand_location(), false );
+
+		$test_query = new WP_Query( array( 'p' => $post_id ) );
+		$this->assertTrue( $test_query->have_posts() );
+		$test_query->the_post();
+		$content = apply_filters( 'the_content', get_the_content() );
+		wp_reset_postdata();
+
+		$this->assertStringContainsString( '<img', $content );
+		$this->assertStringNotContainsString( 'onerror="alert', $content );
+	}
+
+	/**
+	 * Security: the click_to_load_text shortcode attribute is concatenated
+	 * unescaped into the static map image's title attribute inside
+	 * build_map_image(), which runs before click_to_load_content()'s
+	 * esc_html() ever sees the value, letting a contributor break out and
+	 * inject an event handler (XSS).
+	 */
+	function test_static_map_click_to_load_text_is_escaped() {
+		$malicious_text = 'x" onmouseover="alert(1)';
+		$post_id = $this->factory->post->create( array(
+			'post_content' => "[geo_mashup_map map_content=\"single\" static=\"true\" click_to_load=\"true\" click_to_load_text='{$malicious_text}']",
+		) );
+		GeoMashupDB::set_object_location( 'post', $post_id, $this->rand_location(), false );
+
+		$test_query = new WP_Query( array( 'p' => $post_id ) );
+		$this->assertTrue( $test_query->have_posts() );
+		$test_query->the_post();
+		$content = apply_filters( 'the_content', get_the_content() );
+		wp_reset_postdata();
+
+		$this->assertStringContainsString( '<img', $content );
+		$this->assertStringNotContainsString( 'onmouseover="alert', $content );
+	}
+
+	/**
 	 * Security: build_map_data() must not let request/shortcode data override
 	 * the trusted, server-computed URL properties (ajaxurl, siteurl, url_path,
 	 * template_url_path, custom_url_path). Those values reach GeoMashup.opts

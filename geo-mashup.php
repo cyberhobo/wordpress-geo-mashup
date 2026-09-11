@@ -1076,14 +1076,14 @@ class GeoMashup {
 			$map_image .= '&amp;center=' . $map_data['object_data']['objects'][0]['lat'] . ',' .
 				$map_data['object_data']['objects'][0]['lng'];
 		}
-		$map_image .= '&amp;zoom=' . $map_data['zoom'] . '&amp;markers=size:small|color:red';
+		$map_image .= '&amp;zoom=' . (int) $map_data['zoom'] . '&amp;markers=size:small|color:red';
 		foreach( $map_data['object_data']['objects'] as $location ) {
 			// TODO: Try to use the correct color for the category? Draw category lines?
 			$map_image .= '|' . $location['lat'] . ',' . $location['lng'];
 		}
 		$map_image .= '" alt="geo_mashup_map"';
 		if ($click_to_load === 'true') {
-			$map_image .= '" title="'.$click_to_load_text.'"';
+			$map_image .= '" title="' . esc_attr( $click_to_load_text ) . '"';
 		}
 		$map_image .= ' />';
 
@@ -1167,8 +1167,10 @@ class GeoMashup {
 	 */
 	private static function interactive_map_content( $map_data, $iframe_src ) {
 
+		$shape = self::shape_style_value( isset( $map_data['shape'] ) ? $map_data['shape'] : '' );
+
 		$div_styles = 'position: relative;';
-		if ( empty( $map_data['shape'] ) ) {
+		if ( empty( $shape ) ) {
 			$div_styles .= sprintf(
 				'height: %s; width: %s;',
 				self::dimension_style_value( $map_data['height'] ),
@@ -1177,7 +1179,7 @@ class GeoMashup {
 		} else {
 			$div_styles .= sprintf(
 				'padding-bottom: %s; height: 0; width: 100%%;',
-				$map_data['shape']
+				$shape
 			);
 		}
 
@@ -1186,7 +1188,7 @@ class GeoMashup {
 		/** @noinspection HtmlUnknownTarget */
 		return sprintf(
 			'<div class="gm-map" style="%s"><iframe name="%s" allowfullscreen src="%s" style="%s"></iframe></div>',
-			$div_styles,
+			esc_attr( $div_styles ),
 			esc_attr( $map_data['name'] ),
 			$iframe_src,
 			$frame_styles
@@ -1202,6 +1204,24 @@ class GeoMashup {
 	private static function dimension_style_value( $dimension ) {
 		$units = ( '%' === substr( $dimension, -1 ) ) ? '%' : 'px';
 		return (int) $dimension . $units;
+	}
+
+	/**
+	 * Format and validate the map shape attribute (an aspect ratio expressed
+	 * as CSS padding-bottom percentage) as a CSS style value.
+	 *
+	 * @since 1.13.22
+	 * @param string $shape
+	 * @return string A CSS percentage value, or '' if $shape isn't one.
+	 */
+	private static function shape_style_value( $shape ) {
+		if ( empty( $shape ) || ! is_string( $shape ) ) {
+			return '';
+		}
+		if ( ! preg_match( '/^\d+(\.\d+)?%$/', trim( $shape ) ) ) {
+			return '';
+		}
+		return trim( $shape );
 	}
 
 	/**
