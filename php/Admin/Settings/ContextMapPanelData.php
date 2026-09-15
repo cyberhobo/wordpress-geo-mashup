@@ -16,7 +16,7 @@ class ContextMapPanelData extends BaseData {
 	/** @var Overall */
 	public $overall;
 
-	public function __construct( ContextMap $context = null, Overall $overall = null) {
+	public function __construct( ?ContextMap $context = null, ?Overall $overall = null) {
 		global $geo_mashup_options;
 
 		BaseData::__construct();

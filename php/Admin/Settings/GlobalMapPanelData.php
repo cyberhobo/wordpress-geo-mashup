@@ -21,7 +21,7 @@ class GlobalMapPanelData extends BaseData {
 	/** @var array */
 	public $thumbnail_sizes;
 
-	public function __construct(GlobalMap $global_map = null, Overall $overall = null) {
+	public function __construct(?GlobalMap $global_map = null, ?Overall $overall = null) {
 		global $geo_mashup_options;
 		BaseData::__construct();
 		$this->options = $global_map === null ? GlobalMap::from_options($geo_mashup_options) : $global_map;

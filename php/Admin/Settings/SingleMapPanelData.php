@@ -16,7 +16,7 @@ class SingleMapPanelData extends BaseData {
 	/** @var Overall */
 	public $overall;
 
-	public function __construct( SingleMap $single_map = null, Overall $overall = null) {
+	public function __construct( ?SingleMap $single_map = null, ?Overall $overall = null) {
 		global $geo_mashup_options;
 		BaseData::__construct();
 		$this->options = $single_map === null ? SingleMap::from_options( $geo_mashup_options ) : $single_map;
