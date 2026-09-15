@@ -16,7 +16,7 @@ class OverallPanelData extends BaseData {
 	/** @var array */
 	public $map_apis;
 
-	public function __construct(Overall $overall = null) {
+	public function __construct(?Overall $overall = null) {
 		global $geo_mashup_options;
 
 		BaseData::__construct();

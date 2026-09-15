@@ -128,6 +128,29 @@ GeoMashup = {
 		return new ClonedObject();
 	},
 
+	/**
+	 * Whether a URL resolves to the same origin as the current page. Used to
+	 * validate server-supplied URLs (siteurl, ajaxurl, url_path) before
+	 * they're used as AJAX request bases or JS resource paths, in case a
+	 * filter or future code path lets one through unvalidated.
+	 * @param {String} url
+	 * @return {Boolean}
+	 */
+	isSameOrigin : function( url ) {
+		var link;
+		if ( typeof url !== 'string' || url === '' ) {
+			return false;
+		}
+		// A root-relative path (not protocol-relative, i.e. not "//host/...")
+		// always resolves to the current origin.
+		if ( url.charAt( 0 ) === '/' && url.charAt( 1 ) !== '/' ) {
+			return true;
+		}
+		link = document.createElement( 'a' );
+		link.href = url;
+		return link.protocol === window.location.protocol && link.host === window.location.host;
+	},
+
 	forEach : function( obj, callback ) {
 		var key;
 		for( key in obj ) {

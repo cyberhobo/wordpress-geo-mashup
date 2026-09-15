@@ -3,8 +3,8 @@ Contributors: cyberhobo, freemius
 Donate Link:
 Tags: maps, google maps, mapping, geo, geocms
 Requires at least: 3.7
-Tested up to: 6.9.4
-Stable tag: 1.13.21
+Tested up to: 7.1
+Stable tag: 1.13.22
 License: GPL2+
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -68,7 +68,9 @@ of all your content, including geographic data.
 
 Thanks for security reports to:
 
+* [JunHee Cho](https://patchstack.com/database/researchers/42086720-0ee7-4848-8507-d67a5b877284)
 * [Leonid Semenenko](https://www.wordfence.com/threat-intel/vulnerabilities/researchers/leonid-semenenko)
+* [Asim Alshaya](https://patchstack.com/database/researchers/9ad1a41f-26e4-41d2-934a-b0b2711a7a32)
 * [she11f](https://vdp.patchstack.com/database/researchers/8ac0aa48-331b-4e0c-858b-07ea684d5139)
 * [Baikuya](https://vdp.patchstack.com/database/researchers/e5bd3943-072d-4219-9144-64c2843a261b)
 * [daroo](https://vdp.patchstack.com/database/researchers/9f3ffb0b-5ad7-4756-86d2-cd63a1d09469)
@@ -91,6 +93,9 @@ The Patchstack team help validate, triage and handle any security vulnerabilitie
 GeoMashup supports [standard WordPress plugin installation].
 
 == Upgrade Notice ==
+
+= 1.13.22 =
+This version includes a security update.  Upgrade immediately.
 
 = 1.13.20 =
 This version includes a security update.  Upgrade immediately.
@@ -123,6 +128,10 @@ This version fixes a security related bug.  Upgrade immediately.
 This version fixes a security related bug.  Upgrade immediately.
 
 == Change Log ==
+
+= 1.13.22 Sep 14 2026 =
+
+Security fixes.
 
 = 1.13.21 May 2 2026 =
 
@@ -473,7 +482,7 @@ Fixed:
 
 [194]: https://github.com/cyberhobo/wordpress-geo-mashup/issues/194
 
-= 1.2.3 = 
+= 1.2.3 =
 Fixed:
 
 * [Issue 185][185] Sticky posts appear in all info windows
@@ -482,11 +491,11 @@ Fixed:
 [185]: https://github.com/cyberhobo/wordpress-geo-mashup/issues/185
 [183]: https://github.com/cyberhobo/wordpress-geo-mashup/issues/183
 
-= 1.2.2 = 
+= 1.2.2 =
 Fixed:
 
 * [Issue 181][181] Marker is not showing up after update
-* [Issue 177][177] Info window for post not loading (spinning wait icon) 
+* [Issue 177][177] Info window for post not loading (spinning wait icon)
 
 [181]: https://github.com/cyberhobo/wordpress-geo-mashup/issues/181
 [177]: https://github.com/cyberhobo/wordpress-geo-mashup/issues/177

@@ -3,7 +3,7 @@
 Plugin Name: Geo Mashup
 Plugin URI: https://wordpress.org/plugins/geo-mashup/
 Description: Save location for posts and pages, or even users and comments. Display these locations on Google, Leaflet, and OSM maps. Make WordPress into your GeoCMS.
-Version: 1.13.21
+Version: 1.13.22
 Author: Dylan Kuhn
 Text Domain: GeoMashup
 Domain Path: /lang
@@ -256,7 +256,7 @@ class GeoMashup {
 		define('GEO_MASHUP_DIRECTORY', dirname( GEO_MASHUP_PLUGIN_NAME ) );
 		define('GEO_MASHUP_URL_PATH', trim( plugin_dir_url( __FILE__ ), '/' ) );
 		define('GEO_MASHUP_MAX_ZOOM', 20);
-		define('GEO_MASHUP_VERSION', '1.13.21');
+		define('GEO_MASHUP_VERSION', '1.13.22');
 		define('GEO_MASHUP_DB_VERSION', '1.3');
 	}
 
@@ -916,6 +916,14 @@ class GeoMashup {
 	 */
 	public static function build_map_data( $query ) {
 		global $geo_mashup_options, $geo_mashup_custom;
+
+		// These are always computed server side below - a request (or a
+		// malicious shortcode attribute) must never be able to supply them,
+		// since they end up in JavaScript as trusted URLs.
+		foreach ( array( 'ajaxurl', 'siteurl', 'url_path', 'template_url_path', 'custom_url_path' ) as $reserved_key ) {
+			unset( $query[ $reserved_key ] );
+		}
+
 		$defaults = array(
 			'map_api' => $geo_mashup_options->get( 'overall', 'map_api' )
 		);
@@ -1068,14 +1076,14 @@ class GeoMashup {
 			$map_image .= '&amp;center=' . $map_data['object_data']['objects'][0]['lat'] . ',' .
 				$map_data['object_data']['objects'][0]['lng'];
 		}
-		$map_image .= '&amp;zoom=' . $map_data['zoom'] . '&amp;markers=size:small|color:red';
+		$map_image .= '&amp;zoom=' . (int) $map_data['zoom'] . '&amp;markers=size:small|color:red';
 		foreach( $map_data['object_data']['objects'] as $location ) {
 			// TODO: Try to use the correct color for the category? Draw category lines?
 			$map_image .= '|' . $location['lat'] . ',' . $location['lng'];
 		}
 		$map_image .= '" alt="geo_mashup_map"';
 		if ($click_to_load === 'true') {
-			$map_image .= '" title="'.$click_to_load_text.'"';
+			$map_image .= '" title="' . esc_attr( $click_to_load_text ) . '"';
 		}
 		$map_image .= ' />';
 
@@ -1113,11 +1121,10 @@ class GeoMashup {
 	 */
 	private static function click_to_load_content( $map_data, $iframe_src, $click_to_load_text, $static, $map_image ) {
 
-		$iframe_src = esc_attr( $iframe_src );
 		$click_to_load_text = esc_html( $click_to_load_text );
 
 		if ( is_feed() ) {
-			return "<a href=\"{$iframe_src}\">$click_to_load_text</a>";
+			return '<a href="' . esc_attr( $iframe_src ) . '">' . $click_to_load_text . '</a>';
 		}
 
 		$width_style = self::dimension_style_value( $map_data['width'] );
@@ -1129,10 +1136,18 @@ class GeoMashup {
 			'background-image: url('.GEO_MASHUP_URL_PATH.'/images/wp-gm-pale.png);'.
 			'background-repeat: no-repeat;background-position:center; cursor: pointer;';
 
-		$name = $map_data['name'];
+		// Values inside the JS string literals need esc_js(); the whole
+		// handler then needs esc_attr() for the surrounding HTML attribute.
+		$onclick = sprintf(
+			"GeoMashupLoader.addMapFrame(this,'%s','%s','%s','%s')",
+			esc_js( $iframe_src ),
+			esc_js( $height_style ),
+			esc_js( $width_style ),
+			esc_js( $map_data['name'] )
+		);
 
 		$content = "<div class=\"gm-map\" style=\"$style\" " .
-			"onclick=\"GeoMashupLoader.addMapFrame(this,'$iframe_src','{$height_style}','{$width_style}','{$name}')\">";
+			'onclick="' . esc_attr( $onclick ) . '">';
 
 		if ( $static ) {
 			// TODO: test whether click to load really works with a static map
@@ -1152,8 +1167,10 @@ class GeoMashup {
 	 */
 	private static function interactive_map_content( $map_data, $iframe_src ) {
 
+		$shape = self::shape_style_value( isset( $map_data['shape'] ) ? $map_data['shape'] : '' );
+
 		$div_styles = 'position: relative;';
-		if ( empty( $map_data['shape'] ) ) {
+		if ( empty( $shape ) ) {
 			$div_styles .= sprintf(
 				'height: %s; width: %s;',
 				self::dimension_style_value( $map_data['height'] ),
@@ -1162,7 +1179,7 @@ class GeoMashup {
 		} else {
 			$div_styles .= sprintf(
 				'padding-bottom: %s; height: 0; width: 100%%;',
-				$map_data['shape']
+				$shape
 			);
 		}
 
@@ -1171,8 +1188,8 @@ class GeoMashup {
 		/** @noinspection HtmlUnknownTarget */
 		return sprintf(
 			'<div class="gm-map" style="%s"><iframe name="%s" allowfullscreen src="%s" style="%s"></iframe></div>',
-			$div_styles,
-			$map_data['name'],
+			esc_attr( $div_styles ),
+			esc_attr( $map_data['name'] ),
 			$iframe_src,
 			$frame_styles
 		);
@@ -1187,6 +1204,24 @@ class GeoMashup {
 	private static function dimension_style_value( $dimension ) {
 		$units = ( '%' === substr( $dimension, -1 ) ) ? '%' : 'px';
 		return (int) $dimension . $units;
+	}
+
+	/**
+	 * Format and validate the map shape attribute (an aspect ratio expressed
+	 * as CSS padding-bottom percentage) as a CSS style value.
+	 *
+	 * @since 1.13.22
+	 * @param string $shape
+	 * @return string A CSS percentage value, or '' if $shape isn't one.
+	 */
+	private static function shape_style_value( $shape ) {
+		if ( empty( $shape ) || ! is_string( $shape ) ) {
+			return '';
+		}
+		if ( ! preg_match( '/^\d+(\.\d+)?%$/', trim( $shape ) ) ) {
+			return '';
+		}
+		return trim( $shape );
 	}
 
 	/**
