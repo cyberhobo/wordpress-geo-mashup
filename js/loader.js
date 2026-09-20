@@ -8,10 +8,12 @@ var GeoMashupLoader;
  * Currently implements click to load feature.
  */
 GeoMashupLoader = {
-	addMapFrame : function (element, frame_url, height, width, name) {
+	addMapFrame : function (element, frame_url, height, width, name, title) {
 		var html = ['<iframe name="'];
 		element.style.backgroundImage = 'none';
 		html.push(name);
+		html.push('" title="');
+		html.push(title);
 		html.push('" src="');
 		html.push(frame_url);
 		html.push('" allowfullscreen style="height:');

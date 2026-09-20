@@ -1139,11 +1139,12 @@ class GeoMashup {
 		// Values inside the JS string literals need esc_js(); the whole
 		// handler then needs esc_attr() for the surrounding HTML attribute.
 		$onclick = sprintf(
-			"GeoMashupLoader.addMapFrame(this,'%s','%s','%s','%s')",
+			"GeoMashupLoader.addMapFrame(this,'%s','%s','%s','%s','%s')",
 			esc_js( $iframe_src ),
 			esc_js( $height_style ),
 			esc_js( $width_style ),
-			esc_js( $map_data['name'] )
+			esc_js( $map_data['name'] ),
+			esc_js( __( 'Geo Mashup Map', 'GeoMashup' ) )
 		);
 
 		$content = "<div class=\"gm-map\" style=\"$style\" " .
@@ -1187,11 +1188,12 @@ class GeoMashup {
 
 		/** @noinspection HtmlUnknownTarget */
 		return sprintf(
-			'<div class="gm-map" style="%s"><iframe name="%s" allowfullscreen src="%s" style="%s"></iframe></div>',
+			'<div class="gm-map" style="%s"><iframe name="%s" allowfullscreen src="%s" style="%s" title="%s"></iframe></div>',
 			esc_attr( $div_styles ),
 			esc_attr( $map_data['name'] ),
 			$iframe_src,
-			$frame_styles
+			$frame_styles,
+			esc_attr( __( 'Geo Mashup Map', 'GeoMashup' ) )
 		);
 	}
 
