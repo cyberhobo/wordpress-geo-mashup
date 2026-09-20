@@ -32,7 +32,7 @@
 
 	<head>
 		<meta http-equiv="content-type" content="text/html; charset=utf-8"/>
-	<title>Geo Mashup Map</title>
+	<title><?php _e( 'Geo Mashup Map', 'GeoMashup' ); ?></title>
 		<?php GeoMashupRenderMap::head(); ?>
 
 		<style type="text/css">
