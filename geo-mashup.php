@@ -3,7 +3,7 @@
 Plugin Name: Geo Mashup
 Plugin URI: https://wordpress.org/plugins/geo-mashup/
 Description: Save location for posts and pages, or even users and comments. Display these locations on Google, Leaflet, and OSM maps. Make WordPress into your GeoCMS.
-Version: 1.13.22
+Version: 1.13.23
 Author: Dylan Kuhn
 Text Domain: GeoMashup
 Domain Path: /lang
@@ -256,7 +256,7 @@ class GeoMashup {
 		define('GEO_MASHUP_DIRECTORY', dirname( GEO_MASHUP_PLUGIN_NAME ) );
 		define('GEO_MASHUP_URL_PATH', trim( plugin_dir_url( __FILE__ ), '/' ) );
 		define('GEO_MASHUP_MAX_ZOOM', 20);
-		define('GEO_MASHUP_VERSION', '1.13.22');
+		define('GEO_MASHUP_VERSION', '1.13.23');
 		define('GEO_MASHUP_DB_VERSION', '1.3');
 	}
 
@@ -1139,11 +1139,12 @@ class GeoMashup {
 		// Values inside the JS string literals need esc_js(); the whole
 		// handler then needs esc_attr() for the surrounding HTML attribute.
 		$onclick = sprintf(
-			"GeoMashupLoader.addMapFrame(this,'%s','%s','%s','%s')",
+			"GeoMashupLoader.addMapFrame(this,'%s','%s','%s','%s','%s')",
 			esc_js( $iframe_src ),
 			esc_js( $height_style ),
 			esc_js( $width_style ),
-			esc_js( $map_data['name'] )
+			esc_js( $map_data['name'] ),
+			esc_js( __( 'Geo Mashup Map', 'GeoMashup' ) )
 		);
 
 		$content = "<div class=\"gm-map\" style=\"$style\" " .
@@ -1187,11 +1188,12 @@ class GeoMashup {
 
 		/** @noinspection HtmlUnknownTarget */
 		return sprintf(
-			'<div class="gm-map" style="%s"><iframe name="%s" allowfullscreen src="%s" style="%s"></iframe></div>',
+			'<div class="gm-map" style="%s"><iframe name="%s" allowfullscreen src="%s" style="%s" title="%s"></iframe></div>',
 			esc_attr( $div_styles ),
 			esc_attr( $map_data['name'] ),
 			$iframe_src,
-			$frame_styles
+			$frame_styles,
+			esc_attr( __( 'Geo Mashup Map', 'GeoMashup' ) )
 		);
 	}
 

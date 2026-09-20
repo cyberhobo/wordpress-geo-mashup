@@ -4,7 +4,7 @@ Donate Link:
 Tags: maps, google maps, mapping, geo, geocms
 Requires at least: 3.7
 Tested up to: 7.1
-Stable tag: 1.13.22
+Stable tag: 1.13.23
 License: GPL2+
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -128,6 +128,10 @@ This version fixes a security related bug.  Upgrade immediately.
 This version fixes a security related bug.  Upgrade immediately.
 
 == Change Log ==
+
+= 1.13.22 Sep 20 2026 =
+
+Add accessible title attribute to map iframes.
 
 = 1.13.22 Sep 14 2026 =
 
