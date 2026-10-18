@@ -778,8 +778,8 @@ GeoMashup.createMap = function( container, opts ) {
 
 	if ( opts.load_kml ) {
 		try {
-			// Some servers (Google) don't like HTML entities in URLs
-			opts.load_kml = jQuery( '<div/>' ).html( opts.load_kml ).text();
+			// HTML entities are decoded server side, where the value can't be
+			// mistaken for markup - see GeoMashup::build_map_data()
 			if ( initial_zoom === 'auto' ) {
 				this.map.addOverlay( opts.load_kml, true );
 			} else {
@@ -810,7 +810,7 @@ GeoMashup.createMap = function( container, opts ) {
 			// Center on the most recent located object
 			url = this.geo_query_url + '&limit=1';
 			if ( opts.map_cat ) {
-				url += '&map_cat=' + opts.map_cat;
+				url += '&map_cat=' + encodeURIComponent( opts.map_cat );
 			}
 			if ( GeoMashup.isSameOrigin( url ) ) {
 				jQuery.getJSON( url, function( objects ) {

@@ -924,6 +924,19 @@ class GeoMashup {
 			unset( $query[ $reserved_key ] );
 		}
 
+		// A KML overlay URL can also come from a request or a shortcode, and
+		// it reaches JavaScript as a URL too, so it has to be vetted. It can't
+		// simply be unset like the keys above, since supplying it is a
+		// documented feature.
+		if ( isset( $query['load_kml'] ) ) {
+			$load_kml = self::sanitize_kml_url( $query['load_kml'] );
+			if ( '' === $load_kml ) {
+				unset( $query['load_kml'] );
+			} else {
+				$query['load_kml'] = $load_kml;
+			}
+		}
+
 		$defaults = array(
 			'map_api' => $geo_mashup_options->get( 'overall', 'map_api' )
 		);
@@ -1022,6 +1035,59 @@ class GeoMashup {
 		unset( $map_data['load_empty_map'] );
 
 		return $map_data;
+	}
+
+	/**
+	 * Format and validate an untrusted KML overlay URL.
+	 *
+	 * HTML entities are decoded here because shortcode attributes store them
+	 * encoded, and some KML servers (Google) reject entities in URLs. Doing
+	 * that decoding server side keeps the value away from the HTML-parsing
+	 * sinks a browser offers, where a value like "<img src=x onerror=...>"
+	 * would otherwise run as markup instead of failing as a URL.
+	 *
+	 * Site-relative and protocol-relative URLs are allowed, since KML is
+	 * usually uploaded to the site itself. Anything else has to be http(s):
+	 * notably not "javascript:" or "data:".
+	 *
+	 * @since 1.13.24
+	 * @param string $url An untrusted KML URL.
+	 * @return string The URL, or '' if it isn't a usable http(s) URL.
+	 */
+	public static function sanitize_kml_url( $url ) {
+		if ( empty( $url ) || ! is_string( $url ) ) {
+			return '';
+		}
+
+		// esc_url_raw() strips the characters that make HTML injection
+		// possible, and returns '' for a disallowed protocol. Use the raw
+		// variant so '&' isn't re-encoded into the entity we just decoded.
+		$url = esc_url_raw(
+			html_entity_decode( $url, ENT_QUOTES ),
+			array( 'http', 'https' )
+		);
+
+		if ( '' === $url ) {
+			return '';
+		}
+
+		// An absolute URL has to have a plausible host. That also weeds out
+		// input that only survived the escaping above as a nonsense URL:
+		// stripping the markup out of '<img src=x onerror=alert(1)>' leaves
+		// esc_url_raw() prepending a protocol to the remains.
+		if ( preg_match( '#^(?:https?:)?//#i', $url ) ) {
+			$host = parse_url( $url, PHP_URL_HOST );
+			$host_pattern = '/^(?:[a-z0-9\-._~\x80-\xff]+|\[[0-9a-f:.]+\])$/i';
+			if ( empty( $host ) || ! preg_match( $host_pattern, $host ) ) {
+				return '';
+			}
+			return $url;
+		}
+
+		// Anything else is a path relative to the site, which is a normal way
+		// to point at uploaded KML. esc_url_raw() has already removed the
+		// characters that could make it markup instead of a path.
+		return $url;
 	}
 
 	/**

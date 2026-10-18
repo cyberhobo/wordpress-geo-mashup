@@ -595,6 +595,194 @@ class GeoMashup_Unit_Tests extends GeoMashupTestCase {
 	}
 
 	/**
+	 * Security hardening: the map data key names the transient a request reads
+	 * its map data from, so only keys in the format we generate may be looked
+	 * up. Otherwise a visitor picks which stored value is loaded and rendered.
+	 */
+	function test_get_map_data_rejects_foreign_data_key() {
+		require_once GEO_MASHUP_DIR_PATH . '/render-map.php';
+
+		$saved_get = $_GET;
+		set_transient( 'gmm_not_a_map_key', array( 'name' => 'foreign-data' ) );
+
+		$_GET = array( 'map_data_key' => '_not_a_map_key' );
+		$map_data = GeoMashupRenderMap::get_map_data();
+
+		$_GET = $saved_get;
+		delete_transient( 'gmm_not_a_map_key' );
+
+		$this->assertEmpty( $map_data );
+	}
+
+	/**
+	 * The map data key check must still accept the keys GeoMashup::map()
+	 * generates, or every iframe map stops rendering.
+	 */
+	function test_get_map_data_accepts_generated_data_key() {
+		require_once GEO_MASHUP_DIR_PATH . '/render-map.php';
+
+		$saved_get = $_GET;
+		// The format generated in GeoMashup::map()
+		$key = md5( serialize( array( 'map_content' => 'global' ) ) );
+		set_transient( 'gmm' . $key, array( 'name' => 'cached-map' ) );
+
+		$_GET = array( 'map_data_key' => $key );
+		$map_data = GeoMashupRenderMap::get_map_data();
+
+		$_GET = $saved_get;
+		delete_transient( 'gmm' . $key );
+
+		$this->assertIsArray( $map_data );
+		$this->assertSame( 'cached-map', $map_data['name'] );
+	}
+
+	/**
+	 * Security: build_map_data() must not pass a request/shortcode load_kml
+	 * value through as markup. It reaches JavaScript as a map overlay URL, so
+	 * a value like '<img src=x onerror=...>' used to run as HTML there.
+	 */
+	function test_build_map_data_sanitizes_load_kml() {
+		$payloads = array(
+			'<img src=x onerror=alert(document.domain)>',
+			'"><img src=x onerror=alert(1)>',
+			'javascript:alert(document.domain)',
+			'JaVaScRiPt:alert(1)',
+			'data:text/html;base64,PHNjcmlwdD5hbGVydCgxKTwvc2NyaXB0Pg==',
+			// The entity-decoding step must not reintroduce markup
+			'&lt;img src=x onerror=alert(1)&gt;',
+		);
+
+		foreach ( $payloads as $payload ) {
+			$map_data = GeoMashup::build_map_data( array(
+				'map_content' => 'global',
+				'load_empty_map' => 'true',
+				'load_kml' => $payload,
+			) );
+
+			$this->assertNotWPError( $map_data );
+
+			// None of these is a usable KML URL, so the option is dropped
+			$this->assertArrayNotHasKey( 'load_kml', $map_data, "Payload: $payload" );
+
+			// Belt and braces: nothing resembling the payload reaches the
+			// JSON that gets printed into a script tag
+			$json = json_encode( $map_data );
+			$this->assertStringNotContainsString( 'onerror', $json, "Payload: $payload" );
+			$this->assertStringNotContainsString( 'javascript:', $json, "Payload: $payload" );
+		}
+	}
+
+	/**
+	 * The load_kml fix must not break the documented feature. Supplying a KML
+	 * URL by request or shortcode is legitimate, including the site-relative
+	 * form and the HTML-encoded '&' that shortcode attributes are stored with.
+	 */
+	function test_build_map_data_allows_real_kml_urls() {
+		$urls = array(
+			'https://example.com/path/my.kml' => 'https://example.com/path/my.kml',
+			'http://example.com/my.kml' => 'http://example.com/my.kml',
+			'/wp-content/uploads/2024/01/my.kml' => '/wp-content/uploads/2024/01/my.kml',
+			'//example.com/my.kml' => '//example.com/my.kml',
+			'https://example.com/kml.php?id=1&amp;v=2' => 'https://example.com/kml.php?id=1&v=2',
+			'https://example.com/a%20b.kml' => 'https://example.com/a%20b.kml',
+		);
+
+		foreach ( $urls as $url => $expected ) {
+			$map_data = GeoMashup::build_map_data( array(
+				'map_content' => 'global',
+				'load_empty_map' => 'true',
+				'load_kml' => $url,
+			) );
+
+			$this->assertNotWPError( $map_data );
+			$this->assertSame( $expected, $map_data['load_kml'], "URL: $url" );
+		}
+	}
+
+	/**
+	 * Render a post containing a map shortcode, with $query_string standing in
+	 * for the request the page was loaded with.
+	 *
+	 * @param string $post_content
+	 * @param string $query_string
+	 * @return string The rendered content.
+	 */
+	private function map_content_for_query_string( $post_content, $query_string ) {
+		$saved_query_string = isset( $_SERVER['QUERY_STRING'] ) ? $_SERVER['QUERY_STRING'] : null;
+		$_SERVER['QUERY_STRING'] = $query_string;
+
+		$post_id = $this->factory->post->create( array( 'post_content' => $post_content ) );
+		$test_query = new WP_Query( array( 'p' => $post_id ) );
+		$this->assertTrue( $test_query->have_posts() );
+		$test_query->the_post();
+		$content = apply_filters( 'the_content', get_the_content() );
+		wp_reset_postdata();
+
+		if ( null === $saved_query_string ) {
+			unset( $_SERVER['QUERY_STRING'] );
+		} else {
+			$_SERVER['QUERY_STRING'] = $saved_query_string;
+		}
+
+		return $content;
+	}
+
+	/**
+	 * Security: a global map on a page takes whitelisted parameters from the
+	 * query string (see
+	 * GeoMashupMapAttributes::add_whitelisted_query_string_parameters()), so
+	 * load_kml is attacker controlled there too, with no map_content or
+	 * geo_mashup_content parameter needed. An unusable one must not be
+	 * reflected into the page or copied into the map iframe URL.
+	 */
+	function test_query_string_load_kml_is_sanitized() {
+		$content = $this->map_content_for_query_string(
+			'[geo_mashup_map map_content=global load_empty_map=true]',
+			'load_kml=' . rawurlencode( '<img src=x onerror=alert(document.domain)>' )
+		);
+
+		$this->assertStringContainsString( '<iframe', $content );
+		$this->assertStringNotContainsString( 'onerror', $content );
+		$this->assertStringNotContainsString( 'load_kml', $content );
+	}
+
+	/**
+	 * Taking load_kml from the query string is a feature, so a usable URL must
+	 * still reach the map iframe.
+	 */
+	function test_query_string_load_kml_allows_real_url() {
+		$content = $this->map_content_for_query_string(
+			'[geo_mashup_map map_content=global load_empty_map=true]',
+			'load_kml=' . rawurlencode( 'https://example.com/trails.kml' )
+		);
+
+		$this->assertStringContainsString( 'load_kml=https://example.com/trails.kml', $content );
+	}
+
+	/**
+	 * A single map takes its KML overlay from an attachment of the post, not
+	 * from the request. That URL is generated server side, so the load_kml
+	 * sanitizing must leave it alone.
+	 */
+	function test_single_map_uses_kml_attachment() {
+		$post_id = $this->factory->post->create();
+		$attachment_id = $this->factory->attachment->create_object( 'trail.kml', $post_id, array(
+			'post_mime_type' => 'application/vnd.google-earth.kml+xml',
+			'post_type' => 'attachment',
+		) );
+		GeoMashupDB::set_object_location( 'post', $post_id, $this->rand_location(), $do_lookups = false );
+
+		$map_data = GeoMashup::build_map_data( array(
+			'map_content' => 'single',
+			'object_name' => 'post',
+			'object_id' => $post_id,
+		) );
+
+		$this->assertNotWPError( $map_data );
+		$this->assertSame( wp_get_attachment_url( $attachment_id ), $map_data['load_kml'] );
+	}
+
+	/**
 	 * The reserved-key fix in build_map_data() (see
 	 * test_build_map_data_ignores_request_urls()) must only strip the
 	 * specific URL properties it's meant to. Every other query value is
