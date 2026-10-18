@@ -899,11 +899,55 @@ class GeoMashup_Unit_Tests extends GeoMashupTestCase {
 	}
 
 	/**
+	 * Places mock_geocode_request() knows the coordinates of, keyed by the
+	 * geocode query that should find them.
+	 *
+	 * @return array
+	 */
+	private function canned_geocode_results() {
+		return array(
+			"l'isle d'abeau,france" => array(
+				'lat' => '45.6186',
+				'lon' => '5.2258',
+				'display_name' => "L'Isle-d'Abeau, Isère, France",
+				'address' => array(
+					'city' => "L'Isle-d'Abeau",
+					'county' => 'Isère',
+					'postcode' => '38080',
+					'country_code' => 'fr',
+				),
+			),
+			'paris,france' => array(
+				'lat' => '48.8566',
+				'lon' => '2.3522',
+				'display_name' => 'Paris, Île-de-France, France',
+				'address' => array(
+					'city' => 'Paris',
+					'postcode' => '75000',
+					'country_code' => 'fr',
+				),
+			),
+			'paris,texas' => array(
+				'lat' => '33.6609',
+				'lon' => '-95.5555',
+				'display_name' => 'Paris, Lamar County, Texas, United States',
+				'address' => array(
+					'city' => 'Paris',
+					'county' => 'Lamar County',
+					'postcode' => '75460',
+					'country_code' => 'us',
+				),
+			),
+		);
+	}
+
+	/**
 	 * Stand in for a geocoding service.
 	 *
 	 * The geocoders make their requests through WP_Http, which applies
-	 * pre_http_request first, so this keeps them off the network entirely.
-	 * Coordinates are those of the search text used in test_search().
+	 * pre_http_request first, so this keeps them off the network entirely -
+	 * including the reverse geocoding a location save attempts, which gets an
+	 * error here just as it would with no connection.
 	 *
 	 * @param false|array|WP_Error $preempt
 	 * @param array $args Request arguments.
@@ -918,21 +962,23 @@ class GeoMashup_Unit_Tests extends GeoMashupTestCase {
 			return new WP_Error( 'http_request_failed', 'Unexpected request: ' . $url );
 		}
 
-		$result = array(
-			'lat' => '45.6186',
-			'lon' => '5.2258',
-			'display_name' => "L'Isle-d'Abeau, Isère, France",
-			'address' => array(
-				'city' => "L'Isle-d'Abeau",
-				'county' => 'Isère',
-				'postcode' => '38080',
-				'country_code' => 'fr',
-			),
-		);
+		$url_args = array();
+		parse_str( (string) parse_url( $url, PHP_URL_QUERY ), $url_args );
+		$query = isset( $url_args['q'] ) ? strtolower( $url_args['q'] ) : '';
+		// The import builds its query by joining field values with a comma
+		$query = trim( preg_replace( '/\s*,\s*/', ',', $query ) );
+
+		$results = array();
+		foreach ( $this->canned_geocode_results() as $place => $result ) {
+			if ( false !== strpos( $query, $place ) ) {
+				$results[] = $result;
+				break;
+			}
+		}
 
 		return array(
 			'response' => array( 'code' => 200, 'message' => 'OK' ),
-			'body' => wp_json_encode( array( $result ) ),
+			'body' => wp_json_encode( $results ),
 		);
 	}
 
@@ -1182,8 +1228,12 @@ class GeoMashup_Unit_Tests extends GeoMashupTestCase {
 	}
 
 	public function test_user_import_fields() {
-		// This test calls geocoding services, but allows for failure
 		global $geo_mashup_options;
+
+		// Geocode locally, so the test doesn't depend on a geocoding service
+		// being reachable, in agreement, and under its rate limit
+		$this->data->geocode_urls = array();
+		$this->add_filter( 'pre_http_request', array( $this, 'mock_geocode_request' ), 10, 3 );
 
 		$geo_mashup_options->set_valid_options( array( 'overall' => array( 'import_custom_field' => 'city, region' ) ) );
 		GeoMashupDB::add_geodata_sync_hooks();
@@ -1191,42 +1241,46 @@ class GeoMashup_Unit_Tests extends GeoMashupTestCase {
 		$user_id = $this->factory->user->create();
 		$this->assertEmpty( GeoMashupDB::get_object_location( 'user', $user_id ) );
 
+		// Both fields are needed before the import geocodes anything
 		update_user_meta( $user_id, 'city', 'Paris' );
+		$this->assertEmpty( GeoMashupDB::get_object_location( 'user', $user_id ) );
+
 		update_user_meta( $user_id, 'region', 'France' );
 
-		$error = get_user_meta( $user_id, 'geocoding_error', true );
-		if ( $error ) {
+		$this->assertEmpty( get_user_meta( $user_id, 'geocoding_error', true ) );
+		$location = GeoMashupDB::get_object_location( 'user', $user_id );
+		$this->assertEquals( 48, (int) $location->lat );
+		$this->assertEquals( 2, (int) $location->lng );
 
-			echo $error;
-			// If we can't geocode, no location is saved
-			$this->assertEmpty( GeoMashupDB::get_object_location( 'user', $user_id ) );
+		// A second update overwrites the first result with Paris, TX
+		update_user_meta( $user_id, 'region', 'Texas' );
 
-		} else {
+		$this->assertEmpty( get_user_meta( $user_id, 'geocoding_error', true ) );
+		$location = GeoMashupDB::get_object_location( 'user', $user_id );
+		$this->assertEquals( 33, (int) $location->lat );
+		$this->assertEquals( -95, (int) $location->lng );
+	}
 
-			$location = GeoMashupDB::get_object_location( 'user', $user_id );
-			$this->assertEquals( 48, (int) $location->lat );
-			$this->assertEquals( 2, (int) $location->lng );
+	/**
+	 * A field value that can't be geocoded records the error and leaves any
+	 * location already found in place.
+	 */
+	public function test_user_import_fields_geocoding_failure() {
+		global $geo_mashup_options;
 
-			// A second update overwrites if successful
-			update_user_meta( $user_id, 'region', 'Texas' );
-			$error = get_user_meta( $user_id, 'geocoding_error', true );
-			if ( $error ) {
+		$this->data->geocode_urls = array();
+		$this->add_filter( 'pre_http_request', array( $this, 'mock_geocode_request' ), 10, 3 );
 
-				// Failed geocoding leaves the first result
-				echo $error;
-				$location = GeoMashupDB::get_object_location( 'user', $user_id );
-				$this->assertEquals( 48, (int) $location->lat, $error );
-				$this->assertEquals( 2, (int) $location->lng, $error );
+		$geo_mashup_options->set_valid_options( array( 'overall' => array( 'import_custom_field' => 'city, region' ) ) );
+		GeoMashupDB::add_geodata_sync_hooks();
 
-			} else {
+		$user_id = $this->factory->user->create();
+		update_user_meta( $user_id, 'city', 'Nowhere' );
+		update_user_meta( $user_id, 'region', 'Nowhere' );
 
-				// Location is updated to Paris, TX
-				$location = GeoMashupDB::get_object_location( 'user', $user_id );
-				$this->assertEquals( 33, (int) $location->lat );
-				$this->assertEquals( -95, (int) $location->lng );
-
-			}
-		}
+		$this->assertNotEmpty( $this->data->geocode_urls, 'Import did not geocode the fields.' );
+		$this->assertNotEmpty( get_user_meta( $user_id, 'geocoding_error', true ) );
+		$this->assertEmpty( GeoMashupDB::get_object_location( 'user', $user_id ) );
 	}
 
 
