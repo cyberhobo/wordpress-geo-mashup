@@ -898,8 +898,52 @@ class GeoMashup_Unit_Tests extends GeoMashupTestCase {
 		$this->assertThat( $html, $this->stringContains( 'height: 30%;' ) );
 	}
 
+	/**
+	 * Stand in for a geocoding service.
+	 *
+	 * The geocoders make their requests through WP_Http, which applies
+	 * pre_http_request first, so this keeps them off the network entirely.
+	 * Coordinates are those of the search text used in test_search().
+	 *
+	 * @param false|array|WP_Error $preempt
+	 * @param array $args Request arguments.
+	 * @param string $url
+	 * @return array|WP_Error A canned response, or an error for any request
+	 *                        this isn't meant to answer.
+	 */
+	function mock_geocode_request( $preempt, $args, $url ) {
+		$this->data->geocode_urls[] = $url;
+
+		if ( false === strpos( $url, 'nominatim.openstreetmap.org/search' ) ) {
+			return new WP_Error( 'http_request_failed', 'Unexpected request: ' . $url );
+		}
+
+		$result = array(
+			'lat' => '45.6186',
+			'lon' => '5.2258',
+			'display_name' => "L'Isle-d'Abeau, Isère, France",
+			'address' => array(
+				'city' => "L'Isle-d'Abeau",
+				'county' => 'Isère',
+				'postcode' => '38080',
+				'country_code' => 'fr',
+			),
+		);
+
+		return array(
+			'response' => array( 'code' => 200, 'message' => 'OK' ),
+			'body' => wp_json_encode( array( $result ) ),
+		);
+	}
+
 	function test_search() {
 		require_once GEO_MASHUP_DIR_PATH . '/geo-mashup-search.php';
+
+		// Geocode locally, so the test doesn't depend on a geocoding service
+		// being reachable, in agreement, and under its rate limit
+		$this->data->geocode_urls = array();
+		$this->add_filter( 'pre_http_request', array( $this, 'mock_geocode_request' ), 10, 3 );
+
 		$not_found_post = $this->factory->post->create_and_get();
 		GeoMashupDB::set_object_location( 'post', $not_found_post->ID, $this->get_nv_test_location(), false );
 
@@ -917,7 +961,8 @@ class GeoMashup_Unit_Tests extends GeoMashupTestCase {
 			'geo_mashup_search_submit' => 'Search',
 		);
 		$search = new GeoMashupSearch( $search_args );
-		$this->assertTrue( $search->have_posts(), 'Search did not find any posts (internet required).' );
+		$this->assertNotEmpty( $this->data->geocode_urls, 'Search did not geocode the search text.' );
+		$this->assertTrue( $search->have_posts(), 'Search did not find any posts.' );
 		$this->assertContains( (string) $found_post->ID, $search->get_the_IDs(), 'Search did not find the target post.' );
 		$this->assertNotContains( (string) $not_found_post->ID, $search->get_the_IDs(), 'Search found the wrong post.' );
 
