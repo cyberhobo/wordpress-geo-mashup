@@ -1337,12 +1337,6 @@ class GeoMashup_Unit_Tests extends GeoMashupTestCase {
 		$this->assertStringContainsString( 'zoom=10', GeoMashup::show_on_map_link( $test_args ) );
 	}
 
-	function verify_google_geocode_request( $continue, $request, $url ) {
-		$this->assertStringContainsString( 'TESTKEY', $url, 'Expected query URL to contain the test key.' );
-		$this->data->geocode_called = true;
-		return array( 'response' => array( 'code' => 200 ), 'body' => '{ "status": "ZERO_RESULTS" }' );
-	}
-
 	/**
 	 * issue 715
 	 */
