@@ -1486,4 +1486,35 @@ class GeoMashup_Unit_Tests extends GeoMashupTestCase {
 		$result = GeoMashupDB::sanitize_query_args( $args );
 		$this->assertEquals( '49111', $result['map_cat'] );
 	}
+
+	function test_visible_posts_list_heading_default_tags() {
+		$html = GeoMashup::visible_posts_list( array( 'heading_text' => 'Visible Posts' ) );
+		$this->assertEquals(
+			'<div id="gm-map-1-visible-list-header" style="display:none;"><h2>Visible Posts</h2></div>' .
+				'<div id="gm-map-1-visible-list"></div>',
+			$html
+		);
+	}
+
+	function test_visible_posts_list_heading_custom_tags() {
+		$html = GeoMashup::visible_posts_list( array(
+			'for_map' => 'gm-map-2',
+			'heading_text' => 'Nearby',
+			'heading_tags' => '<h3><em>',
+		) );
+		$this->assertStringContainsString(
+			'<div id="gm-map-2-visible-list-header" style="display:none;"><h3><em>Nearby</em></h3></div>',
+			$html
+		);
+	}
+
+	function test_visible_posts_list_heading_escapes_markup() {
+		$html = GeoMashup::visible_posts_list( array(
+			'heading_text' => '<img src=x onerror=alert(1)>',
+			'heading_tags' => '<script><h4 onclick="alert(1)">',
+		) );
+		$this->assertStringContainsString( '<h4>&lt;img src=x onerror=alert(1)&gt;</h4>', $html );
+		$this->assertStringNotContainsString( '<script', $html );
+		$this->assertStringNotContainsString( 'onclick', $html );
+	}
 }

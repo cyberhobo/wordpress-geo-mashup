@@ -1889,12 +1889,25 @@ class GeoMashup {
 			$for_map = $args['for_map'];
 		}
 		if ( !empty( $args['heading_text'] ) ) {
-			$heading_div = '<div id="' . esc_attr($for_map) . '-visible-list-header" style="display:none;">';
-			$heading_tags = '<h2>';
+			$tag_names = array( 'h2' );
 			if ( !empty( $args['heading_tags'] ) ) {
-				$heading_tags = $args['heading_tags'];
+				// Keep only the names of allowed tags, e.g. '<h3><em>' becomes h3 and em
+				preg_match_all( '/<\s*([a-z][a-z0-9]*)/i', $args['heading_tags'], $matches );
+				$allowed_tag_names = array( 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'div', 'span', 'strong', 'em', 'b', 'i' );
+				$requested_tag_names = array_intersect( array_map( 'strtolower', $matches[1] ), $allowed_tag_names );
+				if ( $requested_tag_names ) {
+					$tag_names = array_values( $requested_tag_names );
+				}
 			}
-			$list_html .= balanceTags( esc_html($heading_div . $heading_tags . $args['heading_text']), true );
+			$list_html .= '<div id="' . esc_attr($for_map) . '-visible-list-header" style="display:none;">';
+			foreach ( $tag_names as $tag_name ) {
+				$list_html .= '<' . $tag_name . '>';
+			}
+			$list_html .= esc_html( $args['heading_text'] );
+			foreach ( array_reverse( $tag_names ) as $tag_name ) {
+				$list_html .= '</' . $tag_name . '>';
+			}
+			$list_html .= '</div>';
 		}
 		$list_html .= '<div id="' . esc_attr($for_map) . '-visible-list"></div>';
 		return $list_html;
