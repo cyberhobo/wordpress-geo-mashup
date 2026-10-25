@@ -5,11 +5,11 @@
   "license": "GPL-2.0-or-later",
   "config": {
     "platform": {
-      "php": "8.3"
+      "php": "8.3.36"
     }
   },
   "require": {
-    "freemius/wordpress-sdk": "^2.13.0"
+    "freemius/wordpress-sdk": "^2.13.5"
   },
   "require-dev": {
     "roave/security-advisories": "dev-latest",
