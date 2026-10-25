@@ -249,7 +249,8 @@ GeoMashup = {
 	 * @returns {String} Modified markup
 	 */
 	parentizeLinksMarkup : function( markup ) {
-		var container = document.createElement( 'div' );
+		// Parse in an inert document so handlers like onerror don't run here
+		var container = document.implementation.createHTMLDocument( '' ).createElement( 'div' );
 		container.innerHTML = markup;
 		this.parentizeLinks( container );
 		return container.innerHTML;
