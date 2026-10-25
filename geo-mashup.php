@@ -570,21 +570,41 @@ class GeoMashup {
 
 		$status = array( 'request' => 'ajax-edit', 'code' => 200 );
 		if ( isset( $_POST['geo_mashup_object_id'] ) ) {
-			$status['object_id'] = $_POST['geo_mashup_object_id'];
+			$status['object_id'] = absint( $_POST['geo_mashup_object_id'] );
 		} else {
 			$status['code'] = 400;
 			$status['message'] = __( 'No object id posted.', 'GeoMashup' );
 			$status['object_id'] = '?';
 		}
 
-		/** @todo add an option for a user capability check here? */
+		/**
+		 * Filter the UI managers that may save locations via ajax, and the
+		 * capability required on the object ID to do so.
+		 *
+		 * @since 1.13.24
+		 *
+		 * @param array $manager_capabilities UI manager class name => meta capability.
+		 */
+		$manager_capabilities = apply_filters( 'geo_mashup_ajax_edit_manager_capabilities', array(
+			'GeoMashupPostUIManager' => 'edit_post',
+			'GeoMashupUserUIManager' => 'edit_user',
+		) );
 
 		if ( ! empty( $_POST['geo_mashup_ui_manager'] ) && 200 === $status['code'] ) {
-			$ui_manager = GeoMashupUIManager::get_instance( $_POST['geo_mashup_ui_manager'] );
-			$result = $ui_manager->save_posted_object_location( $status['object_id'] );
-			if ( is_wp_error( $result ) ) {
-				$status['code'] = 500;
-				$status['message'] = $result->get_error_message();
+			$manager_name = (string) $_POST['geo_mashup_ui_manager'];
+			if ( ! isset( $manager_capabilities[$manager_name] ) ) {
+				$status['code'] = 400;
+				$status['message'] = __( 'Object location not saved - invalid request.', 'GeoMashup' );
+			} else if ( ! current_user_can( $manager_capabilities[$manager_name], $status['object_id'] ) ) {
+				$status['code'] = 403;
+				$status['message'] = __( 'You are not allowed to edit this location.', 'GeoMashup' );
+			} else {
+				$ui_manager = GeoMashupUIManager::get_instance( $manager_name );
+				$result = $ui_manager->save_posted_object_location( $status['object_id'] );
+				if ( is_wp_error( $result ) ) {
+					$status['code'] = 500;
+					$status['message'] = $result->get_error_message();
+				}
 			}
 		}
 
@@ -598,8 +618,7 @@ class GeoMashup {
 			}
 		}
 
-		echo json_encode( array( 'status' => $status ) );
-		exit();
+		wp_send_json( array( 'status' => $status ) );
 	}
 
 	/**
