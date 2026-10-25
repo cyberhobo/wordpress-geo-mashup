@@ -860,6 +860,20 @@ GeoMashup = {
 		this.last_zoom_level = new_level;
 	},
 
+	/**
+	 * Escape a string for use in HTML text or a quoted attribute value.
+	 * @param {String} text
+	 * @returns {String} Escaped text
+	 */
+	escapeHtml : function( text ) {
+		return String( text )
+			.replace( /&/g, '&amp;' )
+			.replace( /</g, '&lt;' )
+			.replace( />/g, '&gt;' )
+			.replace( /"/g, '&quot;' )
+			.replace( /'/g, '&#39;' );
+	},
+
 	objectLinkHtml : function(object_id) {
 		return ['<a href="#',
 		this.opts.name,
@@ -868,7 +882,7 @@ GeoMashup = {
 		'\'].GeoMashup.clickObjectMarker(',
 		object_id,
 		');">',
-		this.objects[object_id].title,
+		this.escapeHtml(this.objects[object_id].title),
 		'</a>'].join('');
 	},
 
@@ -905,7 +919,7 @@ GeoMashup = {
 					list_item.push('<li><img src="');
 					list_item.push(obj.icon.image);
 					list_item.push('" alt="');
-					list_item.push(obj.title);
+					list_item.push(this.escapeHtml(obj.title));
 					list_item.push('" />');
 					list_item.push(this.objectLinkHtml(object_id));
 					list_item.push('</li>');
