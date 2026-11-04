@@ -906,9 +906,7 @@ class GeoMashup {
 		$augmented_object = array(
 			'object_name' => $object_name,
 			'object_id' => $object_location->object_id,
-			// We should be able to use real UTF-8 characters in titles
-			// Helps with the spelling-out of entities in tooltips
-			'title' => html_entity_decode( $object_location->label, ENT_COMPAT, 'UTF-8' ),
+			'title' => self::map_object_title( $object_location->label ),
 			'lat' => $object_location->lat,
 			'lng' => $object_location->lng,
 			'author_name' => $author_name,
@@ -917,6 +915,30 @@ class GeoMashup {
 
 		// Allow companion plugins to add data with legacy filter name
 		return apply_filters( 'geo_mashup_locations_json_object', $augmented_object, $object_location );
+	}
+
+	/**
+	 * Convert a stored object label to the plain text title used by map JavaScript.
+	 *
+	 * Labels are stored entity encoded, so decoding can produce markup that was
+	 * inert in storage. Only a less than sign followed by a letter, /, ! or ? can
+	 * open a tag in HTML, so titles without one are left as they are.
+	 *
+	 * @since 1.13.24
+	 *
+	 * @param string $label The stored label.
+	 * @return string The decoded title, which contains no HTML tags.
+	 */
+	private static function map_object_title( $label ) {
+		// We should be able to use real UTF-8 characters in titles
+		// Helps with the spelling-out of entities in tooltips
+		$title = html_entity_decode( $label, ENT_COMPAT, 'UTF-8' );
+
+		if ( preg_match( '/<[a-z\/!?]/i', $title ) ) {
+			$title = preg_replace( '/<+(?=[a-z\/!?])/i', '', wp_strip_all_tags( $title ) );
+		}
+
+		return $title;
 	}
 
 	/**

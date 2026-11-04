@@ -1517,4 +1517,57 @@ class GeoMashup_Unit_Tests extends GeoMashupTestCase {
 		$this->assertStringNotContainsString( '<script', $html );
 		$this->assertStringNotContainsString( 'onclick', $html );
 	}
+
+	/**
+	 * Comment author and user display names are stored entity encoded, and
+	 * map titles are decoded for the map JavaScript, which must not turn them
+	 * back into markup for any consumer of the location data.
+	 *
+	 * @dataProvider provide_map_titles
+	 */
+	function test_map_title_decoding_does_not_produce_markup( $stored_label, $expected_title ) {
+		$comment_id = self::factory()->comment->create( array(
+			'comment_author' => $stored_label,
+			'comment_approved' => '1',
+		) );
+		GeoMashupDB::set_object_location( 'comment', $comment_id, $this->get_nv_test_location(), false );
+
+		$locations = GeoMashup::get_locations_json(
+			array( 'object_name' => 'comment', 'object_ids' => $comment_id ),
+			ARRAY_A
+		);
+
+		$this->assertCount( 1, $locations['objects'] );
+		$this->assertSame( $expected_title, $locations['objects'][0]['title'] );
+	}
+
+	function provide_map_titles() {
+		return array(
+			'named entities' => array( '&lt;img src=x onerror=alert(1)&gt;', '' ),
+			'numeric entities' => array( '&#60;img src=x onerror=alert(1)&#62;', '' ),
+			'hex entities' => array( '&#x3c;img src=x onerror=alert(1)&#x3e;', '' ),
+			'unclosed tag' => array( '&lt;img src=x onerror=alert(1)', '' ),
+			'surrounding text' => array( 'Ann &lt;svg/onload=alert(1)&gt; Lee', 'Ann  Lee' ),
+			'nested tag leaves no opener' => array( '&lt;&lt;b&gt;b&gt;img src=x onerror=alert(1)&gt;', 'img src=x onerror=alert(1)>' ),
+			'heart then tag' => array( 'I &lt;3 &lt;&lt;b&gt;img src=x onerror=alert(1)&gt;', 'I' ),
+			'double encoded stays inert' => array( '&amp;lt;img src=x&amp;gt;', '&lt;img src=x&gt;' ),
+			'less than heart' => array( 'I &lt;3 Paris', 'I <3 Paris' ),
+			'spaced comparison' => array( 'a &lt; b &gt; c', 'a < b > c' ),
+			'ampersand' => array( 'Smith &amp; Sons', 'Smith & Sons' ),
+			'utf-8 entity' => array( 'caf&eacute; &quot;Ren&eacute;&quot;', "caf\u{e9} \"Ren\u{e9}\"" ),
+		);
+	}
+
+	function test_map_title_of_user_does_not_produce_markup() {
+		$user_id = self::factory()->user->create( array( 'display_name' => '&lt;img src=x onerror=alert(1)&gt;' ) );
+		GeoMashupDB::set_object_location( 'user', $user_id, $this->get_nv_test_location(), false );
+
+		$locations = GeoMashup::get_locations_json(
+			array( 'object_name' => 'user', 'object_ids' => $user_id ),
+			ARRAY_A
+		);
+
+		$this->assertCount( 1, $locations['objects'] );
+		$this->assertStringNotContainsString( '<img', $locations['objects'][0]['title'] );
+	}
 }
