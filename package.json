@@ -46,8 +46,8 @@
     "deploy:update": "yarn deploy:update:add && yarn deploy:update:rm && yarn deploy:update:commit && yarn deploy:update:tag",
     "deploy:update:add": "svn stat deploy | grep '^?' | awk '{print $2}' | xargs -r svn add",
     "deploy:update:rm": "svn stat deploy | grep '^!' | awk '{print $2}' | xargs -r svn rm",
-    "deploy:update:commit": "svn commit deploy -m \"deploy from build of $npm_package_version\" --no-auth-cache --username \"$SVN_USERNAME\" --password \"$SVN_PASSWORD\"",
-    "deploy:update:tag": "svn copy \"http://plugins.svn.wordpress.org/geo-mashup/trunk\" \"http://plugins.svn.wordpress.org/geo-mashup/tags/$npm_package_version\" -m \"Tagging $npm_package_version\" --no-auth-cache --username \"$SVN_USERNAME\" --password \"$SVN_PASSWORD\"",
+    "deploy:update:commit": "printf '%s' \"$SVN_PASSWORD\" | svn commit deploy -m \"deploy from build of $npm_package_version\" --no-auth-cache --non-interactive --username \"$SVN_USERNAME\" --password-from-stdin",
+    "deploy:update:tag": "printf '%s' \"$SVN_PASSWORD\" | svn copy \"http://plugins.svn.wordpress.org/geo-mashup/trunk\" \"http://plugins.svn.wordpress.org/geo-mashup/tags/$npm_package_version\" -m \"Tagging $npm_package_version\" --no-auth-cache --non-interactive --username \"$SVN_USERNAME\" --password-from-stdin",
     "deploy:clean": "rm -rf deploy"
   }
 }
