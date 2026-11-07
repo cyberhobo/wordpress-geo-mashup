@@ -23,10 +23,14 @@ class GeoMashupUIManager {
 	 * @since 1.3
 	 *
 	 * @param string $name The class name of the manager.
-	 * @return GeoMashupPostUIManager|GeoMashupUserUIManager|GeoMashupCommentUIManager The singleton object.
+	 * @return GeoMashupPostUIManager|GeoMashupUserUIManager|null The singleton object, null if not a UI manager class.
 	 */
 	public static function get_instance( $name ) {
 		static $instances = array();
+
+		if ( ! is_string( $name ) || ! is_subclass_of( $name, __CLASS__ ) ) {
+			return null;
+		}
 
 		if ( ! isset( $instances[$name] ) ) {
 			$instances[$name] = new $name();
@@ -598,8 +602,7 @@ class GeoMashupPostUIManager extends GeoMashupUIManager {
 		// Browser upload processing
 		add_filter( 'wp_handle_upload', array( &$this, 'wp_handle_upload' ) );
 
-		// Enable front or back end ajax edits
-		add_action( 'wp_ajax_nopriv_geo_mashup_edit', array( 'GeoMashup', 'ajax_edit' ) );
+		// Enable ajax edits - logged in only, since every edit requires a capability
 		add_action( 'wp_ajax_geo_mashup_edit', array( 'GeoMashup', 'ajax_edit' ) );
 
 		// Form generation

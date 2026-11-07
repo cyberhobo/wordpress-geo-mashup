@@ -3,7 +3,7 @@
 Plugin Name: Geo Mashup
 Plugin URI: https://wordpress.org/plugins/geo-mashup/
 Description: Save location for posts and pages, or even users and comments. Display these locations on Google, Leaflet, and OSM maps. Make WordPress into your GeoCMS.
-Version: 1.13.23
+Version: 1.13.24
 Author: Dylan Kuhn
 Text Domain: GeoMashup
 Domain Path: /lang
@@ -256,7 +256,7 @@ class GeoMashup {
 		define('GEO_MASHUP_DIRECTORY', dirname( GEO_MASHUP_PLUGIN_NAME ) );
 		define('GEO_MASHUP_URL_PATH', trim( plugin_dir_url( __FILE__ ), '/' ) );
 		define('GEO_MASHUP_MAX_ZOOM', 20);
-		define('GEO_MASHUP_VERSION', '1.13.23');
+		define('GEO_MASHUP_VERSION', '1.13.24');
 		define('GEO_MASHUP_DB_VERSION', '1.3');
 	}
 
@@ -570,21 +570,41 @@ class GeoMashup {
 
 		$status = array( 'request' => 'ajax-edit', 'code' => 200 );
 		if ( isset( $_POST['geo_mashup_object_id'] ) ) {
-			$status['object_id'] = $_POST['geo_mashup_object_id'];
+			$status['object_id'] = absint( $_POST['geo_mashup_object_id'] );
 		} else {
 			$status['code'] = 400;
 			$status['message'] = __( 'No object id posted.', 'GeoMashup' );
 			$status['object_id'] = '?';
 		}
 
-		/** @todo add an option for a user capability check here? */
+		/**
+		 * Filter the UI managers that may save locations via ajax, and the
+		 * capability required on the object ID to do so.
+		 *
+		 * @since 1.13.24
+		 *
+		 * @param array $manager_capabilities UI manager class name => meta capability.
+		 */
+		$manager_capabilities = apply_filters( 'geo_mashup_ajax_edit_manager_capabilities', array(
+			'GeoMashupPostUIManager' => 'edit_post',
+			'GeoMashupUserUIManager' => 'edit_user',
+		) );
 
 		if ( ! empty( $_POST['geo_mashup_ui_manager'] ) && 200 === $status['code'] ) {
-			$ui_manager = GeoMashupUIManager::get_instance( $_POST['geo_mashup_ui_manager'] );
-			$result = $ui_manager->save_posted_object_location( $status['object_id'] );
-			if ( is_wp_error( $result ) ) {
-				$status['code'] = 500;
-				$status['message'] = $result->get_error_message();
+			$manager_name = (string) $_POST['geo_mashup_ui_manager'];
+			if ( ! isset( $manager_capabilities[$manager_name] ) ) {
+				$status['code'] = 400;
+				$status['message'] = __( 'Object location not saved - invalid request.', 'GeoMashup' );
+			} else if ( ! current_user_can( $manager_capabilities[$manager_name], $status['object_id'] ) ) {
+				$status['code'] = 403;
+				$status['message'] = __( 'You are not allowed to edit this location.', 'GeoMashup' );
+			} else {
+				$ui_manager = GeoMashupUIManager::get_instance( $manager_name );
+				$result = $ui_manager->save_posted_object_location( $status['object_id'] );
+				if ( is_wp_error( $result ) ) {
+					$status['code'] = 500;
+					$status['message'] = $result->get_error_message();
+				}
 			}
 		}
 
@@ -598,8 +618,7 @@ class GeoMashup {
 			}
 		}
 
-		echo json_encode( array( 'status' => $status ) );
-		exit();
+		wp_send_json( array( 'status' => $status ) );
 	}
 
 	/**
@@ -887,9 +906,7 @@ class GeoMashup {
 		$augmented_object = array(
 			'object_name' => $object_name,
 			'object_id' => $object_location->object_id,
-			// We should be able to use real UTF-8 characters in titles
-			// Helps with the spelling-out of entities in tooltips
-			'title' => html_entity_decode( $object_location->label, ENT_COMPAT, 'UTF-8' ),
+			'title' => self::map_object_title( $object_location->label ),
 			'lat' => $object_location->lat,
 			'lng' => $object_location->lng,
 			'author_name' => $author_name,
@@ -898,6 +915,30 @@ class GeoMashup {
 
 		// Allow companion plugins to add data with legacy filter name
 		return apply_filters( 'geo_mashup_locations_json_object', $augmented_object, $object_location );
+	}
+
+	/**
+	 * Convert a stored object label to the plain text title used by map JavaScript.
+	 *
+	 * Labels are stored entity encoded, so decoding can produce markup that was
+	 * inert in storage. Only a less than sign followed by a letter, /, ! or ? can
+	 * open a tag in HTML, so titles without one are left as they are.
+	 *
+	 * @since 1.13.24
+	 *
+	 * @param string $label The stored label.
+	 * @return string The decoded title, which contains no HTML tags.
+	 */
+	private static function map_object_title( $label ) {
+		// We should be able to use real UTF-8 characters in titles
+		// Helps with the spelling-out of entities in tooltips
+		$title = html_entity_decode( $label, ENT_COMPAT, 'UTF-8' );
+
+		if ( preg_match( '/<[a-z\/!?]/i', $title ) ) {
+			$title = preg_replace( '/<+(?=[a-z\/!?])/i', '', wp_strip_all_tags( $title ) );
+		}
+
+		return $title;
 	}
 
 	/**
@@ -922,6 +963,19 @@ class GeoMashup {
 		// since they end up in JavaScript as trusted URLs.
 		foreach ( array( 'ajaxurl', 'siteurl', 'url_path', 'template_url_path', 'custom_url_path' ) as $reserved_key ) {
 			unset( $query[ $reserved_key ] );
+		}
+
+		// A KML overlay URL can also come from a request or a shortcode, and
+		// it reaches JavaScript as a URL too, so it has to be vetted. It can't
+		// simply be unset like the keys above, since supplying it is a
+		// documented feature.
+		if ( isset( $query['load_kml'] ) ) {
+			$load_kml = self::sanitize_kml_url( $query['load_kml'] );
+			if ( '' === $load_kml ) {
+				unset( $query['load_kml'] );
+			} else {
+				$query['load_kml'] = $load_kml;
+			}
 		}
 
 		$defaults = array(
@@ -1022,6 +1076,59 @@ class GeoMashup {
 		unset( $map_data['load_empty_map'] );
 
 		return $map_data;
+	}
+
+	/**
+	 * Format and validate an untrusted KML overlay URL.
+	 *
+	 * HTML entities are decoded here because shortcode attributes store them
+	 * encoded, and some KML servers (Google) reject entities in URLs. Doing
+	 * that decoding server side keeps the value away from the HTML-parsing
+	 * sinks a browser offers, where a value like "<img src=x onerror=...>"
+	 * would otherwise run as markup instead of failing as a URL.
+	 *
+	 * Site-relative and protocol-relative URLs are allowed, since KML is
+	 * usually uploaded to the site itself. Anything else has to be http(s):
+	 * notably not "javascript:" or "data:".
+	 *
+	 * @since 1.13.24
+	 * @param string $url An untrusted KML URL.
+	 * @return string The URL, or '' if it isn't a usable http(s) URL.
+	 */
+	public static function sanitize_kml_url( $url ) {
+		if ( empty( $url ) || ! is_string( $url ) ) {
+			return '';
+		}
+
+		// esc_url_raw() strips the characters that make HTML injection
+		// possible, and returns '' for a disallowed protocol. Use the raw
+		// variant so '&' isn't re-encoded into the entity we just decoded.
+		$url = esc_url_raw(
+			html_entity_decode( $url, ENT_QUOTES ),
+			array( 'http', 'https' )
+		);
+
+		if ( '' === $url ) {
+			return '';
+		}
+
+		// An absolute URL has to have a plausible host. That also weeds out
+		// input that only survived the escaping above as a nonsense URL:
+		// stripping the markup out of '<img src=x onerror=alert(1)>' leaves
+		// esc_url_raw() prepending a protocol to the remains.
+		if ( preg_match( '#^(?:https?:)?//#i', $url ) ) {
+			$host = parse_url( $url, PHP_URL_HOST );
+			$host_pattern = '/^(?:[a-z0-9\-._~\x80-\xff]+|\[[0-9a-f:.]+\])$/i';
+			if ( empty( $host ) || ! preg_match( $host_pattern, $host ) ) {
+				return '';
+			}
+			return $url;
+		}
+
+		// Anything else is a path relative to the site, which is a normal way
+		// to point at uploaded KML. esc_url_raw() has already removed the
+		// characters that could make it markup instead of a path.
+		return $url;
 	}
 
 	/**
@@ -1804,12 +1911,25 @@ class GeoMashup {
 			$for_map = $args['for_map'];
 		}
 		if ( !empty( $args['heading_text'] ) ) {
-			$heading_div = '<div id="' . esc_attr($for_map) . '-visible-list-header" style="display:none;">';
-			$heading_tags = '<h2>';
+			$tag_names = array( 'h2' );
 			if ( !empty( $args['heading_tags'] ) ) {
-				$heading_tags = $args['heading_tags'];
+				// Keep only the names of allowed tags, e.g. '<h3><em>' becomes h3 and em
+				preg_match_all( '/<\s*([a-z][a-z0-9]*)/i', $args['heading_tags'], $matches );
+				$allowed_tag_names = array( 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'div', 'span', 'strong', 'em', 'b', 'i' );
+				$requested_tag_names = array_intersect( array_map( 'strtolower', $matches[1] ), $allowed_tag_names );
+				if ( $requested_tag_names ) {
+					$tag_names = array_values( $requested_tag_names );
+				}
 			}
-			$list_html .= balanceTags( esc_html($heading_div . $heading_tags . $args['heading_text']), true );
+			$list_html .= '<div id="' . esc_attr($for_map) . '-visible-list-header" style="display:none;">';
+			foreach ( $tag_names as $tag_name ) {
+				$list_html .= '<' . $tag_name . '>';
+			}
+			$list_html .= esc_html( $args['heading_text'] );
+			foreach ( array_reverse( $tag_names ) as $tag_name ) {
+				$list_html .= '</' . $tag_name . '>';
+			}
+			$list_html .= '</div>';
 		}
 		$list_html .= '<div id="' . esc_attr($for_map) . '-visible-list"></div>';
 		return $list_html;

@@ -169,7 +169,8 @@ $global_urls = array();
 foreach( $test_apis as $test_api ) {
 	$api_data = $global_data;
 	$api_data['map_api'] = $test_api;
-	$data_key = $test_api . '-global-test';
+	// Must be an MD5 hash to pass GeoMashupRenderMap::is_map_data_key()
+	$data_key = md5( $test_api . '-global-test' );
 	set_transient( 'gmm' . $data_key, $api_data );
 	$global_urls[$test_api] = htmlspecialchars_decode( GeoMashup::build_home_url( array(
 		'geo_mashup_content' => 'render-map',

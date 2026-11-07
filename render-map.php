@@ -138,6 +138,45 @@ class GeoMashupRenderMap {
 	}
 
 	/**
+	 * Format and validate a color as a CSS hex color value.
+	 *
+	 * Geo Mashup stores these without the leading '#', but accept one so a
+	 * hand-written attribute works either way.
+	 *
+	 * @since 1.13.24
+	 * @param string $color
+	 * @return string A CSS hex color, or '' if $color isn't one.
+	 */
+	private static function hex_color_value( $color ) {
+		if ( empty( $color ) || ! is_string( $color ) ) {
+			return '';
+		}
+
+		$digits = ltrim( trim( $color ), '#' );
+
+		if ( ! preg_match( '/^([0-9a-f]{3,4}|[0-9a-f]{6}|[0-9a-f]{8})$/i', $digits ) ) {
+			return '';
+		}
+
+		return '#' . $digits;
+	}
+
+	/**
+	 * Check that a map data key is in the format we generate.
+	 *
+	 * The key names the transient a request reads its map data from, so
+	 * requiring our own format keeps a visitor from choosing which stored
+	 * value gets loaded and rendered as a map.
+	 *
+	 * @since 1.13.24
+	 * @param string $key The map_data_key request value.
+	 * @return bool Whether the key is an MD5 hash, as generated in GeoMashup::map().
+	 */
+	private static function is_map_data_key( $key ) {
+		return is_string( $key ) && 32 === strlen( $key ) && ctype_xdigit( $key );
+	}
+
+	/**
 	 * Retrieve any cached map data, or build it.
 	 * 
 	 * @since 1.5
@@ -147,7 +186,7 @@ class GeoMashupRenderMap {
 
 		$map_data = null;
 
-		if ( isset( $_GET['map_data_key'] ) ) {
+		if ( isset( $_GET['map_data_key'] ) && self::is_map_data_key( $_GET['map_data_key'] ) ) {
 			// Map data is cached in a transient
 			$map_data = get_transient( 'gmm' . $_GET['map_data_key'] );
 		}
@@ -423,9 +462,15 @@ class GeoMashupRenderMap {
 		unset( $map_data['height'] );
 		self::map_property( 'height', $height );
 
-		// Add background color if specified
+		// Add background color if specified. This is printed into a CSS
+		// declaration in the map frame template, where escaping can't keep a
+		// request value from closing the declaration and adding rules of its
+		// own, so only accept the hex color the option is documented to be.
 		if ( !empty( $map_data['background_color'] ) ) {
-			self::map_property( 'background_color', '#' . $map_data['background_color'] );
+			$background_color = self::hex_color_value( $map_data['background_color'] );
+			if ( '' !== $background_color ) {
+				self::map_property( 'background_color', $background_color );
+			}
 			unset( $map_data['background_color'] );
 		}
 

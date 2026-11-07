@@ -479,6 +479,19 @@ class GeoMashupMapAttributes {
 
 		$allowed_parameters = array_intersect_key( wp_parse_args( $_SERVER['QUERY_STRING'] ), array_flip( $whitelist ) );
 
+		// A KML overlay URL from the query string is also copied into the map
+		// iframe URL, so vet it here instead of reflecting it back into the
+		// page. An unusable one is dropped, leaving any shortcode attribute
+		// of the same name in place.
+		if ( isset( $allowed_parameters['load_kml'] ) ) {
+			$load_kml = GeoMashup::sanitize_kml_url( $allowed_parameters['load_kml'] );
+			if ( '' === $load_kml ) {
+				unset( $allowed_parameters['load_kml'] );
+			} else {
+				$allowed_parameters['load_kml'] = $load_kml;
+			}
+		}
+
 		$this->values = array_merge( $this->values, $allowed_parameters );
 	}
 }

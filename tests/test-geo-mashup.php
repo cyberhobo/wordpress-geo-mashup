@@ -595,6 +595,194 @@ class GeoMashup_Unit_Tests extends GeoMashupTestCase {
 	}
 
 	/**
+	 * Security hardening: the map data key names the transient a request reads
+	 * its map data from, so only keys in the format we generate may be looked
+	 * up. Otherwise a visitor picks which stored value is loaded and rendered.
+	 */
+	function test_get_map_data_rejects_foreign_data_key() {
+		require_once GEO_MASHUP_DIR_PATH . '/render-map.php';
+
+		$saved_get = $_GET;
+		set_transient( 'gmm_not_a_map_key', array( 'name' => 'foreign-data' ) );
+
+		$_GET = array( 'map_data_key' => '_not_a_map_key' );
+		$map_data = GeoMashupRenderMap::get_map_data();
+
+		$_GET = $saved_get;
+		delete_transient( 'gmm_not_a_map_key' );
+
+		$this->assertEmpty( $map_data );
+	}
+
+	/**
+	 * The map data key check must still accept the keys GeoMashup::map()
+	 * generates, or every iframe map stops rendering.
+	 */
+	function test_get_map_data_accepts_generated_data_key() {
+		require_once GEO_MASHUP_DIR_PATH . '/render-map.php';
+
+		$saved_get = $_GET;
+		// The format generated in GeoMashup::map()
+		$key = md5( serialize( array( 'map_content' => 'global' ) ) );
+		set_transient( 'gmm' . $key, array( 'name' => 'cached-map' ) );
+
+		$_GET = array( 'map_data_key' => $key );
+		$map_data = GeoMashupRenderMap::get_map_data();
+
+		$_GET = $saved_get;
+		delete_transient( 'gmm' . $key );
+
+		$this->assertIsArray( $map_data );
+		$this->assertSame( 'cached-map', $map_data['name'] );
+	}
+
+	/**
+	 * Security: build_map_data() must not pass a request/shortcode load_kml
+	 * value through as markup. It reaches JavaScript as a map overlay URL, so
+	 * a value like '<img src=x onerror=...>' used to run as HTML there.
+	 */
+	function test_build_map_data_sanitizes_load_kml() {
+		$payloads = array(
+			'<img src=x onerror=alert(document.domain)>',
+			'"><img src=x onerror=alert(1)>',
+			'javascript:alert(document.domain)',
+			'JaVaScRiPt:alert(1)',
+			'data:text/html;base64,PHNjcmlwdD5hbGVydCgxKTwvc2NyaXB0Pg==',
+			// The entity-decoding step must not reintroduce markup
+			'&lt;img src=x onerror=alert(1)&gt;',
+		);
+
+		foreach ( $payloads as $payload ) {
+			$map_data = GeoMashup::build_map_data( array(
+				'map_content' => 'global',
+				'load_empty_map' => 'true',
+				'load_kml' => $payload,
+			) );
+
+			$this->assertNotWPError( $map_data );
+
+			// None of these is a usable KML URL, so the option is dropped
+			$this->assertArrayNotHasKey( 'load_kml', $map_data, "Payload: $payload" );
+
+			// Belt and braces: nothing resembling the payload reaches the
+			// JSON that gets printed into a script tag
+			$json = json_encode( $map_data );
+			$this->assertStringNotContainsString( 'onerror', $json, "Payload: $payload" );
+			$this->assertStringNotContainsString( 'javascript:', $json, "Payload: $payload" );
+		}
+	}
+
+	/**
+	 * The load_kml fix must not break the documented feature. Supplying a KML
+	 * URL by request or shortcode is legitimate, including the site-relative
+	 * form and the HTML-encoded '&' that shortcode attributes are stored with.
+	 */
+	function test_build_map_data_allows_real_kml_urls() {
+		$urls = array(
+			'https://example.com/path/my.kml' => 'https://example.com/path/my.kml',
+			'http://example.com/my.kml' => 'http://example.com/my.kml',
+			'/wp-content/uploads/2024/01/my.kml' => '/wp-content/uploads/2024/01/my.kml',
+			'//example.com/my.kml' => '//example.com/my.kml',
+			'https://example.com/kml.php?id=1&amp;v=2' => 'https://example.com/kml.php?id=1&v=2',
+			'https://example.com/a%20b.kml' => 'https://example.com/a%20b.kml',
+		);
+
+		foreach ( $urls as $url => $expected ) {
+			$map_data = GeoMashup::build_map_data( array(
+				'map_content' => 'global',
+				'load_empty_map' => 'true',
+				'load_kml' => $url,
+			) );
+
+			$this->assertNotWPError( $map_data );
+			$this->assertSame( $expected, $map_data['load_kml'], "URL: $url" );
+		}
+	}
+
+	/**
+	 * Render a post containing a map shortcode, with $query_string standing in
+	 * for the request the page was loaded with.
+	 *
+	 * @param string $post_content
+	 * @param string $query_string
+	 * @return string The rendered content.
+	 */
+	private function map_content_for_query_string( $post_content, $query_string ) {
+		$saved_query_string = isset( $_SERVER['QUERY_STRING'] ) ? $_SERVER['QUERY_STRING'] : null;
+		$_SERVER['QUERY_STRING'] = $query_string;
+
+		$post_id = $this->factory->post->create( array( 'post_content' => $post_content ) );
+		$test_query = new WP_Query( array( 'p' => $post_id ) );
+		$this->assertTrue( $test_query->have_posts() );
+		$test_query->the_post();
+		$content = apply_filters( 'the_content', get_the_content() );
+		wp_reset_postdata();
+
+		if ( null === $saved_query_string ) {
+			unset( $_SERVER['QUERY_STRING'] );
+		} else {
+			$_SERVER['QUERY_STRING'] = $saved_query_string;
+		}
+
+		return $content;
+	}
+
+	/**
+	 * Security: a global map on a page takes whitelisted parameters from the
+	 * query string (see
+	 * GeoMashupMapAttributes::add_whitelisted_query_string_parameters()), so
+	 * load_kml is attacker controlled there too, with no map_content or
+	 * geo_mashup_content parameter needed. An unusable one must not be
+	 * reflected into the page or copied into the map iframe URL.
+	 */
+	function test_query_string_load_kml_is_sanitized() {
+		$content = $this->map_content_for_query_string(
+			'[geo_mashup_map map_content=global load_empty_map=true]',
+			'load_kml=' . rawurlencode( '<img src=x onerror=alert(document.domain)>' )
+		);
+
+		$this->assertStringContainsString( '<iframe', $content );
+		$this->assertStringNotContainsString( 'onerror', $content );
+		$this->assertStringNotContainsString( 'load_kml', $content );
+	}
+
+	/**
+	 * Taking load_kml from the query string is a feature, so a usable URL must
+	 * still reach the map iframe.
+	 */
+	function test_query_string_load_kml_allows_real_url() {
+		$content = $this->map_content_for_query_string(
+			'[geo_mashup_map map_content=global load_empty_map=true]',
+			'load_kml=' . rawurlencode( 'https://example.com/trails.kml' )
+		);
+
+		$this->assertStringContainsString( 'load_kml=https://example.com/trails.kml', $content );
+	}
+
+	/**
+	 * A single map takes its KML overlay from an attachment of the post, not
+	 * from the request. That URL is generated server side, so the load_kml
+	 * sanitizing must leave it alone.
+	 */
+	function test_single_map_uses_kml_attachment() {
+		$post_id = $this->factory->post->create();
+		$attachment_id = $this->factory->attachment->create_object( 'trail.kml', $post_id, array(
+			'post_mime_type' => 'application/vnd.google-earth.kml+xml',
+			'post_type' => 'attachment',
+		) );
+		GeoMashupDB::set_object_location( 'post', $post_id, $this->rand_location(), $do_lookups = false );
+
+		$map_data = GeoMashup::build_map_data( array(
+			'map_content' => 'single',
+			'object_name' => 'post',
+			'object_id' => $post_id,
+		) );
+
+		$this->assertNotWPError( $map_data );
+		$this->assertSame( wp_get_attachment_url( $attachment_id ), $map_data['load_kml'] );
+	}
+
+	/**
 	 * The reserved-key fix in build_map_data() (see
 	 * test_build_map_data_ignores_request_urls()) must only strip the
 	 * specific URL properties it's meant to. Every other query value is
@@ -710,8 +898,98 @@ class GeoMashup_Unit_Tests extends GeoMashupTestCase {
 		$this->assertThat( $html, $this->stringContains( 'height: 30%;' ) );
 	}
 
+	/**
+	 * Places mock_geocode_request() knows the coordinates of, keyed by the
+	 * geocode query that should find them.
+	 *
+	 * @return array
+	 */
+	private function canned_geocode_results() {
+		return array(
+			"l'isle d'abeau,france" => array(
+				'lat' => '45.6186',
+				'lon' => '5.2258',
+				'display_name' => "L'Isle-d'Abeau, Isère, France",
+				'address' => array(
+					'city' => "L'Isle-d'Abeau",
+					'county' => 'Isère',
+					'postcode' => '38080',
+					'country_code' => 'fr',
+				),
+			),
+			'paris,france' => array(
+				'lat' => '48.8566',
+				'lon' => '2.3522',
+				'display_name' => 'Paris, Île-de-France, France',
+				'address' => array(
+					'city' => 'Paris',
+					'postcode' => '75000',
+					'country_code' => 'fr',
+				),
+			),
+			'paris,texas' => array(
+				'lat' => '33.6609',
+				'lon' => '-95.5555',
+				'display_name' => 'Paris, Lamar County, Texas, United States',
+				'address' => array(
+					'city' => 'Paris',
+					'county' => 'Lamar County',
+					'postcode' => '75460',
+					'country_code' => 'us',
+				),
+			),
+		);
+	}
+
+	/**
+	 * Stand in for a geocoding service.
+	 *
+	 * The geocoders make their requests through WP_Http, which applies
+	 * pre_http_request first, so this keeps them off the network entirely -
+	 * including the reverse geocoding a location save attempts, which gets an
+	 * error here just as it would with no connection.
+	 *
+	 * @param false|array|WP_Error $preempt
+	 * @param array $args Request arguments.
+	 * @param string $url
+	 * @return array|WP_Error A canned response, or an error for any request
+	 *                        this isn't meant to answer.
+	 */
+	function mock_geocode_request( $preempt, $args, $url ) {
+		$this->data->geocode_urls[] = $url;
+
+		if ( false === strpos( $url, 'nominatim.openstreetmap.org/search' ) ) {
+			return new WP_Error( 'http_request_failed', 'Unexpected request: ' . $url );
+		}
+
+		$url_args = array();
+		parse_str( (string) parse_url( $url, PHP_URL_QUERY ), $url_args );
+		$query = isset( $url_args['q'] ) ? strtolower( $url_args['q'] ) : '';
+		// The import builds its query by joining field values with a comma
+		$query = trim( preg_replace( '/\s*,\s*/', ',', $query ) );
+
+		$results = array();
+		foreach ( $this->canned_geocode_results() as $place => $result ) {
+			if ( false !== strpos( $query, $place ) ) {
+				$results[] = $result;
+				break;
+			}
+		}
+
+		return array(
+			'response' => array( 'code' => 200, 'message' => 'OK' ),
+			'body' => wp_json_encode( $results ),
+		);
+	}
+
 	function test_search() {
 		require_once GEO_MASHUP_DIR_PATH . '/geo-mashup-search.php';
+
+		// Geocode locally, so the test doesn't depend on a geocoding service
+		// being reachable, in agreement, and under its rate limit
+		$this->data->geocode_urls = array();
+		$this->add_filter( 'pre_http_request', array( $this, 'mock_geocode_request' ), 10, 3 );
+
 		$not_found_post = $this->factory->post->create_and_get();
 		GeoMashupDB::set_object_location( 'post', $not_found_post->ID, $this->get_nv_test_location(), false );
 
@@ -729,7 +1007,8 @@ class GeoMashup_Unit_Tests extends GeoMashupTestCase {
 			'geo_mashup_search_submit' => 'Search',
 		);
 		$search = new GeoMashupSearch( $search_args );
-		$this->assertTrue( $search->have_posts(), 'Search did not find any posts (internet required).' );
+		$this->assertNotEmpty( $this->data->geocode_urls, 'Search did not geocode the search text.' );
+		$this->assertTrue( $search->have_posts(), 'Search did not find any posts.' );
 		$this->assertContains( (string) $found_post->ID, $search->get_the_IDs(), 'Search did not find the target post.' );
 		$this->assertNotContains( (string) $not_found_post->ID, $search->get_the_IDs(), 'Search found the wrong post.' );
 
@@ -949,8 +1228,12 @@ class GeoMashup_Unit_Tests extends GeoMashupTestCase {
 	}
 
 	public function test_user_import_fields() {
-		// This test calls geocoding services, but allows for failure
 		global $geo_mashup_options;
+
+		// Geocode locally, so the test doesn't depend on a geocoding service
+		// being reachable, in agreement, and under its rate limit
+		$this->data->geocode_urls = array();
+		$this->add_filter( 'pre_http_request', array( $this, 'mock_geocode_request' ), 10, 3 );
 
 		$geo_mashup_options->set_valid_options( array( 'overall' => array( 'import_custom_field' => 'city, region' ) ) );
 		GeoMashupDB::add_geodata_sync_hooks();
@@ -958,42 +1241,46 @@ class GeoMashup_Unit_Tests extends GeoMashupTestCase {
 		$user_id = $this->factory->user->create();
 		$this->assertEmpty( GeoMashupDB::get_object_location( 'user', $user_id ) );
 
+		// Both fields are needed before the import geocodes anything
 		update_user_meta( $user_id, 'city', 'Paris' );
+		$this->assertEmpty( GeoMashupDB::get_object_location( 'user', $user_id ) );
+
 		update_user_meta( $user_id, 'region', 'France' );
 
-		$error = get_user_meta( $user_id, 'geocoding_error', true );
-		if ( $error ) {
+		$this->assertEmpty( get_user_meta( $user_id, 'geocoding_error', true ) );
+		$location = GeoMashupDB::get_object_location( 'user', $user_id );
+		$this->assertEquals( 48, (int) $location->lat );
+		$this->assertEquals( 2, (int) $location->lng );
 
-			echo $error;
-			// If we can't geocode, no location is saved
-			$this->assertEmpty( GeoMashupDB::get_object_location( 'user', $user_id ) );
+		// A second update overwrites the first result with Paris, TX
+		update_user_meta( $user_id, 'region', 'Texas' );
 
-		} else {
+		$this->assertEmpty( get_user_meta( $user_id, 'geocoding_error', true ) );
+		$location = GeoMashupDB::get_object_location( 'user', $user_id );
+		$this->assertEquals( 33, (int) $location->lat );
+		$this->assertEquals( -95, (int) $location->lng );
+	}
 
-			$location = GeoMashupDB::get_object_location( 'user', $user_id );
-			$this->assertEquals( 48, (int) $location->lat );
-			$this->assertEquals( 2, (int) $location->lng );
+	/**
+	 * A field value that can't be geocoded records the error and leaves any
+	 * location already found in place.
+	 */
+	public function test_user_import_fields_geocoding_failure() {
+		global $geo_mashup_options;
 
-			// A second update overwrites if successful
-			update_user_meta( $user_id, 'region', 'Texas' );
-			$error = get_user_meta( $user_id, 'geocoding_error', true );
-			if ( $error ) {
+		$this->data->geocode_urls = array();
+		$this->add_filter( 'pre_http_request', array( $this, 'mock_geocode_request' ), 10, 3 );
 
-				// Failed geocoding leaves the first result
-				echo $error;
-				$location = GeoMashupDB::get_object_location( 'user', $user_id );
-				$this->assertEquals( 48, (int) $location->lat, $error );
-				$this->assertEquals( 2, (int) $location->lng, $error );
+		$geo_mashup_options->set_valid_options( array( 'overall' => array( 'import_custom_field' => 'city, region' ) ) );
+		GeoMashupDB::add_geodata_sync_hooks();
 
-			} else {
+		$user_id = $this->factory->user->create();
+		update_user_meta( $user_id, 'city', 'Nowhere' );
+		update_user_meta( $user_id, 'region', 'Nowhere' );
 
-				// Location is updated to Paris, TX
-				$location = GeoMashupDB::get_object_location( 'user', $user_id );
-				$this->assertEquals( 33, (int) $location->lat );
-				$this->assertEquals( -95, (int) $location->lng );
-
-			}
-		}
+		$this->assertNotEmpty( $this->data->geocode_urls, 'Import did not geocode the fields.' );
+		$this->assertNotEmpty( get_user_meta( $user_id, 'geocoding_error', true ) );
+		$this->assertEmpty( GeoMashupDB::get_object_location( 'user', $user_id ) );
 	}
 
 
@@ -1048,12 +1335,6 @@ class GeoMashup_Unit_Tests extends GeoMashupTestCase {
 		$test_args = array( 'text' => 'TEST TEXT', 'zoom' => 10 );
 		$this->assertStringNotContainsString( 'text=', GeoMashup::show_on_map_link( $test_args ) );
 		$this->assertStringContainsString( 'zoom=10', GeoMashup::show_on_map_link( $test_args ) );
-	}
-
-	function verify_google_geocode_request( $continue, $request, $url ) {
-		$this->assertStringContainsString( 'TESTKEY', $url, 'Expected query URL to contain the test key.' );
-		$this->data->geocode_called = true;
-		return array( 'response' => array( 'code' => 200 ), 'body' => '{ "status": "ZERO_RESULTS" }' );
 	}
 
 	/**
@@ -1204,5 +1485,89 @@ class GeoMashup_Unit_Tests extends GeoMashupTestCase {
 		$args = array( 'map_cat' => '491 OR 1=1' );
 		$result = GeoMashupDB::sanitize_query_args( $args );
 		$this->assertEquals( '49111', $result['map_cat'] );
+	}
+
+	function test_visible_posts_list_heading_default_tags() {
+		$html = GeoMashup::visible_posts_list( array( 'heading_text' => 'Visible Posts' ) );
+		$this->assertEquals(
+			'<div id="gm-map-1-visible-list-header" style="display:none;"><h2>Visible Posts</h2></div>' .
+				'<div id="gm-map-1-visible-list"></div>',
+			$html
+		);
+	}
+
+	function test_visible_posts_list_heading_custom_tags() {
+		$html = GeoMashup::visible_posts_list( array(
+			'for_map' => 'gm-map-2',
+			'heading_text' => 'Nearby',
+			'heading_tags' => '<h3><em>',
+		) );
+		$this->assertStringContainsString(
+			'<div id="gm-map-2-visible-list-header" style="display:none;"><h3><em>Nearby</em></h3></div>',
+			$html
+		);
+	}
+
+	function test_visible_posts_list_heading_escapes_markup() {
+		$html = GeoMashup::visible_posts_list( array(
+			'heading_text' => '<img src=x onerror=alert(1)>',
+			'heading_tags' => '<script><h4 onclick="alert(1)">',
+		) );
+		$this->assertStringContainsString( '<h4>&lt;img src=x onerror=alert(1)&gt;</h4>', $html );
+		$this->assertStringNotContainsString( '<script', $html );
+		$this->assertStringNotContainsString( 'onclick', $html );
+	}
+
+	/**
+	 * Comment author and user display names are stored entity encoded, and
+	 * map titles are decoded for the map JavaScript, which must not turn them
+	 * back into markup for any consumer of the location data.
+	 *
+	 * @dataProvider provide_map_titles
+	 */
+	function test_map_title_decoding_does_not_produce_markup( $stored_label, $expected_title ) {
+		$comment_id = self::factory()->comment->create( array(
+			'comment_author' => $stored_label,
+			'comment_approved' => '1',
+		) );
+		GeoMashupDB::set_object_location( 'comment', $comment_id, $this->get_nv_test_location(), false );
+
+		$locations = GeoMashup::get_locations_json(
+			array( 'object_name' => 'comment', 'object_ids' => $comment_id ),
+			ARRAY_A
+		);
+
+		$this->assertCount( 1, $locations['objects'] );
+		$this->assertSame( $expected_title, $locations['objects'][0]['title'] );
+	}
+
+	function provide_map_titles() {
+		return array(
+			'named entities' => array( '&lt;img src=x onerror=alert(1)&gt;', '' ),
+			'numeric entities' => array( '&#60;img src=x onerror=alert(1)&#62;', '' ),
+			'hex entities' => array( '&#x3c;img src=x onerror=alert(1)&#x3e;', '' ),
+			'unclosed tag' => array( '&lt;img src=x onerror=alert(1)', '' ),
+			'surrounding text' => array( 'Ann &lt;svg/onload=alert(1)&gt; Lee', 'Ann  Lee' ),
+			'nested tag leaves no opener' => array( '&lt;&lt;b&gt;b&gt;img src=x onerror=alert(1)&gt;', 'img src=x onerror=alert(1)>' ),
+			'heart then tag' => array( 'I &lt;3 &lt;&lt;b&gt;img src=x onerror=alert(1)&gt;', 'I' ),
+			'double encoded stays inert' => array( '&amp;lt;img src=x&amp;gt;', '&lt;img src=x&gt;' ),
+			'less than heart' => array( 'I &lt;3 Paris', 'I <3 Paris' ),
+			'spaced comparison' => array( 'a &lt; b &gt; c', 'a < b > c' ),
+			'ampersand' => array( 'Smith &amp; Sons', 'Smith & Sons' ),
+			'utf-8 entity' => array( 'caf&eacute; &quot;Ren&eacute;&quot;', "caf\u{e9} \"Ren\u{e9}\"" ),
+		);
+	}
+
+	function test_map_title_of_user_does_not_produce_markup() {
+		$user_id = self::factory()->user->create( array( 'display_name' => '&lt;img src=x onerror=alert(1)&gt;' ) );
+		GeoMashupDB::set_object_location( 'user', $user_id, $this->get_nv_test_location(), false );
+
+		$locations = GeoMashup::get_locations_json(
+			array( 'object_name' => 'user', 'object_ids' => $user_id ),
+			ARRAY_A
+		);
+
+		$this->assertCount( 1, $locations['objects'] );
+		$this->assertStringNotContainsString( '<img', $locations['objects'][0]['title'] );
 	}
 }
