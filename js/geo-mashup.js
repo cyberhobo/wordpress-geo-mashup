@@ -918,7 +918,7 @@ GeoMashup = {
 				if ( this.isObjectOn( obj ) && this.isMarkerVisible( obj.marker ) ) {
 					var list_item = [];
 					list_item.push('<li><img src="');
-					list_item.push(obj.icon.image);
+					list_item.push(this.escapeHtml(obj.icon.image));
 					list_item.push('" alt="');
 					list_item.push(this.escapeHtml(obj.title));
 					list_item.push('" />');

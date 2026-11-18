@@ -492,6 +492,17 @@ class GeoMashupMapAttributes {
 			}
 		}
 
+		// The same goes for the default marker color, which ends up in a
+		// marker icon URL.
+		if ( isset( $allowed_parameters['marker_default_color'] ) ) {
+			$marker_default_color = GeoMashup::sanitize_marker_color( $allowed_parameters['marker_default_color'] );
+			if ( '' === $marker_default_color ) {
+				unset( $allowed_parameters['marker_default_color'] );
+			} else {
+				$allowed_parameters['marker_default_color'] = $marker_default_color;
+			}
+		}
+
 		$this->values = array_merge( $this->values, $allowed_parameters );
 	}
 }

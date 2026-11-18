@@ -978,6 +978,18 @@ class GeoMashup {
 			}
 		}
 
+		// The default marker color is built into a marker icon URL in
+		// JavaScript, so only a plain color name may come from a request or
+		// shortcode. An unusable one is dropped, leaving the saved option.
+		if ( isset( $query['marker_default_color'] ) ) {
+			$marker_default_color = self::sanitize_marker_color( $query['marker_default_color'] );
+			if ( '' === $marker_default_color ) {
+				unset( $query['marker_default_color'] );
+			} else {
+				$query['marker_default_color'] = $marker_default_color;
+			}
+		}
+
 		$defaults = array(
 			'map_api' => $geo_mashup_options->get( 'overall', 'map_api' )
 		);
@@ -1129,6 +1141,31 @@ class GeoMashup {
 		// to point at uploaded KML. esc_url_raw() has already removed the
 		// characters that could make it markup instead of a path.
 		return $url;
+	}
+
+	/**
+	 * Validate a marker color name from an untrusted source.
+	 *
+	 * The name becomes part of a marker icon image URL (mm_36_<color>.png),
+	 * so it is limited to the characters a color or icon name needs. Names
+	 * beyond the built-in colors are allowed for custom icon functions.
+	 *
+	 * @since 1.13.25
+	 * @param mixed $color An untrusted color name.
+	 * @return string The lowercase color name, or '' if it isn't a usable one.
+	 */
+	public static function sanitize_marker_color( $color ) {
+		if ( ! is_string( $color ) ) {
+			return '';
+		}
+
+		$color = strtolower( trim( $color ) );
+
+		if ( ! preg_match( '/^[a-z0-9_-]{1,32}$/', $color ) ) {
+			return '';
+		}
+
+		return $color;
 	}
 
 	/**
