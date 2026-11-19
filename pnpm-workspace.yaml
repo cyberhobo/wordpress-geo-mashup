@@ -1,0 +1,11 @@
+# Dependency install scripts pnpm may run. fs-ext-extra-prebuilt (via
+# @wordpress/env's Playground runtime) ships prebuilt binaries; its script
+# only verifies or compiles them, and the Docker runtime doesn't need it.
+allowBuilds:
+  fs-ext-extra-prebuilt: false
+
+# pnpm rejects packages published less than a day ago (minimumReleaseAge).
+# @wordpress/env 12.2.0 was published 2026-11-18T18:47Z; this entry can be
+# removed after 2026-11-19T18:47Z.
+minimumReleaseAgeExclude:
+  - '@wordpress/env@12.2.0'
