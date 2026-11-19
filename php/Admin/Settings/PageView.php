@@ -16,8 +16,7 @@ class PageView {
 		OverallPanel $overall_panel,
 		SingleMapPanel $single_map_panel,
 		GlobalMapPanel $global_map_panel,
-		ContextMapPanel $context_map_panel,
-		TestsPanel $tests_panel
+		ContextMapPanel $context_map_panel
 	) {
 		?>
         <div class="wrap">
@@ -29,7 +28,6 @@ class PageView {
 				$single_map_panel->render( $data->single_map_panel_data );
 				$global_map_panel->render( $data->global_map_panel_data );
 				$context_map_panel->render( $data->context_map_panel_data );
-				$tests_panel->render( $data->tests_panel_data );
 				?>
             </form>
 			<?php if ( $data->view_activation_log ) : ?>

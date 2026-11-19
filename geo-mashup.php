@@ -3,7 +3,7 @@
 Plugin Name: Geo Mashup
 Plugin URI: https://wordpress.org/plugins/geo-mashup/
 Description: Save location for posts and pages, or even users and comments. Display these locations on Google, Leaflet, and OSM maps. Make WordPress into your GeoCMS.
-Version: 1.13.24
+Version: 1.13.25
 Author: Dylan Kuhn
 Text Domain: GeoMashup
 Domain Path: /lang
@@ -256,7 +256,7 @@ class GeoMashup {
 		define('GEO_MASHUP_DIRECTORY', dirname( GEO_MASHUP_PLUGIN_NAME ) );
 		define('GEO_MASHUP_URL_PATH', trim( plugin_dir_url( __FILE__ ), '/' ) );
 		define('GEO_MASHUP_MAX_ZOOM', 20);
-		define('GEO_MASHUP_VERSION', '1.13.24');
+		define('GEO_MASHUP_VERSION', '1.13.25');
 		define('GEO_MASHUP_DB_VERSION', '1.3');
 	}
 
@@ -269,13 +269,6 @@ class GeoMashup {
 		if ( self::is_options_page() ) {
 			wp_enqueue_script( 'jquery-ui-tabs' );
 			wp_enqueue_script( 'suggest' );
-			if ( isset( $_POST['geo_mashup_run_tests'] ) ){
-				self::register_script( 'qunit', 'js/qunit.js', array( 'jquery' ), GEO_MASHUP_VERSION, true );
-				self::register_script( 'qunit-close-enough', 'js/qunit-close-enough.js', array( 'qunit' ), GEO_MASHUP_VERSION, true );
-				self::register_script( 'geo-mashup-tests', 'js/qunit-tests.js', array( 'qunit-close-enough' ), GEO_MASHUP_VERSION, true );
-				wp_enqueue_script( 'geo-mashup-tests' );
-				include_once GEO_MASHUP_DIR_PATH . '/tests.php';
-			}
 		}
 		if (is_admin()){
 			self::register_script( 'geo-mashup-widget','js/widget.js', array( 'jquery' ), GEO_MASHUP_VERSION, true );
@@ -291,10 +284,6 @@ class GeoMashup {
 		if ( self::is_options_page() ) {
 			self::register_style( 'jquery-smoothness', 'css/jquery-ui.1.7.smoothness.css', array(), GEO_MASHUP_VERSION, 'screen' );
 			wp_enqueue_style( 'jquery-smoothness' );
-			if ( isset( $_POST['geo_mashup_run_tests'] ) ){
-				self::register_style( 'qunit', 'css/qunit.css', array(), GEO_MASHUP_VERSION, 'screen' );
-				wp_enqueue_style( 'qunit' );
-			}
 		}
 	}
 
@@ -978,6 +967,18 @@ class GeoMashup {
 			}
 		}
 
+		// The default marker color is built into a marker icon URL in
+		// JavaScript, so only a plain color name may come from a request or
+		// shortcode. An unusable one is dropped, leaving the saved option.
+		if ( isset( $query['marker_default_color'] ) ) {
+			$marker_default_color = self::sanitize_marker_color( $query['marker_default_color'] );
+			if ( '' === $marker_default_color ) {
+				unset( $query['marker_default_color'] );
+			} else {
+				$query['marker_default_color'] = $marker_default_color;
+			}
+		}
+
 		$defaults = array(
 			'map_api' => $geo_mashup_options->get( 'overall', 'map_api' )
 		);
@@ -1129,6 +1130,31 @@ class GeoMashup {
 		// to point at uploaded KML. esc_url_raw() has already removed the
 		// characters that could make it markup instead of a path.
 		return $url;
+	}
+
+	/**
+	 * Validate a marker color name from an untrusted source.
+	 *
+	 * The name becomes part of a marker icon image URL (mm_36_<color>.png),
+	 * so it is limited to the characters a color or icon name needs. Names
+	 * beyond the built-in colors are allowed for custom icon functions.
+	 *
+	 * @since 1.13.25
+	 * @param mixed $color An untrusted color name.
+	 * @return string The lowercase color name, or '' if it isn't a usable one.
+	 */
+	public static function sanitize_marker_color( $color ) {
+		if ( ! is_string( $color ) ) {
+			return '';
+		}
+
+		$color = strtolower( trim( $color ) );
+
+		if ( ! preg_match( '/^[a-z0-9_-]{1,32}$/', $color ) ) {
+			return '';
+		}
+
+		return $color;
 	}
 
 	/**

@@ -1,13 +1,18 @@
 services:
-  yarn:
+  pnpm:
     image: geo-mashup-dev-install
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+      args:
+        PHP_VERSION: 8.3
     volumes:
       - ..:/app
       - geo-mashup-test-support:/tmp
     env_file:
-      - .yarn.env
+      - .pnpm.env
     working_dir: /app
-    entrypoint: yarn
+    entrypoint: pnpm
 
 volumes:
   geo-mashup-test-support:

@@ -35,9 +35,6 @@ class Tabs {
             </li>
             <li><a href="#geo-mashup-context-map-settings"><span><?php _e( 'Contextual Maps',
 							'GeoMashup' ); ?></span></a></li>
-			<?php if ( $data->include_tests ) : ?>
-                <li><a href="#geo-mashup-tests"><span><?php _e( 'Tests', 'GeoMashup' ); ?></span></a></li>
-			<?php endif; ?>
         </ul>
 		<?php
 	}

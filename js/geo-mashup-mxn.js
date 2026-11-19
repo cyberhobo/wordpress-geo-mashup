@@ -447,6 +447,10 @@ GeoMashup.clickObjectMarker = function( object_id, try_count ) {
 
 GeoMashup.colorIcon = function( color_name ) {
 	var icon = this.clone( this.base_color_icon );
+	// The name becomes part of an image URL, so only allow a plain name
+	if ( typeof color_name !== 'string' || !/^[a-z0-9_-]+$/i.test( color_name ) ) {
+		color_name = 'red';
+	}
 	icon.image = this.opts.url_path + '/images/mm_36_' + color_name + '.png';
 	return icon;
 };

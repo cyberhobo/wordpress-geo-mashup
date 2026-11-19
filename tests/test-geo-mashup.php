@@ -760,6 +760,84 @@ class GeoMashup_Unit_Tests extends GeoMashupTestCase {
 	}
 
 	/**
+	 * Security: marker_default_color is built into a marker icon URL that
+	 * the visible posts list wrote into an <img src="..."> as markup, so a
+	 * request or shortcode value must be limited to a plain color name.
+	 */
+	function test_build_map_data_sanitizes_marker_default_color() {
+		$payloads = array(
+			'x" onerror="document.title=\'GM-XSS-PROOF\'" x="',
+			'"><img src=x onerror=alert(1)>',
+			'red onerror=alert(1)',
+			'../../evil',
+			'',
+		);
+
+		foreach ( $payloads as $payload ) {
+			$map_data = GeoMashup::build_map_data( array(
+				'map_content' => 'global',
+				'load_empty_map' => 'true',
+				'marker_default_color' => $payload,
+			) );
+
+			$this->assertNotWPError( $map_data );
+
+			// The payload is dropped in favor of the saved option
+			$this->assertSame( 'red', $map_data['marker_default_color'], "Payload: $payload" );
+			$json = json_encode( $map_data );
+			$this->assertStringNotContainsString( 'onerror', $json, "Payload: $payload" );
+		}
+	}
+
+	/**
+	 * Choosing a marker color by request or shortcode is a feature, so a
+	 * plain color name must still take effect.
+	 */
+	function test_build_map_data_allows_marker_default_color() {
+		$colors = array( 'blue' => 'blue', 'Lime' => 'lime', 'my_custom-1' => 'my_custom-1' );
+
+		foreach ( $colors as $color => $expected ) {
+			$map_data = GeoMashup::build_map_data( array(
+				'map_content' => 'global',
+				'load_empty_map' => 'true',
+				'marker_default_color' => $color,
+			) );
+
+			$this->assertNotWPError( $map_data );
+			$this->assertSame( $expected, $map_data['marker_default_color'], "Color: $color" );
+		}
+	}
+
+	/**
+	 * Security: marker_default_color is a whitelisted query string parameter
+	 * for global maps, so an unusable one must not be reflected into the page
+	 * or copied into the map iframe URL.
+	 */
+	function test_query_string_marker_default_color_is_sanitized() {
+		$content = $this->map_content_for_query_string(
+			'[geo_mashup_map map_content=global load_empty_map=true]',
+			'marker_default_color=' . rawurlencode( 'x" onerror="document.title=\'GM-XSS-PROOF\'" x="' )
+		);
+
+		$this->assertStringContainsString( '<iframe', $content );
+		$this->assertStringNotContainsString( 'onerror', $content );
+		$this->assertStringNotContainsString( 'marker_default_color', $content );
+	}
+
+	/**
+	 * A plain color name from the query string must still reach the map
+	 * iframe.
+	 */
+	function test_query_string_marker_default_color_allows_color_name() {
+		$content = $this->map_content_for_query_string(
+			'[geo_mashup_map map_content=global load_empty_map=true]',
+			'marker_default_color=blue'
+		);
+
+		$this->assertStringContainsString( 'marker_default_color=blue', $content );
+	}
+
+	/**
 	 * A single map takes its KML overlay from an attachment of the post, not
 	 * from the request. That URL is generated server side, so the load_kml
 	 * sanitizing must leave it alone.

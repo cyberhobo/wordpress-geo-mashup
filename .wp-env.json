@@ -1,0 +1,16 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/wp-env.json",
+	"plugins": [
+		"."
+	],
+	"mappings": {
+		"wp-content/mu-plugins": "./e2e/fixtures"
+	},
+	"config": {
+		"WP_DEBUG": true,
+		"SCRIPT_DEBUG": true
+	},
+	"lifecycleScripts": {
+		"afterStart": "wp-env run cli wp rewrite structure '/%postname%/' --hard && wp-env run cli wp geo-mashup-e2e seed --googlev3-key=\"${GOOGLE_MAPS_API_KEY:-}\""
+	}
+}

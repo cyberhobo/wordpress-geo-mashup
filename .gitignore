@@ -7,3 +7,5 @@ node_modules/
 tmp/
 .phpunit.result.cache
 .claude/settings.local.json
+test-results/
+playwright-report/
