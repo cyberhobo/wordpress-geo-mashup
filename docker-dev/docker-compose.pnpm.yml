@@ -6,6 +6,8 @@ services:
       dockerfile: Dockerfile.dev
       args:
         PHP_VERSION: 8.3
+    # Run as the host user so files written to the checkout aren't owned by root
+    user: "${HOST_UID:-1000}:${HOST_GID:-1000}"
     volumes:
       - ..:/app
       - geo-mashup-test-support:/tmp

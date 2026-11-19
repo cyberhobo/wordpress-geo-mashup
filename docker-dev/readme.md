@@ -12,6 +12,15 @@ the development server is brought up.
 
 Alternatively `./pnpm.sh run install:dev` will do the job.
 
+Containers that write to the checkout run as your user, so installed files
+aren't owned by root. `pnpm.sh` passes your user and group IDs in
+`HOST_UID`/`HOST_GID`; plain `docker compose` commands default to 1000:1000, so
+export those variables if your IDs differ.
+
+If `node_modules` or `vendor` were installed by an older, root-run container,
+take ownership once: `sudo chown -R "$(id -u):$(id -g)" node_modules vendor`
+(from the project root), or delete them and reinstall.
+
 ## Development Server
 
 To run MariaDB and WordPress with a live copy of Geo Mashup:
