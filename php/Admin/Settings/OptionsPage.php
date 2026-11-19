@@ -20,7 +20,6 @@ class OptionsPage {
 	private $single_map_panel;
 	private $global_map_panel;
 	private $context_map_panel;
-	private $tests_panel;
 	private $activated_copy_geodata = false;
 
 	public function __construct(
@@ -30,8 +29,7 @@ class OptionsPage {
 		?OverallPanel $overall_panel = null,
 		?SingleMapPanel $single_map_panel = null,
 		?GlobalMapPanel $global_map_panel = null,
-		?ContextMapPanel $context_map_panel = null,
-		?TestsPanel $tests_panel = null
+		?ContextMapPanel $context_map_panel = null
 	) {
 		global $geo_mashup_options;
 		$this->options = $options === null ? $geo_mashup_options : $options;
@@ -41,7 +39,6 @@ class OptionsPage {
 		$this->single_map_panel = $single_map_panel === null ? new SingleMapPanel() : $single_map_panel;
 		$this->global_map_panel = $global_map_panel === null ? new GlobalMapPanel() : $global_map_panel;
 		$this->context_map_panel = $context_map_panel === null ? new ContextMapPanel() : $context_map_panel;
-		$this->tests_panel = $tests_panel === null ? new TestsPanel() : $tests_panel;
 	}
 
 	/**
@@ -59,7 +56,6 @@ class OptionsPage {
 		echo $this->save( $submission );
 		echo $this->duplicate_geodata();
 		echo $this->bulk_reverse_geocode( $submission );
-		echo $this->tests( $submission );
 		echo $this->migrate();
 		echo $this->delete_log( $submission );
 		echo $this->corrupt_options();
@@ -73,7 +69,6 @@ class OptionsPage {
 		$data->single_map_panel_data = new SingleMapPanelData();
 		$data->global_map_panel_data = new GlobalMapPanelData();
 		$data->context_map_panel_data = new ContextMapPanelData();
-		$data->tests_panel_data = TestsPanelData::from_submission( $submission );
 
 		PageView::render(
 			$data,
@@ -81,8 +76,7 @@ class OptionsPage {
 			$this->overall_panel,
 			$this->single_map_panel,
 			$this->global_map_panel,
-			$this->context_map_panel,
-			$this->tests_panel
+			$this->context_map_panel
 		);
 	}
 
@@ -154,39 +148,6 @@ class OptionsPage {
 		$log = $this->db->bulk_reverse_geocode();
 
 		return '<div class="updated fade">' . $log . '</div>';
-	}
-
-	private function tests( $submission ) {
-		if ( ! isset( $submission['geo_mashup_run_tests'] ) ) {
-			// Set a test transient
-			set_transient( 'geo_mashup_test', 'true', 60 * 60 );
-
-			return '';
-		}
-
-		if ( ! function_exists( 'mb_check_encoding' ) ) {
-			return '<div class="updated fade">' .
-				printf(
-					__( '%s Multibyte string functions %s are not installed.', 'GeoMashup' ),
-					'<a href="http://www.php.net/manual/en/mbstring.installation.php" title="">',
-					'</a>'
-				) . ' ' .
-				_e( 'Geocoding and other web services may not work properly.', 'GeoMashup' ) .
-				'</div>';
-		}
-
-		$test_transient = get_transient( 'geo_mashup_test' );
-		if ( ! $test_transient ) {
-			unset( $submission['geo_mashup_run_tests'] );
-
-			return '<div class="updated fade">' .
-				_e( 'WordPress transients may not be working. Try deactivating or reconfiguring caching plugins.',
-					'GeoMashup' ) .
-				' <a href="https://github.com/cyberhobo/wordpress-geo-mashup/issues/425">issue 425</a></div>';
-		}
-
-		// load tests
-		return '';
 	}
 
 	private function migrate() {

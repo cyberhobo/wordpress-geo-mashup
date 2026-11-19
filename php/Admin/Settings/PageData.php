@@ -20,8 +20,6 @@ class PageData
 	public $global_map_panel_data;
 	/** @var ContextMapPanelData */
 	public $context_map_panel_data;
-	/** @var TestsPanelData */
-	public $tests_panel_data;
 	/** @var string */
 	public $action;
 	/** @var bool */

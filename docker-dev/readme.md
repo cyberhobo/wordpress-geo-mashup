@@ -45,3 +45,24 @@ commands is `composer` which can be used to run composer commands.
 
 This is just a shorthand for a longer docker-compose command which
 you can use if you prefer.
+
+## End-to-end tests
+
+Browser tests live in `e2e/` and use [Playwright](https://playwright.dev) against a
+[wp-env](https://www.npmjs.com/package/@wordpress/env) site. They need Node 24+ and Docker.
+
+```sh
+composer install                     # vendor/ must exist for the plugin to load
+yarn install
+npx playwright install chromium      # once
+yarn e2e:env:start                   # http://localhost:8888 (admin / password), seeds fixtures
+yarn e2e                             # or: yarn e2e --ui
+yarn e2e:env:stop
+```
+
+`yarn e2e:env:start` runs `wp geo-mashup-e2e seed` (from `e2e/fixtures/`), which recreates
+the located test posts, `test_tax` terms, plugin options, and one global map page per map
+provider. Re-run it any time with `npx wp-env run cli wp geo-mashup-e2e seed`.
+
+Google Maps tests are skipped unless `GOOGLE_MAPS_API_KEY` is set when the site is seeded
+and when the tests run.
