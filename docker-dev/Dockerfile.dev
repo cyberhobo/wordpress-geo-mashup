@@ -13,16 +13,18 @@ RUN apk add --no-cache \
     bash \
     git \
     subversion \
-    # Node.js and package managers
+    # Node.js to bootstrap pnpm (pnpm then downloads the project's pinned Node)
     nodejs \
     npm \
-    yarn \
     # Build tools for native modules
     make \
     g++ \
     python3 \
     # MySQL client for WordPress tests
     mysql-client
+
+# pnpm switches itself to the version pinned in package.json "packageManager"
+RUN npm install -g pnpm
 
 # Install PHP extensions commonly needed for WordPress
 RUN docker-php-ext-install \

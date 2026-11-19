@@ -19,28 +19,21 @@ jobs:
           tools: composer
           extensions: mysql
 
-      - name: Set Node.js 24.x
-        uses: actions/setup-node@v6
+      # Installs the pnpm from package.json "packageManager", the Node.js from
+      # "devEngines.runtime", and runs a frozen-lockfile install.
+      - name: Setup pnpm, Node.js, and dependencies
+        uses: pnpm/setup@v3
         with:
-          node-version: 24.x
-
-      - name: Install
-        uses: borales/actions-yarn@v5
-        with:
-          cmd: install
+          require-lockfile: true
 
       - name: Build
-        uses: borales/actions-yarn@v5
-        with:
-          cmd: build
+        run: pnpm run build
 
       - name: Install SVN
         run: sudo apt-get update && sudo apt-get install -y subversion
 
       - name: Deploy
-        uses: borales/actions-yarn@v5
-        with:
-          cmd: deploy
+        run: pnpm run deploy
         env:
           SVN_USERNAME: ${{ secrets.SVN_USERNAME }}
           SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}

@@ -2,7 +2,7 @@
 const { defineConfig, devices } = require( '@playwright/test' );
 
 /**
- * End-to-end tests run against the wp-env site (`yarn e2e:env:start`).
+ * End-to-end tests run against the wp-env site (`pnpm run e2e:env:start`).
  *
  * @see https://playwright.dev/docs/test-configuration
  */

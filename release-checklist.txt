@@ -12,11 +12,11 @@ If any step fails, fix before continuing, repeating any necessary prior steps.
 
 	1. Start a `release/<version>` branch off `develop`, remember to `git pull` changes`.
 	1. Edit WP readme.txt (Remember tested version, and changelog. Stable tag is automated.)
-	1. Update the language template if the release contains new language strings `yarn makepot`, `git commit`;
-	1. Update version, `./yarn.sh version --new-version <new version> --no-git-tag-version`, commit.
+	1. Update the language template if the release contains new language strings `pnpm run makepot`, `git commit`;
+	1. Update version, `pnpm pkg set version=<new version> && pnpm run version`, commit.
 	1. Push, check GitHub actions, `git push -u origin release/<version>`
 	1. Merge `git checkout master; git merge --no-ff release/<version>; git push`
-    1. For major versions generate and deploy any new PHPDoc and JavaDocs. `yarn jsdoc`, `yarn phpdoc`.
+    1. For major versions generate and deploy any new PHPDoc and JavaDocs. `pnpm run jsdoc`, `pnpm run phpdoc`.
     1. Tag and push `git tag <version>; git push --tags`. A GitHub action will deploy to wordpress.org.
     1. Merge back to develop `git co develop; git merge master; git push`
 	1. Close milestone, prune issues.

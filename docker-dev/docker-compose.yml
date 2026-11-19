@@ -22,6 +22,7 @@ services:
     volumes:
       - mysql:/var/lib/mysql
   install:
+    image: geo-mashup-dev-install
     build:
       context: .
       dockerfile: Dockerfile.dev
@@ -30,7 +31,7 @@ services:
     volumes:
       - ..:/app
     working_dir: /app
-    command: yarn install:dev
+    command: pnpm run install:dev
 
 volumes:
   uploads:

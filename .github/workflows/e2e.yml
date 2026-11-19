@@ -30,23 +30,22 @@ jobs:
     - name: Install Composer dependencies
       run: composer install --prefer-dist --no-progress --no-dev
 
-    - name: Set Node.js 24.x
-      uses: actions/setup-node@v6
+    # Installs the pnpm from package.json "packageManager", the Node.js from
+    # "devEngines.runtime", and runs a frozen-lockfile install.
+    - name: Setup pnpm, Node.js, and dependencies
+      uses: pnpm/setup@v3
       with:
-        node-version: 24.x
-        cache: yarn
-
-    - name: Install Node dependencies
-      run: yarn install --frozen-lockfile
+        cache: true
+        require-lockfile: true
 
     - name: Install Playwright browser
-      run: npx playwright install --with-deps chromium
+      run: pnpm exec playwright install --with-deps chromium
 
     - name: Start WordPress
-      run: yarn e2e:env:start
+      run: pnpm run e2e:env:start
 
     - name: Run E2E tests
-      run: yarn e2e
+      run: pnpm run e2e
 
     - name: Upload report
       if: failure()
