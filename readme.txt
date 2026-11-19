@@ -3,8 +3,8 @@ Contributors: cyberhobo, freemius
 Donate Link:
 Tags: maps, google maps, mapping, geo, geocms
 Requires at least: 3.7
-Tested up to: 7.1.4
-Stable tag: 1.13.24
+Tested up to: 7.1.5
+Stable tag: 1.13.25
 License: GPL2+
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -68,6 +68,7 @@ of all your content, including geographic data.
 
 Thanks for security reports to:
 
+* [Harry Nguyen](https://patchstack.com/database/researchers/c829ec05-8e41-459d-8911-d6d9d1e3449d)
 * [M. Bal-Ghaoui](https://patchstack.com/database/researchers/e8a25916-1e04-48ae-9667-3d626f2f76b6)
 * [JunHee Cho](https://patchstack.com/database/researchers/42086720-0ee7-4848-8507-d67a5b877284)
 * [Leonid Semenenko](https://www.wordfence.com/threat-intel/vulnerabilities/researchers/leonid-semenenko)
@@ -94,6 +95,9 @@ The Patchstack team help validate, triage and handle any security vulnerabilitie
 GeoMashup supports [standard WordPress plugin installation].
 
 == Upgrade Notice ==
+
+= 1.13.25 =
+This version includes a security update.  Upgrade immediately.
 
 = 1.13.24 =
 This version includes a security update.  Upgrade immediately.
@@ -132,6 +136,10 @@ This version fixes a security related bug.  Upgrade immediately.
 This version fixes a security related bug.  Upgrade immediately.
 
 == Change Log ==
+
+= 1.13.25 Nov 19 2026 =
+
+Security fixes.
 
 = 1.13.24 Sep 20 2026 =
 

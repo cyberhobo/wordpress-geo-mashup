@@ -1,17 +1,18 @@
-# Copyright (C) 2020 Dylan Kuhn
+# Copyright (C) 2026 Dylan Kuhn
 # This file is distributed under the GPL2+.
 msgid ""
 msgstr ""
-"Project-Id-Version: Geo Mashup 1.12.0\n"
-"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/app\n"
-"POT-Creation-Date: 2020-02-09 01:49:42+00:00\n"
+"Project-Id-Version: Geo Mashup 1.13.25\n"
+"Report-Msgid-Bugs-To: "
+"https://wordpress.org/support/plugin/wordpress-geo-mashup\n"
+"POT-Creation-Date: 2026-11-19 13:12:18+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"PO-Revision-Date: 2020-MO-DA HO:MI+ZONE\n"
+"PO-Revision-Date: 2026-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
-"X-Generator: node-wp-i18n 1.2.3\n"
+"X-Generator: node-wp-i18n 1.2.8\n"
 
 #: default-templates/comment.php:51
 msgid "<cite class=\"fn\">%s</cite> <span class=\"says\">says:</span>"
@@ -19,6 +20,10 @@ msgstr ""
 
 #: default-templates/comment.php:54
 msgid "%1$s at %2$s"
+msgstr ""
+
+#: default-templates/map-frame.php:35 geo-mashup.php:1280 geo-mashup.php:1329
+msgid "Geo Mashup Map"
 msgstr ""
 
 #: default-templates/map-frame.php:52
@@ -35,8 +40,8 @@ msgstr ""
 msgid "Users Nearby"
 msgstr ""
 
-#: default-templates/search-form.php:24 geo-mashup-ui-managers.php:482
-#: geo-mashup-ui-managers.php:671
+#: default-templates/search-form.php:24 geo-mashup-ui-managers.php:487
+#: geo-mashup-ui-managers.php:675
 msgid "Location"
 msgstr ""
 
@@ -292,11 +297,11 @@ msgstr ""
 msgid "Initialized %d geo dates from corresponding post dates."
 msgstr ""
 
-#: geo-mashup-db.php:1858
+#: geo-mashup-db.php:1932
 msgid "A location must have an ID or coordinates to be saved."
 msgstr ""
 
-#: geo-mashup-geocoders.php:106 php/Admin/Settings/OptionsPage.php:179
+#: geo-mashup-geocoders.php:106
 msgid "%s Multibyte string functions %s are not installed."
 msgstr ""
 
@@ -313,235 +318,109 @@ msgstr ""
 msgid "Failed to geocode \"%s\" with status %s and body %s."
 msgstr ""
 
-#: geo-mashup-options.php:379 geo-mashup-options.php:387
-#: geo-mashup-options.php:393 geo-mashup-options.php:403
-#: geo-mashup-options.php:412 geo-mashup-options.php:421
-#: geo-mashup-options.php:444 geo-mashup-options.php:449
-#: geo-mashup-options.php:462 geo-mashup-options.php:494
-#: geo-mashup-options.php:510 geo-mashup-options.php:523
-#: geo-mashup-options.php:532
+#: geo-mashup-options.php:382 geo-mashup-options.php:390
+#: geo-mashup-options.php:396 geo-mashup-options.php:406
+#: geo-mashup-options.php:415 geo-mashup-options.php:424
+#: geo-mashup-options.php:447 geo-mashup-options.php:452
+#: geo-mashup-options.php:465 geo-mashup-options.php:498
+#: geo-mashup-options.php:514 geo-mashup-options.php:527
+#: geo-mashup-options.php:536
 msgid "is invalid for"
 msgstr ""
 
-#: geo-mashup-options.php:380 geo-mashup-options.php:394
+#: geo-mashup-options.php:383 geo-mashup-options.php:397
 msgid ", which must be a valid map type (see documentation)"
 msgstr ""
 
-#: geo-mashup-options.php:388
+#: geo-mashup-options.php:391
 msgid ", which must be an array of valid map types (see documentation)"
 msgstr ""
 
-#: geo-mashup-options.php:404
+#: geo-mashup-options.php:407
 msgid ", which must be a valid map control (see documentation)"
 msgstr ""
 
-#: geo-mashup-options.php:413
+#: geo-mashup-options.php:416
 msgid ", which must be a valid map provider."
 msgstr ""
 
-#: geo-mashup-options.php:422
+#: geo-mashup-options.php:425
 msgid ", which must be a valid clustering library."
 msgstr ""
 
-#: geo-mashup-options.php:445
+#: geo-mashup-options.php:448
 msgid ", which must be a string"
 msgstr ""
 
-#: geo-mashup-options.php:450
+#: geo-mashup-options.php:453
 msgid ", which must not contain XML tags."
 msgstr ""
 
-#: geo-mashup-options.php:463
+#: geo-mashup-options.php:466
 msgid ", which must be a number"
 msgstr ""
 
-#: geo-mashup-options.php:495
+#: geo-mashup-options.php:499
 msgid ", which must be \"true\" or \"false\""
 msgstr ""
 
-#: geo-mashup-options.php:511
+#: geo-mashup-options.php:515
 msgid ", which must be an array"
 msgstr ""
 
-#: geo-mashup-options.php:524
+#: geo-mashup-options.php:528
 msgid ", which must be a number from 0 to "
 msgstr ""
 
-#: geo-mashup-options.php:533
+#: geo-mashup-options.php:537
 msgid ", which is a deprecated option"
 msgstr ""
 
-#: geo-mashup-search.php:408
-msgid "Search content by Geo Mashup location."
-msgstr ""
-
-#: geo-mashup-search.php:410
-msgid "Geo Mashup Search"
-msgstr ""
-
-#: geo-mashup-search.php:427
-msgid "Couldn't find you..."
-msgstr ""
-
-#: geo-mashup-search.php:428
-msgid "My Location"
-msgstr ""
-
-#: geo-mashup-search.php:443
-msgid "No Geo Mashup Search result page found - check widget settings."
-msgstr ""
-
-#: geo-mashup-search.php:513
-msgid "Widget heading, leave blank to omit."
-msgstr ""
-
-#: geo-mashup-search.php:514
-msgid "Title:"
-msgstr ""
-
-#: geo-mashup-search.php:525
-msgid ""
-"Default text in the search text box for use as a prompt, leave blank to "
-"omit."
-msgstr ""
-
-#: geo-mashup-search.php:526
-msgid "Default Search Text:"
-msgstr ""
-
-#: geo-mashup-search.php:531
-msgid "city, state or zip"
-msgstr ""
-
-#: geo-mashup-search.php:537
-msgid "Text for the user locate button, leave blank to omit."
-msgstr ""
-
-#: geo-mashup-search.php:538
-msgid "Find Me Button:"
-msgstr ""
-
-#: geo-mashup-search.php:543
-msgid "Find Me"
-msgstr ""
-
-#: geo-mashup-search.php:548
-msgid "What to search:"
-msgstr ""
-
-#: geo-mashup-search.php:560
-msgid "All post types"
-msgstr ""
-
-#: geo-mashup-search.php:575
-msgid "users"
-msgstr ""
-
-#: geo-mashup-search.php:579
-msgid "comments"
-msgstr ""
-
-#: geo-mashup-search.php:594
-msgid "To disable taxonomies and terms on search widget leave select"
-msgstr ""
-
-#: geo-mashup-search.php:595
-msgid "Taxonomies Menu:"
-msgstr ""
-
-#: geo-mashup-search.php:601
-msgid "Select"
-msgstr ""
-
-#: geo-mashup-search.php:618
-msgid "Terms Menu:"
-msgstr ""
-
-#: geo-mashup-search.php:623
-msgid "First, choose Taxonomy"
-msgstr ""
-
-#: geo-mashup-search.php:634
-msgid "All"
-msgstr ""
-
-#: geo-mashup-search.php:650
-msgid ""
-"Taxonomies Terms dropdown contents. Blank to omit, 'all' for all post "
-"categories, or comma separated category IDs to include."
-msgstr ""
-
-#: geo-mashup-search.php:663
-msgid "Units:"
-msgstr ""
-
-#: geo-mashup-search.php:668
-msgid "miles"
-msgstr ""
-
-#: geo-mashup-search.php:672
-msgid "kilometers"
-msgstr ""
-
-#: geo-mashup-search.php:679
-msgid ""
-"Radius dropdown contents. Blank to omit, or comma separated numeric "
-"distances in selected units."
-msgstr ""
-
-#: geo-mashup-search.php:680
-msgid "Radius Menu:"
-msgstr ""
-
-#: geo-mashup-search.php:691
-msgid "The page where search results should be displayed."
-msgstr ""
-
-#: geo-mashup-search.php:692
-msgid "Results Page:"
-msgstr ""
-
-#: geo-mashup-ui-managers.php:262
+#: geo-mashup-ui-managers.php:267 geo-mashup.php:586
 msgid "Object location not saved - invalid request."
 msgstr ""
 
-#: geo-mashup-ui-managers.php:793
+#: geo-mashup-ui-managers.php:797
 msgid "Address not found - try making it less detailed"
 msgstr ""
 
-#: geo-mashup-ui-managers.php:977
+#: geo-mashup-ui-managers.php:981
 msgid "Written from (location)"
 msgstr ""
 
-#: geo-mashup-ui-managers.php:979
+#: geo-mashup-ui-managers.php:983
 msgid "Loading..."
 msgstr ""
 
-#: geo-mashup.php:575
+#: geo-mashup.php:565
 msgid "No object id posted."
 msgstr ""
 
-#: geo-mashup.php:592
+#: geo-mashup.php:589
+msgid "You are not allowed to edit this location."
+msgstr ""
+
+#: geo-mashup.php:602
 msgid "Location updated."
 msgstr ""
 
-#: geo-mashup.php:594
+#: geo-mashup.php:604
 msgid "Location deleted."
 msgstr ""
 
-#: geo-mashup.php:596
+#: geo-mashup.php:606
 msgid "Location added."
 msgstr ""
 
-#: geo-mashup.php:1010
+#: geo-mashup.php:1074
 msgid "Geo Mashup omitted a map with no located objects found."
 msgstr ""
 
-#: geo-mashup.php:1405
+#: geo-mashup.php:1579
 msgid "You must add a description to this category to use this Geo Mashup feature."
 msgstr ""
 
-#: geo-mashup.php:1432 php/Admin/Settings/PageView.php:31
+#: geo-mashup.php:1606 php/Admin/Settings/PageView.php:23
 msgid "Geo Mashup Options"
 msgstr ""
 
@@ -549,39 +428,39 @@ msgstr ""
 msgid "Geo Mashup"
 msgstr ""
 
-#: geo-mashup.php:1450
+#: geo-mashup.php:1624
 msgid ""
 "Geo Mashup now includes search, deactivating the old %s plugin. It's safe "
 "to delete it."
 msgstr ""
 
-#: geo-mashup.php:1460
+#: geo-mashup.php:1634
 msgid ""
 "Geo Mashup needs to upgrade its database, visit the <a "
 "href=\"%s\">settings</a> to do it now."
 msgstr ""
 
-#: geo-mashup.php:1485
+#: geo-mashup.php:1659
 msgid "Settings"
 msgstr ""
 
-#: geo-mashup.php:1507
+#: geo-mashup.php:1681
 msgid "Documentation"
 msgstr ""
 
-#: geo-mashup.php:1509
+#: geo-mashup.php:1683
 msgid "Donate"
 msgstr ""
 
-#: geo-mashup.php:1721
+#: geo-mashup.php:1896
 msgid "Show on map"
 msgstr ""
 
-#: geo-mashup.php:1732
+#: geo-mashup.php:1907
 msgid "Geotag Icon"
 msgstr ""
 
-#: geo-mashup.php:1892
+#: geo-mashup.php:2080
 msgid ""
 "Enable the geo search widget in the Geo Mashup settings to power the nearby "
 "list!"
@@ -603,35 +482,35 @@ msgstr ""
 msgid "Geo Mashup map omitted to avoid nesting maps"
 msgstr ""
 
-#: php/Admin/Settings/BaseData.php:21
+#: php/Admin/Settings/BaseData.php:22
 msgid "Small Zoom"
 msgstr ""
 
-#: php/Admin/Settings/BaseData.php:22
+#: php/Admin/Settings/BaseData.php:23
 msgid "Small Pan/Zoom"
 msgstr ""
 
-#: php/Admin/Settings/BaseData.php:23
+#: php/Admin/Settings/BaseData.php:24
 msgid "Large Pan/Zoom"
 msgstr ""
 
-#: php/Admin/Settings/BaseData.php:26
+#: php/Admin/Settings/BaseData.php:28 php/Admin/Settings/BaseData.php:34
 msgid "Roadmap"
 msgstr ""
 
-#: php/Admin/Settings/BaseData.php:27
+#: php/Admin/Settings/BaseData.php:29 php/Admin/Settings/BaseData.php:35
 msgid "Satellite"
 msgstr ""
 
-#: php/Admin/Settings/BaseData.php:28
+#: php/Admin/Settings/BaseData.php:30
 msgid "Hybrid"
 msgstr ""
 
-#: php/Admin/Settings/BaseData.php:29
+#: php/Admin/Settings/BaseData.php:31
 msgid "Terrain"
 msgstr ""
 
-#: php/Admin/Settings/BaseData.php:50
+#: php/Admin/Settings/BaseData.php:57
 msgid "auto"
 msgstr ""
 
@@ -677,85 +556,91 @@ msgstr ""
 msgid "Default Map Type"
 msgstr ""
 
-#: php/Admin/Settings/ContextMapPanel.php:73
-#: php/Admin/Settings/GlobalMapPanel.php:74
-#: php/Admin/Settings/SingleMapPanel.php:72
+#: php/Admin/Settings/ContextMapPanel.php:75
+#: php/Admin/Settings/GlobalMapPanel.php:76
+#: php/Admin/Settings/SingleMapPanel.php:74
 msgid "Add Map Type Control"
 msgstr ""
 
-#: php/Admin/Settings/ContextMapPanel.php:90
-#: php/Admin/Settings/GlobalMapPanel.php:91
-#: php/Admin/Settings/SingleMapPanel.php:89
+#: php/Admin/Settings/ContextMapPanel.php:92
+#: php/Admin/Settings/GlobalMapPanel.php:93
+#: php/Admin/Settings/SingleMapPanel.php:91
 msgid "Add Overview Control"
 msgstr ""
 
-#: php/Admin/Settings/ContextMapPanel.php:102
-#: php/Admin/Settings/GlobalMapPanel.php:103
-#: php/Admin/Settings/SingleMapPanel.php:99
+#: php/Admin/Settings/ContextMapPanel.php:104
+#: php/Admin/Settings/GlobalMapPanel.php:105
+#: php/Admin/Settings/SingleMapPanel.php:101
+msgid "Add Full Screen Control"
+msgstr ""
+
+#: php/Admin/Settings/ContextMapPanel.php:115
+#: php/Admin/Settings/GlobalMapPanel.php:116
+#: php/Admin/Settings/SingleMapPanel.php:113
 msgid "Enable Scroll Wheel Zoom"
 msgstr ""
 
-#: php/Admin/Settings/ContextMapPanel.php:111
-#: php/Admin/Settings/GlobalMapPanel.php:112
-#: php/Admin/Settings/SingleMapPanel.php:108
+#: php/Admin/Settings/ContextMapPanel.php:124
+#: php/Admin/Settings/GlobalMapPanel.php:125
+#: php/Admin/Settings/SingleMapPanel.php:122
 msgid "Marker Default Color"
 msgstr ""
 
-#: php/Admin/Settings/ContextMapPanel.php:127
-#: php/Admin/Settings/GlobalMapPanel.php:128
-#: php/Admin/Settings/SingleMapPanel.php:124
+#: php/Admin/Settings/ContextMapPanel.php:140
+#: php/Admin/Settings/GlobalMapPanel.php:141
+#: php/Admin/Settings/SingleMapPanel.php:138
 msgid "Default Zoom Level"
 msgstr ""
 
-#: php/Admin/Settings/ContextMapPanel.php:139
-#: php/Admin/Settings/GlobalMapPanel.php:140
+#: php/Admin/Settings/ContextMapPanel.php:152
+#: php/Admin/Settings/GlobalMapPanel.php:153
 #: php/Admin/Settings/OverallPanel.php:374
-#: php/Admin/Settings/SingleMapPanel.php:136
+#: php/Admin/Settings/SingleMapPanel.php:150
 msgid "0 is zoomed all the way out."
 msgstr ""
 
-#: php/Admin/Settings/ContextMapPanel.php:144
-#: php/Admin/Settings/GlobalMapPanel.php:167
+#: php/Admin/Settings/ContextMapPanel.php:157
+#: php/Admin/Settings/GlobalMapPanel.php:180
 msgid "Marker Selection Behaviors"
 msgstr ""
 
-#: php/Admin/Settings/ContextMapPanel.php:150
-#: php/Admin/Settings/GlobalMapPanel.php:173
+#: php/Admin/Settings/ContextMapPanel.php:163
+#: php/Admin/Settings/GlobalMapPanel.php:186
 msgid "Open info window"
 msgstr ""
 
-#: php/Admin/Settings/ContextMapPanel.php:155
-#: php/Admin/Settings/GlobalMapPanel.php:178
+#: php/Admin/Settings/ContextMapPanel.php:168
+#: php/Admin/Settings/GlobalMapPanel.php:191
 msgid "Highlight"
 msgstr ""
 
-#: php/Admin/Settings/ContextMapPanel.php:160
-#: php/Admin/Settings/GlobalMapPanel.php:183
+#: php/Admin/Settings/ContextMapPanel.php:173
+#: php/Admin/Settings/GlobalMapPanel.php:196
 msgid "Center"
 msgstr ""
 
-#: php/Admin/Settings/ContextMapPanel.php:165
-#: php/Admin/Settings/GlobalMapPanel.php:188
+#: php/Admin/Settings/ContextMapPanel.php:178
+#: php/Admin/Settings/GlobalMapPanel.php:201
 msgid "Show Geo Attachments"
 msgstr ""
 
-#: php/Admin/Settings/ContextMapPanel.php:169
-#: php/Admin/Settings/GlobalMapPanel.php:247
-#: php/Admin/Settings/SingleMapPanel.php:141
+#: php/Admin/Settings/ContextMapPanel.php:182
+#: php/Admin/Settings/GlobalMapPanel.php:260
+#: php/Admin/Settings/SingleMapPanel.php:155
 msgid "Click To Load"
 msgstr ""
 
-#: php/Admin/Settings/ContextMapPanel.php:180
-#: php/Admin/Settings/GlobalMapPanel.php:258
-#: php/Admin/Settings/SingleMapPanel.php:152
+#: php/Admin/Settings/ContextMapPanel.php:193
+#: php/Admin/Settings/GlobalMapPanel.php:271
+#: php/Admin/Settings/SingleMapPanel.php:166
 msgid "Click To Load Text"
 msgstr ""
 
-#: php/Admin/Settings/ContextMapPanel.php:193
+#: php/Admin/Settings/ContextMapPanel.php:206
 #: php/Admin/Settings/GlobalMapPanel.php:16
-#: php/Admin/Settings/GlobalMapPanel.php:319
+#: php/Admin/Settings/GlobalMapPanel.php:332
 #: php/Admin/Settings/OverallPanel.php:381
-#: php/Admin/Settings/SingleMapPanel.php:164
+#: php/Admin/Settings/SingleMapPanel.php:178
 msgid "Update Options"
 msgstr ""
 
@@ -763,95 +648,85 @@ msgstr ""
 msgid "Default settings for global maps of located items."
 msgstr ""
 
-#: php/Admin/Settings/GlobalMapPanel.php:146
+#: php/Admin/Settings/GlobalMapPanel.php:159
 msgid "Clustering"
 msgstr ""
 
-#: php/Admin/Settings/GlobalMapPanel.php:150
+#: php/Admin/Settings/GlobalMapPanel.php:163
 msgid "Cluster markers from zoom level 0 to %s"
 msgstr ""
 
-#: php/Admin/Settings/GlobalMapPanel.php:192
+#: php/Admin/Settings/GlobalMapPanel.php:205
 msgid "Info window thumbnail size"
 msgstr ""
 
-#: php/Admin/Settings/GlobalMapPanel.php:206
+#: php/Admin/Settings/GlobalMapPanel.php:219
 msgid "Automatic Selection"
 msgstr ""
 
-#: php/Admin/Settings/GlobalMapPanel.php:217
+#: php/Admin/Settings/GlobalMapPanel.php:230
 msgid "Selects the linked or most recent item when the map loads."
 msgstr ""
 
-#: php/Admin/Settings/GlobalMapPanel.php:222
+#: php/Admin/Settings/GlobalMapPanel.php:235
 msgid "Show Only Most Recent Items"
 msgstr ""
 
-#: php/Admin/Settings/GlobalMapPanel.php:230
+#: php/Admin/Settings/GlobalMapPanel.php:243
 msgid "Number of items to show, leave blank for all"
 msgstr ""
 
-#: php/Admin/Settings/GlobalMapPanel.php:235
+#: php/Admin/Settings/GlobalMapPanel.php:248
 msgid "Show Future Posts"
 msgstr ""
 
-#: php/Admin/Settings/GlobalMapPanel.php:276
+#: php/Admin/Settings/GlobalMapPanel.php:289
 msgid "Color"
 msgstr ""
 
-#: php/Admin/Settings/GlobalMapPanel.php:277
+#: php/Admin/Settings/GlobalMapPanel.php:290
 msgid "Show Connecting Line Until Zoom Level (0-20 or none)"
 msgstr ""
 
-#: php/Admin/Settings/GlobalMapPanelData.php:33
+#: php/Admin/Settings/GlobalMapPanelData.php:30
 msgid "0 (Clustering Off)"
 msgstr ""
 
-#: php/Admin/Settings/GlobalMapPanelData.php:39
+#: php/Admin/Settings/GlobalMapPanelData.php:36
 msgid "Yes"
 msgstr ""
 
-#: php/Admin/Settings/GlobalMapPanelData.php:40
+#: php/Admin/Settings/GlobalMapPanelData.php:37
 msgid "No"
 msgstr ""
 
-#: php/Admin/Settings/GlobalMapPanelData.php:41
+#: php/Admin/Settings/GlobalMapPanelData.php:38
 msgid "Only"
 msgstr ""
 
-#: php/Admin/Settings/OptionsPage.php:139
+#: php/Admin/Settings/OptionsPage.php:123
 msgid ""
 "Options updated.  Browser or server caching may delay updates for recently "
 "viewed maps."
 msgstr ""
 
-#: php/Admin/Settings/OptionsPage.php:154
+#: php/Admin/Settings/OptionsPage.php:139
 msgid "Copied existing geodata, see log for details."
 msgstr ""
 
-#: php/Admin/Settings/OptionsPage.php:183
-msgid "Geocoding and other web services may not work properly."
-msgstr ""
-
-#: php/Admin/Settings/OptionsPage.php:192 render-map.php:511
-msgid ""
-"WordPress transients may not be working. Try deactivating or reconfiguring "
-"caching plugins."
-msgstr ""
-
-#: php/Admin/Settings/OptionsPage.php:204
+#: php/Admin/Settings/OptionsPage.php:156
 msgid "Database upgraded, see log for details."
 msgstr ""
 
-#: php/Admin/Settings/OptionsPage.php:216
+#: php/Admin/Settings/OptionsPage.php:168
 msgid "Log deleted."
 msgstr ""
 
-#: php/Admin/Settings/OptionsPage.php:225
+#: php/Admin/Settings/OptionsPage.php:177
 msgid "Saved options may be corrupted, try updating again. Corrupt values: "
 msgstr ""
 
-#: php/Admin/Settings/OptionsPage.php:239
+#: php/Admin/Settings/OptionsPage.php:191
 msgid ""
 "Some invalid options will not be used. If you've just upgraded, do an "
 "update to initialize new options."
@@ -1043,35 +918,35 @@ msgstr ""
 msgid "Category Link Zoom Level"
 msgstr ""
 
-#: php/Admin/Settings/OverallPanelData.php:28
+#: php/Admin/Settings/OverallPanelData.php:25
 msgid "Google v3"
 msgstr ""
 
-#: php/Admin/Settings/OverallPanelData.php:29
+#: php/Admin/Settings/OverallPanelData.php:26
 msgid "OpenLayers"
 msgstr ""
 
-#: php/Admin/Settings/OverallPanelData.php:30
+#: php/Admin/Settings/OverallPanelData.php:27
 msgid "Leaflet"
 msgstr ""
 
-#: php/Admin/Settings/PageView.php:44
+#: php/Admin/Settings/PageView.php:35
 msgid "Update Log"
 msgstr ""
 
-#: php/Admin/Settings/PageView.php:48
+#: php/Admin/Settings/PageView.php:39
 msgid "Delete Log"
 msgstr ""
 
-#: php/Admin/Settings/PageView.php:51
+#: php/Admin/Settings/PageView.php:42
 msgid "You can keep this log as a record, future entries will be appended."
 msgstr ""
 
-#: php/Admin/Settings/PageView.php:58
+#: php/Admin/Settings/PageView.php:49
 msgid "View Update Log"
 msgstr ""
 
-#: php/Admin/Settings/PageView.php:63
+#: php/Admin/Settings/PageView.php:54
 msgid "Geo Mashup Documentation"
 msgstr ""
 
@@ -1095,20 +970,148 @@ msgstr ""
 msgid "Contextual Maps"
 msgstr ""
 
-#: php/Admin/Settings/Tabs.php:39
-msgid "Tests"
+#: php/Widgets/Search.php:14
+msgid "Search content by Geo Mashup location."
 msgstr ""
 
-#: php/Admin/Settings/TestsPanel.php:18
-msgid "Some checks that Geo Mashup is working properly."
+#: php/Widgets/Search.php:18
+msgid "Geo Mashup Search"
 msgstr ""
 
-#: php/Admin/Settings/TestsPanel.php:25
-msgid "Run Tests"
+#: php/Widgets/Search.php:38
+msgid "Couldn't find you..."
 msgstr ""
 
-#: render-map.php:449
+#: php/Widgets/Search.php:39
+msgid "My Location"
+msgstr ""
+
+#: php/Widgets/Search.php:55
+msgid "No Geo Mashup Search result page found - check widget settings."
+msgstr ""
+
+#: php/Widgets/Search.php:137
+msgid "Widget heading, leave blank to omit."
+msgstr ""
+
+#: php/Widgets/Search.php:138
+msgid "Title:"
+msgstr ""
+
+#: php/Widgets/Search.php:149
+msgid ""
+"Default text in the search text box for use as a prompt, leave blank to "
+"omit."
+msgstr ""
+
+#: php/Widgets/Search.php:150
+msgid "Default Search Text:"
+msgstr ""
+
+#: php/Widgets/Search.php:155
+msgid "city, state or zip"
+msgstr ""
+
+#: php/Widgets/Search.php:161
+msgid "Text for the user locate button, leave blank to omit."
+msgstr ""
+
+#: php/Widgets/Search.php:162
+msgid "Find Me Button:"
+msgstr ""
+
+#: php/Widgets/Search.php:167
+msgid "Find Me"
+msgstr ""
+
+#: php/Widgets/Search.php:172
+msgid "What to search:"
+msgstr ""
+
+#: php/Widgets/Search.php:184
+msgid "All post types"
+msgstr ""
+
+#: php/Widgets/Search.php:199
+msgid "users"
+msgstr ""
+
+#: php/Widgets/Search.php:203
+msgid "comments"
+msgstr ""
+
+#: php/Widgets/Search.php:218
+msgid "To disable taxonomies and terms on search widget leave select"
+msgstr ""
+
+#: php/Widgets/Search.php:219
+msgid "Taxonomies Menu:"
+msgstr ""
+
+#: php/Widgets/Search.php:225
+msgid "Select"
+msgstr ""
+
+#: php/Widgets/Search.php:243
+msgid "Terms Menu:"
+msgstr ""
+
+#: php/Widgets/Search.php:248
+msgid "First, choose Taxonomy"
+msgstr ""
+
+#: php/Widgets/Search.php:259
+msgid "All"
+msgstr ""
+
+#: php/Widgets/Search.php:276
+msgid ""
+"Taxonomies Terms dropdown contents. Blank to omit, 'all' for all post "
+"categories, or comma separated category IDs to include."
+msgstr ""
+
+#: php/Widgets/Search.php:289
+msgid "Units:"
+msgstr ""
+
+#: php/Widgets/Search.php:294
+msgid "miles"
+msgstr ""
+
+#: php/Widgets/Search.php:298
+msgid "kilometers"
+msgstr ""
+
+#: php/Widgets/Search.php:302
+msgid "nautical miles"
+msgstr ""
+
+#: php/Widgets/Search.php:309
+msgid ""
+"Radius dropdown contents. Blank to omit, or comma separated numeric "
+"distances in selected units."
+msgstr ""
+
+#: php/Widgets/Search.php:310
+msgid "Radius Menu:"
+msgstr ""
+
+#: php/Widgets/Search.php:321
+msgid "The page where search results should be displayed."
+msgstr ""
+
+#: php/Widgets/Search.php:322
+msgid "Results Page:"
+msgstr ""
+
+#: render-map.php:501
 msgid "Check/Uncheck All"
+msgstr ""
+
+#: render-map.php:563
+msgid ""
+"WordPress transients may not be working. Try deactivating or reconfiguring "
+"caching plugins."
 msgstr ""
 
 #: rest-api.php:64
