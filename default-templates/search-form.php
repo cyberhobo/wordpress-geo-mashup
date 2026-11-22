@@ -23,7 +23,7 @@
 	<div class="Location clear">
 		<label for="<?php echo $widget_id; ?>-input"><?php _e('Location','GeoMashup' ) ?>:</label>
 		<input id="<?php echo $widget_id; ?>-input" class="geo-mashup-search-input" name="location_text" type="search" 
-			placeholder="<?php if ( !empty( $_POST['location_text'] ) ) { echo esc_attr( $_POST['location_text'] ); } else if ( !empty( $instance['default_search_text'] ) ) {echo esc_attr( $instance['default_search_text'] );} ?>"
+			placeholder="<?php if ( !empty( $_POST['location_text'] ) ) { echo esc_attr( sanitize_text_field( wp_unslash( $_POST['location_text'] ) ) ); } else if ( !empty( $instance['default_search_text'] ) ) {echo esc_attr( $instance['default_search_text'] );} ?>"
 			value=""/>
 	</div>
 	<div class="object clear">

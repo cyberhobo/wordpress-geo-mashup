@@ -6,14 +6,20 @@ use GeoMashup\Search;
 
 class SearchResults extends Base {
 
+	/**
+	 * Run after core's do_shortcode (priority 11) so visitor-supplied search
+	 * text in the appended results is never parsed as a shortcode.
+	 */
+	const PRIORITY = 12;
+
 	public function add() {
 		if ( isset( $_POST['location_text'] ) ) {
-			add_filter( 'the_content', [ $this, 'the_content' ] );
+			add_filter( 'the_content', [ $this, 'the_content' ], self::PRIORITY );
 		}
 	}
 
 	public function remove() {
-		remove_filter( 'the_content', [ $this, 'the_content' ] );
+		remove_filter( 'the_content', [ $this, 'the_content' ], self::PRIORITY );
 	}
 
 	public function the_content( $content ) {
@@ -39,7 +45,7 @@ class SearchResults extends Base {
 		$_POST = stripslashes_deep( $_POST );
 
 		// Remove this filter to prevent recursion
-		remove_filter( 'the_content', [ $this, 'the_content' ] );
+		remove_filter( 'the_content', [ $this, 'the_content' ], self::PRIORITY );
 
 		$geo_search = new Search( $_POST );
 
@@ -49,7 +55,7 @@ class SearchResults extends Base {
 		$content .= ob_get_clean();
 
 		// Add the filter back - it's possible that content preprocessors will cause it to be run again
-		add_filter( 'the_content', [ $this, 'the_content' ] );
+		add_filter( 'the_content', [ $this, 'the_content' ], self::PRIORITY );
 
 		return $content;
 	}

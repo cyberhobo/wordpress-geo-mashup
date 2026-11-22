@@ -182,7 +182,8 @@ class Search {
 	 	$sort = isset($this->query_vars['sort']) ? $this->query_vars['sort'] : null;
 
 		extract( [
-			'search_text'       => esc_html( $location_text ),
+			// Encode square brackets so the search text can't be parsed as a shortcode
+			'search_text'       => str_replace( [ '[', ']' ], [ '&#91;', '&#93;' ], esc_html( $location_text ) ),
 			'distance_factor'   => $this->distance_factor,
 			'near_location'     => $this->near_location,
 			'result_count'      => (int) $this->result_count,

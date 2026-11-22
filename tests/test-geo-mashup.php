@@ -1128,6 +1128,77 @@ class GeoMashup_Unit_Tests extends GeoMashupTestCase {
 		$this->assertContains( (string) $found_post->ID, $search->get_the_IDs(), 'Search did not find the target post.' );
 	}
 
+	/**
+	 * Search text must not be parsed as a shortcode by the results template.
+	 */
+	function test_search_template_neutralizes_shortcode_in_search_text() {
+		require_once GEO_MASHUP_DIR_PATH . '/geo-mashup-search.php';
+
+		add_shortcode( 'gm_test_injected', array( $this, 'injected_shortcode' ) );
+
+		$search = new GeoMashupSearch( array(
+			'location_text' => '[gm_test_injected attr=value]',
+			'near_lat' => 45.6181,
+			'near_lng' => 5.226,
+			'object_name' => 'post',
+			'units' => 'km',
+		) );
+
+		ob_start();
+		$search->load_template();
+		$output = do_shortcode( ob_get_clean() );
+
+		remove_shortcode( 'gm_test_injected' );
+
+		$this->assertStringNotContainsString( 'GM_INJECTED_SHORTCODE_RAN', $output );
+		$this->assertStringNotContainsString( '[gm_test_injected', $output, 'Search text brackets were not encoded.' );
+		$this->assertStringContainsString(
+			'[gm_test_injected attr=value]',
+			html_entity_decode( $output ),
+			'Search text was not displayed.'
+		);
+	}
+
+	/**
+	 * Unauthenticated Geo Search posts must not run shortcodes through the_content.
+	 */
+	function test_search_results_content_does_not_run_posted_shortcode() {
+		require_once GEO_MASHUP_DIR_PATH . '/geo-mashup-search.php';
+
+		add_shortcode( 'gm_test_injected', array( $this, 'injected_shortcode' ) );
+
+		$page_id = $this->factory->post->create( array(
+			'post_type' => 'page',
+			'post_content' => 'Page content',
+		) );
+		$this->go_to( get_permalink( $page_id ) );
+		the_post();
+
+		$saved_post = $_POST;
+		$_POST = array(
+			'location_text' => '[gm_test_injected attr=value]',
+			'near_lat' => '45.6181',
+			'near_lng' => '5.226',
+			'object_name' => 'post',
+			'units' => 'km',
+		);
+
+		$hook = new \GeoMashup\Hooks\SearchResults();
+		$hook->add();
+		$content = apply_filters( 'the_content', get_post_field( 'post_content', $page_id ) );
+		$hook->remove();
+
+		$_POST = $saved_post;
+		remove_shortcode( 'gm_test_injected' );
+
+		$this->assertStringContainsString( 'geo-mashup-search-results', $content, 'Search results were not appended.' );
+		$this->assertStringNotContainsString( 'GM_INJECTED_SHORTCODE_RAN', $content, 'Posted search text was executed as a shortcode.' );
+	}
+
+	public function injected_shortcode() {
+		return 'GM_INJECTED_SHORTCODE_RAN';
+	}
+
     /**
      * Issue 777
      */
