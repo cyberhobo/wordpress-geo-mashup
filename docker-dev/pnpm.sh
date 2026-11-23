@@ -1,2 +1,2 @@
 #!/usr/bin/env bash
-docker compose -f "docker-compose.pnpm.yml" run --build --rm pnpm "$@"
+HOST_UID="$(id -u)" HOST_GID="$(id -g)" docker compose -f "docker-compose.pnpm.yml" run --build --rm pnpm "$@"

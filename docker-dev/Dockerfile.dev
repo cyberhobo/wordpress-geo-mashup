@@ -31,11 +31,14 @@ RUN docker-php-ext-install \
     mysqli \
     pdo_mysql
 
+# Containers run as the host user (see docker-compose files), which has no
+# home directory in the image. Give it a writable one for pnpm, Node.js, and
+# Composer caches.
+RUN mkdir -m 1777 /home/dev
+ENV HOME=/home/dev
+
 # Set working directory
 WORKDIR /app
-
-# Stop git from complaining about ownership
-RUN git config --global --add safe.directory /app
 
 # Default command
 CMD ["/bin/bash"]
