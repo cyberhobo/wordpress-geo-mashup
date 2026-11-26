@@ -292,7 +292,7 @@ class Search {
 		/** @var $append_units */
 		/** @var $echo */
 		extract( $args, EXTR_OVERWRITE );
-		$factor   = ( 'km' === $this->units ) ? 1 : self::MILES_PER_KILOMETER;
+		$factor   = $this->distance_factor;
 		$distance = round( $this->result->distance_km * $factor, $decimal_places );
 		$distance = number_format_i18n( $distance, $decimal_places );
 		if ( $append_units ) {
