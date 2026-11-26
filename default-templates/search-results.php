@@ -65,7 +65,7 @@
 			
 			<?php while ( $geo_mashup_search->have_posts() ) : $user=$geo_mashup_search->get_userdata(); ?>
 					<div class="search-result">
-						<h3><?php echo $user->first_name.' '.$user->last_name;?> aka <?php echo $user->user_nicename?></h3>
+						<h3><?php echo esc_html( $user->first_name . ' ' . $user->last_name ); ?> aka <?php echo esc_html( $user->user_nicename ); ?></h3>
 						<p>
 					<?php _e( 'Distance', 'GeoMashup' ); ?>:
 					<?php $geo_mashup_search->the_distance(); ?>

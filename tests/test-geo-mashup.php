@@ -1106,6 +1106,34 @@ class GeoMashup_Unit_Tests extends GeoMashupTestCase {
 		);
 	}
 
+	function test_search_units_are_allowlisted() {
+		require_once GEO_MASHUP_DIR_PATH . '/geo-mashup-search.php';
+
+		$post = $this->factory->post->create_and_get();
+		$location = GeoMashupDB::blank_location();
+		$location->lat = 40.7128;
+		$location->lng = -74.0060;
+		GeoMashupDB::set_object_location( 'post', $post->ID, $location, false );
+
+		$payload = 'km<img src=x onerror=alert(document.domain)>';
+		$search = new GeoMashupSearch( array(
+			'location_text' => 'Sample',
+			'near_lat'      => '40.7128',
+			'near_lng'      => '-74.0060',
+			'radius'        => '25000',
+			'units'         => $payload,
+			'object_name'   => 'post',
+		) );
+		$this->assertTrue( $search->have_posts(), 'Search did not find the post.' );
+
+		ob_start();
+		$search->load_template();
+		$output = ob_get_clean();
+
+		$this->assertStringNotContainsString( '<img src=x', $output, 'Units markup was output unescaped.' );
+		$this->assertStringContainsString( '0.00 km', $output, 'Invalid units did not fall back to km.' );
+	}
+
 	function test_small_search() {
 		require_once GEO_MASHUP_DIR_PATH . '/geo-mashup-search.php';
 
