@@ -150,6 +150,8 @@ This version fixes a security related bug.  Upgrade immediately.
 
 Security fixes. Scheduled (future) posts are now only included in map info windows and location queries when Show Future Posts is enabled in the global map settings, or for logged in users who can read them.
 
+Geo Search distances are now shown in nautical miles when nm is selected.
+
 = 1.13.26 Nov 23 2026 =
 
 Security fixes.
