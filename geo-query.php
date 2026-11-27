@@ -86,8 +86,11 @@ class GeoMashupQuery {
 
 		switch ( $object_name ) {
 			case 'post':
+				// Scheduled posts are included only for users allowed to see them
+				$object_ids = GeoMashup::filter_visible_post_ids( $object_ids );
 				$query_vars = array( 
-					'post__in' => $object_ids, 
+					// An empty post__in would be ignored, returning every post
+					'post__in' => empty( $object_ids ) ? array( 0 ) : $object_ids, 
 					'post_type' => GeoMashup::get_searchable_post_types(), 
 					'post_status' => 'publish,future' 
 				);
@@ -269,7 +272,7 @@ class GeoMashupQuery {
 		header('Cache-Control: no-cache;', true);
 		header('Expires: -1;', true);
 
-		$json = GeoMashup::get_locations_json( $_REQUEST );
+		$json = GeoMashup::get_public_locations_json( $_REQUEST );
 		if ( isset( $_REQUEST['callback'] ) )
 			$json = esc_js( $_REQUEST['callback'] ) . '(' . $json . ')';
 		echo $json;

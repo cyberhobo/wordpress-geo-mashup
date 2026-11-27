@@ -3,7 +3,7 @@
 Plugin Name: Geo Mashup
 Plugin URI: https://wordpress.org/plugins/geo-mashup/
 Description: Save location for posts and pages, or even users and comments. Display these locations on Google, Leaflet, and OSM maps. Make WordPress into your GeoCMS.
-Version: 1.13.26
+Version: 1.13.27
 Author: Dylan Kuhn
 Text Domain: GeoMashup
 Domain Path: /lang
@@ -256,7 +256,7 @@ class GeoMashup {
 		define('GEO_MASHUP_DIRECTORY', dirname( GEO_MASHUP_PLUGIN_NAME ) );
 		define('GEO_MASHUP_URL_PATH', trim( plugin_dir_url( __FILE__ ), '/' ) );
 		define('GEO_MASHUP_MAX_ZOOM', 20);
-		define('GEO_MASHUP_VERSION', '1.13.26');
+		define('GEO_MASHUP_VERSION', '1.13.27');
 		define('GEO_MASHUP_DB_VERSION', '1.3');
 	}
 
@@ -718,6 +718,93 @@ class GeoMashup {
 		$located_types = $geo_mashup_options->get( 'overall', 'located_post_types' );
 		$searchable_types = array_keys( get_post_types( array('exclude_from_search' => false) ) );
 		return array_unique( array_merge( $located_types, $searchable_types ) );
+	}
+
+	/**
+	 * Whether the site has opted in to showing scheduled (future) posts to everyone.
+	 *
+	 * Public requests may ask for future posts, but only the administrator's
+	 * global map "Show Future Posts" setting can make them visible to visitors
+	 * who could not otherwise read them.
+	 *
+	 * @since 1.13.27
+	 *
+	 * @return bool
+	 */
+	public static function future_posts_are_public() {
+		global $geo_mashup_options;
+		return in_array( $geo_mashup_options->get( 'global_map', 'show_future' ), array( 'true', 'only' ), true );
+	}
+
+	/**
+	 * Whether the current user may see a post in public map query output.
+	 *
+	 * Published posts are visible. Scheduled posts are visible when the site
+	 * has made future posts public, or to users who can read the post.
+	 * Anything else is not.
+	 *
+	 * @since 1.13.27
+	 *
+	 * @param int $post_id
+	 * @return bool
+	 */
+	public static function current_user_can_see_queried_post( $post_id ) {
+		$status = get_post_status( $post_id );
+		if ( 'publish' === $status ) {
+			return true;
+		}
+		if ( 'future' === $status ) {
+			return self::future_posts_are_public() || current_user_can( 'read_post', $post_id );
+		}
+		return false;
+	}
+
+	/**
+	 * Remove posts the current user may not see from a list of requested IDs.
+	 *
+	 * @since 1.13.27
+	 *
+	 * @param int[] $post_ids
+	 * @return int[]
+	 */
+	public static function filter_visible_post_ids( $post_ids ) {
+		return array_values( array_filter( array_map( 'intval', $post_ids ), array( __CLASS__, 'current_user_can_see_queried_post' ) ) );
+	}
+
+	/**
+	 * Get location JSON for a public (AJAX) request.
+	 *
+	 * The show_future argument comes from the request, so scheduled posts are
+	 * only included when the site has made them public, or for logged in users
+	 * who can read them.
+	 *
+	 * @since 1.13.27
+	 *
+	 * @param array $query_args Request arguments.
+	 * @return string JSON.
+	 */
+	public static function get_public_locations_json( $query_args ) {
+		$query_args = wp_parse_args( $query_args, array( 'object_name' => 'post' ) );
+		$wants_future = isset( $query_args['show_future'] ) &&
+			in_array( sanitize_key( $query_args['show_future'] ), array( 'true', 'only' ), true );
+
+		if ( 'post' !== $query_args['object_name'] || ! $wants_future || self::future_posts_are_public() ) {
+			return self::get_locations_json( $query_args );
+		}
+
+		if ( ! is_user_logged_in() ) {
+			if ( 'only' === sanitize_key( $query_args['show_future'] ) ) {
+				return json_encode( array( 'objects' => array() ) );
+			}
+			$query_args['show_future'] = 'false';
+			return self::get_locations_json( $query_args );
+		}
+
+		$data = self::get_locations_json( $query_args, ARRAY_A );
+		$data['objects'] = array_values( array_filter( $data['objects'], function ( $object ) {
+			return isset( $object['object_id'] ) && self::current_user_can_see_queried_post( $object['object_id'] );
+		} ) );
+		return json_encode( $data );
 	}
 
 	/**

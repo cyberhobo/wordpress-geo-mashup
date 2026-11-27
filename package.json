@@ -1,6 +1,6 @@
 {
   "license": "GPL-2.0-or-later",
-  "version": "1.13.26",
+  "version": "1.13.27",
   "devDependencies": {
     "@larscom/cpx": "^2.0.0",
     "@playwright/test": "^1.65.1",

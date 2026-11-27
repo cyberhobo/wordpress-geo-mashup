@@ -69,6 +69,10 @@ class Search {
 		);
 		$this->query_vars                  = wp_parse_args( $args, $default_args );
 		$this->query_vars['location_text'] = apply_filters( 'geo_mashup_search_query_location_text', $this->query_vars['location_text'] );
+		$this->query_vars['units']         = self::sanitize_units( $this->query_vars['units'] );
+		if ( ! is_null( $this->query_vars['radius'] ) && '' !== $this->query_vars['radius'] ) {
+			$this->query_vars['radius'] = is_numeric( $this->query_vars['radius'] ) ? abs( (float) $this->query_vars['radius'] ) : null;
+		}
 
 		$near_lat = $near_lng = $location_text = $geolocation = $radius = $map_terms = $map_cat = $map_post_type = null;
 		/** @var string $units */
@@ -288,11 +292,11 @@ class Search {
 		/** @var $append_units */
 		/** @var $echo */
 		extract( $args, EXTR_OVERWRITE );
-		$factor   = ( 'km' === $this->units ) ? 1 : self::MILES_PER_KILOMETER;
+		$factor   = $this->distance_factor;
 		$distance = round( $this->result->distance_km * $factor, $decimal_places );
 		$distance = number_format_i18n( $distance, $decimal_places );
 		if ( $append_units ) {
-			$distance .= ' ' . $this->units;
+			$distance .= ' ' . esc_html( $this->units );
 		}
 		if ( $echo ) {
 			echo $distance;
@@ -311,6 +315,16 @@ class Search {
 	public function enqueue_script( $handle ) {
 		// As of WP 3.3 we can enqueue scripts any time
 		wp_enqueue_script( $handle );
+	}
+
+	/**
+	 * Restrict a units value to the supported set.
+	 *
+	 * @param mixed $units Requested units.
+	 * @return string 'km', 'mi' or 'nm', defaulting to 'km'.
+	 */
+	private static function sanitize_units( $units ) {
+		return in_array( $units, array( 'km', 'mi', 'nm' ), true ) ? $units : 'km';
 	}
 
 	private function distance_factor_for($units) {

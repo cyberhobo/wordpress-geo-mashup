@@ -4,7 +4,7 @@ Donate Link:
 Tags: maps, google maps, mapping, geo, geocms
 Requires at least: 3.7
 Tested up to: 7.1.5
-Stable tag: 1.13.26
+Stable tag: 1.13.27
 License: GPL2+
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -68,6 +68,8 @@ of all your content, including geographic data.
 
 Thanks for security reports to:
 
+* [ytaero](https://patchstack.com/database/researchers/5b159b6f-b810-4a21-85d5-cc1b85eb8ed0)
+* [Phạm Khắc Sang](https://patchstack.com/database/researchers/c1b89b9b-5710-4382-9bde-4ff99ac43980)
 * [Santh](https://patchstack.com/database/researchers/4cd974a2-649f-492c-87a9-900f357105e4)
 * [Harry Nguyen](https://patchstack.com/database/researchers/c829ec05-8e41-459d-8911-d6d9d1e3449d)
 * [M. Bal-Ghaoui](https://patchstack.com/database/researchers/e8a25916-1e04-48ae-9667-3d626f2f76b6)
@@ -96,6 +98,9 @@ The Patchstack team help validate, triage and handle any security vulnerabilitie
 GeoMashup supports [standard WordPress plugin installation].
 
 == Upgrade Notice ==
+
+= 1.13.27 =
+This version includes a security update.  Upgrade immediately.
 
 = 1.13.26 =
 This version includes a security update.  Upgrade immediately.
@@ -140,6 +145,12 @@ This version fixes a security related bug.  Upgrade immediately.
 This version fixes a security related bug.  Upgrade immediately.
 
 == Change Log ==
+
+= 1.13.27 Nov 27 2026 =
+
+Security fixes. Scheduled (future) posts are now only included in map info windows and location queries when Show Future Posts is enabled in the global map settings, or for logged in users who can read them.
+
+Geo Search distances are now shown in nautical miles when nm is selected.
 
 = 1.13.26 Nov 23 2026 =
 
